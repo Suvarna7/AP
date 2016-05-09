@@ -1,0 +1,24 @@
+<!-- saved from url=(0014)about:internet -->
+<pre class="code">
+<span class="srcline"><span class="lineno"><a href="1,1" id="srcline1"> 1</a></span><span class="line"><span class="keyword">function</span> [<span class="var type0" id="S2T0U3">c_state_sigma</span>,<span class="var type0" id="S3T0U4">fval</span>]=m20141215_sigma_const()</span></span>
+<span class="srcline"><span class="lineno"><a href="1,2" id="srcline2"> 2</a></span><span class="line"><span class="var type0" id="S4T0U9">lowerlim</span>=[0 40 0 0 0.034 0.0185 0.65 10]';</span></span>
+<span class="srcline"><span class="lineno"><a href="1,3" id="srcline3"> 3</a></span><span class="line"><span class="var type0" id="S5T0U23">upperlim</span>=[250 600 600 600 0.136 0.074 2.6 180]';</span></span>
+<span class="srcline"><span class="lineno"><a href="1,4" id="srcline4"> 4</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,5" id="srcline5"> 5</a></span><span class="line"><span class="var type0" id="S6T0U37">X_n</span>=[0.09273680247274323</span></span>
+<span class="srcline"><span class="lineno"><a href="1,6" id="srcline6"> 6</a></span><span class="line"> 142.43608745282637</span></span>
+<span class="srcline"><span class="lineno"><a href="1,7" id="srcline7"> 7</a></span><span class="line"> -9.09564993011939E-8</span></span>
+<span class="srcline"><span class="lineno"><a href="1,8" id="srcline8"> 8</a></span><span class="line"> 3.098636113808439E-8</span></span>
+<span class="srcline"><span class="lineno"><a href="1,9" id="srcline9"> 9</a></span><span class="line"> 0.06800017315152491</span></span>
+<span class="srcline"><span class="lineno"><a href="1,10" id="srcline10">10</a></span><span class="line"> 0.03700019008578548</span></span>
+<span class="srcline"><span class="lineno"><a href="1,11" id="srcline11">11</a></span><span class="line"> 1.3000002222313223</span></span>
+<span class="srcline"><span class="lineno"><a href="1,12" id="srcline12">12</a></span><span class="line"> 19.105572870053386]</span></span>
+<span class="srcline"><span class="lineno"><a href="1,13" id="srcline13">13</a></span><span class="line"><span class="var type0" id="S7T0U58">p1</span>=eye(8);</span></span>
+<span class="srcline"><span class="lineno"><a href="1,14" id="srcline14">14</a></span><span class="line"><span class="var type0" id="S9T0U64">x_a</span>=[0.09273725182172585            146.82000046944435            1.4516292528888533E-7            1.7536228986124187E-22            0.06800025902248848            0.03699979674776825            1.017157432659038            20.00000065934651]'</span></span>
+<span class="srcline"><span class="lineno"><a href="1,15" id="srcline15">15</a></span><span class="line"><span class="var type0" id="S10T0U78">DD</span>=<span class="string">'Off'</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,16" id="srcline16">16</a></span><span class="line"><span class="var type0" id="S11T0U82">options</span>=optimset(<span class="string">'Algorithm'</span>,<span class="string">'sqp'</span>);</span></span>
+<span class="srcline"><span class="lineno"><a href="1,17" id="srcline17">17</a></span><span class="line">[<span class="var type0" id="S2T0U90">c_state_sigma</span>,<span class="var type0" id="S3T0U91">fval</span>]=fmincon(@objective,<span class="var type0" id="S9T0U96">x_a</span>,[],[],[],[],<span class="var type0" id="S4T0U105">lowerlim</span>,<span class="var type0" id="S5T0U106">upperlim</span>,[],<span class="var type0" id="S11T0U109">options</span>);</span></span>
+<span class="srcline"><span class="lineno"><a href="1,18" id="srcline18">18</a></span><span class="line">    <span class="keyword">function</span> <span class="var type0" id="S15T0U112">V</span>=<span class="message fatal" id="M1F1C">objective</span>(<span class="var type0" id="S16T0U115">Q</span>)</span></span>
+<span class="srcline"><span class="lineno"><a href="1,19" id="srcline19">19</a></span><span class="line">        <span class="var type0" id="S15T0U118">V</span>=(<span class="var type0" id="S16T0U124">Q</span>-<span class="var type0" id="S6T0U125">X_n</span>)'*<span class="var type0" id="S7T0U126">p1</span>*(<span class="var type0" id="S16T0U129">Q</span>-<span class="var type0" id="S6T0U130">X_n</span>);</span></span>
+<span class="srcline"><span class="lineno"><a href="1,20" id="srcline20">20</a></span><span class="line">    <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,21" id="srcline21">21</a></span><span class="line"><span class="keyword">end</span></span></span>
+</pre>
