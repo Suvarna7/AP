@@ -7,6 +7,7 @@ package dias;
 
 import Jama.Matrix;
 import static java.lang.Math.atan;
+import dias.MemoryStaticVariables.m20150711_load_global_variables;
 
 /**
  *

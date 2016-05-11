@@ -6,6 +6,8 @@
 package dias;
 
 import Jama.Matrix;
+import dias.MemoryStaticVariables.m20150711_load_global_variables;
+
 
 
 
