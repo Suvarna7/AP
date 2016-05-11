@@ -26,6 +26,7 @@ public class OptRecursive {
     public double Y;
     public Matrix phi;
     public Matrix Q_old;
+    public double[] Q_old_ARRAY;
     public Matrix P_old;
     public double lamda_old;
     public double[] upperlimit = new double[Q_SIZE + 1];
@@ -44,12 +45,12 @@ public class OptRecursive {
     //TrustRegionRadiusStart : (default = 0.5)
     //We were using RHO_BEG= 1;
     //DO NOT USE RHO_bEG > 6
-    private final double _RHO_BEG = 0.5;
+    private final double _RHO_BEG = 0.25;
     //TrustRegionRadiusEnd  : (default = 1.0e-6)
     private final double _RHO_END = 1.0e-6;
     private final int iprint = 1;
     //TODO Max_function - max recursive loop
-    private final static int MAX_FUNC = 3500;
+    private final static int MAX_FUNC = 70000;
     private final static int N_VARIABLES = 24;
     private final static int M_CONSTRAINTS = 1;
 
@@ -83,6 +84,13 @@ public class OptRecursive {
         this.P_old = P_old;
         this.lamda_old = lamda_old;
         this.Q_old = Q_old;
+        //Update its double array version:
+        double[][] previousQold = Q_old.getArray();
+        Q_old_ARRAY = new double[Q_SIZE];
+        for (int i = 0; i < previousQold.length; i++) {
+            Q_old_ARRAY[i] = previousQold[i][0];
+            System.out.print(i + ", ");
+        }
         this.phi = phi;
         this.upperlimit = upperlimit;
         this.lowerlimit = lowerlimit;
@@ -137,19 +145,10 @@ public class OptRecursive {
             public double compute(int n, int m, double[] Q, double[] con) {
                 //1. Get constraints for Q
                 //Returns: (max(Astatetemp) - 0.99)
-                //TODO another approcah
-                //boolean Avalid = constraints(x); //TODO does not affect the program !!!!
-
-                //Actually.... we should use the constrains, con, to perform the constraints:
-                //TODO return all eigen values 
-                //con  = checkConstraintsOp(Q);
-                con[0] = constraints(Q);
-                //If A is a valid matrix, it satisfies the constraints and the optimization
-                //is done
-                //Otherwise:
-                //TODO Another approach
-                //if (Avalid) {
-                //TODO Function to optimize
+                //Cobyla constraint: con[0] >= 0
+                 con[0] = getConstraintValue(Q);
+                 //con[0] = -1;
+                
                 //2. Set the function to optimize - V
                 // V = (Q- Qold)'*(pseudo-inv(P)*(Q-Q_old) + (Y-phi'*Q)'*(Y-phi'*Q);
                 //Update other variables: f, f1 /V= f + fi
@@ -193,16 +192,17 @@ public class OptRecursive {
         //Q_oldtemp = Q_old.getArray()[1];
         //printMatrix( "Q_old to findmin: "+ Q_oldtemp);
         //Prepare the Qold matrix to be pass to the min function, as double[]
-        double[][] preQold = Q_old.getArray();
+        double[][] previousQold = Q_old.getArray();
         double[] Q_oldMIN = new double[Q_SIZE];
-        for (int i = 0; i < preQold.length; i++) {
-            Q_oldMIN[i] = preQold[i][0];
+        for (int i = 0; i < previousQold.length; i++) {
+            Q_oldMIN[i] = previousQold[i][0];
             System.out.print(i + ", ");
         }
+        //Update Qold to be equal to previous one
 
         System.out.println("Size Qold " + Q_oldMIN.length + " - ");
         //Run the optimization
-        CobylaExitStatus result = Cobyla.findMinimum(calcfc, N_VARIABLES, M_CONSTRAINTS, Q_oldMIN, _RHO_BEG, _RHO_END, iprint, MAX_FUNC);
+        CobylaExitStatus result = Cobyla.findMinimum(calcfc, N_VARIABLES, M_CONSTRAINTS, Q_old_ARRAY, _RHO_BEG, _RHO_END, iprint, MAX_FUNC);
         //  result1 = cobyla.findMinimum(calcfc, 24,2*Q_old.getRowDimension()+1, Q_oldtemp, rhobeg, rhoend, iprint, maxfun);  
 
         //Exit status: DIVERGING ROUNDING ERRORS / MAX ITERATION REACH / NORMAL
@@ -293,12 +293,11 @@ public class OptRecursive {
      * We return the 0.99 - maxEigen so the algorithm can check if it is >=0
      *
      * @param x - Q
-     * @return 0.99 - maxEigen
+     * @return (0.99 - maxEigen)
      */
-    public double constraints(double[] x) {
+    public double getConstraintValue(double[] x) {
         //double [][] A_state = new double[21][21];
         double[][] A_state = new double[Q_SIZE - 2][Q_SIZE - 2];
-//        java.util.Arrays.fill(A_state, 0);
 
         //Generate A_state
         //A --> -x
@@ -361,12 +360,15 @@ public class OptRecursive {
         //Check if eigen values are valid
         for (int z = 0; z < 21; z++) {
             //Use absolute values of eigen values
-            AstatetEigen.set(z, 0, Math.abs(AstateModify.eig().getD().get(z, z)));
+            //A = V D V^T.
+            AstatetEigen.set(z, 0, Math.abs(AstateModify.eig().getV().get(z, z)));
+            //AstatetEigen.print(9, 6);
         }
 
         //  printMatrix(Astatetemp,"Astatetemp");
         //double c = (max(Astatetemp) - 0.99);
-        return (EIGEN_CONSTRAIN_VALUE - max(AstatetEigen));
+        //We want: max(AstateEigen) -0.99 <= 0
+        return (EIGEN_CONSTRAIN_VALUE - max(AstatetEigen) );
     }
 
     /**
@@ -387,74 +389,6 @@ public class OptRecursive {
         System.out.println("}");
     }
 
-    private double[] checkConstraintsOp(double[] x) {
-        double[][] A_state = new double[21][21];
-        //Generate A_state
-
-        A_state[0][3] = x[4];
-        A_state[0][4] = x[5];
-        A_state[0][5] = x[6];
-        A_state[0][6] = x[7];
-        A_state[0][7] = x[8];
-        A_state[0][8] = x[9];
-        A_state[0][9] = x[10];
-        A_state[0][10] = x[11];
-        A_state[0][11] = x[12];
-        A_state[0][12] = x[13];
-        A_state[0][13] = x[14];
-        A_state[0][14] = x[16];
-        A_state[0][15] = x[17];
-        //x
-        A_state[0][16] = x[18];
-        A_state[0][17] = x[20];
-        A_state[0][18] = x[21];
-        A_state[0][19] = x[22];
-        //C
-        A_state[0][20] = x[23];
-
-        A_state[1][0] = 1;
-        A_state[2][1] = 1;
-        A_state[4][3] = 1;
-        A_state[5][4] = 1;
-        A_state[6][5] = 1;
-        A_state[7][6] = 1;
-        A_state[8][7] = 1;
-        A_state[9][8] = 1;
-        A_state[10][9] = 1;
-        A_state[11][10] = 1;
-        A_state[12][11] = 1;
-        A_state[13][12] = 1;
-        A_state[15][14] = 1;
-        A_state[16][15] = 1;
-        A_state[18][17] = 1;
-        A_state[19][18] = 1;
-
-        for (int z = 1; z < 21; z++) {
-            for (int r = 0; r < 21; r++) {
-                if (A_state[z][r] != 1) {
-                    A_state[z][r] = 0;
-                }
-            }
-        }
-
-        //Check if the eigen values are right:
-        //Matrix to use in this operations AstateModify
-        Matrix AstateModify = new Matrix(A_state);
-        Matrix AstatetEigen = new Matrix(21, 1);
-
-        //Build the constrains values: 
-        double[] checkConstraints = new double[21];
-        for (int z = 0; z < 21; z++) {
-            double eigenVal = Math.abs(AstateModify.eig().getD().get(z, z));
-            //Valid Eigen values < 1
-            checkConstraints[z] = EIGEN_CONSTRAIN_VALUE - eigenVal;
-            //AstatetEigen.set(z, 0, eigenVal);
-            //Check if it is < 
-
-        }
-        //Return constraint values: they should be >1
-        return checkConstraints;
-    }
 
     /**
      * max() - obtains the maximum value of the matrix
@@ -466,11 +400,11 @@ public class OptRecursive {
         //Init with the first value
         double max = matrix.get(0, 0);
         //Iterate thru values
-        for (int z = 0; z < matrix.getRowDimension(); z++) {
-            for (int r = 0; r < matrix.getColumnDimension(); r++) {
+        for (double[] row: matrix.getArray() ) {
+            for (double val: row) {
                 //If it is greater than the previous, update max
-                if (matrix.get(z, r) > max) {
-                    max = matrix.get(z, r);
+                if (val > max) {
+                    max = val;
                 }
             }
         }
@@ -491,5 +425,33 @@ public class OptRecursive {
             System.out.print("\n");
         }
     }
+    
+    /*************************************************************************
+     * **********************************************************************
+     * APACHE OPTIMIZATION:
+     * 
+     * http://stackoverflow.com/questions/16950115/apache-commons-optimization-troubles
+     *  double[] point = {1.,2.};
+    double[] cost = {3., 2.};
+    MultivariateFunction function = new MultivariateFunction() {
+            public double value(double[] point) {
+                    double x = point[0];
+                    double y = point[1];
+                    return x * y;
+            }
+    };
+
+
+    MultivariateOptimizer optimize = new BOBYQAOptimizer(5);
+    optimize.optimize(
+            new MaxEval(200),
+            GoalType.MAXIMIZE,
+            new InitialGuess(point),
+            new ObjectiveFunction(function),
+            new LinearConstraint(cost, Relationship.EQ, 30));
+     * 
+     * 
+     * **********************************************************************
+     */
 
 }
