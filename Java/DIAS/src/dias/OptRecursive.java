@@ -45,12 +45,12 @@ public class OptRecursive {
     //TrustRegionRadiusStart : (default = 0.5)
     //We were using RHO_BEG= 1;
     //DO NOT USE RHO_bEG > 6
-    private final double _RHO_BEG = 0.25;
+    private final double _RHO_BEG = 0.5;
     //TrustRegionRadiusEnd  : (default = 1.0e-6)
     private final double _RHO_END = 1.0e-6;
     private final int iprint = 1;
     //TODO Max_function - max recursive loop
-    private final static int MAX_FUNC = 70000;
+    private final static int MAX_FUNC = 500000;
     private final static int N_VARIABLES = 24;
     private final static int M_CONSTRAINTS = 1;
 
