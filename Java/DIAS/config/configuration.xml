@@ -9,10 +9,7 @@
     	<email>caterina.lazaro@gmail.com</email>
     </emails>
   </processing>
-  <!-- TO BE CHANGED: -->
-  <!-- <processing env="dev_zm"> -->
-   <processing env="dev_cl"> 
-
+  <processing env="dev_zm">
     <paths>
       <excelFilePath>/data/path1</excelFilePath>
       <bodymediaFileUrl>/data/otherpath</bodymediaFileUrl>
