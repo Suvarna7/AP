@@ -6,6 +6,7 @@
 package dias;
 
 import Jama.Matrix;
+import java.io.File; 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -28,9 +29,19 @@ public class Save {
         this.filepath = filepath;
     }
 
+    //better in one place than all over. 
+    // We should refactor to do this when the Save() class is created.
+    private Boolean setupDirectory(String dirPath) { 
+        File handle = new File(dirPath); 
+        Boolean dirCreated = handle.mkdirs();
+        return dirCreated; 
+    }
+    
     public void save(Matrix matrice, String filename) throws FileNotFoundException, IOException {   ///It is working
-        String fileName = DIAS.excelFilePath + "\\" + filepath + "\\" + filename + ".xlsx";
-        System.out.println("Save address: "+ fileName);
+        String dirPath = DIAS.excelFilePath + File.separator + filepath; 
+        setupDirectory(dirPath); 
+        String fileName = dirPath + File.separator + filename + ".xlsx";
+        System.out.println("Using filepath " + filepath + ", saving to address: "+ fileName); 
         try {
             FileOutputStream fileOut = new FileOutputStream(fileName);
             XSSFWorkbook workbook = new XSSFWorkbook();
@@ -63,8 +74,9 @@ public class Save {
     }
 
     public void savedouble(double matrice, String filename) throws FileNotFoundException, IOException {   ///It is working
-        String fileName = DIAS.excelFilePath + "\\" + filepath + "\\" + filename + ".xlsx";
-
+        String dirPath = DIAS.excelFilePath + File.separator + filepath; 
+        setupDirectory(dirPath); 
+        String fileName = dirPath + File.separator + filename + ".xlsx";
         try {
             FileOutputStream fileOut = new FileOutputStream(fileName);
             XSSFWorkbook workbook = new XSSFWorkbook();
@@ -97,8 +109,9 @@ public class Save {
     }
 
     public void save3D(Matrix matrice, String filename, int kj) throws FileNotFoundException, IOException {   ///It is working
-        String fileName = DIAS.excelFilePath + "\\" + filepath + "\\" + filename + kj + ".xlsx";
-
+        String dirPath = DIAS.excelFilePath + File.separator + filepath; 
+        setupDirectory(dirPath); 
+        String fileName = dirPath + File.separator + filename + kj + ".xlsx";
         try {
             FileOutputStream fileOut = new FileOutputStream(fileName);
             XSSFWorkbook workbook = new XSSFWorkbook();
@@ -130,7 +143,9 @@ public class Save {
     }
 
     public void saveString(String[] matrice, String filename) throws FileNotFoundException, IOException {   ///It is working
-        String fileName = DIAS.excelFilePath + "\\" + filepath + "\\" + filename + ".xlsx";
+        String dirPath = DIAS.excelFilePath + File.separator + filepath; 
+        setupDirectory(dirPath); 
+        String fileName = dirPath + File.separator + filename + ".xlsx";
         try {
             FileOutputStream fileOut = new FileOutputStream(fileName);
             XSSFWorkbook workbook = new XSSFWorkbook();
