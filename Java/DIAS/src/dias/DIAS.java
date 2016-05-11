@@ -6,8 +6,9 @@
 package dias;
 
 import Jama.Matrix;
-import java.util.*; 
+import java.io.File; 
 import javax.mail.MessagingException;
+import java.util.*; 
 //stuff we need for configuration
 import org.apache.commons.configuration2.beanutils.BeanDeclaration;
 import org.apache.commons.configuration2.beanutils.BeanHelper;
@@ -50,6 +51,9 @@ public class DIAS {
         // variables. 
         boolean configureOK = configureSession(); 
         
+        System.out.println(excelFilePath + " : " + new File(excelFilePath).exists());
+        System.out.println(bodymediaFileUrl  + " : " + new File(bodymediaFileUrl).exists()); 
+        
         //Start Graphical interface
         //XXX restore this next line before merging with master. 
         if (configureOK) {new GUI().setVisible(true);}
@@ -66,7 +70,7 @@ public class DIAS {
         Configurations configs = new Configurations();
         try
         {
-            //System.out.println("User directory is " + System.getProperty("user.dir"));
+            System.out.println("User directory is " + System.getProperty("user.dir"));
             XMLConfiguration config = configs.xml("config/configuration.xml"); //this is a really nice factory implementation we're eliding
             //use XPATH so we can query attributes. NB that this means we'll be using slash-style lookup as in 
             // "processing/paths/excelFilePath" 
