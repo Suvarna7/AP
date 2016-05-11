@@ -5,9 +5,11 @@
  */
 package dias;
 
+import dias.MemoryStaticVariables.*;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 
 /**
  *
@@ -21,8 +23,6 @@ public class SaveAllData{
         VirtualCgm vcgm = new VirtualCgm(lgvariables.kj);
        
         Save savedata = new Save ("Test Save");
-        trackdata t = new trackdata ();
-        change_variable cv = new change_variable ();
         prevdata_error_summation prdata = new prevdata_error_summation();
         temp_SEDFR_noise tempSnoise = new temp_SEDFR_noise();
         temp_SEDFR_nonoise tempSnonoise = new temp_SEDFR_nonoise();
@@ -113,20 +113,20 @@ public class SaveAllData{
             savedata.saveString(lgvariables.carb_amount,"carb_amount");
             
             
-            savedata.savedouble(t.I_error_rspeed,"I_error_rspeed");
-            savedata.savedouble(t.I_me_inst,"I_me_inst");
-            savedata.save(t.I_track,"I_track");
-            savedata.save(t.data_mem,"data_mem");
-            savedata.save(t.I_u_constrain,"I_u_constrain");
+            savedata.savedouble(TrackData.I_error_rspeed,"I_error_rspeed");
+            savedata.savedouble(TrackData.I_me_inst,"I_me_inst");
+            savedata.save(TrackData.I_track,"I_track");
+            savedata.save(TrackData.data_mem,"data_mem");
+            savedata.save(TrackData.I_u_constrain,"I_u_constrain");
             
-            savedata.save(cv.compensate_ins,"compensate_ins");
-            savedata.save(cv.flag_constrains,"flag_constrains");
-            savedata.save(cv.flag_ratio,"flag_ratio");
-            savedata.save(cv.g_prediction_feedback,"g_prediction_feedback");
-            savedata.save(cv.ins_CPA,"ins_CPA");
-            savedata.save(cv.insulin_CPA,"insulin_CPA");
-            savedata.save(cv.lamda_CPA,"lamda_CPA");
-            savedata.save(cv.sensor_error,"sensor_error");
+            savedata.save(ChangeVariable.compensate_ins,"compensate_ins");
+            savedata.save(ChangeVariable.flag_constrains,"flag_constrains");
+            savedata.save(ChangeVariable.flag_ratio,"flag_ratio");
+            savedata.save(ChangeVariable.g_prediction_feedback,"g_prediction_feedback");
+            savedata.save(ChangeVariable.ins_CPA,"ins_CPA");
+            savedata.save(ChangeVariable.insulin_CPA,"insulin_CPA");
+            savedata.save(ChangeVariable.lamda_CPA,"lamda_CPA");
+            savedata.save(ChangeVariable.sensor_error,"sensor_error");
             
             savedata.save(prdata.D_potential,"D_potential");
             savedata.save(prdata.error_summation,"error_summation");

@@ -9,6 +9,7 @@ import Jama.Matrix;
 import java.io.IOException;
 import static java.lang.Double.isNaN;
 import java.util.Random;
+import dias.MemoryStaticVariables.m20150711_load_global_variables;
 /**
  *
  * @author Mert

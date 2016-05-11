@@ -6,7 +6,7 @@
 package dias;
 
 import Jama.Matrix;
-
+import dias.MemoryStaticVariables.ChangeVariable;
 /**
  *
  * @author Mert
@@ -141,8 +141,6 @@ public class CPA_Module_paralleled_calculation_JF {
 
     
     public void CPA () throws Exception{
-        change_variable c= new change_variable();
-        trackdata t= new trackdata();
         prevdata_error_summation pesm = new prevdata_error_summation ();
          
      /*   /////////////////////////////////////////INPUTS CPA////////////////////////////////////////////////////////////////////////////////////////////////
@@ -230,53 +228,56 @@ public class CPA_Module_paralleled_calculation_JF {
        
         if(kj>25){
              
-             ins_CPA = new Matrix (c.ins_CPA.getRowDimension(),c.ins_CPA.getColumnDimension()); 
+             ins_CPA = new Matrix (ChangeVariable.ins_CPA.getRowDimension(),ChangeVariable.ins_CPA.getColumnDimension()); 
              
-             for(int i=0;i<c.ins_CPA.getRowDimension();i++)
-                 for(int j=0;j<c.ins_CPA.getColumnDimension();j++)
-             ins_CPA.set(i,j, c.ins_CPA.get(i, j));
+             for(int i=0;i<ChangeVariable.ins_CPA.getRowDimension();i++)
+                 for(int j=0;j<ChangeVariable.ins_CPA.getColumnDimension();j++)
+             ins_CPA.set(i,j, ChangeVariable.ins_CPA.get(i, j));
 
-             g_prediction_feedback = new Matrix (c.g_prediction_feedback.getRowDimension(),c.g_prediction_feedback.getColumnDimension());
+             g_prediction_feedback = new Matrix (ChangeVariable.g_prediction_feedback.getRowDimension(),
+                     ChangeVariable.g_prediction_feedback.getColumnDimension());
              
-                for(int i=0;i<c.g_prediction_feedback.getRowDimension();i++)
-                 for(int j=0;j<c.g_prediction_feedback.getColumnDimension();j++)
-                         g_prediction_feedback.set(i,j, c.g_prediction_feedback.get(i, j));
+                for(int i=0;i<ChangeVariable.g_prediction_feedback.getRowDimension();i++)
+                 for(int j=0;j<ChangeVariable.g_prediction_feedback.getColumnDimension();j++)
+                         g_prediction_feedback.set(i,j, ChangeVariable.g_prediction_feedback.get(i, j));
 
-             flag_constrains = new Matrix (c.flag_constrains.getRowDimension(),c.flag_constrains.getColumnDimension());
+             flag_constrains = new Matrix (ChangeVariable.flag_constrains.getRowDimension(),
+                     ChangeVariable.flag_constrains.getColumnDimension());
              
-               for(int i=0;i<c.flag_constrains.getRowDimension();i++)
-                 for(int j=0;j<c.flag_constrains.getColumnDimension();j++)
-                     flag_constrains.set(i, j, c.flag_constrains.get(i, j));
+               for(int i=0;i<ChangeVariable.flag_constrains.getRowDimension();i++)
+                 for(int j=0;j<ChangeVariable.flag_constrains.getColumnDimension();j++)
+                     flag_constrains.set(i, j, ChangeVariable.flag_constrains.get(i, j));
    
-             compensate_ins = new Matrix (c.compensate_ins.getRowDimension(),c.compensate_ins.getColumnDimension());
+             compensate_ins = new Matrix (ChangeVariable.compensate_ins.getRowDimension(),
+                     ChangeVariable.compensate_ins.getColumnDimension());
              
-              for(int i=0;i<c.compensate_ins.getRowDimension();i++)
-                 for(int j=0;j<c.compensate_ins.getColumnDimension();j++)
-                     compensate_ins.set(i, j,c.compensate_ins.get(i, j));
+              for(int i=0;i<ChangeVariable.compensate_ins.getRowDimension();i++)
+                 for(int j=0;j<ChangeVariable.compensate_ins.getColumnDimension();j++)
+                     compensate_ins.set(i, j,ChangeVariable.compensate_ins.get(i, j));
      
-            lamda_CPA = new Matrix (c.lamda_CPA.getRowDimension(),c.lamda_CPA.getColumnDimension());
+            lamda_CPA = new Matrix (ChangeVariable.lamda_CPA.getRowDimension(),ChangeVariable.lamda_CPA.getColumnDimension());
              
-              for(int i=0;i<c.lamda_CPA.getRowDimension();i++)
-                 for(int j=0;j<c.lamda_CPA.getColumnDimension();j++)
-                     lamda_CPA.set(i, j, c.lamda_CPA.get(i, j));
+              for(int i=0;i<ChangeVariable.lamda_CPA.getRowDimension();i++)
+                 for(int j=0;j<ChangeVariable.lamda_CPA.getColumnDimension();j++)
+                     lamda_CPA.set(i, j, ChangeVariable.lamda_CPA.get(i, j));
   
-            sensor_error = new Matrix (c.sensor_error.getRowDimension(),c.sensor_error.getColumnDimension());
+            sensor_error = new Matrix (ChangeVariable.sensor_error.getRowDimension(),ChangeVariable.sensor_error.getColumnDimension());
              
-             for(int i=0;i<c.sensor_error.getRowDimension();i++)
-                 for(int j=0;j<c.sensor_error.getColumnDimension();j++)
-                        sensor_error.set(i, j, c.sensor_error.get(i, j));
+             for(int i=0;i<ChangeVariable.sensor_error.getRowDimension();i++)
+                 for(int j=0;j<ChangeVariable.sensor_error.getColumnDimension();j++)
+                        sensor_error.set(i, j, ChangeVariable.sensor_error.get(i, j));
    
-            flag_ratio = new Matrix (c.flag_ratio.getRowDimension(),c.flag_ratio.getColumnDimension());  
+            flag_ratio = new Matrix (ChangeVariable.flag_ratio.getRowDimension(),ChangeVariable.flag_ratio.getColumnDimension());  
               
-             for(int i=0;i<c.flag_ratio.getRowDimension();i++)
-                 for(int j=0;j<c.flag_ratio.getColumnDimension();j++)
-                        flag_ratio.set(i, j, c.flag_ratio.get(i, j));
+             for(int i=0;i<ChangeVariable.flag_ratio.getRowDimension();i++)
+                 for(int j=0;j<ChangeVariable.flag_ratio.getColumnDimension();j++)
+                        flag_ratio.set(i, j, ChangeVariable.flag_ratio.get(i, j));
 
-             insulin_CPA = new Matrix (c.insulin_CPA.getRowDimension(),c.insulin_CPA.getColumnDimension());  
+             insulin_CPA = new Matrix (ChangeVariable.insulin_CPA.getRowDimension(),ChangeVariable.insulin_CPA.getColumnDimension());  
               
-             for(int i=0;i<c.insulin_CPA.getRowDimension();i++)
-                 for(int j=0;j<c.insulin_CPA.getColumnDimension();j++)
-                        insulin_CPA.set(i, j, c.insulin_CPA.get(i, j));
+             for(int i=0;i<ChangeVariable.insulin_CPA.getRowDimension();i++)
+                 for(int j=0;j<ChangeVariable.insulin_CPA.getColumnDimension();j++)
+                        insulin_CPA.set(i, j, ChangeVariable.insulin_CPA.get(i, j));
  
             prevdata_error_summation pdes = new prevdata_error_summation ();
             
@@ -421,48 +422,48 @@ public class CPA_Module_paralleled_calculation_JF {
 
    for(int i=0;i<insulin_CPA.getRowDimension();i++)
         for(int j=0;j<insulin_CPA.getColumnDimension();j++)
-           c.insulin_CPA.set(i, j, insulin_CPA.get(i, j));
+           ChangeVariable.insulin_CPA.set(i, j, insulin_CPA.get(i, j));
 
     for(int i=0;i<compensate_ins.getRowDimension();i++)
         for(int j=0;j<compensate_ins.getColumnDimension();j++)
-           c.compensate_ins.set(i, j, compensate_ins.get(i, j));
+           ChangeVariable.compensate_ins.set(i, j, compensate_ins.get(i, j));
   
     for(int i=0;i<sensor_error.getRowDimension();i++)
         for(int j=0;j<sensor_error.getColumnDimension();j++)
-           c.sensor_error.set(i, j, sensor_error.get(i, j));
+           ChangeVariable.sensor_error.set(i, j, sensor_error.get(i, j));
   
       for(int i=0;i<flag_ratio.getRowDimension();i++)
         for(int j=0;j<flag_ratio.getColumnDimension();j++)
-           c.flag_ratio.set(i, j, flag_ratio.get(i, j));
+           ChangeVariable.flag_ratio.set(i, j, flag_ratio.get(i, j));
 
        for(int i=0;i<flag_constrains.getRowDimension();i++)
         for(int j=0;j<flag_constrains.getColumnDimension();j++)
-           c.flag_constrains.set(i, j, flag_constrains.get(i, j));
+           ChangeVariable.flag_constrains.set(i, j, flag_constrains.get(i, j));
   
-       c.lamda_CPA = new Matrix (lamda_CPA.getRowDimension(),lamda_CPA.getColumnDimension());
+       ChangeVariable.lamda_CPA = new Matrix (lamda_CPA.getRowDimension(),lamda_CPA.getColumnDimension());
        
         for(int i=0;i<lamda_CPA.getRowDimension();i++)
         for(int j=0;j<lamda_CPA.getColumnDimension();j++)
-           c.lamda_CPA.set(i, j, lamda_CPA.get(i, j));
+           ChangeVariable.lamda_CPA.set(i, j, lamda_CPA.get(i, j));
        
-        c.ins_CPA = new Matrix (ins_CPA.getRowDimension(),ins_CPA.getColumnDimension());
+        ChangeVariable.ins_CPA = new Matrix (ins_CPA.getRowDimension(),ins_CPA.getColumnDimension());
         
         for(int i=0;i<ins_CPA.getRowDimension();i++)
         for(int j=0;j<ins_CPA.getColumnDimension();j++)
-           c.ins_CPA.set(i, j, ins_CPA.get(i, j));
+           ChangeVariable.ins_CPA.set(i, j, ins_CPA.get(i, j));
    
         for(int i=0;i<g_prediction_feedback.getRowDimension();i++)
         for(int j=0;j<g_prediction_feedback.getColumnDimension();j++)
-           c.g_prediction_feedback.set(i, j, g_prediction_feedback.get(i, j));
+           ChangeVariable.g_prediction_feedback.set(i, j, g_prediction_feedback.get(i, j));
 
-             c.sensor_error= createnewMatrix(kj+1,1,c.sensor_error);
-             c.compensate_ins= createnewMatrix(kj+1,1,c.compensate_ins);
-             c.flag_ratio= createnewMatrix(kj+1,1,c.flag_ratio);
-             c.insulin_CPA= createnewMatrix(8,kj+1,c.insulin_CPA);
-             c.flag_constrains= createnewMatrix(1,kj+1,c.flag_constrains);
-             c.g_prediction_feedback= createnewMatrix(8,kj+1,c.g_prediction_feedback);
-             c.ins_CPA= createnewMatrix(8,kj+1,c.ins_CPA);
-             c.lamda_CPA= createnewMatrix(kj+1,1,c.lamda_CPA);
+             ChangeVariable.sensor_error= createnewMatrix(kj+1,1,ChangeVariable.sensor_error);
+             ChangeVariable.compensate_ins= createnewMatrix(kj+1,1,ChangeVariable.compensate_ins);
+             ChangeVariable.flag_ratio= createnewMatrix(kj+1,1,ChangeVariable.flag_ratio);
+             ChangeVariable.insulin_CPA= createnewMatrix(8,kj+1,ChangeVariable.insulin_CPA);
+             ChangeVariable.flag_constrains= createnewMatrix(1,kj+1,ChangeVariable.flag_constrains);
+             ChangeVariable.g_prediction_feedback= createnewMatrix(8,kj+1,ChangeVariable.g_prediction_feedback);
+             ChangeVariable.ins_CPA= createnewMatrix(8,kj+1,ChangeVariable.ins_CPA);
+             ChangeVariable.lamda_CPA= createnewMatrix(kj+1,1,ChangeVariable.lamda_CPA);
        
         }
         else{
@@ -483,67 +484,66 @@ public class CPA_Module_paralleled_calculation_JF {
            for(int j=0;j<armax_lamda.getColumnDimension();j++)
                lamda_CPA.set(i, j, armax_lamda.get(i, j));
  
-        for(int i=0;i<c.g_prediction_feedback.getRowDimension();i++)
-                 c.g_prediction_feedback.set(i,c.g_prediction_feedback.getRowDimension()-1,0); 
+        for(int i=0;i<ChangeVariable.g_prediction_feedback.getRowDimension();i++)
+                 ChangeVariable.g_prediction_feedback.set(i,ChangeVariable.g_prediction_feedback.getRowDimension()-1,0); 
     
-        c.insulin_CPA= new Matrix (insulin_CPA.getRowDimension(),insulin_CPA.getColumnDimension());  
+        ChangeVariable.insulin_CPA= new Matrix (insulin_CPA.getRowDimension(),insulin_CPA.getColumnDimension());  
         
        for(int i=0;i<insulin_CPA.getRowDimension();i++)
         for(int j=0;j<insulin_CPA.getColumnDimension();j++)
-           c.insulin_CPA.set(i, j, insulin_CPA.get(i, j));
+           ChangeVariable.insulin_CPA.set(i, j, insulin_CPA.get(i, j));
  
       
-       c.compensate_ins= new Matrix (compensate_ins.getRowDimension(),compensate_ins.getColumnDimension());
+       ChangeVariable.compensate_ins= new Matrix (compensate_ins.getRowDimension(),compensate_ins.getColumnDimension());
        
        for(int i=0;i<compensate_ins.getRowDimension();i++)
         for(int j=0;j<compensate_ins.getColumnDimension();j++)
-           c.compensate_ins.set(i, j, compensate_ins.get(i, j));
+           ChangeVariable.compensate_ins.set(i, j, compensate_ins.get(i, j));
     
-      c.sensor_error= new Matrix (sensor_error.getRowDimension(),sensor_error.getColumnDimension()); 
+      ChangeVariable.sensor_error= new Matrix (sensor_error.getRowDimension(),sensor_error.getColumnDimension()); 
        
       for(int i=0;i<sensor_error.getRowDimension();i++)
         for(int j=0;j<sensor_error.getColumnDimension();j++)
-           c.sensor_error.set(i, j, sensor_error.get(i, j));
+           ChangeVariable.sensor_error.set(i, j, sensor_error.get(i, j));
    
-      c.flag_ratio= new Matrix (flag_ratio.getRowDimension(),flag_ratio.getColumnDimension()); 
+      ChangeVariable.flag_ratio= new Matrix (flag_ratio.getRowDimension(),flag_ratio.getColumnDimension()); 
     
       for(int i=0;i<flag_ratio.getRowDimension();i++)
         for(int j=0;j<flag_ratio.getColumnDimension();j++)
-           c.flag_ratio.set(i, j, flag_ratio.get(i, j));
+           ChangeVariable.flag_ratio.set(i, j, flag_ratio.get(i, j));
  
-       c.flag_constrains= new Matrix (flag_constrains.getRowDimension(),flag_constrains.getColumnDimension()); 
+       ChangeVariable.flag_constrains= new Matrix (flag_constrains.getRowDimension(),flag_constrains.getColumnDimension()); 
     
        for(int i=0;i<flag_constrains.getRowDimension();i++)
         for(int j=0;j<flag_constrains.getColumnDimension();j++)
-           c.flag_constrains.set(i, j, flag_constrains.get(i, j));
+           ChangeVariable.flag_constrains.set(i, j, flag_constrains.get(i, j));
   
-       c.lamda_CPA= new Matrix (lamda_CPA.getRowDimension(),lamda_CPA.getColumnDimension()); 
+       ChangeVariable.lamda_CPA= new Matrix (lamda_CPA.getRowDimension(),lamda_CPA.getColumnDimension()); 
        
         for(int i=0;i<lamda_CPA.getRowDimension();i++)
         for(int j=0;j<lamda_CPA.getColumnDimension();j++)
-           c.lamda_CPA.set(i, j, lamda_CPA.get(i, j));
+           ChangeVariable.lamda_CPA.set(i, j, lamda_CPA.get(i, j));
  
-        c.ins_CPA= new Matrix (ins_CPA.getRowDimension(),ins_CPA.getColumnDimension()); 
+        ChangeVariable.ins_CPA= new Matrix (ins_CPA.getRowDimension(),ins_CPA.getColumnDimension()); 
         
         for(int i=0;i<ins_CPA.getRowDimension();i++)
         for(int j=0;j<ins_CPA.getColumnDimension();j++)
-           c.ins_CPA.set(i, j, ins_CPA.get(i, j));
+           ChangeVariable.ins_CPA.set(i, j, ins_CPA.get(i, j));
         
-        c.g_prediction_feedback= new Matrix (g_prediction_feedback.getRowDimension(),g_prediction_feedback.getColumnDimension()); 
+        ChangeVariable.g_prediction_feedback= new Matrix (g_prediction_feedback.getRowDimension(),g_prediction_feedback.getColumnDimension()); 
    
         for(int i=0;i<g_prediction_feedback.getRowDimension();i++)
         for(int j=0;j<g_prediction_feedback.getColumnDimension();j++)
-          c.g_prediction_feedback.set(i, j, g_prediction_feedback.get(i, j));
-  
-        
-             c.sensor_error= createnewMatrix(kj+1,1,c.sensor_error);
-             c.compensate_ins= createnewMatrix(kj+1,1,c.compensate_ins);
-             c.flag_ratio= createnewMatrix(kj+1,1,c.flag_ratio);
-             c.insulin_CPA= createnewMatrix(8,kj+1,c.insulin_CPA);
-             c.flag_constrains= createnewMatrix(1,kj+1,c.flag_constrains);
-             c.g_prediction_feedback= createnewMatrix(8,kj+1,c.g_prediction_feedback);
-             c.ins_CPA= createnewMatrix(8,kj+1,c.ins_CPA);
-             c.lamda_CPA= createnewMatrix(kj+1,1,c.lamda_CPA);
+          ChangeVariable.g_prediction_feedback.set(i, j, g_prediction_feedback.get(i, j));
+          
+             ChangeVariable.sensor_error= createnewMatrix(kj+1,1,ChangeVariable.sensor_error);
+             ChangeVariable.compensate_ins= createnewMatrix(kj+1,1,ChangeVariable.compensate_ins);
+             ChangeVariable.flag_ratio= createnewMatrix(kj+1,1,ChangeVariable.flag_ratio);
+             ChangeVariable.insulin_CPA= createnewMatrix(8,kj+1,ChangeVariable.insulin_CPA);
+             ChangeVariable.flag_constrains= createnewMatrix(1,kj+1,ChangeVariable.flag_constrains);
+             ChangeVariable.g_prediction_feedback= createnewMatrix(8,kj+1,ChangeVariable.g_prediction_feedback);
+             ChangeVariable.ins_CPA= createnewMatrix(8,kj+1,ChangeVariable.ins_CPA);
+             ChangeVariable.lamda_CPA= createnewMatrix(kj+1,1,ChangeVariable.lamda_CPA);
         
         }    
     }
