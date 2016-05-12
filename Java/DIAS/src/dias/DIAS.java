@@ -32,7 +32,7 @@ public class DIAS {
     //Parameter : current processing environment. 
     // This allows us to switch between <processing> nodes in the configuration XML 
     // by using the @env attribute. 
-    public static final String configurationEnvironment = "dev_cl"; 
+    public static final String configurationEnvironment = "dev_zm"; 
     //Parameter: excel files to save/load variables
     //TODO make sure files exist in the given path
     public static String excelFilePath ;
