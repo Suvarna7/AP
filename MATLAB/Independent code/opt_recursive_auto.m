@@ -18,11 +18,12 @@ file_location = 'C:\Users\Cat\Desktop\Java-MATLAB\outputOpt\';
 
 Y = Yin
 phi = phiIN
-Q_old = Qold;
+Q_old = Qold
 P_old = Pold;
 lamda_old = lamda_o';
 upperlim = u_lim';
 lowerlim = l_lim';
+printedFirst = 1;
 %HARDCODED VALUES:
 % Y = [180.0];
 % phi= [	 
@@ -118,7 +119,6 @@ lowerlim = l_lim';
 [Q_java,~,~]=xlsread(strcat(file_location,'Q_res.xlsx'));
 
 
-
 %% 1. DEFINE PARAMETERS MATRIX
 %Calculate P matrix and its pseudo-inverse, fromt he input parameters
 P=(1/(lamda_old))*(P_old-(P_old*phi*pinv(lamda_old+phi'*P_old*phi)*phi'*P_old))
@@ -129,10 +129,17 @@ pinvP=pinv(P);
     %V = (Q- Qold)'*(pseudo-inv(P)*(Q-Q_old) + (Y-phi'*Q)*(Y-phi'*Q);
     function V=objective(Q)
         V=(Q-Q_old)'*pinvP*(Q-Q_old)+(Y-phi'*Q)'*(Y-phi'*Q);
+        if (printedFirst < 10)
+            V
+        end
     end
 % Debug function - simple Q_old
     function V = debugObj(Q)
         V =  (Y-phi'*Q)'*(Y-phi'*Q);
+        if (printedFirst < 10)
+            V
+        end
+
     end
 %% 3. CONSTRAINT FUNCTION DEFINITION - C, CEQ = CONSTRAINT(Q)
 %   Function defining the constraints for our opimization:
@@ -165,6 +172,12 @@ pinvP=pinv(P);
                 zeros(1,18) 1 zeros(1,2);...
                 zeros(1,21)];
         eigA=abs(eig(A_state));
+        if (printedFirst < 10)
+            Q
+            A_state
+            eigA
+            printedFirst  = printedFirst +1
+        end
         c=max(eigA)-0.99;
         ceq = [];
     end
