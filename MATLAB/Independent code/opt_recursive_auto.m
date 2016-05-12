@@ -123,14 +123,18 @@ printedFirst = 1;
 %Calculate P matrix and its pseudo-inverse, fromt he input parameters
 P=(1/(lamda_old))*(P_old-(P_old*phi*pinv(lamda_old+phi'*P_old*phi)*phi'*P_old))
 pinvP=pinv(P);
-
+Vinitial;
 %% 2. FUNCTION TO BE OPTIMIZED - V = OBJECTIVE(Q)
 %Function we will be optimizing: 
     %V = (Q- Qold)'*(pseudo-inv(P)*(Q-Q_old) + (Y-phi'*Q)*(Y-phi'*Q);
     function V=objective(Q)
         V=(Q-Q_old)'*pinvP*(Q-Q_old)+(Y-phi'*Q)'*(Y-phi'*Q);
-        if (printedFirst < 10)
+        if (printedFirst < 2)
+            Vinitial = V;
+        end
+        if (Vinitial ~= V)
             V
+            Vinitial = V;
         end
     end
 % Debug function - simple Q_old

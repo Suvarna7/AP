@@ -52,7 +52,7 @@ public class OptRecursive {
     private final double _RHO_END = 1.0e-6;
     private final int iprint = 1;
     //TODO Max_function - max recursive loop
-    private final static int MAX_FUNC = 5000;
+    private final static int MAX_FUNC = 5000000;
     private final static int N_VARIABLES = 24;
     private final static int M_CONSTRAINTS = 1;
 
@@ -69,6 +69,9 @@ public class OptRecursive {
     private final Matrix Q_optimizing_keepValue = new Matrix(Q_SIZE, 1);
     public Matrix Q_res;
     private Matrix fresult;
+    
+    private double Vinitial;
+    private boolean firstIteration;
 
     /**
      * Create the opt_recursive object with the given parameters
@@ -100,6 +103,7 @@ public class OptRecursive {
         fresult = new Matrix(1, 1);
         
         printed = false;
+        firstIteration = true;
     }
 
     public void runOptimization() {
@@ -152,11 +156,21 @@ public class OptRecursive {
                 //Cobyla constraint: con[0] >= 0
                  con[0] = getConstraintValue(Q);
                  //con[0] = -1;
-                
+                 
                 //2. Set the function to optimize - V
                 double opt = optimizationFunctionV(Q);
-                System.out.println("V: "+opt);
+                
+                //3. We make sure V stays the same:
+               /* if (firstIteration){
+                    Vinitial = opt;
+                    firstIteration = false;
+                }
+                con[1] =  equalVConstraint(Q);*/
+                
+                System.out.println("V: "+opt + "    Vinitial:"+Vinitial);
                 return opt;
+                
+           
        
 
                 
@@ -349,6 +363,16 @@ public class OptRecursive {
         //double c = (max(Astatetemp) - 0.99);
         //We want: max(AstateEigen) -0.99 <= 0
         return (EIGEN_CONSTRAIN_VALUE - max(AstatetEigen) );
+    }
+    
+    private double equalVConstraint(double[] x){
+        double newV = optimizationFunctionV (x);
+        if (newV == Vinitial)
+            return 1;
+        else
+            return -1;
+        
+        
     }
 
     private double optimizationFunctionV (double [] Q){
