@@ -32,7 +32,7 @@ public class DIAS {
     //Parameter : current processing environment. 
     // This allows us to switch between <processing> nodes in the configuration XML 
     // by using the @env attribute. 
-    public static final String configurationEnvironment = "dev_zm"; 
+    public static String configurationEnvironment = "none"; 
     //Parameter: excel files to save/load variables
     //TODO make sure files exist in the given path
     public static String excelFilePath ;
@@ -76,6 +76,8 @@ public class DIAS {
             // instead of 
             // "processing.paths.excelFilePath"
             config.setExpressionEngine(new XPathExpressionEngine()); 
+            configurationEnvironment = config.getString("environment/env"); 
+            System.out.println(configurationEnvironment);
             excelFilePath = config.getString("processing[@env='" + configurationEnvironment + "']/paths/excelFilePath");
             bodymediaFileUrl = config.getString("processing[@env='" + configurationEnvironment + "']/paths/bodymediaFileUrl");
             //HierarchicalConfiguration node = (HierarchicalConfiguration) config.configurationAt("/nodes/node[@id='"+(str)+"']");
