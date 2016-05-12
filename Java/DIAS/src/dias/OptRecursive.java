@@ -137,30 +137,71 @@ public class OptRecursive {
         double partialResult = 1 / ((((phi.transpose()).times(P_old)).times(phi)).get(0, 0) + lamda_old);
         P = (P_old.minus(P_old.times(phi).times(partialResult).times(phi.transpose()).times(P_old))).times(1 / lamda_old);
 
-        //pP: pseudo-inverse of P
+        //pP is the pseudo-inverse of P
         //Returns the seudoinvers of P only if P is not square
         pP = P.inverse();
 
         //2. Use Cobyla functions 
-        // Define calcfc:
         Calcfc calcfc = new Calcfc() {
             //Init with compute function
+            //TODO use con for constrains ????
             @Override
             public double compute(int n, int m, double[] Q, double[] con) {
                 //1. Get constraints for Q
                 //Returns: (max(Astatetemp) - 0.99)
                 //Cobyla constraint: con[0] >= 0
-                con[0] = getConstraintValue(Q);
-                //con[0] = -1;
-
+                 con[0] = getConstraintValue(Q);
+                 //con[0] = -1;
+                
                 //2. Set the function to optimize - V
+<<<<<<< HEAD
                 double opt = optimizationFunctionV(Q);
                 System.out.println("V: "+opt);
                 return opt;
 
+=======
+                // V = (Q- Qold)'*(pseudo-inv(P)*(Q-Q_old) + (Y-phi'*Q)'*(Y-phi'*Q);
+                //Update other variables: f, f1 /V= f + fi
+                //differenceMatrix: Q - Qold
+                //phiQ = phi'*Q
+                Matrix differenceMatrix;
+                differenceMatrix = new Matrix(Q_old.getRowDimension(), 1);
+                for (int s1 = 0; s1 < Q_old.getRowDimension(); s1++) {
+                    differenceMatrix.set(s1, 0, Q[s1] - Q_old.get(s1, 0));
+                }
+                //First part of V. f = (Q - Qold)'*pseudoinvP*(Q-Qold)
+                double f = (((differenceMatrix.transpose()).times(pP)).times(differenceMatrix)).get(0, 0);
+                //Middle term - temp = phi'*Q
+                double phiQ = 0;
+                //Do the multiplication manually:
+                for (int a = 0; a < Q.length; a++) {
+                    phiQ = phi.get(a, 0) * Q[a] + phiQ;
+                }
+                //System.out.println("PhiQ: "+ phiQ);
+                //Partial function to optimize =(Y-phi'*Q)'*(Y-phi'*Q)
+                double f1 = (Y - phiQ) * (Y - phiQ);
+                //SAVE LOCAL VALUE OF Q:
+                //Q_optimizing = Q
+                for (int i = 0; i < Q.length; i++) {
+                    Q_optimizing_keepValue.set(i, 0, Q[i]);
+                }
+                //DEBUG - result matrix to save
+                fresult = new Matrix(fresult.getRowDimension() + 1, 1);
+                fresult.set(fresult.getRowDimension() - 1, 0, f + f1);
+
+                //REAL: 
+                //return (f + f1);
+                //TODO DEBUG: 
+                return (f + f1);
+                /*} else {
+                return 0;
+            }*/
+>>>>>>> origin/master
             }
         };
 
+        //Q_oldtemp = Q_old.getArray()[1];
+        //printMatrix( "Q_old to findmin: "+ Q_oldtemp);
         //Prepare the Qold matrix to be pass to the min function, as double[]
         double[][] previousQold = Q_old.getArray();
         double[] Q_oldMIN = new double[Q_SIZE];
@@ -168,14 +209,15 @@ public class OptRecursive {
             Q_oldMIN[i] = previousQold[i][0];
             System.out.print(i + ", ");
         }
+        //Update Qold to be equal to previous one
 
+        System.out.println("Size Qold " + Q_oldMIN.length + " - ");
         //Run the optimization
         CobylaExitStatus result = Cobyla.findMinimum(calcfc, N_VARIABLES, M_CONSTRAINTS, Q_old_ARRAY, _RHO_BEG, _RHO_END, iprint, MAX_FUNC);
         //  result1 = cobyla.findMinimum(calcfc, 24,2*Q_old.getRowDimension()+1, Q_oldtemp, rhobeg, rhoend, iprint, maxfun);  
 
         //Exit status: DIVERGING ROUNDING ERRORS / MAX ITERATION REACH / NORMAL
         System.out.println("COBYLA EXIT: " + result);
-       
         /**
          * *********************************************
          * Save the result of Cobyla optimization
@@ -224,6 +266,7 @@ public class OptRecursive {
         //TODO Debug - Save all matrices in an excel file, to use later on in MATLAB
         try {
             Save saveManager = new Save(outputOpt);
+
             //Save the inputs
             Matrix Y_m = new Matrix(1, 1);
             Y_m.set(0, 0, Y);
@@ -285,7 +328,6 @@ public class OptRecursive {
         A_state[0][12] = x[13];
         A_state[0][13] = x[14];
         //B2 --> x
-        //TODO Weird samples...
         A_state[0][14] = x[16];
         A_state[0][15] = x[17];
         A_state[0][16] = x[18];
@@ -298,13 +340,8 @@ public class OptRecursive {
         A_state[0][21] = x[23];
 
         //Diagontal 1 line:
-        //LINE 0 - Defined
-        //LINE 1-  1 0 0 0000
         A_state[1][0] = 1;
-        //LINE 2 - 0 1 0 0000... 0
         A_state[2][1] = 1;
-        //LINE 3 - 0 0 0 ... 0
-        //LINE 4 - 0 0 0 1
         A_state[4][3] = 1;
         A_state[5][4] = 1;
         A_state[6][5] = 1;
@@ -314,23 +351,18 @@ public class OptRecursive {
         A_state[10][9] = 1;
         A_state[11][10] = 1;
         A_state[12][11] = 1;
-        //LINE 13 - 0 0... 0 1
         A_state[13][12] = 1;
-        //LINE 14 - 0 0 0 0 .... 0
-        //LINE 15 - 0 . 0 0 1 ... 0
         A_state[15][14] = 1;
-        //LINE 16 - 0 . 0 0 1 ... 0
         A_state[16][15] = 1;
-        //LINE 17 - 0 0 0 0 ... 0
-        //LINE 18 - 0 0 0 0 ... 0 1 0 .... 0
         A_state[18][17] = 1;
-        //LINE 19 -  0 0 0 ...0 1 0 0
         A_state[19][18] = 1;
-        // LINE 20 - 0 0 0 ... 0
         //Last row x[20][j] is kept to zero
 
-        //Prev alg: A_state only has 0 or 1 values. Any other value is turn to 0
+        //TODO THIS IS DISCOMMENTED
+        //A_state only has 0 or 1 values. Any other value is turn to 0
         //??????????????????????????????????/
+        //TODO A_State
+        //printDoubleArrayMatrix(A_state, "A_s");
         //Check if the eigen values are right:
         //Matrix to use in this operations AstateModify
         Matrix AstateModify = new Matrix(A_state);
@@ -353,51 +385,7 @@ public class OptRecursive {
         //  printMatrix(Astatetemp,"Astatetemp");
         //double c = (max(Astatetemp) - 0.99);
         //We want: max(AstateEigen) -0.99 <= 0
-        return (EIGEN_CONSTRAIN_VALUE - max(AstatetEigen));
-    }
-
-    /**
-     * Function to optimize: V It computes: V = (Q-
-     * Qold)'*(pseudo-inv(P)*(Q-Q_old) + (Y-phi'*Q)'*(Y-phi'*Q);
-     *
-     * Phi and Y are parameters of the optimization
-     * P (paremeters matrix) is computed when optimization function is called 
-     * @param Q - input value Q = x
-     * @return v - result of V function
-     */
-    public double optimizationFunctionV(double[] Q) {
-        // V = (Q- Qold)'*(pseudo-inv(P)*(Q-Q_old) + (Y-phi'*Q)'*(Y-phi'*Q);
-        //Update other variables: f, f1 /V= f + fi
-        //differenceMatrix: Q - Qold
-        //phiQ = phi'*Q
-        Matrix differenceMatrix;
-        differenceMatrix = new Matrix(Q_old.getRowDimension(), 1);
-        for (int s1 = 0; s1 < Q_old.getRowDimension(); s1++) {
-            differenceMatrix.set(s1, 0, Q[s1] - Q_old.get(s1, 0));
-        }
-        //First part of V. f = (Q - Qold)'*pseudoinvP*(Q-Qold)
-        double f = (((differenceMatrix.transpose()).times(pP)).times(differenceMatrix)).get(0, 0);
-        //Middle term - temp = phi'*Q
-        double phiQ = 0;
-        //Do the multiplication manually:
-        for (int a = 0; a < Q.length; a++) {
-            phiQ = phi.get(a, 0) * Q[a] + phiQ;
-        }
-        //System.out.println("PhiQ: "+ phiQ);
-        //Partial function to optimize =(Y-phi'*Q)'*(Y-phi'*Q)
-        double f1 = (Y - phiQ) * (Y - phiQ);
-        //SAVE LOCAL VALUE OF Q:
-        //Q_optimizing = Q
-        for (int i = 0; i < Q.length; i++) {
-            Q_optimizing_keepValue.set(i, 0, Q[i]);
-        }
-        //DEBUG - result matrix to save
-        fresult = new Matrix(fresult.getRowDimension() + 1, 1);
-        fresult.set(fresult.getRowDimension() - 1, 0, f + f1);
-        //REAL: 
-        //return (f + f1);
-        //TODO DEBUG: 
-        return f + f1;
+        return (EIGEN_CONSTRAIN_VALUE - max(AstatetEigen) );
     }
 
     /**
@@ -418,6 +406,7 @@ public class OptRecursive {
         System.out.println("}");
     }
 
+
     /**
      * max() - obtains the maximum value of the matrix
      *
@@ -428,8 +417,8 @@ public class OptRecursive {
         //Init with the first value
         double max = matrix.get(0, 0);
         //Iterate thru values
-        for (double[] row : matrix.getArray()) {
-            for (double val : row) {
+        for (double[] row: matrix.getArray() ) {
+            for (double val: row) {
                 //If it is greater than the previous, update max
                 if (val > max) {
                     max = val;
@@ -453,24 +442,33 @@ public class OptRecursive {
             System.out.print("\n");
         }
     }
-
-    /**
-     * ***********************************************************************
+    
+    /*************************************************************************
      * **********************************************************************
      * APACHE OPTIMIZATION:
-     *
+     * 
      * http://stackoverflow.com/questions/16950115/apache-commons-optimization-troubles
-     * double[] point = {1.,2.}; double[] cost = {3., 2.}; MultivariateFunction
-     * function = new MultivariateFunction() { public double value(double[]
-     * point) { double x = point[0]; double y = point[1]; return x * y; } };
-     *
-     *
-     * MultivariateOptimizer optimize = new BOBYQAOptimizer(5);
-     * optimize.optimize( new MaxEval(200), GoalType.MAXIMIZE, new
-     * InitialGuess(point), new ObjectiveFunction(function), new
-     * LinearConstraint(cost, Relationship.EQ, 30));
-     *
-     *
+     *  double[] point = {1.,2.};
+    double[] cost = {3., 2.};
+    MultivariateFunction function = new MultivariateFunction() {
+            public double value(double[] point) {
+                    double x = point[0];
+                    double y = point[1];
+                    return x * y;
+            }
+    };
+
+
+    MultivariateOptimizer optimize = new BOBYQAOptimizer(5);
+    optimize.optimize(
+            new MaxEval(200),
+            GoalType.MAXIMIZE,
+            new InitialGuess(point),
+            new ObjectiveFunction(function),
+            new LinearConstraint(cost, Relationship.EQ, 30));
+     * 
+     * 
      * **********************************************************************
      */
+
 }

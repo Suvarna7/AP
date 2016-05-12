@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <configuration>
+  <environment>
+    <env>dev_zm</env>
+  </environment>
   <processing env="dev_cl">
     <paths>
       <excelFilePath>C:\Users\Cat\Desktop\Java-MATLAB</excelFilePath>
@@ -7,6 +10,15 @@
     </paths>
     <emails>
     	<email>caterina.lazaro@gmail.com</email>
+    </emails>
+  </processing>
+  <processing env="dev_ms">
+    <paths>
+      <excelFilePath>Mert's file location</excelFilePath>
+      <bodymediaFileUrl>Mert's file location\JDRF17_04222015 TO 04272015_ARMBAND.xls</bodymediaFileUrl>
+    </paths>
+    <emails>
+      <email>msevil@hawk.iit.edu</email>
     </emails>
   </processing>
   <processing env="dev_zm">
