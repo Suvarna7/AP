@@ -20,6 +20,8 @@ public class OptRecursive {
 
     //Size of Q matrix
     private static final int Q_SIZE = 24;
+    
+    private static boolean printed;
 
     //Variables for the optimization
     //INPUTS:
@@ -96,6 +98,8 @@ public class OptRecursive {
         this.lowerlimit = lowerlimit;
         //Qintermediate =  
         fresult = new Matrix(1, 1);
+        
+        printed = false;
     }
 
     public void runOptimization() {
@@ -151,6 +155,7 @@ public class OptRecursive {
 
                 //2. Set the function to optimize - V
                 double opt = optimizationFunctionV(Q);
+                System.out.println("V: "+opt);
                 return opt;
 
             }
@@ -335,10 +340,16 @@ public class OptRecursive {
         for (int z = 0; z < 21; z++) {
             //Use absolute values of eigen values
             //A = V D V^T.
-            AstatetEigen.set(z, 0, Math.abs(AstateModify.eig().getV().get(z, z)));
+            AstatetEigen.set(z, 0, Math.abs(AstateModify.eig().getD().get(z, z)));
             //AstatetEigen.print(9, 6);
         }
-
+        //if(!printed){
+        
+            printMatrix(AstatetEigen, "Eigen matrix: ");
+            printDoubleArrayMatrix(A_state, "A_state matrix: ");
+            printDoubleArrayMatrix(new double[][]{x}, "Q state matrix:");
+            printed = true;
+        //}
         //  printMatrix(Astatetemp,"Astatetemp");
         //double c = (max(Astatetemp) - 0.99);
         //We want: max(AstateEigen) -0.99 <= 0
