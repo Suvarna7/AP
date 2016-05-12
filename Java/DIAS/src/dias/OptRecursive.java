@@ -154,49 +154,12 @@ public class OptRecursive {
                  //con[0] = -1;
                 
                 //2. Set the function to optimize - V
-<<<<<<< HEAD
                 double opt = optimizationFunctionV(Q);
                 System.out.println("V: "+opt);
                 return opt;
+       
 
-=======
-                // V = (Q- Qold)'*(pseudo-inv(P)*(Q-Q_old) + (Y-phi'*Q)'*(Y-phi'*Q);
-                //Update other variables: f, f1 /V= f + fi
-                //differenceMatrix: Q - Qold
-                //phiQ = phi'*Q
-                Matrix differenceMatrix;
-                differenceMatrix = new Matrix(Q_old.getRowDimension(), 1);
-                for (int s1 = 0; s1 < Q_old.getRowDimension(); s1++) {
-                    differenceMatrix.set(s1, 0, Q[s1] - Q_old.get(s1, 0));
-                }
-                //First part of V. f = (Q - Qold)'*pseudoinvP*(Q-Qold)
-                double f = (((differenceMatrix.transpose()).times(pP)).times(differenceMatrix)).get(0, 0);
-                //Middle term - temp = phi'*Q
-                double phiQ = 0;
-                //Do the multiplication manually:
-                for (int a = 0; a < Q.length; a++) {
-                    phiQ = phi.get(a, 0) * Q[a] + phiQ;
-                }
-                //System.out.println("PhiQ: "+ phiQ);
-                //Partial function to optimize =(Y-phi'*Q)'*(Y-phi'*Q)
-                double f1 = (Y - phiQ) * (Y - phiQ);
-                //SAVE LOCAL VALUE OF Q:
-                //Q_optimizing = Q
-                for (int i = 0; i < Q.length; i++) {
-                    Q_optimizing_keepValue.set(i, 0, Q[i]);
-                }
-                //DEBUG - result matrix to save
-                fresult = new Matrix(fresult.getRowDimension() + 1, 1);
-                fresult.set(fresult.getRowDimension() - 1, 0, f + f1);
-
-                //REAL: 
-                //return (f + f1);
-                //TODO DEBUG: 
-                return (f + f1);
-                /*} else {
-                return 0;
-            }*/
->>>>>>> origin/master
+                
             }
         };
 
@@ -388,6 +351,44 @@ public class OptRecursive {
         return (EIGEN_CONSTRAIN_VALUE - max(AstatetEigen) );
     }
 
+    private double optimizationFunctionV (double [] Q){
+        // V = (Q- Qold)'*(pseudo-inv(P)*(Q-Q_old) + (Y-phi'*Q)'*(Y-phi'*Q);
+                //Update other variables: f, f1 /V= f + fi
+                //differenceMatrix: Q - Qold
+                //phiQ = phi'*Q
+                Matrix differenceMatrix;
+                differenceMatrix = new Matrix(Q_old.getRowDimension(), 1);
+                for (int s1 = 0; s1 < Q_old.getRowDimension(); s1++) {
+                    differenceMatrix.set(s1, 0, Q[s1] - Q_old.get(s1, 0));
+                }
+                //First part of V. f = (Q - Qold)'*pseudoinvP*(Q-Qold)
+                double f = (((differenceMatrix.transpose()).times(pP)).times(differenceMatrix)).get(0, 0);
+                //Middle term - temp = phi'*Q
+                double phiQ = 0;
+                //Do the multiplication manually:
+                for (int a = 0; a < Q.length; a++) {
+                    phiQ = phi.get(a, 0) * Q[a] + phiQ;
+                }
+                //System.out.println("PhiQ: "+ phiQ);
+                //Partial function to optimize =(Y-phi'*Q)'*(Y-phi'*Q)
+                double f1 = (Y - phiQ) * (Y - phiQ);
+                //SAVE LOCAL VALUE OF Q:
+                //Q_optimizing = Q
+                for (int i = 0; i < Q.length; i++) {
+                    Q_optimizing_keepValue.set(i, 0, Q[i]);
+                }
+                //DEBUG - result matrix to save
+                fresult = new Matrix(fresult.getRowDimension() + 1, 1);
+                fresult.set(fresult.getRowDimension() - 1, 0, f + f1);
+
+                //REAL: 
+                //return (f + f1);
+                //TODO DEBUG: 
+                return (f + f1);
+                /*} else {
+                return 0;
+            }*/
+    }
     /**
      * printMatrix() - auxiliar function for debugging purposes Prints the given
      * matrix on the console
