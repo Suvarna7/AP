@@ -45,6 +45,7 @@ public class OptRecursive {
     //Parameters of the Cobyla optimization
     //TODO precission of the cosntraints around zero: _RHO_END< constraing < RHO_BEG
     //TrustRegionRadiusStart : (default = 0.5)
+    //MATLAB tolerance: TolX
     //We were using RHO_BEG= 1;
     //DO NOT USE RHO_bEG > 6
     private final double _RHO_BEG = 0.5;
@@ -52,7 +53,7 @@ public class OptRecursive {
     private final double _RHO_END = 1.0e-6;
     private final int iprint = 1;
     //TODO Max_function - max recursive loop
-    private final static int MAX_FUNC = 100000;
+    private final static int MAX_FUNC = 5000;
     private final static int N_VARIABLES = 24;
     private final static int M_CONSTRAINTS = 1;
 
@@ -174,6 +175,7 @@ public class OptRecursive {
                 //Returns: (max(Astatetemp) - 0.99)
                 //Cobyla constraint: con[0] >= 0
                  con[0] = getConstraintValue(Q);
+                 System.out.println("Constraints: "+ con[0]);
                  //con[0] = -1;
                  
                 //2. Upper and lower limits

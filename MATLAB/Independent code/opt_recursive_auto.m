@@ -197,14 +197,15 @@ Vinitial = 0;
     end
 %% 4. RUN FMINCON - ALGORITHM MINIMIZATION
 %Available algorithms: 'interior-point', 'active-set', 'sqp', 'trust-region-reflective')
-options=optimset('Algorithm','interior-point','Display','off');
+options=optimset('Algorithm','interior-point','Display','on');
 %Find minimum of constrained nonlinear multivariable function:
 % Q = fmincon(fun,x0,A,b,Aeq,beq,lb,ub,nonlcon,options)
 
-[Q, fval]=fmincon(@objective,Q_old,[],[],[],[],lowerlim,upperlim,@constraint,options);
+[Q, fval, exitflag]=fmincon(@objective,Q_old,[],[],[],[],lowerlim,upperlim,@constraint,options);
 fval
 Q
 Q_java
+exitflag
 %Once we obtain the result of function minimization, obtain secondary
 %values:
 %Err
