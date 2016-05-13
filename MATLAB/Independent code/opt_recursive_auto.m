@@ -24,6 +24,22 @@ lamda_old = lamda_o';
 upperlim = u_lim';
 lowerlim = l_lim';
 printedFirst = 1;
+%DEBUG - Add variables to workspace for inspection
+assignin('base', 'upperlim', upperlim);
+assignin('base', 'lowerlim', lowerlim);
+assignin('base', 'Q_old', Q_old);
+assignin('base', 'phi', phi);
+assignin('base', 'Y', Y);
+assignin('base', 'P_old', P_old);
+assignin('base', 'lamda_old', lamda_old);
+
+
+
+
+
+
+
+
 %HARDCODED VALUES:
 % Y = [180.0];
 % phi= [	 
@@ -200,6 +216,7 @@ lamda1=0.9*lamda_old+(1-0.9)*0.99;
 lamda2=exp(-(err^2)/(1000));
 lamda=lamda1*lamda2;
 if lamda<0.005;lamda=0.005;end
+
 
 
 %% Plot Q results
