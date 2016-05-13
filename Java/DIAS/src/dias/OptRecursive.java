@@ -52,7 +52,7 @@ public class OptRecursive {
     private final double _RHO_END = 1.0e-6;
     private final int iprint = 1;
     //TODO Max_function - max recursive loop
-    private final static int MAX_FUNC = 5000000;
+    private final static int MAX_FUNC = 5000;
     private final static int N_VARIABLES = 24;
     private final static int M_CONSTRAINTS = 1;
 
@@ -97,8 +97,20 @@ public class OptRecursive {
             System.out.print(i + ", ");
         }
         this.phi = phi;
+        //TODO
         this.upperlimit = upperlimit;
         this.lowerlimit = lowerlimit;
+        //TODO DEBUG VALUES:
+        /*this.upperlimit = new double[]{2, 2, 2, 2, 2, 
+                                       2, 2, 2, 2, 2,
+                                       2, 2, 2, 2, 2, 
+                                       2, 2, 2, 2, 2,
+                                       2, 2, 2, 2};
+        this.lowerlimit = new double[] {-2, -2, -2, -2, -2, 
+                                       -2, -2, -2, -2, -2,
+                                       -2, -2, -2, -2, -2, 
+                                       -2, -2, -2, -2, -2,
+                                       -2, -2, -2, -2};*/
         //Qintermediate =  
         fresult = new Matrix(1, 1);
         
@@ -150,6 +162,13 @@ public class OptRecursive {
             //Init with compute function
             //TODO use con for constrains ????
             @Override
+            /**
+             * Compute:
+             * n - number of samples
+             * m - number of constrains
+             * Q - X value for f(x)
+             * con - constrains . con[i]>= 0 for all i
+             */
             public double compute(int n, int m, double[] Q, double[] con) {
                 //1. Get constraints for Q
                 //Returns: (max(Astatetemp) - 0.99)
@@ -157,6 +176,10 @@ public class OptRecursive {
                  con[0] = getConstraintValue(Q);
                  //con[0] = -1;
                  
+                //2. Upper and lower limits
+                double[] limits = limitsConstraint(Q);
+                for (int i = 0; i < m-1; i ++)
+                    con[i+1] = limits[i];
                 //2. Set the function to optimize - V
                 double opt = optimizationFunctionV(Q);
                 
@@ -190,7 +213,7 @@ public class OptRecursive {
 
         System.out.println("Size Qold " + Q_oldMIN.length + " - ");
         //Run the optimization
-        CobylaExitStatus result = Cobyla.findMinimum(calcfc, N_VARIABLES, M_CONSTRAINTS, Q_old_ARRAY, _RHO_BEG, _RHO_END, iprint, MAX_FUNC);
+        CobylaExitStatus result = Cobyla.findMinimum(calcfc, N_VARIABLES, N_VARIABLES+M_CONSTRAINTS, Q_old_ARRAY, _RHO_BEG, _RHO_END, iprint, MAX_FUNC);
         //  result1 = cobyla.findMinimum(calcfc, 24,2*Q_old.getRowDimension()+1, Q_oldtemp, rhobeg, rhoend, iprint, maxfun);  
 
         //Exit status: DIVERGING ROUNDING ERRORS / MAX ITERATION REACH / NORMAL
@@ -365,6 +388,23 @@ public class OptRecursive {
         return (EIGEN_CONSTRAIN_VALUE - max(AstatetEigen) );
     }
     
+    private double[] limitsConstraint(double[] X){
+        double [] limitsResult = new double[N_VARIABLES];
+        for (int i = 0; i < X.length; i ++){
+            if (X[i] <= upperlimit[i] && X[i]>= lowerlimit[i]){
+                //Normal behaviour - 
+                limitsResult[i] = 1;
+            }
+            else
+                limitsResult[i] = -1;
+        }
+        return limitsResult;
+    }
+    /**
+     * 
+     * @param x
+     * @return 
+     */
     private double equalVConstraint(double[] x){
         double newV = optimizationFunctionV (x);
         if (newV == Vinitial)

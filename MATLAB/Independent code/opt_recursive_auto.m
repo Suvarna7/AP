@@ -123,26 +123,20 @@ printedFirst = 1;
 %Calculate P matrix and its pseudo-inverse, fromt he input parameters
 P=(1/(lamda_old))*(P_old-(P_old*phi*pinv(lamda_old+phi'*P_old*phi)*phi'*P_old))
 pinvP=pinv(P);
-Vinitial;
+Vinitial = 0;
 %% 2. FUNCTION TO BE OPTIMIZED - V = OBJECTIVE(Q)
 %Function we will be optimizing: 
     %V = (Q- Qold)'*(pseudo-inv(P)*(Q-Q_old) + (Y-phi'*Q)*(Y-phi'*Q);
     function V=objective(Q)
-        V=(Q-Q_old)'*pinvP*(Q-Q_old)+(Y-phi'*Q)'*(Y-phi'*Q);
-        if (printedFirst < 2)
-            Vinitial = V;
-        end
-        if (Vinitial ~= V)
-            V
-            Vinitial = V;
-        end
+        V=(Q-Q_old)'*pinvP*(Q-Q_old)+(Y-phi'*Q)'*(Y-phi'*Q)
+       
     end
 % Debug function - simple Q_old
     function V = debugObj(Q)
         V =  (Y-phi'*Q)'*(Y-phi'*Q);
-        if (printedFirst < 10)
-            V
-        end
+        %if (printedFirst < 10)
+          %  V
+        %end
 
     end
 %% 3. CONSTRAINT FUNCTION DEFINITION - C, CEQ = CONSTRAINT(Q)
@@ -176,12 +170,12 @@ Vinitial;
                 zeros(1,18) 1 zeros(1,2);...
                 zeros(1,21)];
         eigA=abs(eig(A_state));
-        if (printedFirst < 10)
+        %if (printedFirst < 10)
             Q
             A_state
             eigA
             printedFirst  = printedFirst +1
-        end
+        %end
         c=max(eigA)-0.99;
         ceq = [];
     end
@@ -191,7 +185,8 @@ options=optimset('Algorithm','interior-point','Display','off');
 %Find minimum of constrained nonlinear multivariable function:
 % Q = fmincon(fun,x0,A,b,Aeq,beq,lb,ub,nonlcon,options)
 
-Q=fmincon(@objective,Q_old,[],[],[],[],lowerlim,upperlim,@constraint,options);
+[Q, fval]=fmincon(@objective,Q_old,[],[],[],[],lowerlim,upperlim,@constraint,options);
+fval
 Q
 Q_java
 %Once we obtain the result of function minimization, obtain secondary
@@ -212,7 +207,7 @@ figure;
 time1 = 1:length(Q_java);
 time2 = 1:length(Q);
 
-plot (time1, Q_java,'r', time2, Q, 'b')
+plot (time1, Q_java,'g', time2, Q, 'b', time2, upperlim', 'r', time2, lowerlim',  'r')
 
 legend('Java', 'MATLAB');
 end
