@@ -52,7 +52,7 @@ public class OptRecursive {
     private final double _RHO_END = 1.0e-6;
     private final int iprint = 1;
     //TODO Max_function - max recursive loop
-    private final static int MAX_FUNC = 5000;
+    private final static int MAX_FUNC = 100000;
     private final static int N_VARIABLES = 24;
     private final static int M_CONSTRAINTS = 1;
 
