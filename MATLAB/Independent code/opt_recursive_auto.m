@@ -16,9 +16,9 @@ file_location = 'C:\Users\Cat\Desktop\Java-MATLAB\outputOpt\';
 [l_lim,~,~]=xlsread(strcat(file_location,'lowerlimit.xlsx'));
 [lamda_o,~,~]=xlsread(strcat(file_location,'lamda_old.xlsx'));
 
-Y = Yin
-phi = phiIN
-Q_old = Qold
+Y = Yin;
+phi = phiIN;
+Q_old = Qold;
 P_old = Pold;
 lamda_old = lamda_o';
 upperlim = u_lim';
@@ -33,8 +33,13 @@ assignin('base', 'Y', Y);
 assignin('base', 'P_old', P_old);
 assignin('base', 'lamda_old', lamda_old);
 
-
-
+%Counter to save all values of Q in an array
+i = 0;
+%Q_all saves:
+%   - 1: i/counter 
+%   - 2: V (function value)
+%   - 3:26 Q 
+Q_all =  zeros( 1000, 26);
 
 
 
@@ -144,7 +149,13 @@ Vinitial = 0;
 %Function we will be optimizing: 
     %V = (Q- Qold)'*(pseudo-inv(P)*(Q-Q_old) + (Y-phi'*Q)*(Y-phi'*Q);
     function V=objective(Q)
-        V=(Q-Q_old)'*pinvP*(Q-Q_old)+(Y-phi'*Q)'*(Y-phi'*Q)
+        V=(Q-Q_old)'*pinvP*(Q-Q_old)+(Y-phi'*Q)'*(Y-phi'*Q);
+        i = i +1;
+        Q_all(i, 3:26)= Q;
+        Q_all(i, 1)= i;
+        Q_all(i, 2)= V;
+
+
        
     end
 % Debug function - simple Q_old
@@ -195,13 +206,22 @@ Vinitial = 0;
         c=max(eigA)-0.99;
         ceq = [];
     end
+
+function [c, ceq]=no_constraint(Q)
+        c=[];
+        ceq = [];
+end
 %% 4. RUN FMINCON - ALGORITHM MINIMIZATION
 %Available algorithms: 'interior-point', 'active-set', 'sqp', 'trust-region-reflective')
 options=optimset('Algorithm','interior-point','Display','on');
 %Find minimum of constrained nonlinear multivariable function:
 % Q = fmincon(fun,x0,A,b,Aeq,beq,lb,ub,nonlcon,options)
 
-[Q, fval, exitflag]=fmincon(@objective,Q_old,[],[],[],[],lowerlim,upperlim,@constraint,options);
+%[Q, fval, exitflag]=fmincon(@objective,Q_old,[],[],[],[],lowerlim,upperlim,@constraint,options);
+[Q, fval, exitflag]=fmincon(@objective,Q_old,[],[],[],[],[],[],@no_constraint,options);
+
+
+assignin('base', 'Q_values', Q_all);
 fval
 Q
 Q_java

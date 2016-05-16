@@ -104,7 +104,8 @@ public class GUI extends javax.swing.JFrame {
         jLabel1.setForeground(new java.awt.Color(255, 0, 51));
         jLabel1.setText("CLEAR HISTORY & SAVE-LOAD");
 
-        jTextField1.setText("180");
+        jTextField1.setText("185");
+        jTextField1.setToolTipText("");
         jTextField1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField1ActionPerformed(evt);
