@@ -45,16 +45,17 @@ public class OptRecursive {
     //Parameters of the Cobyla optimization
     //TODO precission of the cosntraints around zero: _RHO_END< constraing < RHO_BEG
     //TrustRegionRadiusStart : (default = 0.5)
+    //MATLAB tolerance: TolX
     //We were using RHO_BEG= 1;
     //DO NOT USE RHO_bEG > 6
-    private final double _RHO_BEG = 0.5;
+    private final double _RHO_BEG = 1;
     //TrustRegionRadiusEnd  : (default = 1.0e-6)
     private final double _RHO_END = 1.0e-6;
     private final int iprint = 1;
     //TODO Max_function - max recursive loop
-    private final static int MAX_FUNC = 100000;
+    private final static int MAX_FUNC = 50000;
     private final static int N_VARIABLES = 24;
-    private final static int M_CONSTRAINTS = 1;
+    private final static int M_CONSTRAINTS = 0;
 
     //******************************************
     //Results of the optimization
@@ -173,14 +174,16 @@ public class OptRecursive {
                 //1. Get constraints for Q
                 //Returns: (max(Astatetemp) - 0.99)
                 //Cobyla constraint: con[0] >= 0
-                 con[0] = getConstraintValue(Q);
+                 /*con[0] = getConstraintValue(Q);
+                 System.out.println("Constraints: "+ con[0]);
+                 con[1]= 3;*/
                  //con[0] = -1;
                  
                 //2. Upper and lower limits
-                double[] limits = limitsConstraint(Q);
+                /*double[] limits = limitsConstraint(Q);
                 for (int i = 0; i < m-1; i ++)
                     con[i+1] = limits[i];
-                //2. Set the function to optimize - V
+                //2. Set the function to optimize - V*/
                 double opt = optimizationFunctionV(Q);
                 
                 //3. We make sure V stays the same:
@@ -190,7 +193,8 @@ public class OptRecursive {
                 }
                 con[1] =  equalVConstraint(Q);*/
                 
-                System.out.println("V: "+opt + "    Vinitial:"+Vinitial);
+                System.out.println("V: "+opt );
+                printDoubleArrayMatrix(  new double[][] {Q}, "Q");
                 return opt;
                 
            
@@ -213,7 +217,7 @@ public class OptRecursive {
 
         System.out.println("Size Qold " + Q_oldMIN.length + " - ");
         //Run the optimization
-        CobylaExitStatus result = Cobyla.findMinimum(calcfc, N_VARIABLES, N_VARIABLES+M_CONSTRAINTS, Q_old_ARRAY, _RHO_BEG, _RHO_END, iprint, MAX_FUNC);
+        CobylaExitStatus result = Cobyla.findMinimum(calcfc, N_VARIABLES, M_CONSTRAINTS, Q_old_ARRAY, _RHO_BEG, _RHO_END, iprint, MAX_FUNC);
         //  result1 = cobyla.findMinimum(calcfc, 24,2*Q_old.getRowDimension()+1, Q_oldtemp, rhobeg, rhoend, iprint, maxfun);  
 
         //Exit status: DIVERGING ROUNDING ERRORS / MAX ITERATION REACH / NORMAL
