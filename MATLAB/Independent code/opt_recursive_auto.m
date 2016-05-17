@@ -213,7 +213,7 @@ function [c, ceq]=no_constraint(Q)
 end
 %% 4. RUN FMINCON - ALGORITHM MINIMIZATION
 %Available algorithms: 'interior-point', 'active-set', 'sqp', 'trust-region-reflective')
-options=optimset('Algorithm','interior-point','Display','on');
+options=optimset('Algorithm','interior-point','Display','iter-detailed');
 %Find minimum of constrained nonlinear multivariable function:
 % Q = fmincon(fun,x0,A,b,Aeq,beq,lb,ub,nonlcon,options)
 

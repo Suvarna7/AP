@@ -51,9 +51,16 @@ public class OptRecursive {
     //MATLAB tolerance: TolX
     //We were using RHO_BEG= 1;
     //DO NOT USE RHO_bEG > 6
-    private final double _RHO_BEG = 1;
+    //MATLAB RHO_BEG = 1.49011611938477e-08
+    // **** NOTE - RHO_BEG is used in the first N_VARIABLES evaluation of the fuction:
+    //      - First: evaluate Q0
+    //      - Then: add RHO_BEG to each single sample
+   
+    private final double _RHO_BEG =  1.49011611938477e-08;
     //TrustRegionRadiusEnd  : (default = 1.0e-6)
-    private final double _RHO_END = 1.0e-4;
+    //We were using default RHO_END = 1.0e-4
+    //MATLAB - RHO_END
+    private final double _RHO_END = 1.49011611938477e-08;
     private final int iprint = 1;
     //TODO Max_function - max recursive loop
     private final static int MAX_FUNC = 50000;
