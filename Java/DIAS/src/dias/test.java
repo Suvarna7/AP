@@ -12,7 +12,7 @@ import javax.mail.MessagingException;
  *
  * @author Mert
  */
-public class test {
+public class Test {
    
    public void Test_of_Addon_noise_JF(){
         Matrix gb= new Matrix (2,2);
@@ -165,7 +165,7 @@ public class test {
         Matrix Bstate = new Matrix (B_state);
         Matrix Cstate = new Matrix (C_state);
         controller_horizons chorizon= new controller_horizons(Astate,Bstate,Cstate,N1,N2,Nu);
-        chorizon.controller_horizon();
+        chorizon.calculateHorizons();
         printMatrix(chorizon.LL,"LL");
         printMatrix(chorizon.LL_ee,"LL_ee");
         printMatrix(chorizon.LL_gsr,"LL_gsr");

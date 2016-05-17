@@ -56,12 +56,12 @@ public class OptRecursive {
     //      - First: evaluate Q0
     //      - Then: add RHO_BEG to each single sample
    
-    private final double _RHO_BEG =  1;
+    private final double _RHO_BEG =  1.0e-4;
     //TrustRegionRadiusEnd  : (default = 1.0e-6)
     //We were using default RHO_END = 1.0e-4
     //MATLAB - RHO_END
     //private final double _RHO_END = 1.49011611938477e-08;
-        private final double _RHO_END = 1.0e-4;
+    private final double _RHO_END = 1.49011611938477e-08;
 
     private final int iprint = 1;
     //TODO Max_function - max recursive loop
@@ -484,7 +484,7 @@ public class OptRecursive {
                 //REAL: 
                 //return (f + f1);
                 //TODO DEBUG: 
-                return (f + f1);
+                return (f +  f1);
                 /*} else {
                 return 0;
             }*/

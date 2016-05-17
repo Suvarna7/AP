@@ -246,6 +246,8 @@ time1 = 1:length(Q_java);
 time2 = 1:length(Q);
 
 plot (time1, Q_java,'g', time2, Q, 'b', time2, upperlim', 'r', time2, lowerlim',  'r')
+figure
+plot(time1, Q_java,'g')
 
 legend('Java', 'MATLAB');
 end

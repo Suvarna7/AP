@@ -145,10 +145,10 @@ public class controller_instance {
        
                          //TODO Change to match
                          //Y=L.times(xtemp).plus(g_prediction);
-                         System.out.println(L.getRowDimension() + " x "+ L.getColumnDimension());
+                         /*System.out.println(L.getRowDimension() + " x "+ L.getColumnDimension());
                          System.out.println(xtemp.getRowDimension() + "x" + xtemp.getColumnDimension());
                          System.out.println(g_prediction.getRowDimension() + "x" + g_prediction.getColumnDimension());
-
+                         */
                          Y=L.times(xtemp).plus(g_prediction);
           
                               
