@@ -5,6 +5,9 @@ import de.xypron.jcobyla.Calcfc;
 import de.xypron.jcobyla.Cobyla;
 import de.xypron.jcobyla.CobylaExitStatus;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * OptRecursive class performs a recursive optimization of the given X input
@@ -48,9 +51,16 @@ public class OptRecursive {
     //MATLAB tolerance: TolX
     //We were using RHO_BEG= 1;
     //DO NOT USE RHO_bEG > 6
-    private final double _RHO_BEG = 1;
+    //MATLAB RHO_BEG = 1.49011611938477e-08
+    // **** NOTE - RHO_BEG is used in the first N_VARIABLES evaluation of the fuction:
+    //      - First: evaluate Q0
+    //      - Then: add RHO_BEG to each single sample
+   
+    private final double _RHO_BEG =  1.49011611938477e-08;
     //TrustRegionRadiusEnd  : (default = 1.0e-6)
-    private final double _RHO_END = 1.0e-6;
+    //We were using default RHO_END = 1.0e-4
+    //MATLAB - RHO_END
+    private final double _RHO_END = 1.49011611938477e-08;
     private final int iprint = 1;
     //TODO Max_function - max recursive loop
     private final static int MAX_FUNC = 50000;
@@ -71,6 +81,9 @@ public class OptRecursive {
     public Matrix Q_res;
     private Matrix fresult;
     
+    //DEBUG FUNCTIONS !!!!
+    private List<Double[]> Q_values;
+    private double iterations;
     private double Vinitial;
     private boolean firstIteration;
 
@@ -117,6 +130,8 @@ public class OptRecursive {
         
         printed = false;
         firstIteration = true;
+        Q_values = new ArrayList<Double[]>();
+        iterations = 0;
     }
 
     public void runOptimization() {
@@ -185,6 +200,14 @@ public class OptRecursive {
                     con[i+1] = limits[i];
                 //2. Set the function to optimize - V*/
                 double opt = optimizationFunctionV(Q);
+                double[] Q_V = new double[N_VARIABLES +2];
+                Q_V[0] = iterations;
+                Q_V[1] = opt;
+                for (int i =2; i < N_VARIABLES +2; i ++)
+                    Q_V [i] = Q[i-2];
+                Double[] doubleArray = ArrayUtils.toObject(Q_V);
+                Q_values.add(doubleArray);
+                iterations ++;
                 
                 //3. We make sure V stays the same:
                /* if (firstIteration){
@@ -193,8 +216,8 @@ public class OptRecursive {
                 }
                 con[1] =  equalVConstraint(Q);*/
                 
-                System.out.println("V: "+opt );
-                printDoubleArrayMatrix(  new double[][] {Q}, "Q");
+                //System.out.println("V: "+opt );
+                //printDoubleArrayMatrix(  new double[][] {Q}, "Q");
                 return opt;
                 
            
@@ -271,6 +294,13 @@ public class OptRecursive {
         try {
             Save saveManager = new Save(outputOpt);
 
+            //Save intermediate results
+            Matrix Q_valuesMatrix = new Matrix ( Q_values.size(), N_VARIABLES +2);
+            for (int i = 0 ; i <iterations; i ++)
+                for (int j = 0; j < N_VARIABLES +2; j ++)
+                    Q_valuesMatrix.set(i, j, Q_values.get(i)[j]);
+                
+            saveManager.save(Q_valuesMatrix, "Optimization_Steps");
             //Save the inputs
             Matrix Y_m = new Matrix(1, 1);
             Y_m.set(0, 0, Y);
