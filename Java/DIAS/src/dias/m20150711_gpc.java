@@ -707,13 +707,15 @@ public class m20150711_gpc {
             }
         }
 
+        System.out.println("N1-N2 and Nu: "+ (N1-N2) + " X " + Nu);
         controller_horizons cont_hor = new controller_horizons(A_state_temp, B_state_temp, C_state_temp, N1, N2, Nu);
-        cont_hor.controller_horizon();
+        cont_hor.calculateHorizons();
 
         lgvariables.L = createnew3Dmatrix(lgvariables.L, cont_hor.LL.getRowDimension(), cont_hor.LL.getColumnDimension(), kj + 1);
         lgvariables.L_ee = createnew3Dmatrix(lgvariables.L_ee, cont_hor.LL_ee.getRowDimension(), cont_hor.LL_ee.getColumnDimension(), kj + 1);
         lgvariables.L_gsr = createnew3Dmatrix(lgvariables.L_gsr, cont_hor.LL_gsr.getRowDimension(), cont_hor.LL_gsr.getColumnDimension(), kj + 1);
         lgvariables.M = createnew3Dmatrix(lgvariables.M, cont_hor.M.getRowDimension(), cont_hor.M.getColumnDimension(), kj + 1);
+
 
         for (int i = 0; i < cont_hor.M.getRowDimension(); i++) {
             for (int j = 0; j < cont_hor.M.getColumnDimension(); j++) {
@@ -1030,6 +1032,8 @@ public class m20150711_gpc {
             lgvariables.insulin_sensitivity_constant.set(i, kj, insulin_sensitivity_constant_temp.get(i, 0));
         }
 
+        System.out.println("L: "+ (lgvariables.L.length + 1) + " x " +
+                + (lgvariables.L[0].length + 1) + " x " + (lgvariables.L[0][0].length + 1));
         Matrix L_matrix = new Matrix((lastvaluereturnxyz(lgvariables.L)[1] + 1), (lastvaluereturnxyz(lgvariables.L)[2] + 1));
 
         for (int i = 0; i < (lastvaluereturnxyz(lgvariables.L)[1] + 1); i++) {
@@ -1038,7 +1042,8 @@ public class m20150711_gpc {
             }
         }
 
-        controller_ins cont = new controller_ins(g_predictionkj, L_matrix, bolus_insulin, basal_insulin, 0.0, reference_glucose_temp, Nu, st, body_weight, insulin_sensitivity_constant_temp, (int) flag_constrains);
+        //TODO Breaks !! Input correct L
+        controller_instance cont = new controller_instance(g_predictionkj, L_matrix, bolus_insulin, basal_insulin, 0.0, reference_glucose_temp, Nu, st, body_weight, insulin_sensitivity_constant_temp, (int) flag_constrains);
 
         cont.control_ins();
 
