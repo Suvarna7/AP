@@ -18,7 +18,7 @@ file_location = 'C:\Users\Cat\Desktop\Java-MATLAB\outputOpt\';
 
 Y = Yin;
 phi = phiIN;
-Q_old = Qold;
+Q_old = Qold
 P_old = Pold;
 lamda_old = lamda_o';
 upperlim = u_lim';

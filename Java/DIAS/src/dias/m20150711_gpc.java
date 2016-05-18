@@ -6,7 +6,6 @@
 package dias;
 
 import Jama.Matrix;
-import java.util.Arrays;
 import dias.MemoryStaticVariables.m20150711_load_global_variables;
 
 
@@ -331,14 +330,8 @@ public class m20150711_gpc {
 
         //TODO Non linear issues
         //Run the non linear optimization
-        
-        // XXX DEBUG : print out our Q and P matrices. 
-        System.out.println("Here is the value of armax_parameterstemp : "); 
-        armax_parameterstemp.print(9, 6);
-        
-        System.out.println("Here is the value of armax_covariancetemp : "); 
-        armax_covariancetemp.print(9, 6);
-        OptRecursive opt_r = new OptRecursive((gs.get(0, kj - 1)), phitemp, armax_parameterstemp, armax_covariancetemp, (armax_lamda.get(kj - 1, 0)), upperlim, lowerlim);
+        OptRecursive opt_r = new OptRecursive((gs.get(0, kj - 1)), phitemp, 
+                armax_parameterstemp, armax_covariancetemp, (armax_lamda.get(kj - 1, 0)), upperlim, lowerlim);
         opt_r.runOptimization();
 
         //Load variables 

@@ -20,35 +20,97 @@ public class VirtualCgm {
 
     //gs -- stores readings from GUI
     //1. Obtain current reading
-    public Matrix gstemp = new Matrix(1, 1);
+    private double intGS = 188;
+    public Matrix gstemp;
     //2. gs stores the las 21 samples
     public Matrix gs;
 
     public Matrix gsconstant = new Matrix(1, 21);
     public static int kj;
 
-    public VirtualCgm(int kj) {
-        this.kj = kj;
+    public VirtualCgm(int kj_in) {
+        kj = kj_in;
+        
+        //Init gstemp matrix -- 21 values equals to init GS
+        for (int i = 0; i < 21; i++) {
+            gs2[0][i] = intGS;
+        }
+        gstemp = new Matrix(gs2);
     }
 
     public Matrix getVirtualCgmValue() {
 
+        setGS1Values();
+
+        //GS temporal  - copied from gs1
+        Matrix result = DIAS.createnewMatrix(1, kj + 1, gstemp);
+        //21 First samples - input value
+        for (int i = 0; i < kj + 1 ; i++) {
+            result.set(0, i, gs1[0][i]);
+        }
+
+        return result;
+    }
+    
+    public Matrix getVirtualCgmValueFromInput() {
+
+        setGS1Values();
+        Matrix gs1Matrix = new Matrix(gs1);
+
+        //Constant matrix with input value 21 times stored
         for (int i = 0; i < 21; i++) {
             gs2[0][i] = m20150711_load_global_variables.gs_in;
         }
-
-        //Constant matrix with input value 21 times stored
         gsconstant = new Matrix(gs2);
+        
+        //GS temporal 
+        gstemp = DIAS.createnewMatrix(1, kj + 1, gstemp);
+        //21 First samples - input value
+        for (int i = 0; i < 21; i++) {
+            gstemp.set(0, i, m20150711_load_global_variables.gs_in);
+        }
+       //After 21 first samples - old gs values
+        for (int i = 21; i < kj + 1; i++) {
+            gstemp.set(0, i, gs1Matrix.get(0, i));
+        }
 
-        // gs1[0][20]=200;
+        return gstemp;
+    }
+
+    private void setGS1Values(){
+        //Before 21
+        gs1[0][0] = 183;
+        gs1[0][1] = 180;
+        gs1[0][2] = 176;
+        gs1[0][3] = 170;
+        gs1[0][4] = 166;
+        gs1[0][5] = 158;
+        gs1[0][6] = 162;
+        gs1[0][7] = 166;
+        gs1[0][8] = 168;
+        gs1[0][9] = 175;
+        gs1[0][10] = 179;
+        
+        gs1[0][11] = 180;
+        gs1[0][12] = 176;
+        gs1[0][13] = 170;
+        gs1[0][14] = 166;
+        gs1[0][15] = 158;
+        gs1[0][16] = 162;
+        gs1[0][17] = 166;
+        gs1[0][18] = 300;
+        gs1[0][19] = 345;
+        gs1[0][20] = 398;
+        //After 21
+        //After 21
         gs1[0][21] = 183;
-        gs1[0][22] = 180;
-        gs1[0][23] = 176;
-        gs1[0][24] = 170;
-        gs1[0][25] = 166;
-        gs1[0][26] = 158;
-        gs1[0][27] = 162;
-        gs1[0][28] = 166;
+        gs1[0][22] = 190;
+        gs1[0][23] = 206;
+        gs1[0][24] = 220;
+        gs1[0][25] = 226;
+        gs1[0][26] = 238;
+        gs1[0][27] = 262;
+        gs1[0][28] = 286;
         gs1[0][29] = 168;
         gs1[0][30] = 175;
         gs1[0][31] = 179;
@@ -237,21 +299,5 @@ public class VirtualCgm {
         gs1[0][213] = 160;
         gs1[0][214] = 170;
         gs1[0][215] = 180;
-
-        gs = new Matrix(gs1);
-
-        CGM__SEDFR_JF cs = new CGM__SEDFR_JF();
-        gstemp = DIAS.createnewMatrix(1, kj + 1, gstemp);
-
-        for (int i = 0; i < 21; i++) {
-            gstemp.set(0, i, gsconstant.get(0, i));
-        }
-
-        for (int i = 21; i < kj + 1; i++) {
-            gstemp.set(0, i, gs.get(0, i));
-        }
-
-        return gstemp;
     }
-
 }

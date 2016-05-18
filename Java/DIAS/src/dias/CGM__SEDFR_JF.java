@@ -641,7 +641,7 @@ public class CGM__SEDFR_JF {
                 ssP = DIAS.createnewMatrix(1, kj + 1, ssP);
                 gb_kal = DIAS.createnewMatrix(kj + 1, 1, gb_kal);
 
-                m2014_3_19_kf_JF mkfJF = new m2014_3_19_kf_JF(lamda, x_r, x_e, y, lastvaluereturnx(x_e)[1], sum_wyxT, sum_wxxT, sum_xxp, sum_xpxp, sum_wyy, sum_wyx, sum_xx, sum_xxpp, Q, R, A, C, a_w0, b_w0);
+                m2014_3_19_kf_JF mkfJF = new m2014_3_19_kf_JF(lamda, x_r, x_e, y, DIAS.matrixLastValueReturnXY(x_e)[1], sum_wyxT, sum_wxxT, sum_xxp, sum_xpxp, sum_wyy, sum_wyx, sum_xx, sum_xxpp, Q, R, A, C, a_w0, b_w0);
                 mkfJF.kf_JF();
 
                 recording_w.set(kj, 0, mkfJF.w);
@@ -855,7 +855,7 @@ public class CGM__SEDFR_JF {
             plsdata_730_R_12_withcluster_16_data pls730R = new plsdata_730_R_12_withcluster_16_data();*/
                 //   y_p.set(0,kj,onlinesJF.onlinesim_3_6_JF()); 
             }
-            score_returning = DIAS.createnewMatrix(lastvaluereturnx(score_returning)[0] + 1, 4, score_returning);
+            score_returning = DIAS.createnewMatrix(DIAS.matrixLastValueReturnXY(score_returning)[0] + 1, 4, score_returning);
 
             double sum = 0;
             double sum2 = 0;
@@ -883,31 +883,31 @@ public class CGM__SEDFR_JF {
 
                         if (sum2 > 0 || (type == 5 && sum3 == length_add)) {
                             type_recording.set(type, 0, type_recording.get(type, 0) + 1);
-                            score_returning.set(lastvaluereturnx(score_returning)[0], 0, 1);
-                            score_returning.set(lastvaluereturnx(score_returning)[0], 1, 0);
-                            score_returning.set(lastvaluereturnx(score_returning)[0], 2, 0);
-                            score_returning.set(lastvaluereturnx(score_returning)[0], 3, 0);
+                            score_returning.set(DIAS.matrixLastValueReturnXY(score_returning)[0], 0, 1);
+                            score_returning.set(DIAS.matrixLastValueReturnXY(score_returning)[0], 1, 0);
+                            score_returning.set(DIAS.matrixLastValueReturnXY(score_returning)[0], 2, 0);
+                            score_returning.set(DIAS.matrixLastValueReturnXY(score_returning)[0], 3, 0);
                         } else {
                             type_recording.set(type, 1, type_recording.get(type, 1) + 1);
-                            score_returning.set(lastvaluereturnx(score_returning)[0], 0, 0);
-                            score_returning.set(lastvaluereturnx(score_returning)[0], 1, 1);
-                            score_returning.set(lastvaluereturnx(score_returning)[0], 2, 0);
-                            score_returning.set(lastvaluereturnx(score_returning)[0], 3, 0);
+                            score_returning.set(DIAS.matrixLastValueReturnXY(score_returning)[0], 0, 0);
+                            score_returning.set(DIAS.matrixLastValueReturnXY(score_returning)[0], 1, 1);
+                            score_returning.set(DIAS.matrixLastValueReturnXY(score_returning)[0], 2, 0);
+                            score_returning.set(DIAS.matrixLastValueReturnXY(score_returning)[0], 3, 0);
                         }
 
                     } else {
                         type_recording.set(type, 3, type_recording.get(type, 3) + 1);
-                        score_returning.set(lastvaluereturnx(score_returning)[0], 0, 0);
-                        score_returning.set(lastvaluereturnx(score_returning)[0], 1, 0);
-                        score_returning.set(lastvaluereturnx(score_returning)[0], 2, 1);
-                        score_returning.set(lastvaluereturnx(score_returning)[0], 3, 0);
+                        score_returning.set(DIAS.matrixLastValueReturnXY(score_returning)[0], 0, 0);
+                        score_returning.set(DIAS.matrixLastValueReturnXY(score_returning)[0], 1, 0);
+                        score_returning.set(DIAS.matrixLastValueReturnXY(score_returning)[0], 2, 1);
+                        score_returning.set(DIAS.matrixLastValueReturnXY(score_returning)[0], 3, 0);
                     }
 
                 } else if (error_detectino_real.get(0, kj) == 1 && error_detectino_real.get(0, kj - 1) == 0 && noisel.get(0, kj) == 0) {
-                    score_returning.set(lastvaluereturnx(score_returning)[0], 0, 0);
-                    score_returning.set(lastvaluereturnx(score_returning)[0], 1, 0);
-                    score_returning.set(lastvaluereturnx(score_returning)[0], 2, 0);
-                    score_returning.set(lastvaluereturnx(score_returning)[0], 3, 1);
+                    score_returning.set(DIAS.matrixLastValueReturnXY(score_returning)[0], 0, 0);
+                    score_returning.set(DIAS.matrixLastValueReturnXY(score_returning)[0], 1, 0);
+                    score_returning.set(DIAS.matrixLastValueReturnXY(score_returning)[0], 2, 0);
+                    score_returning.set(DIAS.matrixLastValueReturnXY(score_returning)[0], 3, 1);
                 }
             }
         }
@@ -1064,7 +1064,7 @@ public class CGM__SEDFR_JF {
             gb_angle_ret = gb_angle_ret.transpose();
         }
 
-        if ((lastvaluereturnx(gb_angle_ret)[1] + 1) > 0) {
+        if ((DIAS.matrixLastValueReturnXY(gb_angle_ret)[1] + 1) > 0) {
             CGM_retuning = gb_angle_ret.get(kj - 1, 0);
         } else {
             CGM_retuning = 88;
@@ -1196,25 +1196,6 @@ public class CGM__SEDFR_JF {
     }
 
     
-    public static int[] lastvaluereturnx(Matrix s) {
-        int lastvaluex = 0;
-        int lastvaluey = 0;
-
-        for (int i = 0; i < s.getRowDimension(); i++) {
-            for (int j = 0; j < s.getColumnDimension(); j++) {
-                if (s.get(i, j) != 0) {
-                    lastvaluex = i;
-                    lastvaluey = j;
-                }
-            }
-        }
-        int[] resultlocation = new int[2];
-        resultlocation[0] = lastvaluex;
-        resultlocation[1] = lastvaluey;
-
-        return resultlocation;
-    }
-
     public static void clearScreen() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
