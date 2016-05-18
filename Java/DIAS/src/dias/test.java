@@ -12,7 +12,7 @@ import javax.mail.MessagingException;
  *
  * @author Mert
  */
-public class Test {
+public class test {
    
    public void Test_of_Addon_noise_JF(){
         Matrix gb= new Matrix (2,2);
