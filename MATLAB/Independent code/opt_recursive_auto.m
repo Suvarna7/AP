@@ -218,7 +218,7 @@ options=optimset('Algorithm','interior-point','Display','iter-detailed');
 % Q = fmincon(fun,x0,A,b,Aeq,beq,lb,ub,nonlcon,options)
 
 %[Q, fval, exitflag]=fmincon(@objective,Q_old,[],[],[],[],lowerlim,upperlim,@constraint,options);
-[Q, fval, exitflag]=fmincon(@objective,Q_old,[],[],[],[],[],[],@no_constraint,options);
+[Q, fval, exitflag]=fmincon(@objective,Q_old,[],[],[],[],[],[],@constraint,options);
 
 
 assignin('base', 'Q_values', Q_all);

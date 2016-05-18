@@ -74,6 +74,13 @@ public class OptRecursive_Testbench {
             updateOptRecursiveSetParametersQRANDOM();
             testOptRecursive = new OptRecursive(Y, phi, Q_old, P_old, lamda_old, upperlimit, lowerlimit);
             testOptRecursive.runOptimization();
+            
+            /*******************************************************
+             * CONSTRAINTS
+             */
+            createOptRecursiveDefaultParameters();
+            OptRecursive_Cons testOptRecursiveCons = new OptRecursive_Cons(Y, phi, Q_old, P_old, lamda_old, upperlimit, lowerlimit);
+            testOptRecursiveCons.runOptimization();
 
         }
 
