@@ -179,8 +179,8 @@ System.out.println("////////////////////////////////////Inputs of Run_meal_detec
        
        m20150711_gpc gpc =new m20150711_gpc();
        
-         for(int i=0;i<lastvaluereturnxyz(lgvariables.meal_covariance)[1]+1;i++)
-              for(int j=0;j<lastvaluereturnxyz(lgvariables.meal_covariance)[2]+1;j++)
+         for(int i=0;i<DIAS.lastValueReturnXYZ(lgvariables.meal_covariance)[1]+1;i++)
+              for(int j=0;j<DIAS.lastValueReturnXYZ(lgvariables.meal_covariance)[2]+1;j++)
                   meal_covariance1.set(i, j,lgvariables.meal_covariance[i][j][kj-1]);
          
        m20141215_ukf_meal ukf = new m20141215_ukf_meal(gs.get(0,kj-1),meal_statesx,meal_covariance1,R_meal,Q_p_meal,meal_g_basal.get(kj-1,0)); 
@@ -256,7 +256,7 @@ System.out.println("////////////////////////////////////Outputs of Run_meal_dete
          public void print3Dmatrice(double x[][][],String matricename){
            
            int [] valuex;
-           valuex=lastvaluereturnxyz(x);
+           valuex=DIAS.lastValueReturnXYZ(x);
            
            System.out.println(matricename);
            
@@ -292,29 +292,7 @@ System.out.println("////////////////////////////////////Outputs of Run_meal_dete
         return max;
     }
     
-     public int[] lastvaluereturnxyz (double s[][][]){
-           int lastvaluex=0;
-           int lastvaluey=0;
-           int lastvaluez=0;
-
-           for(int i=0;i<s.length;i++){
-               for(int j=0;j<s[0].length;j++){
-                   for(int z=0;z<s[0][0].length;z++){
-                   if(s[i][j][z]!=0){
-                       lastvaluex=i;
-                       lastvaluey=j;
-                       lastvaluez=z;
-                   }
-                   }
-               }
-           }
-           int [] dizi=new int[4];
-           dizi[1]=lastvaluex;
-           dizi[2]=lastvaluey;
-           dizi[3]=lastvaluez;
-           
-           return dizi;
-       }
+    
      
      public double[][][] createnew3Dmatrix (double s[][][],int newx,int newy, int newz){
          

@@ -330,7 +330,8 @@ public class m20150711_gpc {
 
         //TODO Non linear issues
         //Run the non linear optimization
-        OptRecursive opt_r = new OptRecursive((gs.get(0, kj - 1)), phitemp, armax_parameterstemp, armax_covariancetemp, (armax_lamda.get(kj - 1, 0)), upperlim, lowerlim);
+        OptRecursive opt_r = new OptRecursive((gs.get(0, kj - 1)), phitemp, 
+                armax_parameterstemp, armax_covariancetemp, (armax_lamda.get(kj - 1, 0)), upperlim, lowerlim);
         opt_r.runOptimization();
 
         //Load variables 

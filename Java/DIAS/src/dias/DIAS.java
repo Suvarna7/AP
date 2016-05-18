@@ -186,9 +186,14 @@ public class DIAS {
 
         return dizi;
     }
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////  
+    /**
+     * matrixLastValueReturnX - return the position of the last non zero value
+     * in the matrix
+     * @param s
+     * @return 
+     */
 
-    public static int[] lastvaluereturnx(Matrix s) {
+    public static int[] matrixLastValueReturnXY(Matrix s) {
         int lastvaluex = 0;
         int lastvaluey = 0;
 
@@ -206,5 +211,7 @@ public class DIAS {
 
         return resultlocation;
     }
+    
+    
 
 }
