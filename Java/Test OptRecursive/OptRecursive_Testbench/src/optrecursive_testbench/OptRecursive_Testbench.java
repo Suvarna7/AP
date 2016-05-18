@@ -15,7 +15,8 @@ import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.tree.xpath.XPathExpressionEngine;
 
 /**
- *
+ * Class to test different values of OptRecursive class
+ * Should be use to compare with MATLAB
  * @author Cat
  */
 public class OptRecursive_Testbench {
@@ -63,7 +64,7 @@ public class OptRecursive_Testbench {
             //Recursive
             int i = 0;
             while (i < 10) {
-                createOptRecursiveSetParametersQP(testOptRecursive.Q_res, testOptRecursive.P);
+                updateOptRecursiveSetParametersQP(testOptRecursive.Q_res, testOptRecursive.P);
                 testOptRecursive = new OptRecursive(Y, phi, Q_old, P_old, lamda_old, upperlimit, lowerlimit);
                 testOptRecursive.runOptimization();
                 i++;
@@ -105,9 +106,15 @@ public class OptRecursive_Testbench {
         }
         return output;
     }
+    
+    /**
+     * Set default parameters for optRecursive
+     */
 
     private static void createOptRecursiveDefaultParameters() {
+        //Y
         Y = 189;
+        //Phi matrix 24x1
         double[] phiArray = new double[]{-300, -166, -162, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0.3,
             0.3, 0.3, 0.3, 0.2, 0.2, 0.2, 0.2, 0};
@@ -117,6 +124,7 @@ public class OptRecursive_Testbench {
         }
         phi = new Matrix(phiDoubleArray);
 
+        //Q_old matrix 24x1
         double[][] Q_oldArray = new double[][]{{0},
         {0},
         {0},
@@ -144,6 +152,7 @@ public class OptRecursive_Testbench {
         };
         Q_old = new Matrix(Q_oldArray);
 
+        //P_old matrix 24 x 24
         double[][] P_oldArray = new double[][]{{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         {0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -170,39 +179,29 @@ public class OptRecursive_Testbench {
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}
         };
         P_old = new Matrix(P_oldArray);
+        //Lambda
         lamda_old = 0.5;
 
+        //Upperlimit array: 1x24
         upperlimit = new double[]{1, 1, 1, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 1, 1, 1, 1, 1};
 
+        //Lowerlimit array: 1x24
         lowerlimit = new double[]{-1, -1, -1, -0.974082841, -0.932309039, -0.847452389, -0.724680039, -0.584206489,
             -0.448368344, -0.333152936, -0.24418079, -0.177141947, -0.122686145, -0.07576685, -0.049439141, -1,
             -1, -1, -1, 0, 0, 0, 0, -1};
 
     }
 
-    private static void createOptRecursiveSetParametersQP(Matrix Qprev, Matrix Pprev) {
-        Y = 189;
-        double[] phiArray = new double[]{-300, -166, -162, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0.3,
-            0.3, 0.3, 0.3, 0.2, 0.2, 0.2, 0.2, 0};
-        double[][] phiDoubleArray = new double[24][1];
-        for (int i = 0; i < phiArray.length; i++) {
-            phiDoubleArray[i][0] = phiArray[i];
-        }
-        phi = new Matrix(phiDoubleArray);
+    /**
+     * Update Q and P parameters only, with previous values
+     * @param Qprev
+     * @param Pprev 
+     */
+    private static void updateOptRecursiveSetParametersQP(Matrix Qprev, Matrix Pprev) {
         Q_old = Qprev;
         P_old = Pprev;
-        lamda_old = 0.5;
-
-        upperlimit = new double[]{1, 1, 1, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 1, 1, 1, 1, 1};
-
-        lowerlimit = new double[]{-1, -1, -1, -0.974082841, -0.932309039, -0.847452389, -0.724680039, -0.584206489,
-            -0.448368344, -0.333152936, -0.24418079, -0.177141947, -0.122686145, -0.07576685, -0.049439141, -1,
-            -1, -1, -1, 0, 0, 0, 0, -1};
 
     }
 
