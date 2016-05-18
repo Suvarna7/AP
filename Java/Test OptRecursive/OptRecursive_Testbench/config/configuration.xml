@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <configuration>
   <environment>
-    <env>dev_cl</env>
+    <env>dev_zm</env>
   </environment>
   <processing env="dev_cl">
     <paths>
@@ -23,8 +23,8 @@
   </processing>
   <processing env="dev_zm">
     <paths>
-      <excelFilePath>/Users/zachariemaloney/NetBeansProjects/Current_Source/Excel_Files/</excelFilePath>
-      <bodymediaFileUrl>/Users/zachariemaloney/NetBeansProjects/Current_Source/Input_Files/JDRF17_04222015 TO 04272015_ARMBAND.xls</bodymediaFileUrl>
+      <excelFilePath>/Users/zachariemaloney/NetBeansProjects/Current_Source/Java/Test OptRecursive/OptRecursive_Testbench/Excel_Files/</excelFilePath>
+      <bodymediaFileUrl>/Users/zachariemaloney/NetBeansProjects/Current_Source/Java/Test OptRecursive/OptRecursive_Testbench/Input_Files/JDRF17_04222015 TO 04272015_ARMBAND.xls</bodymediaFileUrl>
     </paths>
     <emails>
     	<email>zmaloney@hawk.iit.com</email>
