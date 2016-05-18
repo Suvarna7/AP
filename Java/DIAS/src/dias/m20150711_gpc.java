@@ -333,17 +333,14 @@ public class m20150711_gpc {
         OptRecursive opt_r = new OptRecursive((gs.get(0, kj - 1)), phitemp, armax_parameterstemp, armax_covariancetemp, (armax_lamda.get(kj - 1, 0)), upperlim, lowerlim);
         opt_r.runOptimization();
 
-        CGM__SEDFR_JF cs = new CGM__SEDFR_JF();
-        
-
         //Load variables 
         m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
 
         //Update the values with Q and results of the optimization:
         //1. Initializate matrices
-        lgvariables.armax_parameters = cs.createnewMatrix(opt_r.Q_res.getRowDimension(), kj + 1, lgvariables.armax_parameters);
-        lgvariables.armax_lamda = cs.createnewMatrix(kj + 1, 1, armax_lamda);
-        lgvariables.armax_err = cs.createnewMatrix(kj + 1, 1, armax_error);
+        lgvariables.armax_parameters = DIAS.createnewMatrix(opt_r.Q_res.getRowDimension(), kj + 1, lgvariables.armax_parameters);
+        lgvariables.armax_lamda = DIAS.createnewMatrix(kj + 1, 1, armax_lamda);
+        lgvariables.armax_err = DIAS.createnewMatrix(kj + 1, 1, armax_error);
         lgvariables.armax_covariance = createnew3Dmatrix(lgvariables.armax_covariance, opt_r.P.getRowDimension(), opt_r.P.getColumnDimension(), kj + 1);
         lgvariables.armax_lamda.set(kj, 0, opt_r.lamda);
         lgvariables.armax_err.set(kj, 0, opt_r.err);
@@ -397,10 +394,10 @@ public class m20150711_gpc {
 
         //Update the values with Q and results of the optimization:
         //1. Initializate matrices
-        lgvariables.arma_parameters_ee = cs.createnewMatrix(orarm.Q_res.getRowDimension(), kj + 1, lgvariables.arma_parameters_ee);
-        lgvariables.arma_lamda_ee = cs.createnewMatrix(kj + 1, 1, lgvariables.arma_lamda_ee);
+        lgvariables.arma_parameters_ee = DIAS.createnewMatrix(orarm.Q_res.getRowDimension(), kj + 1, lgvariables.arma_parameters_ee);
+        lgvariables.arma_lamda_ee = DIAS.createnewMatrix(kj + 1, 1, lgvariables.arma_lamda_ee);
         lgvariables.arma_covariance_ee = createnew3Dmatrix(lgvariables.arma_covariance_ee, orarm.P.getRowDimension(), orarm.P.getColumnDimension(), kj + 1);
-        lgvariables.arma_err_ee = cs.createnewMatrix(kj + 1, 1, lgvariables.arma_err_ee);
+        lgvariables.arma_err_ee = DIAS.createnewMatrix(kj + 1, 1, lgvariables.arma_err_ee);
         lgvariables.arma_lamda_ee.set(kj, 0, orarm.lamda);
         lgvariables.arma_err_ee.set(kj, 0, orarm.err);
 
@@ -439,10 +436,10 @@ public class m20150711_gpc {
         opt_recursive_arm orarm2 = new opt_recursive_arm(gsr.get(0, kj), phi_gsr_temp, armax_parameters_gsr_temp, arma_covariance_gsr_temp, arma_lamda_gsr.get(kj - 1, 0), arma_err_gsr.get(kj - 1, 0), onesmatrice, minusonesmatrice, 0.99, 0.9, 0.005);
         orarm2.optrecursive();
 
-        lgvariables.arma_parameters_gsr = cs.createnewMatrix(orarm2.Q_res.getRowDimension(), kj + 1, lgvariables.arma_parameters_gsr);
-        lgvariables.arma_lamda_gsr = cs.createnewMatrix(kj + 1, 1, lgvariables.arma_lamda_gsr);
+        lgvariables.arma_parameters_gsr = DIAS.createnewMatrix(orarm2.Q_res.getRowDimension(), kj + 1, lgvariables.arma_parameters_gsr);
+        lgvariables.arma_lamda_gsr = DIAS.createnewMatrix(kj + 1, 1, lgvariables.arma_lamda_gsr);
         lgvariables.arma_covariance_gsr = createnew3Dmatrix(lgvariables.arma_covariance_gsr, orarm2.P.getRowDimension(), orarm2.P.getColumnDimension(), kj + 1);
-        lgvariables.arma_err_gsr = cs.createnewMatrix(kj + 1, 1, lgvariables.arma_err_gsr);
+        lgvariables.arma_err_gsr = DIAS.createnewMatrix(kj + 1, 1, lgvariables.arma_err_gsr);
 
         lgvariables.arma_lamda_gsr.set(kj, 0, orarm2.lamda);
         lgvariables.arma_err_gsr.set(kj, 0, orarm2.err);
@@ -1071,8 +1068,9 @@ public class m20150711_gpc {
 
         // printMatrix(cont.ins,"cont.ins");
         for (int i = 0; i < cont.ins.getRowDimension(); i++) {
-            lgvariables.basal_insulin.set(i, kj, cont.ins.get(i, 0));
+            m20150711_load_global_variables.basal_insulin.set(i, kj, cont.ins.get(i, 0));
         }
+        DIAS.printMatrix ( m20150711_load_global_variables.basal_insulin, "gpc module basal" );
 
         for (int i = 0; i < cont.IOB_pred.getRowDimension(); i++) {
             lgvariables.IOB_prediction.set(i, kj, cont.IOB_pred.get(i, 0));
@@ -1155,16 +1153,6 @@ public class m20150711_gpc {
         return innermatrix;
     }
 
-    public static void printMatrix(Matrix m, String name) {
-        System.out.print("\n " + name + ": \n{");
-        for (double[] row : m.getArray()) {
-            for (double val : row) {
-                System.out.print(" " + val);
-            }
-            System.out.println();
-        }
-        System.out.println("}");
-    }
 
     public int[] lastvaluereturnxyz(double s[][][]) {
         int lastvaluex = 0;

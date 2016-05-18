@@ -60,8 +60,8 @@ public class m20141215_ukf_meal {
        double W0m=lamda/(L+lamda);
        double W0c=W0m+(1-alp*alp+bet);
 
-       Wm= cs.createnewMatrix(1, (int) (2*L+1) ,Wm);
-       Wc= cs.createnewMatrix(1, (int) (2*L+1) ,Wc);
+       Wm= DIAS.createnewMatrix(1, (int) (2*L+1) ,Wm);
+       Wc= DIAS.createnewMatrix(1, (int) (2*L+1) ,Wc);
        
        Wm.set(0,0,W0m);
        Wc.set(0,0,W0c);

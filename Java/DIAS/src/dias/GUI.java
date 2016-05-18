@@ -292,28 +292,30 @@ public class GUI extends javax.swing.JFrame {
      */
     private void RunInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RunInputActionPerformed
 
+        //1. CGM Prediction
         CGM__SEDFR_JF cs = new CGM__SEDFR_JF();
 
         /*  for(int i=0;i<250;i++)
     System.out.println();*/
         m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
 
-        VirtualCgm vcgm = new VirtualCgm(lgvariables.kj);
+        VirtualCgm vcgm = new VirtualCgm(m20150711_load_global_variables.kj);
+        m20150711_load_global_variables.kj++;
 
-        lgvariables.kj++;
-
-        vcgm.gstemp = cs.createnewMatrix(1, lgvariables.kj, vcgm.getVirtualCgmValue());
-        lgvariables.gs = cs.createnewMatrix(1, lgvariables.kj, lgvariables.gs);
-        lgvariables.gs = vcgm.gstemp;
+        vcgm.gstemp = DIAS.createnewMatrix(1, m20150711_load_global_variables.kj, vcgm.getVirtualCgmValue());
+        m20150711_load_global_variables.gs = DIAS.createnewMatrix(1, m20150711_load_global_variables.kj, m20150711_load_global_variables.gs);
+        m20150711_load_global_variables.gs = vcgm.gstemp;
 
         int flag_noise = 1;
 
-        if (lgvariables.kj > 20) {
-            lgvariables.bolus_insulin = cs.createnewMatrix(lgvariables.kj, 1, lgvariables.bolus_insulin);
+        if (m20150711_load_global_variables.kj > 20) {
+            m20150711_load_global_variables.bolus_insulin = DIAS.createnewMatrix(m20150711_load_global_variables.kj,
+                    1, m20150711_load_global_variables.bolus_insulin);
         }
 
-        if (lgvariables.kj > 20) {
-            lgvariables.basal_insulin = cs.createnewMatrix(8, lgvariables.kj, lgvariables.basal_insulin);
+        if (m20150711_load_global_variables.kj > 20) {
+            m20150711_load_global_variables.basal_insulin = DIAS.createnewMatrix(8, 
+                    m20150711_load_global_variables.kj, m20150711_load_global_variables.basal_insulin);
         }
 
         /* CGM__SEDFR_JF csedfrJF = new CGM__SEDFR_JF(vcgm.gstemp,lgvariables.bolus_insulin,lgvariables.basal_insulin,flag_noise);
@@ -331,22 +333,31 @@ public class GUI extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }   */
-        lgvariables.ee = cs.createnewMatrix(1, lgvariables.ee.getColumnDimension() + 1, lgvariables.ee);
-        lgvariables.gsr = cs.createnewMatrix(1, lgvariables.gsr.getColumnDimension() + 1, lgvariables.gsr);
-        lgvariables.sleep = cs.createnewMatrix(1, lgvariables.sleep.getColumnDimension() + 1, lgvariables.sleep);
-        lgvariables.phys_act = cs.createnewMatrix(1, lgvariables.phys_act.getColumnDimension() + 1, lgvariables.phys_act);
+        m20150711_load_global_variables.ee = DIAS.createnewMatrix(1, 
+                m20150711_load_global_variables.ee.getColumnDimension() + 1, 
+                m20150711_load_global_variables.ee);
+        m20150711_load_global_variables.gsr = DIAS.createnewMatrix(1, 
+                m20150711_load_global_variables.gsr.getColumnDimension() + 1, 
+                m20150711_load_global_variables.gsr);
+        m20150711_load_global_variables.sleep = DIAS.createnewMatrix(1, 
+                m20150711_load_global_variables.sleep.getColumnDimension() + 1, 
+                m20150711_load_global_variables.sleep);
+        m20150711_load_global_variables.phys_act = DIAS.createnewMatrix(1, 
+                m20150711_load_global_variables.phys_act.getColumnDimension() + 1, 
+                m20150711_load_global_variables.phys_act);
 
-        m20150711_get_armband_data getarmbanddata = new m20150711_get_armband_data(lgvariables.ee, lgvariables.gsr, lgvariables.sleep, lgvariables.phys_act);
-        lgvariables.armband_data_with_time = getarmbanddata.m20150711_get_armband_data();
-        lgvariables.ee.set(0, lgvariables.kj, getarmbanddata.eedouble);
-        lgvariables.gsr.set(0, lgvariables.kj, getarmbanddata.gsrdouble);
-        lgvariables.sleep.set(0, lgvariables.kj, getarmbanddata.sleepdouble);
-        lgvariables.phys_act.set(0, lgvariables.kj, getarmbanddata.phys_actdouble);
+        m20150711_get_armband_data getarmbanddata = new m20150711_get_armband_data(m20150711_load_global_variables.ee, 
+                m20150711_load_global_variables.gsr, m20150711_load_global_variables.sleep, m20150711_load_global_variables.phys_act);
+        m20150711_load_global_variables.armband_data_with_time = getarmbanddata.m20150711_get_armband_data();
+        m20150711_load_global_variables.ee.set(0, m20150711_load_global_variables.kj, m20150711_get_armband_data.eedouble);
+        m20150711_load_global_variables.gsr.set(0, m20150711_load_global_variables.kj, m20150711_get_armband_data.gsrdouble);
+        m20150711_load_global_variables.sleep.set(0, m20150711_load_global_variables.kj, m20150711_get_armband_data.sleepdouble);
+        m20150711_load_global_variables.phys_act.set(0, m20150711_load_global_variables.kj, m20150711_get_armband_data.phys_actdouble);
 
-        Matrix basal_temp = new Matrix(1, lgvariables.basal_insulin.getColumnDimension());
+        Matrix basal_temp = new Matrix(1, m20150711_load_global_variables.basal_insulin.getColumnDimension());
 
-        for (int i = 0; i < lgvariables.basal_insulin.getColumnDimension(); i++) {
-            basal_temp.set(0, i, lgvariables.basal_insulin.get(0, i));
+        for (int i = 0; i < m20150711_load_global_variables.basal_insulin.getColumnDimension(); i++) {
+            basal_temp.set(0, i, m20150711_load_global_variables.basal_insulin.get(0, i));
         }
 
         /*     ///////////////////////////////////////INPUTS IOB_CALCULATE///////////////////////////////////////////////////////////////////////////////
@@ -354,11 +365,12 @@ public class GUI extends javax.swing.JFrame {
                cs.printMatrix(lgvariables.bolus_insulin,"lgvariables.bolus_insulin");
                cs.printMatrix(basal_temp,"basal_temp");
                System.out.println("////////////////////////INPUTS IOB_CALC////////////////////////////////////////////////////////////////////////////");*/
-        m20150711_calculate_IOB IOBcalculate = new m20150711_calculate_IOB(lgvariables.bolus_insulin, basal_temp);
+        m20150711_calculate_IOB IOBcalculate = new m20150711_calculate_IOB(m20150711_load_global_variables.bolus_insulin, basal_temp);
 
-        lgvariables.IOB_total = cs.createnewMatrix(lgvariables.kj + 1, 1, lgvariables.IOB_total);
+        m20150711_load_global_variables.IOB_total = DIAS.createnewMatrix(m20150711_load_global_variables.kj + 1,
+                1, m20150711_load_global_variables.IOB_total);
 
-        lgvariables.IOB_total.set(lgvariables.kj, 0, IOBcalculate.IOB());
+        m20150711_load_global_variables.IOB_total.set(m20150711_load_global_variables.kj, 0, IOBcalculate.IOB());
 
         /*    /////////////////////////////////OUTPUTS IOB_CALCULATE////////////////////////////////////////////////////////////////////////////////////
                System.out.println("////////////////////////OUTPUT IOB_CALC////////////////////////////////////////////////////////////////////////////");
@@ -381,6 +393,7 @@ public class GUI extends javax.swing.JFrame {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        //Hypo glucemia alarm calculator
         hypo_alarm hypo = new hypo_alarm(lgvariables.hypo_threshold.transpose(), lgvariables.hypo_slope_degree.transpose(), lgvariables.hypo_alarm.transpose(), lgvariables.carb_amount, lgvariables.carb_type, lgvariables.hypo_phase.transpose(), lgvariables.hypo_phase_old.transpose(), lgvariables.repeated_immediate_alarm.transpose(), vcgm.gstemp, lgvariables.kj, lgvariables.g_prediction, lgvariables.phys_act, lgvariables.sleep);
         hypo.m20150711_hypo_alarm();
 
@@ -396,8 +409,8 @@ public class GUI extends javax.swing.JFrame {
 
         lgvariables.batch_CL = hypo.createnewString(lgvariables.kj + 1, lgvariables.batch_CL);
 
-        lgvariables.basal_insulin_calculated = cs.createnewMatrix(8, lgvariables.basal_insulin.getColumnDimension() + 1, lgvariables.basal_insulin_calculated);
-        lgvariables.bolus_insulin_calculated = cs.createnewMatrix(lgvariables.bolus_insulin.getRowDimension() + 1, 1, lgvariables.bolus_insulin_calculated);
+        lgvariables.basal_insulin_calculated = DIAS.createnewMatrix(8, lgvariables.basal_insulin.getColumnDimension() + 1, lgvariables.basal_insulin_calculated);
+        lgvariables.bolus_insulin_calculated = DIAS.createnewMatrix(lgvariables.bolus_insulin.getRowDimension() + 1, 1, lgvariables.bolus_insulin_calculated);
 
         lgvariables.basal_insulin_calculated = lgvariables.basal_insulin;
         lgvariables.bolus_insulin_calculated = lgvariables.bolus_insulin;
@@ -430,9 +443,13 @@ public class GUI extends javax.swing.JFrame {
         saveall.saveall();
 
         //////////////////////////OUTPUTS///////////////////////////////////////////////////////////////////////////////////////////////////////////
-        cs.printMatrix(vcgm.gstemp, "vcgm.gstemp");
-        cs.printMatrix(lgvariables.bolus_insulin, "lgvariables.bolus_insulin");
-        cs.printMatrix(lgvariables.basal_insulin, "lgvariables.basal_insulin");
+        DIAS.printMatrix(vcgm.gstemp, "vcgm.gstemp");
+        DIAS.printMatrix(m20150711_load_global_variables.bolus_insulin, "lgvariables.bolus_insulin");
+        DIAS.printMatrix(m20150711_load_global_variables.basal_insulin, "lgvariables.basal_insulin");
+        //TODO Update output values in GUI
+        jBolusValue.setText("1"); 
+        jBasalValue.setText("1"); ;
+
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -593,61 +610,61 @@ public class GUI extends javax.swing.JFrame {
 
             System.out.println(lgvariables.kj + "     lgvariables.kj");
 
-            lgvariables.basal_insulin = cs.createnewMatrix(8, lgvariables.kj, lgvariables.basal_insulin);
+            lgvariables.basal_insulin = DIAS.createnewMatrix(8, lgvariables.kj, lgvariables.basal_insulin);
 
-            cs.printMatrix(lgvariables.basal_insulin, "lgvariables.basal_insulin");
+            DIAS.printMatrix(lgvariables.basal_insulin, "lgvariables.basal_insulin");
 
-            lgvariables.bolus_insulin = cs.createnewMatrix(lgvariables.kj, 1, lgvariables.bolus_insulin);
-            lgvariables.ee = cs.createnewMatrix(1, lgvariables.kj, lgvariables.ee);
-            lgvariables.phys_act = cs.createnewMatrix(1, lgvariables.kj, lgvariables.phys_act);
-            lgvariables.sleep = cs.createnewMatrix(1, lgvariables.kj, lgvariables.sleep);
-            lgvariables.gsr = cs.createnewMatrix(1, lgvariables.kj, lgvariables.gsr);
-            lgvariables.IOB_total = cs.createnewMatrix(lgvariables.kj, 1, lgvariables.IOB_total);
-            lgvariables.meal_states = cs.createnewMatrix(8, lgvariables.kj, lgvariables.meal_states);
-            lgvariables.meal_bolus_amount = cs.createnewMatrix(lgvariables.kj, 1, lgvariables.meal_bolus_amount);
-            lgvariables.meal_detection = cs.createnewMatrix(lgvariables.kj, 1, lgvariables.meal_detection);
-            lgvariables.meal_detection_time = cs.createnewMatrix(lgvariables.kj, 1, lgvariables.meal_detection_time);
-            lgvariables.correction_bolus_amount = cs.createnewMatrix(lgvariables.kj, 1, lgvariables.correction_bolus_amount);
-            lgvariables.correction_detection = cs.createnewMatrix(lgvariables.kj, 1, lgvariables.correction_detection);
-            lgvariables.correction_detection_time = cs.createnewMatrix(lgvariables.kj, 1, lgvariables.correction_detection_time);
-            lgvariables.correction_limit = cs.createnewMatrix(lgvariables.kj, 1, lgvariables.correction_limit);
-            lgvariables.meal_g_basal = cs.createnewMatrix(lgvariables.kj, 1, lgvariables.meal_g_basal);
-            lgvariables.meal_gpc_gs_slope_degree = cs.createnewMatrix(lgvariables.kj, 1, lgvariables.meal_gpc_gs_slope_degree);
-            lgvariables.meal_gpc_mu = cs.createnewMatrix(lgvariables.kj, 1, lgvariables.meal_gpc_mu);
-            lgvariables.phi = cs.createnewMatrix(24, 21, lgvariables.phi);
-            lgvariables.phi_ee = cs.createnewMatrix(4, 21, lgvariables.phi_ee);
-            lgvariables.phi_gsr = cs.createnewMatrix(4, 21, lgvariables.phi_gsr);
-            lgvariables.armax_parameters = cs.createnewMatrix(24, lgvariables.kj, lgvariables.armax_parameters);
-            lgvariables.armax_lamda = cs.createnewMatrix(lgvariables.kj, 1, lgvariables.armax_lamda);
-            lgvariables.armax_err = cs.createnewMatrix(lgvariables.kj, 1, lgvariables.armax_err);
-            lgvariables.arma_parameters_ee = cs.createnewMatrix(4, lgvariables.kj, lgvariables.arma_parameters_ee);
-            lgvariables.arma_parameters_gsr = cs.createnewMatrix(4, lgvariables.kj, lgvariables.arma_parameters_gsr);
-            lgvariables.arma_lamda_ee = cs.createnewMatrix(lgvariables.kj, 1, lgvariables.arma_lamda_ee);
-            lgvariables.arma_err_ee = cs.createnewMatrix(lgvariables.kj, 1, lgvariables.arma_err_ee);
-            lgvariables.arma_parameters_gsr = cs.createnewMatrix(4, lgvariables.kj, lgvariables.arma_parameters_gsr);
-            lgvariables.arma_lamda_gsr = cs.createnewMatrix(lgvariables.kj, 1, lgvariables.arma_lamda_gsr);
-            lgvariables.arma_err_gsr = cs.createnewMatrix(lgvariables.kj, 1, lgvariables.arma_err_gsr);
-            lgvariables.X_state = cs.createnewMatrix(21, lgvariables.kj, lgvariables.X_state);
-            lgvariables.X_state_ee = cs.createnewMatrix(4, lgvariables.kj, lgvariables.X_state_ee);
-            lgvariables.X_state_gsr = cs.createnewMatrix(4, lgvariables.kj, lgvariables.X_state_gsr);
-            lgvariables.ee_prediction = cs.createnewMatrix(8, lgvariables.kj, lgvariables.ee_prediction);
-            lgvariables.gsr_prediction = cs.createnewMatrix(8, lgvariables.kj, lgvariables.gsr_prediction);
-            lgvariables.g_prediction = cs.createnewMatrix(8, lgvariables.kj, lgvariables.g_prediction);
-            lgvariables.reference_glucose = cs.createnewMatrix(8, lgvariables.kj, lgvariables.reference_glucose);
-            lgvariables.insulin_sensitivity_constant = cs.createnewMatrix(8, lgvariables.kj, lgvariables.insulin_sensitivity_constant);
-            lgvariables.IOB_prediction = cs.createnewMatrix(8, lgvariables.kj, lgvariables.IOB_prediction);
-            lgvariables.maximum_insulin = cs.createnewMatrix(8, lgvariables.kj, lgvariables.maximum_insulin);
-            lgvariables.total_daily_unit = cs.createnewMatrix(8, lgvariables.kj, lgvariables.total_daily_unit);
-            lgvariables.insulin_sensitivity_factor = cs.createnewMatrix(8, lgvariables.kj, lgvariables.insulin_sensitivity_factor);
-            lgvariables.hypo_threshold = cs.createnewMatrix(lgvariables.kj, 1, lgvariables.hypo_threshold);
-            lgvariables.hypo_slope_degree = cs.createnewMatrix(lgvariables.kj, 1, lgvariables.hypo_slope_degree);
-            lgvariables.hypo_alarm = cs.createnewMatrix(lgvariables.kj, 1, lgvariables.hypo_alarm);
-            lgvariables.hypo_phase = cs.createnewMatrix(lgvariables.kj, 1, lgvariables.hypo_phase);
-            lgvariables.hypo_phase_old = cs.createnewMatrix(lgvariables.kj, 1, lgvariables.hypo_phase_old);
-            lgvariables.repeated_immediate_alarm = cs.createnewMatrix(lgvariables.kj, 1, lgvariables.repeated_immediate_alarm);
-            lgvariables.bolus_insulin_calculated = cs.createnewMatrix(lgvariables.kj, 1, lgvariables.bolus_insulin_calculated);
-            lgvariables.basal_insulin_calculated = cs.createnewMatrix(8, lgvariables.kj, lgvariables.basal_insulin_calculated);
-            lgvariables.gs = cs.createnewMatrix(1, lgvariables.kj, lgvariables.gs);
+            lgvariables.bolus_insulin = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.bolus_insulin);
+            lgvariables.ee = DIAS.createnewMatrix(1, lgvariables.kj, lgvariables.ee);
+            lgvariables.phys_act = DIAS.createnewMatrix(1, lgvariables.kj, lgvariables.phys_act);
+            lgvariables.sleep = DIAS.createnewMatrix(1, lgvariables.kj, lgvariables.sleep);
+            lgvariables.gsr = DIAS.createnewMatrix(1, lgvariables.kj, lgvariables.gsr);
+            lgvariables.IOB_total = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.IOB_total);
+            lgvariables.meal_states = DIAS.createnewMatrix(8, lgvariables.kj, lgvariables.meal_states);
+            lgvariables.meal_bolus_amount = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.meal_bolus_amount);
+            lgvariables.meal_detection = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.meal_detection);
+            lgvariables.meal_detection_time = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.meal_detection_time);
+            lgvariables.correction_bolus_amount = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.correction_bolus_amount);
+            lgvariables.correction_detection = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.correction_detection);
+            lgvariables.correction_detection_time = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.correction_detection_time);
+            lgvariables.correction_limit = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.correction_limit);
+            lgvariables.meal_g_basal = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.meal_g_basal);
+            lgvariables.meal_gpc_gs_slope_degree = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.meal_gpc_gs_slope_degree);
+            lgvariables.meal_gpc_mu = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.meal_gpc_mu);
+            lgvariables.phi = DIAS.createnewMatrix(24, 21, lgvariables.phi);
+            lgvariables.phi_ee = DIAS.createnewMatrix(4, 21, lgvariables.phi_ee);
+            lgvariables.phi_gsr = DIAS.createnewMatrix(4, 21, lgvariables.phi_gsr);
+            lgvariables.armax_parameters = DIAS.createnewMatrix(24, lgvariables.kj, lgvariables.armax_parameters);
+            lgvariables.armax_lamda = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.armax_lamda);
+            lgvariables.armax_err = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.armax_err);
+            lgvariables.arma_parameters_ee = DIAS.createnewMatrix(4, lgvariables.kj, lgvariables.arma_parameters_ee);
+            lgvariables.arma_parameters_gsr = DIAS.createnewMatrix(4, lgvariables.kj, lgvariables.arma_parameters_gsr);
+            lgvariables.arma_lamda_ee = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.arma_lamda_ee);
+            lgvariables.arma_err_ee = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.arma_err_ee);
+            lgvariables.arma_parameters_gsr = DIAS.createnewMatrix(4, lgvariables.kj, lgvariables.arma_parameters_gsr);
+            lgvariables.arma_lamda_gsr = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.arma_lamda_gsr);
+            lgvariables.arma_err_gsr = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.arma_err_gsr);
+            lgvariables.X_state = DIAS.createnewMatrix(21, lgvariables.kj, lgvariables.X_state);
+            lgvariables.X_state_ee = DIAS.createnewMatrix(4, lgvariables.kj, lgvariables.X_state_ee);
+            lgvariables.X_state_gsr = DIAS.createnewMatrix(4, lgvariables.kj, lgvariables.X_state_gsr);
+            lgvariables.ee_prediction = DIAS.createnewMatrix(8, lgvariables.kj, lgvariables.ee_prediction);
+            lgvariables.gsr_prediction = DIAS.createnewMatrix(8, lgvariables.kj, lgvariables.gsr_prediction);
+            lgvariables.g_prediction = DIAS.createnewMatrix(8, lgvariables.kj, lgvariables.g_prediction);
+            lgvariables.reference_glucose = DIAS.createnewMatrix(8, lgvariables.kj, lgvariables.reference_glucose);
+            lgvariables.insulin_sensitivity_constant = DIAS.createnewMatrix(8, lgvariables.kj, lgvariables.insulin_sensitivity_constant);
+            lgvariables.IOB_prediction = DIAS.createnewMatrix(8, lgvariables.kj, lgvariables.IOB_prediction);
+            lgvariables.maximum_insulin = DIAS.createnewMatrix(8, lgvariables.kj, lgvariables.maximum_insulin);
+            lgvariables.total_daily_unit = DIAS.createnewMatrix(8, lgvariables.kj, lgvariables.total_daily_unit);
+            lgvariables.insulin_sensitivity_factor = DIAS.createnewMatrix(8, lgvariables.kj, lgvariables.insulin_sensitivity_factor);
+            lgvariables.hypo_threshold = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.hypo_threshold);
+            lgvariables.hypo_slope_degree = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.hypo_slope_degree);
+            lgvariables.hypo_alarm = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.hypo_alarm);
+            lgvariables.hypo_phase = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.hypo_phase);
+            lgvariables.hypo_phase_old = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.hypo_phase_old);
+            lgvariables.repeated_immediate_alarm = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.repeated_immediate_alarm);
+            lgvariables.bolus_insulin_calculated = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.bolus_insulin_calculated);
+            lgvariables.basal_insulin_calculated = DIAS.createnewMatrix(8, lgvariables.kj, lgvariables.basal_insulin_calculated);
+            lgvariables.gs = DIAS.createnewMatrix(1, lgvariables.kj, lgvariables.gs);
 
             lgvariables.basal_insulin = loaddata.load(lgvariables.basal_insulin, "basal_insulin");
             lgvariables.bolus_insulin = loaddata.load(lgvariables.bolus_insulin, "bolus_insulin");
@@ -728,8 +745,8 @@ public class GUI extends javax.swing.JFrame {
             lgvariables.L_ee = gpc.createnew3Dmatrix(lgvariables.L_ee, 8, 8, lgvariables.kj);
             lgvariables.L_gsr = gpc.createnew3Dmatrix(lgvariables.L_gsr, 8, 8, lgvariables.kj);
 
-            cs.print3Dmatrice(lgvariables.meal_covariance, "lgvariables.meal_covariance");
-            cs.printMatrix(lgvariables.meal_states, "lgvariables.meal_states");
+            DIAS.print3DMatrix(lgvariables.meal_covariance, "lgvariables.meal_covariance");
+            DIAS.printMatrix(lgvariables.meal_states, "lgvariables.meal_states");
 
             lgvariables.meal_covariance = loaddata.load3D(lgvariables.meal_covariance, "meal_covariance", lgvariables.kj);
             lgvariables.armax_covariance = loaddata.load3D(lgvariables.armax_covariance, "armax_covariance", lgvariables.kj);
@@ -756,8 +773,8 @@ public class GUI extends javax.swing.JFrame {
             lgvariables.carb_type = loaddata.loadString("carb_type", lgvariables.kj);
             lgvariables.batch_CL = loaddata.loadString("batch_CL", lgvariables.kj);
 
-            cs.print3Dmatrice(lgvariables.meal_covariance, "lgvariables.meal_covariance");
-            cs.printMatrix(lgvariables.meal_states, "lgvariables.meal_states");
+            DIAS.print3DMatrix(lgvariables.meal_covariance, "lgvariables.meal_covariance");
+            DIAS.printMatrix(lgvariables.meal_states, "lgvariables.meal_states");
 
             lgvariables.kj = lgvariables.kj - 1;
 

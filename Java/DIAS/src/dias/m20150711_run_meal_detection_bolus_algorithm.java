@@ -90,20 +90,19 @@ System.out.println("////////////////////////////////////Inputs of Run_meal_detec
          m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
          kj=lgvariables.kj;   
          
-         CGM__SEDFR_JF cs= new CGM__SEDFR_JF();
 
          
-         lgvariables.meal_gpc_mu= cs.createnewMatrix(meal_gpc_mu.getRowDimension()+1, 1 ,lgvariables.meal_gpc_mu);
+         lgvariables.meal_gpc_mu= DIAS.createnewMatrix(meal_gpc_mu.getRowDimension()+1, 1 ,lgvariables.meal_gpc_mu);
       
          
          if(kj>(12)){
-              lgvariables.meal_g_basal= cs.createnewMatrix(meal_g_basal.getRowDimension()+1,1,lgvariables.meal_g_basal );
+              lgvariables.meal_g_basal= DIAS.createnewMatrix(meal_g_basal.getRowDimension()+1,1,lgvariables.meal_g_basal );
               
          double mean=(gs.get(0,kj-12)+gs.get(0,kj-11)+gs.get(0,kj-10)+gs.get(0,kj-9)+gs.get(0,kj-8)+gs.get(0,kj-7))/6;
          lgvariables.meal_g_basal.set(meal_g_basal.getRowDimension(),0,mean);
          }
          else{
-         lgvariables.meal_g_basal= cs.createnewMatrix(meal_g_basal.getRowDimension()+1,1,lgvariables.meal_g_basal );
+         lgvariables.meal_g_basal= DIAS.createnewMatrix(meal_g_basal.getRowDimension()+1,1,lgvariables.meal_g_basal );
          lgvariables.meal_g_basal.set(meal_g_basal.getRowDimension(),0,100);    
          }
         
@@ -128,11 +127,11 @@ System.out.println("////////////////////////////////////Inputs of Run_meal_detec
         meal_gpc_line.set(0, 0, polyfittemp[1]);
         
         
-        lgvariables.meal_gpc_gs_slope_degree= cs.createnewMatrix(meal_gpc_gs_slope_degree.getRowDimension()+1,1,lgvariables.meal_gpc_gs_slope_degree);
+        lgvariables.meal_gpc_gs_slope_degree= DIAS.createnewMatrix(meal_gpc_gs_slope_degree.getRowDimension()+1,1,lgvariables.meal_gpc_gs_slope_degree);
         lgvariables.meal_gpc_gs_slope_degree.set(meal_gpc_gs_slope_degree.getRowDimension(),0,57.2958*(Math.atan(meal_gpc_line.get(0,0))));
         }
         else{
-        lgvariables.meal_gpc_gs_slope_degree= cs.createnewMatrix(meal_gpc_gs_slope_degree.getRowDimension()+1,1,lgvariables.meal_gpc_gs_slope_degree);
+        lgvariables.meal_gpc_gs_slope_degree= DIAS.createnewMatrix(meal_gpc_gs_slope_degree.getRowDimension()+1,1,lgvariables.meal_gpc_gs_slope_degree);
         lgvariables.meal_gpc_gs_slope_degree.set(meal_gpc_gs_slope_degree.getRowDimension(),0,45);  
         }
        
@@ -188,7 +187,7 @@ System.out.println("////////////////////////////////////Inputs of Run_meal_detec
        ukf.m20141215_ukf_meal();
 
        
-       lgvariables.meal_states= cs.createnewMatrix(ukf.x_p.getRowDimension(), kj+1 ,lgvariables.meal_states);
+       lgvariables.meal_states= DIAS.createnewMatrix(ukf.x_p.getRowDimension(), kj+1 ,lgvariables.meal_states);
        
        for(int j=0; j<ukf.x_p.getRowDimension();j++)
        lgvariables.meal_states.set(j, kj, ukf.x_p.get(j,0));
@@ -209,13 +208,13 @@ System.out.println("////////////////////////////////////Inputs of Run_meal_detec
       detection_of_meal dtcmeal =new detection_of_meal(meal_states1, gs.get(0,kj-1), meal_detection.get(kj-1,0), meal_detection_time.get(kj-1,0), correction_detection_time.get(kj-1,0),correction_limit.get(kj-1,0),correction_bolus_amount.get(kj-1,0),(int) kj, body_weight, sleep.get(0,kj-1),phys_act.get(0,kj-1), meal_gpc_mu.get(kj-1,0));
       dtcmeal.detection_of_meal();
        
-      lgvariables.meal_bolus_amount= cs.createnewMatrix(kj+1,1,lgvariables.meal_bolus_amount);
-      lgvariables.correction_detection= cs.createnewMatrix(kj+1,1,lgvariables.correction_detection);
-      lgvariables.meal_detection= cs.createnewMatrix(kj+1,1, lgvariables.meal_detection);
-      lgvariables.meal_detection_time= cs.createnewMatrix(kj+1,1, lgvariables.meal_detection_time);
-      lgvariables.correction_detection_time= cs.createnewMatrix(kj+1,1,  lgvariables.correction_detection_time);
-      lgvariables.correction_limit= cs.createnewMatrix(kj+1,1,  lgvariables.correction_limit);
-      lgvariables.correction_bolus_amount= cs.createnewMatrix(kj+1,1,lgvariables.correction_bolus_amount);
+      lgvariables.meal_bolus_amount= DIAS.createnewMatrix(kj+1,1,lgvariables.meal_bolus_amount);
+      lgvariables.correction_detection= DIAS.createnewMatrix(kj+1,1,lgvariables.correction_detection);
+      lgvariables.meal_detection= DIAS.createnewMatrix(kj+1,1, lgvariables.meal_detection);
+      lgvariables.meal_detection_time= DIAS.createnewMatrix(kj+1,1, lgvariables.meal_detection_time);
+      lgvariables.correction_detection_time= DIAS.createnewMatrix(kj+1,1,  lgvariables.correction_detection_time);
+      lgvariables.correction_limit= DIAS.createnewMatrix(kj+1,1,  lgvariables.correction_limit);
+      lgvariables.correction_bolus_amount= DIAS.createnewMatrix(kj+1,1,lgvariables.correction_bolus_amount);
        
       
       lgvariables.meal_bolus_amount.set(kj, 0,dtcmeal.meal_bolus);
@@ -226,10 +225,11 @@ System.out.println("////////////////////////////////////Inputs of Run_meal_detec
       lgvariables.correction_limit.set(kj, 0,dtcmeal.correction_limit);
       lgvariables.correction_bolus_amount.set(kj, 0,dtcmeal.correction_bolus);
 
-    lgvariables.bolus_insulin=cs.createnewMatrix(bolus_insulin.getRowDimension()+1, 1,lgvariables.bolus_insulin);
-        
-    lgvariables.bolus_insulin.set(bolus_insulin.getRowDimension(), 0,((int)(max(0,lgvariables.meal_bolus_amount.get(kj,0)*lgvariables.meal_detection.get(kj,0)+lgvariables.correction_detection.get(kj,0)*lgvariables.correction_bolus_amount.get(kj,0)-(lgvariables.IOB_total.get(kj-1,0)))/0.05)*0.05));
+    m20150711_load_global_variables.bolus_insulin=DIAS.createnewMatrix(bolus_insulin.getRowDimension()+1, 1,lgvariables.bolus_insulin);
+    m20150711_load_global_variables.bolus_insulin.set(bolus_insulin.getRowDimension(), 0,((int)(max(0,lgvariables.meal_bolus_amount.get(kj,0)*lgvariables.meal_detection.get(kj,0)+lgvariables.correction_detection.get(kj,0)*lgvariables.correction_bolus_amount.get(kj,0)-(lgvariables.IOB_total.get(kj-1,0)))/0.05)*0.05));
    
+    DIAS.printMatrix ( m20150711_load_global_variables.bolus_insulin, "meal detection module bolus" );
+
  /*   ////////////////////////////////////////////////OUTPUTS OF RUN_MEAL_DETECTION_BOLUS_ALGORITHM/////////////////////////////////////////////////////
 System.out.println("////////////////////////////////////Outputs of Run_meal_detection_bolus_algorith///////////////////////////////////////////////");
 printMatrix(lgvariables.bolus_insulin,"lgvariables.bolus_insulin");
