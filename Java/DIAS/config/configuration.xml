@@ -2,6 +2,7 @@
 <configuration>
   <environment>
     <env>dev_zm</env>
+    <verbose>false</verbose>
   </environment>
   <processing env="dev_cl">
     <paths>
