@@ -81,7 +81,11 @@ public class OptRecursive_Testbench {
             createOptRecursiveDefaultParameters();
             OptRecursive_Cons testOptRecursiveCons = new OptRecursive_Cons(Y, phi, Q_old, P_old, lamda_old, upperlimit, lowerlimit);
             testOptRecursiveCons.runOptimization();
-
+            
+            /*********************************************************
+             * TEST CONSTRAINT FUNCTION ITSELF
+             */
+            testOptRecursiveConstraintFunction(testOptRecursiveCons);
         }
 
         //  ChocaNonLinear ch = new ChocaNonLinear ();
@@ -250,6 +254,23 @@ public class OptRecursive_Testbench {
         };
         Q_old = new Matrix(Q_oldArray);
 
+    }
+    
+    private static void testOptRecursiveConstraintFunction(OptRecursive_Cons tORC){
+        //Get X value to test: from MATLAB, one that is giving a non satisfied constraint
+        //Result x1 - 113399.149473697
+        //CONSTRAINT SATISFIED IN JAVA :(
+        double[] x = new double[]{0, 0, 0, 0, 0, 0, 0, 0,
+                                  0, 0, 0, 0, 0, 0, 0, 0,
+                                  0, 0, 0, 0, 0, 0, 0, 1.49011611938477e-08};
+        System.out.println("Constraint eval for x1: "+tORC.getConstraintValue(x));
+        
+        //Result x2 - 3.81501042427541
+        //CONSTRAINT NOT SATISFIED IN JAVA EITHER :)
+        x = new double[]{-2.16796364673538, -1.13873353099803, 0.0565014656063550, 0, 0, 0, 0, 0,
+                         0, 0, 0, 0, 0, 0, 0, 0,
+                         0.00216796915503150, 0.00216796915503150, 0.00216796915503150, 0.00216796915503150, 0.00144531588166004, 0.00144531588166004, 0.00144531588166004, 0.00144531588166004};
+        System.out.println("Constraint eval for x2  : "+tORC.getConstraintValue(x));
     }
 
 }
