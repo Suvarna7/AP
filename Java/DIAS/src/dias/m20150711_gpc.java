@@ -330,9 +330,16 @@ public class m20150711_gpc {
 
         //TODO Non linear issues
         //Run the non linear optimization
-        OptRecursive opt_r = new OptRecursive((gs.get(0, kj - 1)), phitemp, 
-                armax_parameterstemp, armax_covariancetemp, (armax_lamda.get(kj - 1, 0)), upperlim, lowerlim);
-        opt_r.runOptimization();
+        OptInputs inputs = new OptInputs((gs.get(0, kj-1)), phitemp, 
+                armax_parameterstemp, armax_covariancetemp, (armax_lamda.get(kj - 1, 0)), upperlim, lowerlim); 
+        OptRecursive opt_r = new OptRecursive(inputs);
+        //set the inputs to be the output of the current run. 
+        inputs = opt_r.runOptimization();
+//        
+//        // XXX DEBUG 
+//        // A little test to make sure that we can run one OptRecursive using another's outputs. 
+//        opt_r = new OptRecursive(inputs); 
+//        opt_r.runOptimization(); 
 
         //Load variables 
         m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();

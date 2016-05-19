@@ -92,19 +92,13 @@ public class OptRecursive {
     /**
      * Create the opt_recursive object with the given parameters
      *
-     * @param Y
-     * @param phi
-     * @param Q_old
-     * @param P_old
-     * @param lamda_old
-     * @param upperlimit
-     * @param lowerlimit
+     * @param inputs
      */
-    public OptRecursive(double Y, Matrix phi, Matrix Q_old, Matrix P_old, double lamda_old, double[] upperlimit, double[] lowerlimit) {
-        this.Y = Y;
-        this.P_old = P_old;
-        this.lamda_old = lamda_old;
-        this.Q_old = Q_old;
+    public OptRecursive(OptInputs inputs) {
+        this.Y = inputs.y();
+        this.P_old = inputs.p();
+        this.lamda_old = inputs.lamda();
+        this.Q_old = inputs.q();
         //Update its double array version:
         double[][] previousQold = Q_old.getArray();
         Q_old_ARRAY = new double[Q_SIZE];
@@ -112,10 +106,10 @@ public class OptRecursive {
             Q_old_ARRAY[i] = previousQold[i][0];
             System.out.print(i + ", ");
         }
-        this.phi = phi;
+        this.phi = inputs.phi();
         //TODO
-        this.upperlimit = upperlimit;
-        this.lowerlimit = lowerlimit;
+        this.upperlimit = inputs.upperLimit();
+        this.lowerlimit = inputs.lowerLimit();
         //TODO DEBUG VALUES:
         /*this.upperlimit = new double[]{2, 2, 2, 2, 2, 
                                        2, 2, 2, 2, 2,
@@ -136,7 +130,7 @@ public class OptRecursive {
         iterations = 0;
     }
 
-    public void runOptimization() {
+    public OptInputs runOptimization() {
 
         if (DIAS.verboseMode) { this.printInputs(); }
 
@@ -295,6 +289,12 @@ public class OptRecursive {
         } catch (Exception e) {
             System.out.println("Error saving inputOut: " + e);
         }
+        
+        //Return the values normally printed out if debug mode is on.
+        // XXX DEBUG -- there are quite a few variables with similar names. 
+        // Not sure that this is the correct set of variables to return. 
+        OptInputs inputs = new OptInputs(this.Y, this.phi, this.Q_res, this.P, this.lamda, this.upperlimit, this.lowerlimit); 
+        return inputs; 
 
     }
 

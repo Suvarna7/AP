@@ -12,6 +12,9 @@
     <emails>
     	<email>caterina.lazaro@gmail.com</email>
     </emails>
+    <optrecursive>
+      <iterations>1</iterations>
+    </optrecursive>
   </processing>
   <processing env="dev_ms">
     <paths>
@@ -21,6 +24,9 @@
     <emails>
       <email>msevil@hawk.iit.edu</email>
     </emails>
+    <optrecursive>
+      <iterations>1</iterations>
+    </optrecursive>
   </processing>
   <processing env="dev_zm">
     <paths>
@@ -30,5 +36,8 @@
     <emails>
     	<email>zmaloney@hawk.iit.com</email>
     </emails>
+    <optrecursive>
+      <iterations>3</iterations>
+    </optrecursive>
   </processing>
 </configuration>
