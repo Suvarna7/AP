@@ -85,6 +85,7 @@ public class OptRecursive_Cons {
     
     //DEBUG FUNCTIONS !!!!
     private List<Double[]> Q_values;
+    private List<Double[]> constraintValues;
     private double iterations;
     private double Vinitial;
     private boolean firstIteration;
@@ -133,6 +134,7 @@ public class OptRecursive_Cons {
         printed = false;
         firstIteration = true;
         Q_values = new ArrayList<Double[]>();
+        constraintValues = new ArrayList<Double[]>();
         iterations = 0;
     }
 
@@ -297,13 +299,19 @@ public class OptRecursive_Cons {
         try {
             Save saveManager = new Save(outputOpt);
 
-            //Save intermediate results
+            //Save intermediate results of the optimization
             Matrix Q_valuesMatrix = new Matrix ( Q_values.size(), N_VARIABLES +2);
             for (int i = 0 ; i <iterations; i ++)
                 for (int j = 0; j < N_VARIABLES +2; j ++)
                     Q_valuesMatrix.set(i, j, Q_values.get(i)[j]);
                 
-            saveManager.save(Q_valuesMatrix, "Optimization_Steps");
+            saveManager.save(Q_valuesMatrix, "Optimization_Steps_Cons");
+            //Save the result of the constraint
+            Matrix Cons_valuesMatrix = new Matrix ( constraintValues.size(), N_VARIABLES +1);
+            for (int i = 0 ; i <iterations; i ++)
+                for (int j = 0; j < N_VARIABLES +1; j ++)
+                    Cons_valuesMatrix.set(i, j, constraintValues.get(i)[j]);
+            saveManager.save(Cons_valuesMatrix, "Constraint_Steps_Cons");
             //Save the inputs
             Matrix Y_m = new Matrix(1, 1);
             Y_m.set(0, 0, Y);
@@ -344,6 +352,12 @@ public class OptRecursive_Cons {
      * @return (0.99 - maxEigen)
      */
     public double getConstraintValue(double[] x) {
+        //Create the double list with:
+        // - [0,23]: input x
+        // - [24]: constraint result (1 or -1)
+        double[] consInter = new double[N_VARIABLES +1];
+        //Store X value:
+        System.arraycopy(x, 0, consInter, 0, x.length);
         //double [][] A_state = new double[21][21];
         double[][] A_state = new double[Q_SIZE - 2][Q_SIZE - 2];
 
@@ -422,7 +436,12 @@ public class OptRecursive_Cons {
         //  printMatrix(Astatetemp,"Astatetemp");
         //double c = (max(Astatetemp) - 0.99);
         //We want: max(AstateEigen) -0.99 <= 0
-        return (EIGEN_CONSTRAIN_VALUE - max(AstatetEigen) );
+        
+        double resultC = (EIGEN_CONSTRAIN_VALUE - max(AstatetEigen) );
+        //Save values of this step:
+        consInter[24] = resultC;
+        constraintValues.add( ArrayUtils.toObject(consInter));
+        return resultC;
     }
     
     private double[] limitsConstraint(double[] X){

@@ -203,6 +203,7 @@ Vinitial = 0;
             eigA
             printedFirst  = printedFirst +1
         %end
+        Q_all(i, 27) = max(eigA)-0.99;
         c=max(eigA)-0.99;
         ceq = [];
     end
