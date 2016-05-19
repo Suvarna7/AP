@@ -69,6 +69,18 @@ public class OptRecursive_Testbench {
                 testOptRecursive.runOptimization();
                 i++;
             }
+            
+            //Try higher numbers of Q
+            updateOptRecursiveSetParametersQRANDOM();
+            testOptRecursive = new OptRecursive(Y, phi, Q_old, P_old, lamda_old, upperlimit, lowerlimit);
+            testOptRecursive.runOptimization();
+            
+            /*******************************************************
+             * CONSTRAINTS
+             */
+            createOptRecursiveDefaultParameters();
+            OptRecursive_Cons testOptRecursiveCons = new OptRecursive_Cons(Y, phi, Q_old, P_old, lamda_old, upperlimit, lowerlimit);
+            testOptRecursiveCons.runOptimization();
 
         }
 
@@ -202,6 +214,41 @@ public class OptRecursive_Testbench {
     private static void updateOptRecursiveSetParametersQP(Matrix Qprev, Matrix Pprev) {
         Q_old = Qprev;
         P_old = Pprev;
+
+    }
+    
+    /**
+     * Update Q parameters only, with RANDOM values
+     * @param Qprev
+     */
+    private static void updateOptRecursiveSetParametersQRANDOM() {
+        //Q_old matrix 24x1
+        double[][] Q_oldArray = new double[][]{{1},
+        {0},
+        {3},
+        {0},
+        {0},
+        {0},
+        {3},
+        {0},
+        {0},
+        {0},
+        {0},
+        {0},
+        {0},
+        {0},
+        {0},
+        {0},
+        {9},
+        {0},
+        {0},
+        {8},
+        {0},
+        {0},
+        {10},
+        {0}
+        };
+        Q_old = new Matrix(Q_oldArray);
 
     }
 
