@@ -31,6 +31,7 @@ public class DIAS {
     // This allows us to switch between <processing> nodes in the configuration XML 
     // by using the @env attribute. 
     public static String configurationEnvironment = "none";
+    public static Boolean verboseMode = false; 
     //Parameter: excel files to save/load variables
     //TODO make sure files exist in the given path
     public static String excelFilePath;
@@ -68,7 +69,6 @@ public class DIAS {
         boolean output = false; //be pessimistic. 
         Configurations configs = new Configurations();
         try {
-            System.out.println("User directory is " + System.getProperty("user.dir"));
             XMLConfiguration config = configs.xml("config/configuration.xml"); //this is a really nice factory implementation we're eliding
             //use XPATH so we can query attributes. NB that this means we'll be using slash-style lookup as in 
             // "processing/paths/excelFilePath" 
@@ -76,7 +76,9 @@ public class DIAS {
             // "processing.paths.excelFilePath"
             config.setExpressionEngine(new XPathExpressionEngine());
             configurationEnvironment = config.getString("environment/env");
-            System.out.println(configurationEnvironment);
+            verboseMode = Boolean.valueOf(config.getString("environment/verbose"));
+            if (verboseMode) { System.out.println("User directory is " + System.getProperty("user.dir")); }
+            if (verboseMode) { System.out.println(configurationEnvironment); } 
             excelFilePath = config.getString("processing[@env='" + configurationEnvironment + "']/paths/excelFilePath");
             bodymediaFileUrl = config.getString("processing[@env='" + configurationEnvironment + "']/paths/bodymediaFileUrl");
             //HierarchicalConfiguration node = (HierarchicalConfiguration) config.configurationAt("/nodes/node[@id='"+(str)+"']");

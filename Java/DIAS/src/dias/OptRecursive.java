@@ -138,27 +138,7 @@ public class OptRecursive {
 
     public void runOptimization() {
 
-        /**
-         ********************************************
-         * PRINT THE INPUT VALUES ******************************************
-         */
-        System.out.println("///////////////////INPUTS OPT_RECURSIVE/////////////");
-        System.out.println(Y + "Y");
-        printMatrix(P_old, "P_old");
-        printMatrix(phi, "phi");
-        printMatrix(Q_old, "Q_old");
-        System.out.println("lamda_old - " + lamda_old);
-        System.out.println("upperlimit");
-        for (int i = 0; i < upperlimit.length; i++) {
-            System.out.print(upperlimit[i] + "      ");
-        }
-        System.out.println();
-        System.out.println("lowerlimit");
-        for (int i = 0; i < lowerlimit.length; i++) {
-            System.out.print(lowerlimit[i] + "      ");
-        }
-
-        System.out.println("\n///////////////////INPUTS OPT_RECURSIVE/////////////");
+        if (DIAS.verboseMode) { this.printInputs(); }
 
         /**
          * ************************************************************
@@ -168,6 +148,7 @@ public class OptRecursive {
         //1. Build the P matrix and its pseudo-inverse (pP) from phi and P_old
         //P=(1/(lamda_old))*(P_old-(P_old*phi*pinv(lamda_old+phi'*P_old*phi)*phi'*P_old))
         //Intermediate result: partialResult = pinv(lamda_old+phi'*P_old*phi)
+        if (DIAS.verboseMode) { System.out.println("Size of phi: "+ phi.getRowDimension() + "x" + phi.getColumnDimension() ); }
         double partialResult = 1 / ((((phi.transpose()).times(P_old)).times(phi)).get(0, 0) + lamda_old);
         P = (P_old.minus(P_old.times(phi).times(partialResult).times(phi.transpose()).times(P_old))).times(1 / lamda_old);
 
@@ -220,12 +201,7 @@ public class OptRecursive {
                 
                 //System.out.println("V: "+opt );
                 //printDoubleArrayMatrix(  new double[][] {Q}, "Q");
-                return opt;
-                
-           
-       
-
-                
+                return opt; 
             }
         };
 
@@ -236,17 +212,17 @@ public class OptRecursive {
         double[] Q_oldMIN = new double[Q_SIZE];
         for (int i = 0; i < previousQold.length; i++) {
             Q_oldMIN[i] = previousQold[i][0];
-            System.out.print(i + ", ");
+            if (DIAS.verboseMode) { System.out.print(i + ", "); }
         }
         //Update Qold to be equal to previous one
 
-        System.out.println("Size Qold " + Q_oldMIN.length + " - ");
+        if (DIAS.verboseMode) { System.out.println("Size Qold " + Q_oldMIN.length + " - "); }
         //Run the optimization
         CobylaExitStatus result = Cobyla.findMinimum(calcfc, N_VARIABLES, M_CONSTRAINTS, Q_old_ARRAY, _RHO_BEG, _RHO_END, iprint, MAX_FUNC);
         //  result1 = cobyla.findMinimum(calcfc, 24,2*Q_old.getRowDimension()+1, Q_oldtemp, rhobeg, rhoend, iprint, maxfun);  
 
         //Exit status: DIVERGING ROUNDING ERRORS / MAX ITERATION REACH / NORMAL
-        System.out.println("COBYLA EXIT: " + result);
+        if (DIAS.verboseMode) { System.out.println("COBYLA EXIT: " + result); }
         /**
          * *********************************************
          * Save the result of Cobyla optimization
@@ -255,7 +231,7 @@ public class OptRecursive {
         try {
             save1.save(fresult, "testnonlier");
         } catch (IOException e) {
-            System.out.print("Opt recursive: " + e);
+            if (DIAS.verboseMode) { System.out.print("Opt recursive: " + e.getMessage()); }
         }
 
         Q_res = new Matrix(Q_SIZE, 1);
@@ -276,21 +252,9 @@ public class OptRecursive {
             lamda = 0.005;
         }
 
-        /* *******************************************
-         * PRINT THE OUTPUT VALUES 
-         *********************************************/
-        System.out.println("////////////////////OUTPUT OPT_RECURSIVE///////////");
-        printMatrix(Q_res, "Q_res");
-        System.out.println(err + "  err");
-        printMatrix(Y_model, "  Y_model");
-        System.out.println(lamda1 + "  lamda1");
-        System.out.println(lamda2 + "  lamda2");
-        System.out.println(lamda + "  lamda");
-        printMatrix(P, "P");
-        printMatrix(pP, "Pinv");
-        System.out.println("Pinv sizes: " + pP.getColumnDimension() + "x" + pP.getRowDimension());
-        printMatrix(phi, "phi");
-        System.out.println("\n////////////////////OUTPUT OPT_RECURSIVE///////////");
+        if (DIAS.verboseMode) { 
+            this.printOutputs(); 
+        }
 
         //TODO Debug - Save all matrices in an excel file, to use later on in MATLAB
         try {
@@ -413,10 +377,12 @@ public class OptRecursive {
         }
         //if(!printed){
         
-            printMatrix(AstatetEigen, "Eigen matrix: ");
-            printDoubleArrayMatrix(A_state, "A_state matrix: ");
-            printDoubleArrayMatrix(new double[][]{x}, "Q state matrix:");
-            printed = true;
+            if (DIAS.verboseMode ) { 
+                printMatrix(AstatetEigen, "Eigen matrix: ");
+                printDoubleArrayMatrix(A_state, "A_state matrix: ");
+                printDoubleArrayMatrix(new double[][]{x}, "Q state matrix:");
+                printed = true;
+            }
         //}
         //  printMatrix(Astatetemp,"Astatetemp");
         //double c = (max(Astatetemp) - 0.99);
@@ -542,6 +508,40 @@ public class OptRecursive {
             }
             System.out.print("\n");
         }
+    }
+    
+    private void printInputs() { 
+        System.out.println("///////////////////INPUTS OPT_RECURSIVE/////////////");
+        System.out.println(Y + "Y");
+        printMatrix(P_old, "P_old");
+        printMatrix(phi, "phi");
+        printMatrix(Q_old, "Q_old");
+        System.out.println("lamda_old - " + lamda_old);
+        System.out.println("upperlimit");
+        for (int i = 0; i < upperlimit.length; i++) {
+            System.out.print(upperlimit[i] + "      ");
+        }
+        System.out.println();
+        System.out.println("lowerlimit");
+        for (int i = 0; i < lowerlimit.length; i++) {
+            System.out.print(lowerlimit[i] + "      ");
+        }
+        System.out.println("\n///////////////////INPUTS OPT_RECURSIVE/////////////");
+    }
+    
+    private void printOutputs() { 
+            System.out.println("////////////////////OUTPUT OPT_RECURSIVE///////////");
+            printMatrix(Q_res, "Q_res");
+            System.out.println(err + "  err");
+            printMatrix(Y_model, "  Y_model");
+            System.out.println(lamda1 + "  lamda1");
+            System.out.println(lamda2 + "  lamda2");
+            System.out.println(lamda + "  lamda");
+            printMatrix(P, "P");
+            printMatrix(pP, "Pinv");
+            System.out.println("Pinv sizes: " + pP.getColumnDimension() + "x" + pP.getRowDimension());
+            printMatrix(phi, "phi");
+            System.out.println("\n////////////////////OUTPUT OPT_RECURSIVE///////////");
     }
     
     /*************************************************************************
