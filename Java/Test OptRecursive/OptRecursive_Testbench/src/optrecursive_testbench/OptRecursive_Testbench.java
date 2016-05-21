@@ -62,7 +62,7 @@ public class OptRecursive_Testbench {
             OptRecursive testOptRecursive = new OptRecursive(Y, phi, Q_old, P_old, lamda_old, upperlimit, lowerlimit);
             testOptRecursive.runOptimization();
             //Recursive
-            int i = 0;
+            /*int i = 0;
             while (i < 10) {
                 updateOptRecursiveSetParametersQP(testOptRecursive.Q_res, testOptRecursive.P);
                 testOptRecursive = new OptRecursive(Y, phi, Q_old, P_old, lamda_old, upperlimit, lowerlimit);
@@ -73,7 +73,7 @@ public class OptRecursive_Testbench {
             //Try higher numbers of Q
             updateOptRecursiveSetParametersQRANDOM();
             testOptRecursive = new OptRecursive(Y, phi, Q_old, P_old, lamda_old, upperlimit, lowerlimit);
-            testOptRecursive.runOptimization();
+            testOptRecursive.runOptimization();*/
             
             /*******************************************************
              * CONSTRAINTS
@@ -258,18 +258,18 @@ public class OptRecursive_Testbench {
     
     private static void testOptRecursiveConstraintFunction(OptRecursive_Cons tORC){
         //Get X value to test: from MATLAB, one that is giving a non satisfied constraint
-        //Result x1 - 113399.149473697
-        //CONSTRAINT SATISFIED IN JAVA :(
-        double[] x = new double[]{0, 0, 0, 0, 0, 0, 0, 0,
-                                  0, 0, 0, 0, 0, 0, 0, 0,
-                                  0, 0, 0, 0, 0, 0, 0, 1.49011611938477e-08};
+        //Sample 26 / Result x1 - 113399.149473697
+        //CONSTRAINT NOT SATISFIED IN JAVA (-113399.14947369644)| CONSTRAINED NOT SATISFIED IN MATLAB (113399.149473697)
+        double[] x = new double[]{-113399.614221458, -59563.7031614780, 2955.4205651858, 0, 0, 0, 0, 0,
+                                  0, 0, 0, 0, 0, 0, 0, 
+                                  113.399902343750, 113.399902343750, 113.399902343750, 113.399902343750, 75.6000976562500, 75.6000976562500, 75.6000976562500, 75.6000976562500, 0};
         System.out.println("Constraint eval for x1: "+tORC.getConstraintValue(x));
         
-        //Result x2 - 3.81501042427541
-        //CONSTRAINT NOT SATISFIED IN JAVA EITHER :)
-        x = new double[]{-2.16796364673538, -1.13873353099803, 0.0565014656063550, 0, 0, 0, 0, 0,
+        //Sample 29 / Result x2 - 3.81501042427541
+        //CONSTRAINT NOT SATISFIED IN JAVA (-14174.487011283138)| NOT SATISFIED IN MATLAB (14174.4870112831)
+        x = new double[]{-14174.9517776823, -7445.46289518475, 369.427570648231, 0, 0, 0, 0, 0,
                          0, 0, 0, 0, 0, 0, 0, 0,
-                         0.00216796915503150, 0.00216796915503150, 0.00216796915503150, 0.00216796915503150, 0.00144531588166004, 0.00144531588166004, 0.00144531588166004, 0.00144531588166004};
+                         14.1749877929688, 14.1749877929688, 14.1749877929688, 14.1749877929688, 9.45001220703125, 9.45001220703125, 9.45001220703125, 9.45001220703125    };
         System.out.println("Constraint eval for x2  : "+tORC.getConstraintValue(x));
     }
 
