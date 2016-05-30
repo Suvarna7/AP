@@ -24,8 +24,6 @@ public class OptRecursive_Cons {
     //Size of Q matrix
     private static final int Q_SIZE = 24;
 
-    private static boolean printed;
-
     //Variables for the optimization
     //INPUTS:
     public double Y;
@@ -42,7 +40,7 @@ public class OptRecursive_Cons {
     private Matrix pP;
 
     //EIGEN VALUE CONSTRAINT
-    private static final double EIGEN_CONSTRAIN_VALUE = 0.99;
+    private static final double EIGEN_CONSTRAIN_VALUE = 0.9999;
 
     //**********************************************
     //Parameters of the Cobyla optimization
@@ -55,12 +53,14 @@ public class OptRecursive_Cons {
     // **** NOTE - RHO_BEG is used in the first N_VARIABLES evaluation of the fuction:
     //      - First: evaluate Q0
     //      - Then: add RHO_BEG to each single sample
-    private final double _RHO_BEG = 1.0e-4;
+    //private final double _RHO_BEG = 1e-6;
+    private final double _RHO_BEG = 1e-6;
+
     //TrustRegionRadiusEnd  : (default = 1.0e-6)
     //We were using default RHO_END = 1.0e-4
     //MATLAB - RHO_END
     //private final double _RHO_END = 1.49011611938477e-08;
-    private final double _RHO_END = 1.49011611938477e-08;
+    private final double _RHO_END = 1.49011611938477e-8;
 
     private final int iprint = 1;
     //TODO Max_function - max recursive loop
@@ -130,8 +130,6 @@ public class OptRecursive_Cons {
         //Qintermediate =  
         fresult = new Matrix(1, 1);
 
-        printed = false;
-        firstIteration = true;
         Q_values = new ArrayList<Double[]>();
         constraintValues = new ArrayList<Double[]>();
         iterations = 0;
@@ -190,7 +188,8 @@ public class OptRecursive_Cons {
                 //1. Get constraints for Q
                 //Returns: (max(Astatetemp) - 0.99)
                 //Cobyla constraint: con[0] >= 0
-                con[0] = getConstraintValue(Q);
+                con[0] = getConstraintValue(Q) ;
+
                 /*System.out.println("Constraints: "+ con[0]);
                  con[1]= 3;*/
                 //con[0] = -1;
@@ -422,13 +421,10 @@ public class OptRecursive_Cons {
             AstatetEigen.set(z, 0, Math.abs(AstateModify.eig().getD().get(z, z)));
             //AstatetEigen.print(9, 6);
         }
-        //if(!printed){
 
         printMatrix(AstatetEigen, "Eigen matrix: ");
         printDoubleArrayMatrix(A_state, "A_state matrix: ");
         printDoubleArrayMatrix(new double[][]{x}, "Q state matrix:");
-        printed = true;
-        //}
         //  printMatrix(Astatetemp,"Astatetemp");
         //double c = (max(Astatetemp) - 0.99);
         //We want: max(AstateEigen) -0.99 <= 0
