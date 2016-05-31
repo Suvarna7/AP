@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
@@ -7,3 +8,18 @@
         </group>
     </open-files>
 </project-private>
+=======
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/Users/zachariemaloney/NetBeansProjects/Current_Source/Java/DIAS/src/dias/GUI.java</file>
+            <file>file:/Users/zachariemaloney/NetBeansProjects/Current_Source/Java/DIAS/src/dias/m20150711_gpc.java</file>
+            <file>file:/Users/zachariemaloney/NetBeansProjects/Current_Source/Java/DIAS/src/dias/MemoryStaticVariables/m20150711_load_global_variables.java</file>
+            <file>file:/Users/zachariemaloney/NetBeansProjects/Current_Source/Java/DIAS/src/dias/CGM__SEDFR_JF.java</file>
+            <file>file:/Users/zachariemaloney/NetBeansProjects/Current_Source/Java/DIAS/src/dias/OptRecursive.java</file>
+        </group>
+    </open-files>
+</project-private>
+>>>>>>> 4a806fa3511bf2be52f6d017cb9d2d0d2124146d
