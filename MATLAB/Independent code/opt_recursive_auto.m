@@ -45,6 +45,7 @@ Q_all =  zeros( 1000, 26);
 
 
 
+
 %HARDCODED VALUES:
 % Y = [180.0];
 % phi= [	 
@@ -197,13 +198,18 @@ Vinitial = 0;
                 zeros(1,18) 1 zeros(1,2);...
                 zeros(1,21)];
         eigA=abs(eig(A_state));
+        Q_all (i+1,30:50) = eigA';
+        A_states((i-1)*21 +1, 1) = i;
+        A_states((i-1)*21 +1: i*21, 2:22) = A_state;
+        Eigen_all(i,1) = i;
+        Eigen_all(i,2:22) = eigA';
         %if (printedFirst < 10)
             Q
             A_state
             eigA
             printedFirst  = printedFirst +1
         %end
-        Q_all(i, 27) = max(eigA)-0.99;
+        Q_all(i+1, 28) = max(eigA)-0.99;
         c=max(eigA)-0.99;
         ceq = [];
     end
@@ -223,6 +229,10 @@ options=optimset('Algorithm','interior-point','Display','iter-detailed');
 
 
 assignin('base', 'Q_values', Q_all);
+assignin('base', 'Eigen_values', Eigen_all);
+assignin('base', 'A_states', A_states);
+
+
 fval
 Q
 Q_java
