@@ -24,8 +24,6 @@ public class OptRecursive_Cons {
     //Size of Q matrix
     private static final int Q_SIZE = 24;
 
-    private static boolean printed;
-
     //Variables for the optimization
     //INPUTS:
     public double Y;
@@ -42,7 +40,7 @@ public class OptRecursive_Cons {
     private Matrix pP;
 
     //EIGEN VALUE CONSTRAINT
-    private static final double EIGEN_CONSTRAIN_VALUE = 0.99;
+    private static final double EIGEN_CONSTRAIN_VALUE = 0.9999;
 
     //**********************************************
     //Parameters of the Cobyla optimization
@@ -55,12 +53,14 @@ public class OptRecursive_Cons {
     // **** NOTE - RHO_BEG is used in the first N_VARIABLES evaluation of the fuction:
     //      - First: evaluate Q0
     //      - Then: add RHO_BEG to each single sample
-    private final double _RHO_BEG = 1.0e-4;
+    //private final double _RHO_BEG = 1e-6;
+    private final double _RHO_BEG = 1e-6;
+
     //TrustRegionRadiusEnd  : (default = 1.0e-6)
     //We were using default RHO_END = 1.0e-4
     //MATLAB - RHO_END
     //private final double _RHO_END = 1.49011611938477e-08;
-    private final double _RHO_END = 1.49011611938477e-08;
+    private final double _RHO_END = 1.49011611938477e-8;
 
     private final int iprint = 1;
     //TODO Max_function - max recursive loop
@@ -127,15 +127,29 @@ public class OptRecursive_Cons {
                                        -2, -2, -2, -2, -2, 
                                        -2, -2, -2, -2, -2,
                                        -2, -2, -2, -2};*/
+       //Generate the parameter matrix
+       //1. Build the P matrix and its pseudo-inverse (pP) from phi and P_old
+        //P=(1/(lamda_old))*(P_old-(P_old*phi*pinv(lamda_old+phi'*P_old*phi)*phi'*P_old))
+        //Intermediate result: partialResult = pinv(lamda_old+phi'*P_old*phi)
+        System.out.println("Size of phi: " + phi.getRowDimension() + "x" + phi.getColumnDimension());
+        double partialResult = 1 / ((((phi.transpose()).times(P_old)).times(phi)).get(0, 0) + lamda_old);
+        P = (P_old.minus(P_old.times(phi).times(partialResult).times(phi.transpose()).times(P_old))).times(1 / lamda_old);
+
+        //pP is the pseudo-inverse of P
+        //Returns the seudoinvers of P only if P is not square
+        pP = P.inverse();
         //Qintermediate =  
         fresult = new Matrix(1, 1);
 
-        printed = false;
-        firstIteration = true;
         Q_values = new ArrayList<Double[]>();
         constraintValues = new ArrayList<Double[]>();
         iterations = 0;
     }
+    /**
+     * Method to run the optimization for the parameters in the OptRecursive instance
+     * Implements Cobyla optimization algorithm
+     * 
+     */
 
     public void runOptimization() {
 
@@ -166,31 +180,29 @@ public class OptRecursive_Cons {
          * Run the optimization algorithm
          * ************************************************************
          */
-        //1. Build the P matrix and its pseudo-inverse (pP) from phi and P_old
-        //P=(1/(lamda_old))*(P_old-(P_old*phi*pinv(lamda_old+phi'*P_old*phi)*phi'*P_old))
-        //Intermediate result: partialResult = pinv(lamda_old+phi'*P_old*phi)
-        System.out.println("Size of phi: " + phi.getRowDimension() + "x" + phi.getColumnDimension());
-        double partialResult = 1 / ((((phi.transpose()).times(P_old)).times(phi)).get(0, 0) + lamda_old);
-        P = (P_old.minus(P_old.times(phi).times(partialResult).times(phi.transpose()).times(P_old))).times(1 / lamda_old);
+        
 
-        //pP is the pseudo-inverse of P
-        //Returns the seudoinvers of P only if P is not square
-        pP = P.inverse();
-
-        //2. Use Cobyla functions 
+        //1. Use Cobyla functions 
         Calcfc calcfc = new Calcfc() {
             //Init with compute function
             //TODO use con for constrains ????
-            @Override
-            /**
+            
+             /**
              * Compute: n - number of samples m - number of constrains Q - X
              * value for f(x) con - constrains . con[i]>= 0 for all i
+             * 
+             * @param x - Variable values to be employed in function and constraints calculation.
+             * @param  con - Calculated function values of the constraints.
              */
+            @Override
             public double compute(int n, int m, double[] Q, double[] con) {
                 //1. Get constraints for Q
                 //Returns: (max(Astatetemp) - 0.99)
                 //Cobyla constraint: con[0] >= 0
-                con[0] = getConstraintValue(Q);
+                //System.out.println("Con before :" +con[0]);
+                con[0] = getConstraintValue(Q) ;
+                //System.out.println("Con afterwards: "+con[0]);
+
                 /*System.out.println("Constraints: "+ con[0]);
                  con[1]= 3;*/
                 //con[0] = -1;
@@ -211,12 +223,7 @@ public class OptRecursive_Cons {
                 Q_values.add(doubleArray);
                 iterations++;
 
-                //3. We make sure V stays the same:
-                /* if (firstIteration){
-                    Vinitial = opt;
-                    firstIteration = false;
-                }
-                con[1] =  equalVConstraint(Q);*/
+                
                 //System.out.println("V: "+opt );
                 //printDoubleArrayMatrix(  new double[][] {Q}, "Q");
                 return opt;
@@ -344,7 +351,7 @@ public class OptRecursive_Cons {
      * so that all of its eigen values are < 1
      * We return the 0.99 - maxEigen so the algorithm can check if it is >=0
      *
-     * @param x - Q
+     * @param x input Q
      * @return (0.99 - maxEigen)
      */
     public double getConstraintValue(double[] x) {
@@ -422,23 +429,27 @@ public class OptRecursive_Cons {
             AstatetEigen.set(z, 0, Math.abs(AstateModify.eig().getD().get(z, z)));
             //AstatetEigen.print(9, 6);
         }
-        //if(!printed){
 
-        printMatrix(AstatetEigen, "Eigen matrix: ");
+       /* printMatrix(AstatetEigen, "Eigen matrix: ");
         printDoubleArrayMatrix(A_state, "A_state matrix: ");
-        printDoubleArrayMatrix(new double[][]{x}, "Q state matrix:");
-        printed = true;
-        //}
+        printDoubleArrayMatrix(new double[][]{x}, "Q state matrix:");*/
         //  printMatrix(Astatetemp,"Astatetemp");
         //double c = (max(Astatetemp) - 0.99);
         //We want: max(AstateEigen) -0.99 <= 0
 
         double resultC = (EIGEN_CONSTRAIN_VALUE - max(AstatetEigen));
+        //double resultC = -1;
         //Save values of this step:
         consInter[24] = resultC;
         constraintValues.add(ArrayUtils.toObject(consInter));
         return resultC;
     }
+    /**
+     * Method to emulate the effecto of upper and lower bounds as constraints
+     * 
+     * @param X 
+     * @return double[] array with the result of X samples vs bounds
+     */
 
     private double[] limitsConstraint(double[] X) {
         double[] limitsResult = new double[N_VARIABLES];
@@ -467,8 +478,13 @@ public class OptRecursive_Cons {
         }
 
     }
+    /**
+     * Returns the values of the optimization function V
+     * @param Q - input value 
+     * @return  V(X)
+     */
 
-    private double optimizationFunctionV(double[] Q) {
+    public double optimizationFunctionV(double[] Q) {
         // V = (Q- Qold)'*(pseudo-inv(P)*(Q-Q_old) + (Y-phi'*Q)'*(Y-phi'*Q);
         //Update other variables: f, f1 /V= f + fi
         //differenceMatrix: Q - Qold
@@ -511,7 +527,7 @@ public class OptRecursive_Cons {
      * printMatrix() - auxiliar function for debugging purposes Prints the given
      * matrix on the console
      *
-     * @param m
+     * @param matrix
      * @param name
      */
     public static void printMatrix(Matrix m, String name) {
@@ -529,7 +545,7 @@ public class OptRecursive_Cons {
      * max() - obtains the maximum value of the matrix
      *
      * @param matrix
-     * @return
+     * @return maximum
      */
     public double max(Matrix matrix) {
         //Init with the first value

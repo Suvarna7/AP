@@ -204,10 +204,10 @@ Vinitial = 0;
         Eigen_all(i,1) = i;
         Eigen_all(i,2:22) = eigA';
         %if (printedFirst < 10)
-            Q
-            A_state
-            eigA
-            printedFirst  = printedFirst +1
+           % Q
+           % A_state
+           % eigA
+           % printedFirst  = printedFirst +1
         %end
         Q_all(i+1, 28) = max(eigA)-0.99;
         c=max(eigA)-0.99;
@@ -229,8 +229,8 @@ options=optimset('Algorithm','interior-point','Display','iter-detailed');
 
 
 assignin('base', 'Q_values', Q_all);
-assignin('base', 'Eigen_values', Eigen_all);
-assignin('base', 'A_states', A_states);
+%assignin('base', 'Eigen_values', Eigen_all);
+%assignin('base', 'A_states', A_states);
 
 
 fval
@@ -249,16 +249,17 @@ lamda2=exp(-(err^2)/(1000));
 lamda=lamda1*lamda2;
 if lamda<0.005;lamda=0.005;end
 
-
+JavaConstraintEval  =constraint(Q_java)
 
 %% Plot Q results
 figure;
 time1 = 1:length(Q_java);
 time2 = 1:length(Q);
 
-plot (time1, Q_java,'g', time2, Q, 'b', time2, upperlim', 'r', time2, lowerlim',  'r')
+plot (time2, Q_java,'g', time2, Q, 'b', time2, upperlim', 'r', time2, lowerlim',  'r')
+legend('Java', 'MATLAB', 'Upperlim', 'lowerlim');
+
 figure
 plot(time1, Q_java,'g')
-
-legend('Java', 'MATLAB');
+legend('Java');
 end

@@ -58,22 +58,24 @@ public class OptRecursive_Testbench {
         //XXX restore this next line before merging with master. 
         if (configureOK) {
             //Use testbench to test OptRecursive
-            createOptRecursiveDefaultParameters();
+            /*createOptRecursiveDefaultParameters();
             OptRecursive testOptRecursive = new OptRecursive(Y, phi, Q_old, P_old, lamda_old, upperlimit, lowerlimit);
             testOptRecursive.runOptimization();
             //Recursive
-            /*int i = 0;
+            int i = 0;
             while (i < 10) {
+                Y += i*10;
                 updateOptRecursiveSetParametersQP(testOptRecursive.Q_res, testOptRecursive.P);
                 testOptRecursive = new OptRecursive(Y, phi, Q_old, P_old, lamda_old, upperlimit, lowerlimit);
                 testOptRecursive.runOptimization();
                 i++;
-            }
+            }*/
             
             //Try higher numbers of Q
+            /*createOptRecursiveDefaultParameters();
             updateOptRecursiveSetParametersQRANDOM();
             testOptRecursive = new OptRecursive(Y, phi, Q_old, P_old, lamda_old, upperlimit, lowerlimit);
-            testOptRecursive.runOptimization();*/
+            testOptRecursive.runOptimization(); */
             
             /*******************************************************
              * CONSTRAINTS
@@ -82,10 +84,26 @@ public class OptRecursive_Testbench {
             OptRecursive_Cons testOptRecursiveCons = new OptRecursive_Cons(Y, phi, Q_old, P_old, lamda_old, upperlimit, lowerlimit);
             testOptRecursiveCons.runOptimization();
             
+             //Try higher numbers of Q
+            /*createOptRecursiveDefaultParameters();
+            updateOptRecursiveSetParametersQRANDOM();
+            OptRecursive_Cons testOptRecursiveCons = new OptRecursive_Cons(Y, phi, Q_old, P_old, lamda_old, upperlimit, lowerlimit);
+            testOptRecursiveCons.runOptimization();*/
+            
+            
             /*********************************************************
              * TEST CONSTRAINT FUNCTION ITSELF
              */
-            testOptRecursiveConstraintFunction(testOptRecursiveCons);
+            //testOptRecursiveConstraintFunction(testOptRecursiveCons);
+            
+            /***********************************************************
+             * TEST OPTIMIZATION FUNCTION DEFITINION ITSELF
+             */
+            //createOptRecursiveDefaultParameters();
+            //updateOptRecursiveSetParametersQRANDOM();
+            /*OptRecursive_Cons testOptRecursiveCons = new OptRecursive_Cons(Y, phi, Q_old, P_old, lamda_old, upperlimit, lowerlimit);
+            testOptRecursiveFunctionEval(testOptRecursiveCons);*/
+             
         }
 
         //  ChocaNonLinear ch = new ChocaNonLinear ();
@@ -141,7 +159,7 @@ public class OptRecursive_Testbench {
         phi = new Matrix(phiDoubleArray);
 
         //Q_old matrix 24x1
-        double[][] Q_oldArray = new double[][]{{0},
+        double[][] Q_oldArray = new double[][]{{1},
         {0},
         {0},
         {0},
@@ -233,7 +251,7 @@ public class OptRecursive_Testbench {
         {0},
         {0},
         {0},
-        {3},
+        {1},
         {0},
         {0},
         {0},
@@ -243,27 +261,51 @@ public class OptRecursive_Testbench {
         {0},
         {0},
         {0},
-        {9},
+        {5},
         {0},
         {0},
-        {8},
+        {5},
         {0},
         {0},
-        {10},
+        {6},
         {0}
         };
         Q_old = new Matrix(Q_oldArray);
 
     }
+    /**
+     * Test constraint evaluation function of OptRecursive
+     * x values: are copied from MATLAB result --> 
+     *  Check when constraint is not satisfied
+     * @param tORC - test OptRecursive_Cons instance
+     */
     
     private static void testOptRecursiveConstraintFunction(OptRecursive_Cons tORC){
+        
+        //Sample 2 of MATLAB / Result -0.990000000000000
+        //CONSTRAINT SATISFIED IN JAVA (0.9899999850988388) / CONSTRAINT SATISFIED IN MATLAB (-0.99)
+        double[] x = new double[]{1.49011611938477e-08, 0, 0, 0, 0, 0, 0, 0,
+                                  0, 0, 0, 0, 0, 0, 0, 0,
+                                  0, 0, 0, 0, 0, 0, 0, 0};
+        System.out.println("Constraint eval for x0: "+tORC.getConstraintValue(x));
+        
+        //JAVA Sample 2 is different:
+        //However, it is still satisfied (0.9899)
+        x = new double[]{1.0e-4, 0, 0, 0, 0, 0, 0, 0,
+                                  0, 0, 0, 0, 0, 0, 0, 0,
+                                  0, 0, 0, 0, 0, 0, 0, 0};
+        System.out.println("Constraint eval for java x0: "+tORC.getConstraintValue(x));
+
+        
+        
         //Get X value to test: from MATLAB, one that is giving a non satisfied constraint
-        //Sample 26 / Result x1 - 113399.149473697
+        //Sample 26 MATLAB/ Result x1 -> 113399.149473697
         //CONSTRAINT NOT SATISFIED IN JAVA (-113399.14947369644)| CONSTRAINED NOT SATISFIED IN MATLAB (113399.149473697)
-        double[] x = new double[]{-113399.614221458, -59563.7031614780, 2955.4205651858, 0, 0, 0, 0, 0,
+        x = new double[]{-113399.614221458, -59563.7031614780, 2955.4205651858, 0, 0, 0, 0, 0,
                                   0, 0, 0, 0, 0, 0, 0, 
                                   113.399902343750, 113.399902343750, 113.399902343750, 113.399902343750, 75.6000976562500, 75.6000976562500, 75.6000976562500, 75.6000976562500, 0};
         System.out.println("Constraint eval for x1: "+tORC.getConstraintValue(x));
+        
         
         //Sample 29 / Result x2 - 3.81501042427541
         //CONSTRAINT NOT SATISFIED IN JAVA (-14174.487011283138)| NOT SATISFIED IN MATLAB (14174.4870112831)
@@ -271,6 +313,44 @@ public class OptRecursive_Testbench {
                          0, 0, 0, 0, 0, 0, 0, 0,
                          14.1749877929688, 14.1749877929688, 14.1749877929688, 14.1749877929688, 9.45001220703125, 9.45001220703125, 9.45001220703125, 9.45001220703125    };
         System.out.println("Constraint eval for x2  : "+tORC.getConstraintValue(x));
+    }
+    /**
+     * Test our definition of the Optimization function vs MATLAB
+     * Use values already generated in MATLAB
+     * @param tORC  - instance of the OptRecursive_Cons
+     */
+    private static void testOptRecursiveFunctionEval(OptRecursive_Cons tORC){
+        //Sample 2 of MATLAB / V = 35721.0016897917
+        //CONSTRAINT SATISFIED IN JAVA (0.9899999850988388) / CONSTRAINT SATISFIED IN MATLAB (-0.99)
+        double[] x = new double[]{1.49011611938477e-08, 0, 0, 0, 0, 0, 0, 0,
+                                  0, 0, 0, 0, 0, 0, 0, 0,
+                                  0, 0, 0, 0, 0, 0, 0, 0};
+        System.out.println("Function V  eval for x0: "+ tORC.optimizationFunctionV(x) + " vs. 35721.0016897917 {MAT}");
+        
+        //JAVA Sample 2 is different:
+        //However, it is still satisfied (0.9899)
+        x = new double[]{1.0e-4, 0, 0, 0, 0, 0, 0, 0,
+                                  0, 0, 0, 0, 0, 0, 0, 0,
+                                  0, 0, 0, 0, 0, 0, 0, 0};
+        System.out.println("Function V eval for java x1: "+tORC.optimizationFunctionV(x));
+
+        
+        
+        //Get X value to test: from MATLAB, one that is giving a non satisfied constraint
+        //Sample 26 MATLAB/ Result V(x1) -> 3.77212657982506e+15
+        //CONSTRAINT NOT SATISFIED IN JAVA (-113399.14947369644)| CONSTRAINED NOT SATISFIED IN MATLAB (113399.149473697)
+        x = new double[]{-113399.614221458, -59563.7031614780, 2955.4205651858, 0, 0, 0, 0, 0,
+                                  0, 0, 0, 0, 0, 0, 0, 
+                                  113.399902343750, 113.399902343750, 113.399902343750, 113.399902343750, 75.6000976562500, 75.6000976562500, 75.6000976562500, 75.6000976562500, 0};
+        System.out.println("Function V  eval for x2: "+tORC.optimizationFunctionV(x)+ " vs 3.77212657982506e+15 (MAT)");
+        
+        
+        //Sample 29 / Result V(x2) =58937682332278.6
+        x = new double[]{-14174.9517776823, -7445.46289518475, 369.427570648231, 0, 0, 0, 0, 0,
+                         0, 0, 0, 0, 0, 0, 0, 0,
+                         14.1749877929688, 14.1749877929688, 14.1749877929688, 14.1749877929688, 9.45001220703125, 9.45001220703125, 9.45001220703125, 9.45001220703125    };
+        System.out.println("Function V  eval for x3  : "+tORC.optimizationFunctionV(x) +" vs 58937682332278.6 (MAT)");
+    
     }
 
 }
