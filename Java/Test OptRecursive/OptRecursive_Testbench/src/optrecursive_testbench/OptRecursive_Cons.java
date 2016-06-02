@@ -1,6 +1,7 @@
 package optrecursive_testbench;
 
 import Jama.Matrix;
+import Jama.EigenvalueDecomposition;
 import de.xypron.jcobyla.Calcfc;
 import de.xypron.jcobyla.Cobyla;
 import de.xypron.jcobyla.CobylaExitStatus;
@@ -54,7 +55,7 @@ public class OptRecursive_Cons {
     //      - First: evaluate Q0
     //      - Then: add RHO_BEG to each single sample
     //private final double _RHO_BEG = 1e-6;
-    private final double _RHO_BEG = 1e-6;
+    private final double _RHO_BEG = 0.5e-4;
 
     //TrustRegionRadiusEnd  : (default = 1.0e-6)
     //We were using default RHO_END = 1.0e-4
@@ -64,7 +65,7 @@ public class OptRecursive_Cons {
 
     private final int iprint = 1;
     //TODO Max_function - max recursive loop
-    private final static int MAX_FUNC = 50000;
+    private final static int MAX_FUNC = 10000;
     private final static int N_VARIABLES = 24;
     private final static int M_CONSTRAINTS = 1;
 
@@ -421,18 +422,25 @@ public class OptRecursive_Cons {
         //Matrix to use in this operations AstateModify
         Matrix AstateModify = new Matrix(A_state);
         Matrix AstatetEigen = new Matrix(21, 1);
+        
+        EigenvalueDecomposition eigenDec =  new EigenvalueDecomposition(AstateModify);
+        //Matrix vDec = eigenDec.getD();
+        Matrix eigenReal= new Matrix(new double[][]{eigenDec.getRealEigenvalues()} );
+        Matrix eigenIm= new Matrix(new double[][]{eigenDec.getImagEigenvalues()} );
 
         //Check if eigen values are valid
         for (int z = 0; z < 21; z++) {
             //Use absolute values of eigen values
             //A = V D V^T.
-            AstatetEigen.set(z, 0, Math.abs(AstateModify.eig().getD().get(z, z)));
+            //AstatetEigen.set(z, 0, Math.abs(AstateModify.eig().getD().get(z, z)));
+            AstatetEigen.set(z, 0, Math.abs(Math.sqrt(Math.pow(eigenReal.get(0, z),2) 
+                                            + Math.pow(eigenIm.get(0,z),2))));
             //AstatetEigen.print(9, 6);
         }
 
-       /* printMatrix(AstatetEigen, "Eigen matrix: ");
-        printDoubleArrayMatrix(A_state, "A_state matrix: ");
-        printDoubleArrayMatrix(new double[][]{x}, "Q state matrix:");*/
+        //printMatrix(AstatetEigen, "Eigen matrix: ");
+        //printDoubleArrayMatrix(A_state, "A_state matrix: ");
+        //printDoubleArrayMatrix(new double[][]{x}, "Q state matrix:");
         //  printMatrix(Astatetemp,"Astatetemp");
         //double c = (max(Astatetemp) - 0.99);
         //We want: max(AstateEigen) -0.99 <= 0
@@ -527,7 +535,7 @@ public class OptRecursive_Cons {
      * printMatrix() - auxiliar function for debugging purposes Prints the given
      * matrix on the console
      *
-     * @param matrix
+     * @param m matrix
      * @param name
      */
     public static void printMatrix(Matrix m, String name) {
