@@ -18,7 +18,7 @@ file_location = 'C:\Users\Cat\Desktop\Java-MATLAB\outputOpt\';
 
 Y = Yin;
 phi = phiIN;
-Q_old = Qold
+Q_old = Qold;
 P_old = Pold;
 lamda_old = lamda_o';
 upperlim = u_lim';
@@ -197,7 +197,8 @@ Vinitial = 0;
                 zeros(1,17) 1 zeros(1,3);...
                 zeros(1,18) 1 zeros(1,2);...
                 zeros(1,21)];
-        eigA=abs(eig(A_state));
+        D = eig(A_state,'matrix')
+        eigA=abs(eig(A_state))
         Q_all (i+1,30:50) = eigA';
         A_states((i-1)*21 +1, 1) = i;
         A_states((i-1)*21 +1: i*21, 2:22) = A_state;
@@ -227,16 +228,15 @@ options=optimset('Algorithm','interior-point','Display','iter-detailed');
 %[Q, fval, exitflag]=fmincon(@objective,Q_old,[],[],[],[],lowerlim,upperlim,@constraint,options);
 [Q, fval, exitflag]=fmincon(@objective,Q_old,[],[],[],[],[],[],@constraint,options);
 
-
 assignin('base', 'Q_values', Q_all);
 %assignin('base', 'Eigen_values', Eigen_all);
 %assignin('base', 'A_states', A_states);
 
 
-fval
+fval;
 Q
 Q_java
-exitflag
+exitflag;
 %Once we obtain the result of function minimization, obtain secondary
 %values:
 %Err
@@ -249,7 +249,39 @@ lamda2=exp(-(err^2)/(1000));
 lamda=lamda1*lamda2;
 if lamda<0.005;lamda=0.005;end
 
+OUT = 'CONSTRAINT FUNCTION'
+
+Q_test = [-0.6597
+   -0.9177
+   -0.8916
+    0.0030
+    0.0025
+   -0.0012
+    0.0041
+    0.0006
+    0.0028
+    0.0012
+    0.0005
+   -0.0031
+   -0.0011
+   -0.0065
+   -0.0086
+    0.0111
+    0.0104
+    0.0098
+    0.0098
+    0.0082
+    0.0036
+    0.0116
+    0.0111
+   -0.0064];
+JavaTestEval  =constraint(Q_test)
+Q_java
 JavaConstraintEval  =constraint(Q_java)
+Q
+MATLABConstraintEval  =constraint(Q)
+
+
 
 %% Plot Q results
 figure;
