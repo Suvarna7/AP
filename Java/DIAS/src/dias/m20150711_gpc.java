@@ -73,7 +73,65 @@ public class m20150711_gpc {
     public m20150711_gpc() {
 
     }
-
+/**
+ * Constructor. 
+ * 
+ * Creates a new instance of the m20150711_gpc class. 
+ * 
+ * @param gs                            Matrix of glucose level data
+ * @param ee                            Matrix of energy expenditure data
+ * @param gsr                           Matrix of galvanic skin response data
+ * @param kj                            Int
+ * @param phi                           Matrix
+ * @param phi_ee                        Matrix
+ * @param phi_gsr                       Matrix 
+ * @param armax_parameters              Matrix
+ * @param armax_covariance              double[][][]
+ * @param armax_lamda                   Matrix
+ * @param armax_error                   Matrix
+ * @param armax_parameters_ee           Matrix
+ * @param arma_lamda_ee                 Matrix 
+ * @param arma_covariance_ee            double[][][]
+ * @param arma_err_ee                   Matrix
+ * @param arma_parameters_gsr           Matrix
+ * @param arma_lamda_gsr                Matrix
+ * @param arma_covariance_gsr           double[][][]
+ * @param arma_err_gsr                  Matrix
+ * @param A_state                       double[][][]
+ * @param A_state_ee                    double[][][]
+ * @param A_state_gsr                   double[][][]
+ * @param C_state                       double[][][]
+ * @param C_state_ee                    double[][][]
+ * @param C_state_gsr                   double[][][]
+ * @param B_state                       double[][][]
+ * @param K_state                       double[][][]
+ * @param K_state_ee                    double[][][]
+ * @param K_state_gsr                   double[][][]
+ * @param M                             double[][][]
+ * @param L                             double[][][]
+ * @param L_ee                          double[][][]
+ * @param L_gsr                         double[][][]
+ * @param M_ee                          double[][][]
+ * @param M_gsr                         double[][][]
+ * @param X_state                       Matrix
+ * @param X_state_ee                    Matrix
+ * @param X_state_gsr                   Matrix
+ * @param ee_prediction                 Matrix
+ * @param gsr_prediction                Matrix
+ * @param g_prediction                  Matrix
+ * @param reference_glucose             Matrix
+ * @param insulin_sensitivity_constant  Matrix
+ * @param basal_insulin                 Matrix
+ * @param IOB_prediction                Matrix
+ * @param max_insulin                   Matrix
+ * @param total_daily_unit              Matrix
+ * @param insulin_sensitivity_factor    Matrix
+ * @param body_weight                   double, patient body weight
+ * @param meal_gpc_mu                   Matrix
+ * @param bolus_insulin                 Matrix
+ * @param flag_constrains               double
+ * @param g_prediction_feedback         Matrix 
+ */
     public m20150711_gpc(Matrix gs, Matrix ee, Matrix gsr, int kj, Matrix phi, Matrix phi_ee, Matrix phi_gsr, Matrix armax_parameters, double[][][] armax_covariance, Matrix armax_lamda, Matrix armax_error, Matrix armax_parameters_ee, Matrix arma_lamda_ee, double[][][] arma_covariance_ee, Matrix arma_err_ee, Matrix arma_parameters_gsr, Matrix arma_lamda_gsr, double[][][] arma_covariance_gsr, Matrix arma_err_gsr, double[][][] A_state, double[][][] A_state_ee, double[][][] A_state_gsr, double[][][] C_state, double[][][] C_state_ee, double[][][] C_state_gsr, double[][][] B_state, double[][][] K_state, double[][][] K_state_ee, double[][][] K_state_gsr, double[][][] M, double[][][] L, double[][][] L_ee, double[][][] L_gsr, double[][][] M_ee, double[][][] M_gsr, Matrix X_state, Matrix X_state_ee, Matrix X_state_gsr, Matrix ee_prediction, Matrix gsr_prediction, Matrix g_prediction, Matrix reference_glucose, Matrix insulin_sensitivity_constant, Matrix basal_insulin, Matrix IOB_prediction, Matrix max_insulin, Matrix total_daily_unit, Matrix insulin_sensitivity_factor, double body_weight, Matrix meal_gpc_mu, Matrix bolus_insulin, double flag_constrains, Matrix g_prediction_feedback) {
         this.arma_lamda_ee = arma_lamda_ee;
         this.arma_lamda_gsr = arma_lamda_gsr;
@@ -94,8 +152,14 @@ public class m20150711_gpc {
         this.M = M;
         this.M_ee = M_ee;
         this.M_gsr = M_gsr;
+        //XXX OPTIMIZE : It's probably not necessary to pass X_state as a parameter, 
+        // since the first thing we do with it is set it to a fresh matrix. 
         this.X_state = X_state;
+        //XXX OPTIMIZE : It's probably not necessary to pass X_state_ee as a parameter, 
+        // since the first thing we do with it is set it to a fresh matrix. 
         this.X_state_ee = X_state_ee;
+        //XXX OPTIMIZE : It's probably not necessary to pass X_state_gsr as a parameter, 
+        // since the first thing we do with it is set it to a fresh matrix.
         this.X_state_gsr = X_state_gsr;
         this.arma_covariance_ee = arma_covariance_ee;
         this.arma_covariance_gsr = arma_covariance_gsr;
@@ -130,7 +194,9 @@ public class m20150711_gpc {
         this.flag_constrains = flag_constrains;
         this.g_prediction_feedback = g_prediction_feedback;
     }
-
+/**
+ * 
+ */
     public void gpc() {
 
         /* /////////////////////////////////////////////////////INPUTS//////////////////////////////////////////////////////////////////////////////////
@@ -831,6 +897,8 @@ public class m20150711_gpc {
         X_state.set(19, kj, phi.get(22, kj));
         X_state.set(20, kj, phi.get(23, kj));
 
+        // XXX OPTIMIZE : We can probably remove the next line, since X_state gets 
+        // assigned directly from our X_state variable. 
         lgvariables.X_state = createnewMatrix(21, kj + 1, lgvariables.X_state);
         lgvariables.X_state = X_state;
 
@@ -842,6 +910,8 @@ public class m20150711_gpc {
             }
         }
 
+        // XXX OPTIMIZE : We can probably remove the next line, since X_state_ee gets 
+        // assigned directly from our X_state_ee variable. 
         lgvariables.X_state_ee = createnewMatrix(4, kj + 1, lgvariables.X_state_ee);
         lgvariables.X_state_ee = X_state_ee;
 
