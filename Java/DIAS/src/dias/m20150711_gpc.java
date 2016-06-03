@@ -462,7 +462,17 @@ public class m20150711_gpc {
 // </editor-fold>
         
 // <editor-fold defaultstate="collapsed" desc=" Run opt_recursive_arm.optrecursive based on energy expenditure. Set lgvariables energy expenditure properties based on output. ">
-
+/* 
+We create a new instance of opt_recursive_arm called "orarm" (NB that the last three variables of the constructor are hardcoded).
+		
+Now that the new instance of opt_recursive_arm ("orarm") has been set, we initialize all the same lgvariables properties that we stored the OptRecursive data in, but here they all have _ee (energy expenditure) suffixes : 
+    arma_parameters_ee gets the output from orarm.Q_res
+    arma_lamda_ee gets the lgvariables.arma_lamda_ee value (did this get changed by orarm?)
+    arma_covariance_ee gets the orarm.P value
+    arma_err_ee gets the lgvariables.arma_err_ee value
+    The kj / 0th place in arma_lamda_ee gets the orarm.lamda value
+    The kj / 0th place in arma_err_ee gets the orarm.err value
+*/
         opt_recursive_arm orarm = new opt_recursive_arm(ee.get(0, kj), phi_temp, armax_parameters_ee_temp, arma_covariance_ee_temp, arma_lamda_ee.get(kj - 1, 0), arma_err_ee.get(kj - 1, 0), onesmatrice, minusonesmatrice, 0.99, 0.9, 0.005);
         orarm.optrecursive();
 
@@ -487,49 +497,83 @@ public class m20150711_gpc {
         }
 
 // </editor-fold>
-
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//<editor-fold defaultstate="collapsed" desc=" Set up variables for opt_recursive_arm.optrecursive processing based on galvanic skin response.  ">
         Matrix phi_gsr_temp = new Matrix(phi_gsr_trans.getColumnDimension(), 1);
-
+        
         for (int i = 0; i < phi_gsr_trans.getColumnDimension(); i++) {
             phi_gsr_temp.set(i, 0, phi_gsr_trans.get(kj, i));
         }
-
+        
         Matrix armax_parameters_gsr_temp = new Matrix(arma_parameters_gsr.getRowDimension(), 1);
-
+        
         for (int i = 0; i < arma_parameters_gsr.getRowDimension(); i++) {
             armax_parameters_gsr_temp.set(i, 0, arma_parameters_gsr.get(i, kj - 1));
         }
-
+        
         Matrix arma_covariance_gsr_temp = new Matrix((lastvaluereturnxyz(arma_covariance_gsr)[1] + 1), (lastvaluereturnxyz(arma_covariance_gsr)[2] + 1));
-
+        
         for (int i = 0; i < (lastvaluereturnxyz(arma_covariance_gsr)[1] + 1); i++) {
             for (int j = 0; j < (lastvaluereturnxyz(arma_covariance_gsr)[2] + 1); j++) {
                 arma_covariance_gsr_temp.set(i, j, arma_covariance_gsr[i][j][kj - 1]);
             }
         }
 
+// </editor-fold>
+
+// <editor-fold defaultstate="collapsed" desc=" Run opt_recursive_arm.optrecursive based on galvanic skin response. Set lgvariables galvanic skin response properties based on output. ">
+
+/* 
+We now instantiate a new opt_recursive_arm, "orarm2" with the same parameters as orarm, except the following : 
+    Instead of phi_ee_trans, the phi parameter is based on phi_gsr_trans. 
+    Instead of armax_parameters_ee, the armax parameter is based on armax_parameters_gsr. 
+The optrecursive() method of orarm2 is triggered, and returns control immediately to this method, so that this method can use the orarm2 parameters altered by the optrecursive() method.
+*/
         opt_recursive_arm orarm2 = new opt_recursive_arm(gsr.get(0, kj), phi_gsr_temp, armax_parameters_gsr_temp, arma_covariance_gsr_temp, arma_lamda_gsr.get(kj - 1, 0), arma_err_gsr.get(kj - 1, 0), onesmatrice, minusonesmatrice, 0.99, 0.9, 0.005);
         orarm2.optrecursive();
-
+/* 
+With orarm2.optrecursive() complete, the properties of lgvariables now get set the following way : 
+    arma_parameters_gsr gets the value of orarm2.Q_res
+    arma_lamda_gsr gets the value of orarm2.lamda
+    arma_covariance_gsr gets the value of orarm2.P
+    arma_err_gsr gets the value of orarm2.err
+*/
         lgvariables.arma_parameters_gsr = DIAS.createnewMatrix(orarm2.Q_res.getRowDimension(), kj + 1, lgvariables.arma_parameters_gsr);
         lgvariables.arma_lamda_gsr = DIAS.createnewMatrix(kj + 1, 1, lgvariables.arma_lamda_gsr);
         lgvariables.arma_covariance_gsr = createnew3Dmatrix(lgvariables.arma_covariance_gsr, orarm2.P.getRowDimension(), orarm2.P.getColumnDimension(), kj + 1);
         lgvariables.arma_err_gsr = DIAS.createnewMatrix(kj + 1, 1, lgvariables.arma_err_gsr);
-
+        
         lgvariables.arma_lamda_gsr.set(kj, 0, orarm2.lamda);
         lgvariables.arma_err_gsr.set(kj, 0, orarm2.err);
-
+        
         for (int i = 0; i < orarm2.Q_res.getRowDimension(); i++) {
             lgvariables.arma_parameters_gsr.set(i, kj, orarm2.Q_res.get(i, 0));
         }
-
+        
         for (int i = 0; i < orarm2.P.getColumnDimension(); i++) {
             for (int j = 0; j < orarm2.P.getRowDimension(); j++) {
                 lgvariables.arma_covariance_gsr[i][j][kj] = orarm2.P.get(i, j);
             }
         }
 
+// </editor-fold>
+// <editor-fold defaultstate="collapsed" desc=" Set up a bunch of short-term matrices based on lgvariable properties, and also do some updates of those properties based on the optimization that just occurred. We'll use these for future processing. ">
+
+/* 
+Build a bunch of new matrices based on the updated lgvariables properties.
+    The first set of source properties were those updated by the OptRecursive optimization based on glucose levels (gs) : 
+    From lgvariables.armax_parameters : 
+            Values 0-2 go to matrix "A". 
+            Values 3-14 go to matrix "B1". 
+            Values 15-18 go to matrix "B2". 
+            Values 19-22 go to matrix "B3". 
+            Value 23 goes into "C".
+    From lgvariables.armax_parameters_ee : 
+            Values 0-2 go to matrix "Aee"
+            Value 3 goes to matrix "Cee" 
+    From lgvariables.armax_parameters_gsr : 
+            Values 0-2 go to matrix "Agsr". 
+            Value 3 goes to matrix "Cgsr".
+*/
         Matrix A = new Matrix(1, 3);
         Matrix Aee = new Matrix(1, 3);
         Matrix Agsr = new Matrix(1, 3);
@@ -539,37 +583,48 @@ public class m20150711_gpc {
         double C;
         double Cee;
         double Cgsr;
-
+        
         for (int i = 0; i < 3; i++) {
             A.set(0, i, lgvariables.armax_parameters.get(i, kj));
         }
-
+        
         for (int i = 3; i < 15; i++) {
             B1.set(0, i - 3, lgvariables.armax_parameters.get(i, kj));
         }
-
+        
         for (int i = 15; i < 19; i++) {
             B2.set(0, i - 15, lgvariables.armax_parameters.get(i, kj));
         }
-
+        
         for (int i = 19; i < 23; i++) {
             B3.set(0, i - 19, lgvariables.armax_parameters.get(i, kj));
         }
-
+        
         C = lgvariables.armax_parameters.get(23, kj);
-
+        
         for (int i = 0; i < 3; i++) {
             Aee.set(0, i, lgvariables.arma_parameters_ee.get(i, kj));
         }
-
+        
         Cee = lgvariables.arma_parameters_ee.get(3, kj);
-
+        
         for (int i = 0; i < 3; i++) {
             Agsr.set(0, i, lgvariables.arma_parameters_gsr.get(i, kj));
         }
-
+        
         Cgsr = lgvariables.arma_parameters_gsr.get(3, kj);
 
+/*
+Update lgvariables again. The following lgvariables properties are initialized with the values passed as parameters to the m20150711_gpc constructor. Then they get updated as follows : 
+    lgvariables.A_state gets a subset of values from matrix "A" (multiplied by -1), matrix "B1", matrix "B2", matrix "B3", and "C", and then gets what looks like a 3D diagonal set to ones. 
+    lgvariables.A_state_ee gets a subset of values from Aee and Cee. 
+    lgvariables.A_state_gsr gets a subset of values from Agsr and Cgsr. 
+    lgvariables.C_state gets a subset of values from A_state. 
+    lgvariables.C_state_ee gets a subset of values from A_state_ee. 
+    lgvariables.C_state_gsr gets a subset of values from A_state_gsr. 
+    lgvariables.B_state gets a subset of values from "B1", "B2", and "B3". 
+    lgvariables.K_state, K_state_ee, and K_state_gsr get their initialized values, but are overlaid with a certain pattern of ones and zeroes, which produce something like a partial (?) 3D identity matrix.
+*/
         A_state = createnew3Dmatrix(A_state, 22, 24, kj + 1);
         A_state_ee = createnew3Dmatrix(A_state_ee, 4, 4, kj + 1);
         A_state_gsr = createnew3Dmatrix(A_state_gsr, 4, 4, kj + 1);
@@ -752,7 +807,7 @@ public class m20150711_gpc {
         lgvariables.K_state_ee = K_state_ee;
 
         lgvariables.K_state_gsr = K_state_gsr;
-        
+// </editor-fold>     
 // <editor-fold defaultstate="collapsed" desc=" Get controller horizon and update lgvariables parameters L, L_ee, L_gsr, and M. ">
 /* 
 We first build a couple of temp matrices in preparation for creating a controller_horizons instance. 
