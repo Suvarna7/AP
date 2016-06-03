@@ -98,9 +98,8 @@ public class OptRecursive_Testbench {
             /*createOptRecursiveDefaultParameters();
             updateOptRecursiveSetParametersQRANDOM();
             OptRecursive_Cons testOptRecursiveCons = new OptRecursive_Cons(Y, phi, Q_old, P_old, lamda_old, upperlimit, lowerlimit);
-            testOptRecursiveCons.runOptimization();
+            testOptRecursiveCons.runOptimization();*/
             
-            testOptRecursiveConstraintFunction(testOptRecursiveCons);*/
             
             
             /*********************************************************
@@ -171,7 +170,7 @@ public class OptRecursive_Testbench {
         phi = new Matrix(phiDoubleArray);
 
         //Q_old matrix 24x1
-        double[][] Q_oldArray = new double[][]{{1},
+        double[][] Q_oldArray = new double[][]{{0},
         {0},
         {0},
         {0},
@@ -343,6 +342,18 @@ public class OptRecursive_Testbench {
                          0.0098,    0.0098,    0.0082,    0.0036,    0.0116,   0.0111,
                         -0.0064};
         System.out.println("Constraint eval for x3 (MATLAB) : "+tORC.getConstraintValue(x));
+        
+        //Another problematic value:
+        //MATLAB constraint eval =  0.2543
+        x = new double[]{-0.0223,    -0.0278,    1.9267,   -0.0515,
+   -0.2118,   -0.0821,    0.9847,   -0.0390,
+   -0.0448,    0.0430,    0.0853,    0.0435,
+   -0.1123,   -0.2102,    0.0580,   -0.0317,
+    5.2164,    0.5113,    0.3487,    4.9604,
+    0.1955,    0.2967,    6.4045,   -0.1705};
+        
+        System.out.println("Constraint eval for x4 (MATLAB) : "+tORC.getConstraintValue(x));
+
 
 
     }
