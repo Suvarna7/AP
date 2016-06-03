@@ -754,6 +754,21 @@ public class m20150711_gpc {
         lgvariables.K_state_gsr = K_state_gsr;
         
 // <editor-fold defaultstate="collapsed" desc=" Get controller horizon and update lgvariables parameters L, L_ee, L_gsr, and M. ">
+/* 
+We first build a couple of temp matrices in preparation for creating a controller_horizons instance. 
+    A_state_temp is a 21x21 principal submatrix of the kj_th matrix in A_state
+    B_state_temp is a 21x3 subset of the principal submatrix of the kj_th matrix in B_state
+    C_state_temp is a 1x21 vector based on the kj_th matrix in C_state
+
+    The "cont_hor" instance of controller_horizons is now instantiated, using A_state_temp, B_state_temp, C_state_temp, N1 (in the current code, set to 2), N2 (in the current code, set to N2), and Nu (in the current code, set to 8). 
+    The method "calculate_horizons" is called on cont_hor and the control of flow returns to this function. 
+
+    The parameters of the cont_hor instance of the controller_horizons class are now used to repopulate the parameters of lgvariables : 
+    lgvariables.M is updated with values from cont_hor.M
+    lgvriables.L is updated with values from cont_hor.LL
+    lgvariables.L_ee is updated with values from cont_hor.LL_ee
+    lgvariables.L_gsr is updated with values from cont_hor.LL_gsr
+*/
         Matrix A_state_temp = new Matrix(21, 21);
 
         for (int i = 0; i < 21; i++) {
@@ -816,6 +831,14 @@ public class m20150711_gpc {
 // </editor-fold>
         
 // <editor-fold defaultstate="collapsed" desc=" Get prediction horizon based on energy expenditure and update lgvariables.M_ee. ">
+/* 
+In preparation for instantiating a new predication_horizon, we set up some new matrices : 
+    A_state_temp_ee is based on A_state_ee
+    C_state_temp_ee is based on C_state_ee
+
+    The "p_hor" instance of prediction_horizon is now instantiated, using A_state_temp_ee, C_state_temp_ee, N1, and N2. 
+    The output of p_hor's prediction_horizons() method is stored in a new matrix, M_ee_temp. This matrix is used to update lgvariables.M_ee. 
+*/
         Matrix A_state_temp_ee = new Matrix(4, 4);
 
         for (int i = 0; i < 4; i++) {
@@ -845,6 +868,14 @@ public class m20150711_gpc {
 // </editor-fold>
         
 // <editor-fold defaultstate="collapsed" desc=" Get prediction horizon based on GSR and update lgvariables.M_gsr. ">
+/* 
+In preparation for instantiating another prediction_horizon, we set up some new matrices : 
+    A_state_temp_gsr is based on A_state_gsr
+    C_state_temp_gsr is based on C_state_gsr
+
+    The "p_hor2" instance of prediction_horizon is now instantiated, using A_state_temp_gsr, C_state_temp_gsr, N1, and N2. The output of p_hor2's prediction_horizons() method is stored in the new variable M_gsr_temp. This output is used to update lgvariables : 
+    lgvariables.M_gsr gets values from M_gsr_temp. 
+*/
         Matrix A_state_temp_gsr = new Matrix(4, 4);
 
         for (int i = 0; i < 4; i++) {
@@ -875,6 +906,14 @@ public class m20150711_gpc {
 // </editor-fold>
 
 // <editor-fold defaultstate="collapsed" desc=" Build a new value for lgvariables.X_state. ">
+/* 
+Remember phi? It was passed as a parameter to the m20150711_gpc constructor, and got a couple of updates from the gs variable at the top of this function (but it looks like it's mostly unchanged). Well, now we're going to use it in a big way. 
+    X_state was initially passed as a parameter to the constructor as well. It doesn't look like that initial value is ever used (we should consider removing it as a parameter for the constructor), since this is the first time we're using it and we're immediately setting it to a new matrix. 
+    Now we update X_state : values in the kj_th column of the first 20 rows get assigned values (based on) phi. 
+    lgvariables.X_state gets the value of our X_state. 
+    lgvariables.X_state_ee gets the value of our X_state_ee. 
+    lgvariables.X_state_gsr gets the value of our X_state_gsr. 
+*/
         X_state = new Matrix(21, kj + 1);
         X_state_ee = new Matrix(phi_ee_trans.getColumnDimension(), kj + 1);
         X_state_gsr = new Matrix(phi_gsr_trans.getColumnDimension(), kj + 1);
@@ -931,6 +970,16 @@ public class m20150711_gpc {
 // </editor-fold>  
 
 // <editor-fold desc=" Build a new value for lgvariables.ee_prediction. ">
+/* 
+First we build a new matrix, K_state_ee_temp, which is a one-column vector that gets its values from K_state_ee's kj_th value. 
+    We also build X_state_ee, which does exactly the same thing with X_state_ee.  
+
+    Finally, we create a new matrix, ee_prediction_temp, which is the result of a lot of matrix math : 
+    (M_ee_temp x (A_state_temp_ee - (K_state_ee_temp x C_state_temp_ee)) x X_state_ee_temp) + 
+    (M_ee_temp x K_state_ee_temp x the value in the kj_th column of the 0th row in ee)
+
+The instance variable ee_prediction, which was passed through the constructor, gets (partially?) loaded with values from ee_prediction_temp. lgvariables.ee_prediction then gets set to the value of ee_prediction. 
+*/
         Matrix K_state_ee_temp = new Matrix((lastvaluereturnxyz(K_state_ee))[1] + 1, (lastvaluereturnxyz(K_state_ee))[2] + 1);
 
         for (int i = 0; i < (lastvaluereturnxyz(K_state_ee))[1] + 1; i++) {
@@ -961,6 +1010,19 @@ public class m20150711_gpc {
         
 // <editor-fold defaultstate="collapsed" desc=" Build a new value for lgvariables.gsr_prediction. ">
 
+/* 
+With lgvariables.ee_prediction set, we start building a new value for lgvariables.gsr_prediction. This process is very similar to the process used to build lgvariables.ee_prediction. 
+    We create a new matrix, K_state_gsr_temp, which gets its values from 3D array K_state_gsr. 
+    We also create a new matrix, X_state_gsr_temp, which gets its values from X_state_gsr (which was passed through the constructor, but got some updated values earlier in this method). 
+
+    We now create a new matrix, gsr_prediction_temp, which is the result of matrix math similar to ee_prediction_temp : 
+    (M_gsr_temp x (A_state_temp_gsr - (K_state_gsr_temp x C_state_temp_gsr)) x X_state_gsr_temp) + 
+    (M_gsr_temp x K_state_gsr_temp x the value in the kj_th column of the 0th row in gsr)
+
+The instance variable gsr_prediction, which was passed through the constructor, gets (partially?) loaded with values from gsr_prediction_temp. 
+
+Finally, lgvariables.gsr_prediction now gets set to the value of gsr_prediction_temp. 
+*/
         Matrix K_state_gsr_temp = new Matrix((lastvaluereturnxyz(K_state_gsr))[1] + 1, (lastvaluereturnxyz(K_state_gsr))[2] + 1);
 
         for (int i = 0; i < (lastvaluereturnxyz(K_state_gsr))[1] + 1; i++) {
@@ -990,6 +1052,21 @@ public class m20150711_gpc {
 // </editor-fold>
 
 // <editor-fold defaultstate="collapsed" desc=" Set up variable g_prediction for future use. ">
+
+/* 
+Now we're going to set up matrix "g_prediction_temp". This got the similarly-named value passed through the constructor, but we're essentially going to overwrite its values. It gets loaded with the result of a bunch of matrix math, for which we set up a bunch of temporary variables : 
+    M_temp, based on lgvariables.M
+    K_temp, based on lgvariables.K_state
+    X_state_temp, based on lgvariables.X_state
+    L_ee_temp, based on lgvariables.L_ee
+    L_gsr_temp, based on lgvariables.L_gsr
+    ee_temp, based on ee
+    gsr_temp, based on gsr
+    so the value stored in g_prediction_temp is 
+    (M_temp x (A_state_temp - (K_temp x C_state_temp)) x X_state_temp) + 
+    (M_temp x K_temp x the value in the kj_th column of the 0th row in gs)
+Finally, the variable g_prediction gets updated based on the values in g_prediction_temp.
+*/
         Matrix M_temp = new Matrix(8, 21);
 
         for (int i = 0; i < 8; i++) {
@@ -1056,6 +1133,13 @@ public class m20150711_gpc {
 // </editor-fold>
 
 // <editor-fold defaultstate="collapsed" desc=" Update g_prediction and build supporting variables based on it. Update lgvariables.reference_glucose. ">
+
+/* 
+We now build a couple more temporary matrices for processing. 
+    eetemp, based on ee_temp and ee_prediction
+    gsrtemp, based on gsr_temp and gsr_prediction
+We update g_prediction based on L_ee_temp, L_gsr_temp, and g_prediction_feedback.
+*/
         Matrix eetemp = new Matrix(ee_prediction.getRowDimension() - d2 + 1, 1);
         
         eetemp.set(0, 0, ee_temp.get(0, 0));
@@ -1080,6 +1164,10 @@ public class m20150711_gpc {
             g_prediction.set(i, kj, g_prediction_feedback.get(i, 0) + g_prediction.get(i, kj));
         }
         
+/* 
+We now create an instance of reference_trajectory, "ref_trajectory", based on gs, N1, N2, and meal_gpc_mu. NB that there's a hardcoded "110" value being passed through here, which is interesting. The output of running the referencetrajectory() method of ref_trajectory gets stored in reference_glucose_temp. lgvariables.reference_glucose gets updated values from reference_glucose_temp. 
+*/
+        
         reference_trajectory ref_trajectory = new reference_trajectory(gs.get(0, kj - 2), 110, (N2 - N1), meal_gpc_mu.get(kj, 0));
         
         Matrix reference_glucose_temp = ref_trajectory.referencetrajectory();
@@ -1093,6 +1181,14 @@ public class m20150711_gpc {
 // </editor-fold>
 
 // <editor-fold defaultstate="collapsed" desc=" Update lgvariables.insulin_sensitivity_constant. ">
+
+/* 
+Set up local matrices : 
+dividematrix, based on g_prediction and reference_glucose_temp
+g_predictionkj, a subset of g_prediction
+We then use the matricecompareconstantmax() function on dividematrix to set the value of lgvariables.insulin_sensitivity_constant (NB that there's a hardcoded value 0.1 being supplied to the function)
+*/
+
         Matrix dividematrix = new Matrix(g_prediction_temp.getRowDimension(), 1);
         
         for (int i = 0; i < g_prediction.getRowDimension(); i++) {
