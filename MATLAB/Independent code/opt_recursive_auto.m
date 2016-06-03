@@ -143,7 +143,7 @@ Q_all =  zeros( 1000, 26);
 
 %% 1. DEFINE PARAMETERS MATRIX
 %Calculate P matrix and its pseudo-inverse, fromt he input parameters
-P=(1/(lamda_old))*(P_old-(P_old*phi*pinv(lamda_old+phi'*P_old*phi)*phi'*P_old))
+P=(1/(lamda_old))*(P_old-(P_old*phi*pinv(lamda_old+phi'*P_old*phi)*phi'*P_old));
 pinvP=pinv(P);
 Vinitial = 0;
 %% 2. FUNCTION TO BE OPTIMIZED - V = OBJECTIVE(Q)
@@ -197,8 +197,8 @@ Vinitial = 0;
                 zeros(1,17) 1 zeros(1,3);...
                 zeros(1,18) 1 zeros(1,2);...
                 zeros(1,21)];
-        D = eig(A_state,'matrix')
-        eigA=abs(eig(A_state))
+        %D = eig(A_state,'matrix')
+        eigA=abs(eig(A_state));
         Q_all (i+1,30:50) = eigA';
         A_states((i-1)*21 +1, 1) = i;
         A_states((i-1)*21 +1: i*21, 2:22) = A_state;
@@ -221,6 +221,9 @@ function [c, ceq]=no_constraint(Q)
 end
 %% 4. RUN FMINCON - ALGORITHM MINIMIZATION
 %Available algorithms: 'interior-point', 'active-set', 'sqp', 'trust-region-reflective')
+%FinDiffRelStep - default 'Forward finite differences steps 
+%                 delta = v.*sign?(x).*max(abs(x),TypicalX)'
+%                 default is sqrt(eps)
 options=optimset('Algorithm','interior-point','Display','iter-detailed');
 %Find minimum of constrained nonlinear multivariable function:
 % Q = fmincon(fun,x0,A,b,Aeq,beq,lb,ub,nonlcon,options)
@@ -234,8 +237,8 @@ assignin('base', 'Q_values', Q_all);
 
 
 fval;
-Q
-Q_java
+Q;
+Q_java;
 exitflag;
 %Once we obtain the result of function minimization, obtain secondary
 %values:
