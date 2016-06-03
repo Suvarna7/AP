@@ -747,20 +747,14 @@ public class m20150711_gpc {
         K_state_gsr[2][0][kj] = 0;
         K_state_gsr[3][0][kj] = 1;
 
-        // XXX OPTIMIZATION : 
-        // We can probably get rid of all these initializations, since the new lgvariables parameters
-        // just get values directly anyway. 
-        lgvariables.K_state = createnew3Dmatrix(lgvariables.K_state, 21, 1, kj + 1);
         lgvariables.K_state = K_state;
 
-        lgvariables.K_state_ee = createnew3Dmatrix(lgvariables.K_state_ee, 4, 1, kj + 1);
         lgvariables.K_state_ee = K_state_ee;
 
-        lgvariables.K_state_gsr = createnew3Dmatrix(lgvariables.K_state_gsr, 4, 1, kj + 1);
         lgvariables.K_state_gsr = K_state_gsr;
         
 // <editor-fold defaultstate="collapsed" desc=" Get controller horizon and update lgvariables parameters L, L_ee, L_gsr, and M. ">
-Matrix A_state_temp = new Matrix(21, 21);
+        Matrix A_state_temp = new Matrix(21, 21);
 
         for (int i = 0; i < 21; i++) {
             for (int j = 0; j < 21; j++) {
@@ -784,7 +778,9 @@ Matrix A_state_temp = new Matrix(21, 21);
             }
         }
 
-        System.out.println("N1-N2 and Nu: "+ (N1-N2) + " X " + Nu);
+        if (DIAS.verboseMode) { 
+            System.out.println("N1-N2 and Nu: "+ (N1-N2) + " X " + Nu);
+        } 
         controller_horizons cont_hor = new controller_horizons(A_state_temp, B_state_temp, C_state_temp, N1, N2, Nu);
         cont_hor.calculateHorizons();
 
@@ -837,8 +833,7 @@ Matrix A_state_temp = new Matrix(21, 21);
         }
 
         prediction_horizon p_hor = new prediction_horizon(A_state_temp_ee, C_state_temp_ee, N1, N2);
-        Matrix M_ee_temp;
-        M_ee_temp = p_hor.prediction_horizons();
+        Matrix M_ee_temp = p_hor.prediction_horizons();
 
         lgvariables.M_ee = createnew3Dmatrix(lgvariables.M_ee, p_hor.M.getRowDimension(), p_hor.M.getColumnDimension(), kj + 1);
 
@@ -868,8 +863,7 @@ Matrix A_state_temp = new Matrix(21, 21);
 
         prediction_horizon p_hor2 = new prediction_horizon(A_state_temp_gsr, C_state_temp_gsr, N1, N2);
 
-        Matrix M_gsr_temp;
-        M_gsr_temp = p_hor2.prediction_horizons();
+        Matrix M_gsr_temp = p_hor2.prediction_horizons();
 
         lgvariables.M_gsr = createnew3Dmatrix(lgvariables.M_gsr, p_hor2.M.getRowDimension(), p_hor2.M.getColumnDimension(), kj + 1);
 
@@ -909,9 +903,6 @@ Matrix A_state_temp = new Matrix(21, 21);
         X_state.set(19, kj, phi.get(22, kj));
         X_state.set(20, kj, phi.get(23, kj));
 
-        // XXX OPTIMIZE : We can probably remove the next line, since X_state gets 
-        // assigned directly from our X_state variable. 
-        lgvariables.X_state = createnewMatrix(21, kj + 1, lgvariables.X_state);
         lgvariables.X_state = X_state;
 // </editor-fold>      
 
@@ -924,9 +915,6 @@ Matrix A_state_temp = new Matrix(21, 21);
             }
         }
 
-        // XXX OPTIMIZE : We can probably remove the next line, since X_state_ee gets 
-        // assigned directly from our X_state_ee variable. 
-        lgvariables.X_state_ee = createnewMatrix(4, kj + 1, lgvariables.X_state_ee);
         lgvariables.X_state_ee = X_state_ee;
 // </editor-fold>   
 
@@ -939,9 +927,6 @@ Matrix A_state_temp = new Matrix(21, 21);
             }
         }
 
-        // XXX OPTIMIZE : We can probably remove the next line, since X_state_gsr gets 
-        // assigned directly from our X_state_gsr variable. 
-        lgvariables.X_state_gsr = createnewMatrix(4, kj + 1, lgvariables.X_state_gsr);
         lgvariables.X_state_gsr = X_state_gsr;
 // </editor-fold>  
 
@@ -971,10 +956,8 @@ Matrix A_state_temp = new Matrix(21, 21);
             }
         }
 
-        //XXX OPTIMIZE Not sure if we need this next line either. 
-        lgvariables.ee_prediction = createnewMatrix(ee_prediction_temp.getRowDimension(), kj + 1, lgvariables.ee_prediction);
         lgvariables.ee_prediction = ee_prediction;
-        // </editor-fold>      
+// </editor-fold>      
         
 // <editor-fold defaultstate="collapsed" desc=" Build a new value for lgvariables.gsr_prediction. ">
 
@@ -986,15 +969,13 @@ Matrix A_state_temp = new Matrix(21, 21);
             }
         }
 
-        Matrix gsr_prediction_temp;
-
         Matrix X_state_gsr_temp = new Matrix(X_state_gsr.getRowDimension(), 1);
 
         for (int i = 0; i < X_state_gsr.getRowDimension(); i++) {
             X_state_gsr_temp.set(i, 0, X_state_gsr.get(i, kj));
         }
 
-        gsr_prediction_temp = (M_gsr_temp.times((A_state_temp_gsr).minus((K_state_gsr_temp).times(C_state_temp_gsr))).times(X_state_gsr_temp)).plus((M_gsr_temp).times(K_state_gsr_temp).times(gsr.get(0, kj)));
+        Matrix gsr_prediction_temp = (M_gsr_temp.times((A_state_temp_gsr).minus((K_state_gsr_temp).times(C_state_temp_gsr))).times(X_state_gsr_temp)).plus((M_gsr_temp).times(K_state_gsr_temp).times(gsr.get(0, kj)));
 
         gsr_prediction = createnewMatrix(gsr_prediction_temp.getRowDimension(), kj + 1, gsr_prediction);
 
@@ -1008,6 +989,7 @@ Matrix A_state_temp = new Matrix(21, 21);
         lgvariables.gsr_prediction = gsr_prediction;
 // </editor-fold>
 
+// <editor-fold defaultstate="collapsed" desc=" Set up variable g_prediction for future use. ">
         Matrix M_temp = new Matrix(8, 21);
 
         for (int i = 0; i < 8; i++) {
@@ -1062,9 +1044,7 @@ Matrix A_state_temp = new Matrix(21, 21);
             }
         }
 
-        Matrix g_prediction_temp;
-
-        g_prediction_temp = (M_temp.times((A_state_temp).minus((K_temp).times(C_state_temp))).times(X_state_temp)).plus((M_temp).times(K_temp).times(gs.get(0, kj - 2)));
+        Matrix g_prediction_temp = (M_temp.times((A_state_temp).minus((K_temp).times(C_state_temp))).times(X_state_temp)).plus((M_temp).times(K_temp).times(gs.get(0, kj - 2)));
 
         g_prediction = createnewMatrix(g_prediction_temp.getRowDimension(), kj + 1, g_prediction);
 
@@ -1073,64 +1053,66 @@ Matrix A_state_temp = new Matrix(21, 21);
                 g_prediction.set(i, kj, g_prediction_temp.get(i, j));
             }
         }
+// </editor-fold>
 
+// <editor-fold defaultstate="collapsed" desc=" Update g_prediction and build supporting variables based on it. Update lgvariables.reference_glucose. ">
         Matrix eetemp = new Matrix(ee_prediction.getRowDimension() - d2 + 1, 1);
-
+        
         eetemp.set(0, 0, ee_temp.get(0, 0));
-
+        
         for (int i = 0; i < ee_prediction.getRowDimension() - d2; i++) {
             eetemp.set(i + 1, 0, ee_prediction.get(i, kj));
         }
-
+        
         Matrix gsrtemp = new Matrix(gsr_prediction.getRowDimension() - d2 + 1, 1);
-
+        
         gsrtemp.set(0, 0, gsr_temp.get(0, 0));
-
+        
         for (int i = 0; i < gsr_prediction.getRowDimension() - d2; i++) {
             gsrtemp.set(i + 1, 0, gsr_prediction.get(i, kj));
         }
-
+        
         for (int i = 0; i < g_prediction.getRowDimension(); i++) {
             g_prediction.set(i, kj, (L_ee_temp.times(eetemp).plus(L_gsr_temp.times(gsrtemp))).get(i, 0) + g_prediction.get(i, kj));
         }
-
+        
         for (int i = 0; i < g_prediction.getRowDimension(); i++) {
             g_prediction.set(i, kj, g_prediction_feedback.get(i, 0) + g_prediction.get(i, kj));
         }
-
-        Matrix reference_glucose_temp;
-
+        
         reference_trajectory ref_trajectory = new reference_trajectory(gs.get(0, kj - 2), 110, (N2 - N1), meal_gpc_mu.get(kj, 0));
-
-        reference_glucose_temp = ref_trajectory.referencetrajectory();
-
+        
+        Matrix reference_glucose_temp = ref_trajectory.referencetrajectory();
+        
         lgvariables.reference_glucose = createnewMatrix(8, kj + 1, lgvariables.reference_glucose);
-
+        
         for (int i = 0; i < 8; i++) {
             lgvariables.reference_glucose.set(i, kj, reference_glucose_temp.get(i, 0));
         }
 
-        Matrix insulin_sensitivity_constant_temp;
+// </editor-fold>
 
+// <editor-fold defaultstate="collapsed" desc=" Update lgvariables.insulin_sensitivity_constant. ">
         Matrix dividematrix = new Matrix(g_prediction_temp.getRowDimension(), 1);
-
+        
         for (int i = 0; i < g_prediction.getRowDimension(); i++) {
             dividematrix.set(i, 0, g_prediction.get(i, kj) / reference_glucose_temp.get(i, 0));
         }
-
+        
         Matrix g_predictionkj = new Matrix(g_prediction.getRowDimension(), 1);
-
+        
         for (int i = 0; i < g_prediction.getRowDimension(); i++) {
             g_predictionkj.set(i, 0, g_prediction.get(i, kj));
         }
-
-        insulin_sensitivity_constant_temp = matricecompareconstantmax(0.1, dividematrix);
-
+        
+        Matrix insulin_sensitivity_constant_temp = matricecompareconstantmax(0.1, dividematrix);
+        
         lgvariables.insulin_sensitivity_constant = createnewMatrix(8, kj + 1, lgvariables.insulin_sensitivity_constant);
-
+        
         for (int i = 0; i < insulin_sensitivity_constant_temp.getRowDimension(); i++) {
             lgvariables.insulin_sensitivity_constant.set(i, kj, insulin_sensitivity_constant_temp.get(i, 0));
         }
+// </editor-fold>
 
         System.out.println("L: "+ (lgvariables.L.length + 1) + " x " +
                 + (lgvariables.L[0].length + 1) + " x " + (lgvariables.L[0][0].length + 1));
