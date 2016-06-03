@@ -223,7 +223,9 @@ end
 %Available algorithms: 'interior-point', 'active-set', 'sqp', 'trust-region-reflective')
 %FinDiffRelStep - default 'Forward finite differences steps 
 %                 delta = v.*sign?(x).*max(abs(x),TypicalX)'
-%                 default is sqrt(eps)
+%                 v(default) is sqrt(eps)
+%                 eps = 2.2204e-16
+%                 TypicalX (default) =  ones = (numberofvariables,1)
 options=optimset('Algorithm','interior-point','Display','iter-detailed');
 %Find minimum of constrained nonlinear multivariable function:
 % Q = fmincon(fun,x0,A,b,Aeq,beq,lb,ub,nonlcon,options)
@@ -297,4 +299,5 @@ legend('Java', 'MATLAB', 'Upperlim', 'lowerlim');
 figure
 plot(time1, Q_java,'g')
 legend('Java');
+E = eps
 end
