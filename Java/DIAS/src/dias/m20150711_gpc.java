@@ -393,19 +393,13 @@ public class m20150711_gpc {
                 armax_covariancetemp.set(i, j, armax_covariance[i][j][kj - 1]);
             }
         }
+// <editor-fold defaultstate="collapsed" desc=" Run nonlinear optimization (OptRecursive class's .runOptimization method) based on armax parameters.Set lgvariables armax properties based on output.  ">
 
-        //TODO Non linear issues
-        //Run the non linear optimization
-        OptInputs inputs = new OptInputs((gs.get(0, kj-1)), phitemp, 
-                armax_parameterstemp, armax_covariancetemp, (armax_lamda.get(kj - 1, 0)), upperlim, lowerlim); 
+        OptInputs inputs = new OptInputs((gs.get(0, kj - 1)), phitemp,
+                armax_parameterstemp, armax_covariancetemp, (armax_lamda.get(kj - 1, 0)), upperlim, lowerlim);        
         OptRecursive opt_r = new OptRecursive(inputs);
         //set the inputs to be the output of the current run. 
         inputs = opt_r.runOptimization();
-//        
-//        // XXX DEBUG 
-//        // A little test to make sure that we can run one OptRecursive using another's outputs. 
-//        opt_r = new OptRecursive(inputs); 
-//        opt_r.runOptimization(); 
 
         //Load variables 
         m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
@@ -423,46 +417,52 @@ public class m20150711_gpc {
         for (int i = 0; i < opt_r.Q_res.getRowDimension(); i++) {
             lgvariables.armax_parameters.set(i, kj, opt_r.Q_res.get(i, 0));
         }
-
+        
         for (int i = 0; i < opt_r.P.getColumnDimension(); i++) {
             for (int j = 0; j < opt_r.P.getRowDimension(); j++) {
                 lgvariables.armax_covariance[i][j][kj] = opt_r.P.get(i, j);
             }
         }
 
-        Matrix phi_temp = new Matrix(phi_ee_trans.getColumnDimension(), 1);
+// </editor-fold>
 
+// <editor-fold defaultstate="collapsed" desc=" Set up variables for opt_recursive_arm.optrecursive processing based on energy expenditure. ">
+        Matrix phi_temp = new Matrix(phi_ee_trans.getColumnDimension(), 1);
+        
         for (int i = 0; i < phi_ee_trans.getColumnDimension(); i++) {
             phi_temp.set(i, 0, phi_ee_trans.get(kj, i));
         }
-
+        
         Matrix armax_parameters_ee_temp = new Matrix(armax_parameters_ee.getRowDimension(), 1);
-
+        
         for (int i = 0; i < armax_parameters_ee.getRowDimension(); i++) {
             armax_parameters_ee_temp.set(i, 0, armax_parameters_ee.get(i, kj - 1));
         }
-
+        
         Matrix arma_covariance_ee_temp = new Matrix((lastvaluereturnxyz(arma_covariance_ee)[1] + 1), (lastvaluereturnxyz(arma_covariance_ee)[2] + 1));
-
+        
         for (int i = 0; i < (lastvaluereturnxyz(arma_covariance_ee)[1] + 1); i++) {
             for (int j = 0; j < (lastvaluereturnxyz(arma_covariance_ee)[2] + 1); j++) {
                 arma_covariance_ee_temp.set(i, j, arma_covariance_ee[i][j][kj - 1]);
             }
         }
-
+        
         for (int i = 0; i < armax_parameters_ee.getRowDimension(); i++) {
             armax_parameters_ee_temp.set(i, 0, armax_parameters_ee.get(i, kj - 1));
         }
-
+        
         double[] onesmatrice = new double[4];
         double[] minusonesmatrice = new double[4];
-
+        
         for (int i = 0; i < 4; i++) {
             onesmatrice[i] = 1;
             minusonesmatrice[i] = -1;
         }
 
-        //TODO Run the Optimization opt_recursive_arm
+// </editor-fold>
+        
+// <editor-fold defaultstate="collapsed" desc=" Run opt_recursive_arm.optrecursive based on energy expenditure. Set lgvariables energy expenditure properties based on output. ">
+
         opt_recursive_arm orarm = new opt_recursive_arm(ee.get(0, kj), phi_temp, armax_parameters_ee_temp, arma_covariance_ee_temp, arma_lamda_ee.get(kj - 1, 0), arma_err_ee.get(kj - 1, 0), onesmatrice, minusonesmatrice, 0.99, 0.9, 0.005);
         orarm.optrecursive();
 
@@ -479,12 +479,14 @@ public class m20150711_gpc {
         for (int i = 0; i < orarm.Q_res.getRowDimension(); i++) {
             lgvariables.arma_parameters_ee.set(i, kj, orarm.Q_res.get(i, 0));
         }
-
+        
         for (int i = 0; i < orarm.P.getColumnDimension(); i++) {
             for (int j = 0; j < orarm.P.getRowDimension(); j++) {
                 lgvariables.arma_covariance_ee[i][j][kj] = orarm.P.get(i, j);
             }
         }
+
+// </editor-fold>
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         Matrix phi_gsr_temp = new Matrix(phi_gsr_trans.getColumnDimension(), 1);
@@ -745,6 +747,9 @@ public class m20150711_gpc {
         K_state_gsr[2][0][kj] = 0;
         K_state_gsr[3][0][kj] = 1;
 
+        // XXX OPTIMIZATION : 
+        // We can probably get rid of all these initializations, since the new lgvariables parameters
+        // just get values directly anyway. 
         lgvariables.K_state = createnew3Dmatrix(lgvariables.K_state, 21, 1, kj + 1);
         lgvariables.K_state = K_state;
 
@@ -753,8 +758,9 @@ public class m20150711_gpc {
 
         lgvariables.K_state_gsr = createnew3Dmatrix(lgvariables.K_state_gsr, 4, 1, kj + 1);
         lgvariables.K_state_gsr = K_state_gsr;
-
-        Matrix A_state_temp = new Matrix(21, 21);
+        
+// <editor-fold defaultstate="collapsed" desc=" Get controller horizon and update lgvariables parameters L, L_ee, L_gsr, and M. ">
+Matrix A_state_temp = new Matrix(21, 21);
 
         for (int i = 0; i < 21; i++) {
             for (int j = 0; j < 21; j++) {
@@ -811,7 +817,9 @@ public class m20150711_gpc {
                 lgvariables.L_gsr[i][j][kj] = cont_hor.LL_gsr.get(i, j);
             }
         }
-
+// </editor-fold>
+        
+// <editor-fold defaultstate="collapsed" desc=" Get prediction horizon based on energy expenditure and update lgvariables.M_ee. ">
         Matrix A_state_temp_ee = new Matrix(4, 4);
 
         for (int i = 0; i < 4; i++) {
@@ -839,7 +847,9 @@ public class m20150711_gpc {
                 lgvariables.M_ee[i][j][kj] = M_ee_temp.get(i, j);
             }
         }
-
+// </editor-fold>
+        
+// <editor-fold defaultstate="collapsed" desc=" Get prediction horizon based on GSR and update lgvariables.M_gsr. ">
         Matrix A_state_temp_gsr = new Matrix(4, 4);
 
         for (int i = 0; i < 4; i++) {
@@ -868,7 +878,9 @@ public class m20150711_gpc {
                 lgvariables.M_gsr[i][j][kj] = M_gsr_temp.get(i, j);
             }
         }
+// </editor-fold>
 
+// <editor-fold defaultstate="collapsed" desc=" Build a new value for lgvariables.X_state. ">
         X_state = new Matrix(21, kj + 1);
         X_state_ee = new Matrix(phi_ee_trans.getColumnDimension(), kj + 1);
         X_state_gsr = new Matrix(phi_gsr_trans.getColumnDimension(), kj + 1);
@@ -901,7 +913,9 @@ public class m20150711_gpc {
         // assigned directly from our X_state variable. 
         lgvariables.X_state = createnewMatrix(21, kj + 1, lgvariables.X_state);
         lgvariables.X_state = X_state;
+// </editor-fold>      
 
+// <editor-fold defaultstate="collapsed" desc=" Build a new value for lgvariables.X_state_ee. ">
         for (int i = 0; i < phi_ee_trans.getColumnDimension(); i++) {
             if (i < 3) {
                 X_state_ee.set(i, kj, phi_ee_trans.get(kj, i) * (-1));
@@ -914,7 +928,9 @@ public class m20150711_gpc {
         // assigned directly from our X_state_ee variable. 
         lgvariables.X_state_ee = createnewMatrix(4, kj + 1, lgvariables.X_state_ee);
         lgvariables.X_state_ee = X_state_ee;
+// </editor-fold>   
 
+// <editor-fold defaultstate="collapsed" desc=" Build a new value for lgvariables.X_state_gsr ">
         for (int i = 0; i < phi_gsr_trans.getColumnDimension(); i++) {
             if (i < 3) {
                 X_state_gsr.set(i, kj, phi_gsr_trans.get(kj, i) * (-1));
@@ -923,9 +939,13 @@ public class m20150711_gpc {
             }
         }
 
+        // XXX OPTIMIZE : We can probably remove the next line, since X_state_gsr gets 
+        // assigned directly from our X_state_gsr variable. 
         lgvariables.X_state_gsr = createnewMatrix(4, kj + 1, lgvariables.X_state_gsr);
         lgvariables.X_state_gsr = X_state_gsr;
+// </editor-fold>  
 
+// <editor-fold desc=" Build a new value for lgvariables.ee_prediction. ">
         Matrix K_state_ee_temp = new Matrix((lastvaluereturnxyz(K_state_ee))[1] + 1, (lastvaluereturnxyz(K_state_ee))[2] + 1);
 
         for (int i = 0; i < (lastvaluereturnxyz(K_state_ee))[1] + 1; i++) {
@@ -951,8 +971,12 @@ public class m20150711_gpc {
             }
         }
 
+        //XXX OPTIMIZE Not sure if we need this next line either. 
         lgvariables.ee_prediction = createnewMatrix(ee_prediction_temp.getRowDimension(), kj + 1, lgvariables.ee_prediction);
         lgvariables.ee_prediction = ee_prediction;
+        // </editor-fold>      
+        
+// <editor-fold defaultstate="collapsed" desc=" Build a new value for lgvariables.gsr_prediction. ">
 
         Matrix K_state_gsr_temp = new Matrix((lastvaluereturnxyz(K_state_gsr))[1] + 1, (lastvaluereturnxyz(K_state_gsr))[2] + 1);
 
@@ -982,6 +1006,7 @@ public class m20150711_gpc {
 
         lgvariables.gsr_prediction = createnewMatrix(gsr_prediction_temp.getRowDimension(), kj + 1, lgvariables.gsr_prediction);
         lgvariables.gsr_prediction = gsr_prediction;
+// </editor-fold>
 
         Matrix M_temp = new Matrix(8, 21);
 
