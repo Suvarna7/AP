@@ -34,6 +34,7 @@ public class Load {
          FileInputStream fis = null;
          try {
     
+      //String fileName= "D:\\Phd\\Research\\Kamuran`s Code\\"+filepath+"\\"+filename+t+".xlsx" ; 
       String fileName= DIAS.excelFilePath+"\\" +filepath+"\\"+filename+".xlsx" ; 
 fis = new FileInputStream(fileName);
 XSSFWorkbook calismaKitap = new XSSFWorkbook(fis);
@@ -77,9 +78,9 @@ catch (IOException e) {
    for(int t=0;t<kj;t++){
             
          try {
-    
-
-             String fileName= "D:\\Phd\\Research\\Kamuran`s Code\\"+filepath+"\\"+filename+t+".xlsx" ; 
+            //String fileName= "D:\\Phd\\Research\\Kamuran`s Code\\"+filepath+"\\"+filename+t+".xlsx" ; 
+             String fileName= DIAS.excelFilePath+"\\" +filepath+"\\"+filename+".xlsx" ;
+             
 fis = new FileInputStream(fileName);
 XSSFWorkbook calismaKitap = new XSSFWorkbook(fis);
 XSSFSheet sheet = calismaKitap.getSheetAt(0);
@@ -136,8 +137,8 @@ catch (IOException e) {
         double matrice=0;
          FileInputStream fis = null;
          try {
-    
-      String fileName= DIAS.excelFilePath+"\\" + DIAS.excelSubdirectory +"\\"+filename+".xlsx" ;
+             //String fileName= "D:\\Phd\\Research\\Kamuran`s Code\\"+filepath+"\\"+filename+t+".xlsx" ; 
+            String fileName= DIAS.excelFilePath+"\\" + DIAS.excelSubdirectory +"\\"+filename+".xlsx" ;
 fis = new FileInputStream(fileName);
 XSSFWorkbook calismaKitap = new XSSFWorkbook(fis);
 XSSFSheet sheet = calismaKitap.getSheetAt(0);
@@ -175,8 +176,8 @@ catch (IOException e) {
          String [] matrice= new String [kj];
          FileInputStream fis = null;
          try {
-    
-      String fileName= DIAS.excelFilePath+"\\" + DIAS.excelSubdirectory +"\\"+filename+".xlsx" ;
+            //String fileName= "D:\\Phd\\Research\\Kamuran`s Code\\"+filepath+"\\"+filename+t+".xlsx" ; 
+            String fileName= DIAS.excelFilePath+"\\" + DIAS.excelSubdirectory +"\\"+filename+".xlsx" ;
 fis = new FileInputStream(fileName);
 XSSFWorkbook calismaKitap = new XSSFWorkbook(fis);
 XSSFSheet sheet = calismaKitap.getSheetAt(0);
