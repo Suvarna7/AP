@@ -482,7 +482,7 @@ public class GUI extends javax.swing.JFrame {
         m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
         VirtualCgm vcgm = new VirtualCgm(lgvariables.kj);
 
-        Save savedata = new Save("Test Save");
+        Save savedata = new Save(DIAS.excelSubdirectory);
 
         try {
             savedata.save(lgvariables.basal_insulin, "basal_insulin");
@@ -602,18 +602,26 @@ public class GUI extends javax.swing.JFrame {
 
     private void LoadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoadButtonActionPerformed
         // TODO add your handling code here:
-        CGM__SEDFR_JF cs = new CGM__SEDFR_JF();
+// There used to be a call to the CGM__SEDFR_JF constructor here, but the variable was never used, so I removed it. 
+        // CGM__SEDFR_JF cs = new CGM__SEDFR_JF();
+        
+// m20150711_load_global_variables constructor mostly initializes boilerplate objects. 
+// One thing to note is that the kj value, which gets used -many- times in subsequent methods, gets a hardcoded value of 20 from the constructor. This means that it's immediately updated to 21 after attempting to load data. 
         m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
 
-        Load loaddata = new Load("Test Save");
+        Load loaddata = new Load(DIAS.excelSubdirectory);
         try {
             lgvariables.kj = (int) (loaddata.loaddouble("kj") + 1);
-
-            System.out.println(lgvariables.kj + "     lgvariables.kj");
+            
+            if (DIAS.verboseMode) { 
+                System.out.println(lgvariables.kj + "     lgvariables.kj");
+            } 
 
             lgvariables.basal_insulin = DIAS.createnewMatrix(8, lgvariables.kj, lgvariables.basal_insulin);
 
-            DIAS.printMatrix(lgvariables.basal_insulin, "lgvariables.basal_insulin");
+            if (DIAS.verboseMode) { 
+                DIAS.printMatrix(lgvariables.basal_insulin, "lgvariables.basal_insulin");
+            } 
 
             lgvariables.bolus_insulin = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.bolus_insulin);
             lgvariables.ee = DIAS.createnewMatrix(1, lgvariables.kj, lgvariables.ee);

@@ -4,9 +4,10 @@
     <env>dev_cl</env>
     <verbose>false</verbose>
   </environment>
-  <processing env="dev_cl">
+  <processing env="dev_zm">
     <paths>
       <excelFilePath>C:\Users\Cat\Desktop\Java-MATLAB</excelFilePath>
+      <excelSubdirectory>Test Save</excelSubdirectory>
       <bodymediaFileUrl>C:\Users\Cat\Desktop\Java-MATLAB\Matlab\JDRF17_04222015 TO 04272015_ARMBAND.xls</bodymediaFileUrl>
     </paths>
     <emails>
@@ -19,6 +20,7 @@
   <processing env="dev_ms">
     <paths>
       <excelFilePath>Mert's file location</excelFilePath>
+      <excelSubdirectory>Test Save</excelSubdirectory>
       <bodymediaFileUrl>Mert's file location\JDRF17_04222015 TO 04272015_ARMBAND.xls</bodymediaFileUrl>
     </paths>
     <emails>
@@ -31,6 +33,7 @@
   <processing env="dev_zm">
     <paths>
       <excelFilePath>/Users/zachariemaloney/NetBeansProjects/Current_Source/Excel_Files/</excelFilePath>
+      <excelSubdirectory>Test Save</excelSubdirectory>
       <bodymediaFileUrl>/Users/zachariemaloney/NetBeansProjects/Current_Source/Input_Files/JDRF17_04222015 TO 04272015_ARMBAND.xls</bodymediaFileUrl>
     </paths>
     <emails>
