@@ -122,14 +122,22 @@ catch (IOException e) {
          
          
          
-       /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         public double loaddouble(String filename)throws FileNotFoundException , IOException{
+/** 
+ * Loads a double from specified file. 
+ * Always looks in the DIAS.excelSubdirectory folder in the DIAS.excelFilePath directory.
+ * 
+ * @param filename
+ * @return
+ * @throws FileNotFoundException
+ * @throws IOException 
+ */
+    public double loaddouble(String filename)throws FileNotFoundException , IOException{
       ///  double[][] matrice=new double[150][150];
         double matrice=0;
          FileInputStream fis = null;
          try {
     
-      String fileName= "D:\\Phd\\Research\\Kamuran`s Code\\"+filepath+"\\"+filename+".xlsx" ; 
+      String fileName= DIAS.excelFilePath+"\\" + DIAS.excelSubdirectory +"\\"+filename+".xlsx" ;
 fis = new FileInputStream(fileName);
 XSSFWorkbook calismaKitap = new XSSFWorkbook(fis);
 XSSFSheet sheet = calismaKitap.getSheetAt(0);
@@ -168,7 +176,7 @@ catch (IOException e) {
          FileInputStream fis = null;
          try {
     
-      String fileName= "D:\\Phd\\Research\\Kamuran`s Code\\"+filepath+"\\"+filename+".xlsx" ; 
+      String fileName= DIAS.excelFilePath+"\\" + DIAS.excelSubdirectory +"\\"+filename+".xlsx" ;
 fis = new FileInputStream(fileName);
 XSSFWorkbook calismaKitap = new XSSFWorkbook(fis);
 XSSFSheet sheet = calismaKitap.getSheetAt(0);

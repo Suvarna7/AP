@@ -252,19 +252,21 @@ public class m20150711_gpc {
         print3DMatrice(B_state,"B_state");
         System.out.println("/////////////////////////////////INPUTS////////////////////////////////////////////////////////////////////////////////");
         /////////////////////////////////////////////////////INPUTS//////////////////////////////////////////////////////////////////////////////////*/
-        int N1 = 2;
-        int N2 = 10;
-        int Nu = 8;
-        int na = 3;
-        int nb1 = 12;
-        int nb2 = 4;
-        int nb3 = 4;
-        int nc = 1;
-        int st = 5;
-        int d2 = 1;
-        int d3 = 1; //% Prediction and control horizons. Model orders and delays.
-
-        //////////////////////////////////////////////////True/////////////////////////////////////////////////////////////////////////////////////    
+        
+// <editor-fold defaultstate="collapsed" desc=" Set up local variables. ">
+    int N1 = 2;
+    int N2 = 10;
+    int Nu = 8;
+    int na = 3;
+    int nb1 = 12;
+    int nb2 = 4;
+    int nb3 = 4;
+    int nc = 1;
+    int st = 5; //Used only to build a new controller instance.
+    int d2 = 1;
+    int d3 = 1; //% Prediction and control horizons. Model orders and delays.
+  
+        //XXX OPTIMIZE : consider setting IOB as a read from a flat file. NB that this will be similar to the IOB access in m20150711_calculate_IOB (same values, different order). 
         double[][] IOB = new double[1][15];
         IOB[0][0] = 0.974082840593171;
         IOB[0][1] = 0.932309038992748;
@@ -294,7 +296,8 @@ public class m20150711_gpc {
         for (int i = 0; i < na; i++) {
             lowerlim[i] = -1;
         }
-
+        
+//This is the only time we actually use IOB. 
         for (int i = na; i < na + 12; i++) {
             lowerlim[i] = IOB[0][i - na] * (-1);
         }
@@ -331,31 +334,36 @@ public class m20150711_gpc {
        printMatrix(g_prediction_feedback,"g_prediction_feedback");
        printMatrix(meal_gpc_mu,"meal_gpc_mu");
      /////////////////////////////////////////////////Test///////////////////////////////////////////////////////////////////////////////////////  */
-        phi = createnewMatrix(na + nb1 + nb2 + nb2 + nc, kj + 1, phi);
+        
+// </editor-fold>
 
+// <editor-fold defaultstate="collapsed" desc=" Set up standard phi and its process-specific variants (energy expenditure, galvanic skin response, etc.) ">
+
+        phi = createnewMatrix(na + nb1 + nb2 + nb2 + nc, kj + 1, phi);
+        
         for (int i = 0; i < na; i++) {
             phi.set((na - 1) - i, kj, gs.get(0, kj - na - 2 + i) * (-1));
         }
-
+        
         for (int i = na; i < na + nb1; i++) {
             phi.set((na + nb1 - 1) - i + na, kj, basal_insulin.get(0, kj - nb1 - 5 - N1 + i));
         }
-
+        
         for (int i = na + nb1; i < na + nb2 + nb1; i++) {
             phi.set((na + nb2 + nb1 - 1) - i + na + nb1, kj, ee.get(0, kj - nb2 - d2 + i - na - nb1 - 1));
         }
-
+        
         for (int i = na + nb1 + nb2; i < na + nb1 + nb2 + nb2; i++) {
             phi.set((na + nb1 + nb2 + nb2 - 1) - i + na + nb1 + nb2, kj, gsr.get(0, kj - nb2 - d3 + i - 1 - (na + nb1 + nb2)));
         }
-
+        
         for (int i = na + nb1 + nb2 + nb2; i < na + nb1 + nb2 + nb2 + nc; i++) {
             phi.set((na + nb1 + nb2 + nb2 + nc - 1) - i + na + nb1 + nb2 + nb2, kj, armax_error.get(kj - nc + i - 2 - (na + nb1 + nb2 + nb2), 0));
         }
-
+        
         phi_ee = createnewMatrix(4, kj + 1, phi_ee);
         phi_gsr = createnewMatrix(4, kj + 1, phi_gsr);
-
+        
         phi_ee.set(0, kj, -ee.get(0, kj - 2));
         phi_ee.set(1, kj, -ee.get(0, kj - 3));
         phi_ee.set(2, kj, -ee.get(0, kj - 4));
@@ -364,35 +372,41 @@ public class m20150711_gpc {
         // phi_ee=phi_ee.transpose();
         Matrix phi_ee_trans = new Matrix(4, kj + 1);
         phi_ee_trans = phi_ee.transpose();
-
+        
         phi_gsr.set(0, kj, -gsr.get(0, kj - 2));
         phi_gsr.set(1, kj, -gsr.get(0, kj - 3));
         phi_gsr.set(2, kj, -gsr.get(0, kj - 4));
         phi_gsr.set(3, kj, arma_err_gsr.get(kj - 2, 0));
-
+        
         Matrix phi_gsr_trans = new Matrix(4, kj + 1);
         //   phi_gsr=phi_gsr.transpose();
         phi_gsr_trans = phi_gsr.transpose();
 
-        Matrix phitemp = new Matrix(phi.getRowDimension(), 1);
+// </editor-fold>
 
+// <editor-fold defaultstate="collapsed" desc=" Build temporary phi, armax_parameters, and covariance variables. ">
+        Matrix phitemp = new Matrix(phi.getRowDimension(), 1);
+        
         for (int i = 0; i < phi.getRowDimension(); i++) {
             phitemp.set(i, 0, phi.get(i, kj));
         }
-
+        
         Matrix armax_parameterstemp = new Matrix(armax_parameters.getRowDimension(), 1);
-
+        
         for (int i = 0; i < armax_parameters.getRowDimension(); i++) {
             armax_parameterstemp.set(i, 0, armax_parameters.get(i, kj - 1));
         }
-
+        
         Matrix armax_covariancetemp = new Matrix((lastvaluereturnxyz(armax_covariance)[1] + 1), (lastvaluereturnxyz(armax_covariance)[2] + 1));
-
+        
         for (int i = 0; i < (lastvaluereturnxyz(armax_covariance)[1] + 1); i++) {
             for (int j = 0; j < (lastvaluereturnxyz(armax_covariance)[2] + 1); j++) {
                 armax_covariancetemp.set(i, j, armax_covariance[i][j][kj - 1]);
             }
         }
+
+// </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc=" Run nonlinear optimization (OptRecursive class's .runOptimization method) based on armax parameters.Set lgvariables armax properties based on output.  ">
 
         OptInputs inputs = new OptInputs((gs.get(0, kj - 1)), phitemp,
@@ -425,7 +439,6 @@ public class m20150711_gpc {
         }
 
 // </editor-fold>
-
 // <editor-fold defaultstate="collapsed" desc=" Set up variables for opt_recursive_arm.optrecursive processing based on energy expenditure. ">
         Matrix phi_temp = new Matrix(phi_ee_trans.getColumnDimension(), 1);
         

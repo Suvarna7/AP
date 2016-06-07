@@ -10,6 +10,7 @@ import java.io.IOException;
 import static java.lang.Double.isNaN;
 import java.util.Random;
 import dias.MemoryStaticVariables.m20150711_load_global_variables;
+import static java.lang.Double.isNaN;
 
 /**
  *
@@ -76,7 +77,7 @@ public class CGM__SEDFR_JF {
     public int d2;
     public Matrix sum_wyy;
     public double R;
-    public int kj;
+    public int kj_local; //renamed this from "kj" because it's confusing to have a quasi-global variable with the same name.
     public Matrix x_r;
     public Matrix ssP = new Matrix(1, 1);
 
@@ -132,7 +133,7 @@ public class CGM__SEDFR_JF {
 
         m20150711_load_global_variables ldv = new m20150711_load_global_variables();
 
-        kj = ldv.kj;
+        kj_local = ldv.kj;
 
         ins_every5 = new Matrix(1, basal_insulin.getColumnDimension());
 
@@ -196,6 +197,7 @@ public class CGM__SEDFR_JF {
             Q = eye(d2).times(alpha);
             x_e = new Matrix(d2, 60);
 
+            // XXX OPTIMIZE : This could be problematic, since we already have a local variable "kj". Can we replace this with another name?
             for (int kj = 0; kj < 21; kj++) {
                 for (int j = 0; j < d2; j++) {
                     x_e.set(j, kj, 100);
@@ -238,7 +240,7 @@ public class CGM__SEDFR_JF {
             std_CGM_change = plsR12wcluster.gb_change_sd;
 
             Zmu_other_JF zmu4 = new Zmu_other_JF(mean_ins, std_ins, ins);
-            inss = DIAS.createnewMatrix(kj + 1, 1, inss);
+            inss = DIAS.createnewMatrix(kj_local + 1, 1, inss);
             inss = zmu4.zmu_other_JF();
             prediction_step_pls = 0;
             // noisel= new Matrix (start_noise*2-1,1);   //????
@@ -291,7 +293,7 @@ public class CGM__SEDFR_JF {
                 tnoise.sum_xxpp = sum_xxpp;
                 tnoise.R = R;
                 tnoise.Q = Q;
-                tnoise.kj = kj;
+                tnoise.kj = kj_local;
                 tnoise.x_e = x_e;
                 tnoise.A = A;
                 tnoise.C = C;
@@ -364,7 +366,7 @@ public class CGM__SEDFR_JF {
                 tnonoise.sum_xxpp = sum_xxpp;
                 tnonoise.R = R;
                 tnonoise.Q = Q;
-                tnonoise.kj = kj;
+                tnonoise.kj = kj_local;
                 tnonoise.x_e = x_e;
                 tnonoise.A = A;
                 tnonoise.C = C;
@@ -439,7 +441,7 @@ public class CGM__SEDFR_JF {
                 sum_xxpp = tnoise.sum_xxpp;
                 R = tnoise.R;
                 Q = tnoise.Q;
-                kj = tnoise.kj;
+                kj_local = tnoise.kj;
                 x_e = tnoise.x_e;
                 A = tnoise.A;
                 C = tnoise.C;
@@ -512,7 +514,7 @@ public class CGM__SEDFR_JF {
                 sum_xxpp = tnoise.sum_xxpp;
                 R = tnoise.R;
                 Q = tnoise.Q;
-                kj = tnoise.kj;
+                kj_local = tnoise.kj;
                 x_e = tnoise.x_e;
                 A = tnoise.A;
                 C = tnoise.C;
@@ -546,16 +548,16 @@ public class CGM__SEDFR_JF {
             Zmu_other_JF zmu = new Zmu_other_JF(mean_ins, std_ins, ins);
             Matrix inss = new Matrix(ins.getColumnDimension(), ins.getRowDimension());
             inss = zmu.zmu_other_JF().transpose();
-            kj = matricelocation(gb)[0];
+            kj_local = matricelocation(gb)[0];
 
-            if (kj - matricelocation(gb_angle_ret)[1] > 1) {
-                for (int i = matricelocation(gb_angle_ret)[1]; i < kj; i++) {
+            if (kj_local - matricelocation(gb_angle_ret)[1] > 1) {
+                for (int i = matricelocation(gb_angle_ret)[1]; i < kj_local; i++) {
                     gb_angle_ret.set(0, i, gb.get(i, 0));
                 }
             }
 
-            if (kj > start_noise && mod(kj, noise_interval) == 0 && flag_noise == 1) {
-                noisel.set(kj, 0, length_add);
+            if (kj_local > start_noise && mod(kj_local, noise_interval) == 0 && flag_noise == 1) {
+                noisel.set(kj_local, 0, length_add);
 
                 if (type < 6) {
                     type = 1 + type;
@@ -565,206 +567,206 @@ public class CGM__SEDFR_JF {
 
                 addsignal = new Matrix(0, length_add);
 
-                Addon_noise_JF adnJF = new Addon_noise_JF(type, am, length_add, gb, kj);
+                Addon_noise_JF adnJF = new Addon_noise_JF(type, am, length_add, gb, kj_local);
                 addsignal = adnJF.addon_noise_JF();
 
-                gb.set(kj, 0, gb.get(kj, 0) + addsignal.get(0, 0));
-            } else if (noisel.get(kj - 1, 0) > 1) {
-                gb.set(kj, 0, gb.get(kj, 0) + addsignal.get(5 - (int) noisel.get(kj - 1, 0), 0));
-                noisel.set(kj, 0, noisel.get(kj - 1, 0) - 1);
+                gb.set(kj_local, 0, gb.get(kj_local, 0) + addsignal.get(0, 0));
+            } else if (noisel.get(kj_local - 1, 0) > 1) {
+                gb.set(kj_local, 0, gb.get(kj_local, 0) + addsignal.get(5 - (int) noisel.get(kj_local - 1, 0), 0));
+                noisel.set(kj_local, 0, noisel.get(kj_local - 1, 0) - 1);
 
                 if (type == 6) {
-                    gb.set(kj, 0, gb.get(kj - 1, 0));
+                    gb.set(kj_local, 0, gb.get(kj_local - 1, 0));
                 }
 
-            } else if (noisel.get(kj - 1, 0) == 1) {
-                noisel.set(kj, 0, 0);
+            } else if (noisel.get(kj_local - 1, 0) == 1) {
+                noisel.set(kj_local, 0, 0);
             } else if (flag_noise == 1) {
                 Random rand = new Random();
-                gb.set(kj, 0, gb.get(kj, 0) + 2 * (rand.nextDouble() - 0.5));
-                noisel.set(kj, 0, 0);
+                gb.set(kj_local, 0, gb.get(kj_local, 0) + 2 * (rand.nextDouble() - 0.5));
+                noisel.set(kj_local, 0, 0);
             } else {
-                noisel.set(kj, 0, 0);
+                noisel.set(kj_local, 0, 0);
             }
 
-            if (kj > 25) {
-                if (Double.isNaN(gb.get(kj, 0))) {
-                    y.set(0, 0, 2 * gb_angle_ret.get(kj - 1, 0) - gb_angle_ret.get(kj - 2, 0));
+            if (kj_local > 25) {
+                if (Double.isNaN(gb.get(kj_local, 0))) {
+                    y.set(0, 0, 2 * gb_angle_ret.get(kj_local - 1, 0) - gb_angle_ret.get(kj_local - 2, 0));
                 } else {
-                    y.set(0, 0, gb.get(kj, 0));
+                    y.set(0, 0, gb.get(kj_local, 0));
                 }
             } else {
-                y.set(0, 0, gb.get(kj, 0));
+                y.set(0, 0, gb.get(kj_local, 0));
             }
 
-            gb_with_NaN = DIAS.createnewMatrix(kj + 1, 1, gb_with_NaN);
-            gb_kal_ret = DIAS.createnewMatrix(kj + 1, 1, gb_kal_ret);
-            gb_kal = DIAS.createnewMatrix(kj + 1, 1, gb_kal);
-            RR = DIAS.createnewMatrix(kj + 1, 1, RR);
+            gb_with_NaN = DIAS.createnewMatrix(kj_local + 1, 1, gb_with_NaN);
+            gb_kal_ret = DIAS.createnewMatrix(kj_local + 1, 1, gb_kal_ret);
+            gb_kal = DIAS.createnewMatrix(kj_local + 1, 1, gb_kal);
+            RR = DIAS.createnewMatrix(kj_local + 1, 1, RR);
 
-            AA = new double[A.getColumnDimension()][A.getRowDimension()][kj + 1];
-            CC = new double[C.getColumnDimension()][C.getColumnDimension()][kj + 1];
-            QQ = new double[Q.getColumnDimension()][Q.getRowDimension()][kj + 1];
+            AA = new double[A.getColumnDimension()][A.getRowDimension()][kj_local + 1];
+            CC = new double[C.getColumnDimension()][C.getColumnDimension()][kj_local + 1];
+            QQ = new double[Q.getColumnDimension()][Q.getRowDimension()][kj_local + 1];
 
-            gb_with_NaN.set(kj, 0, y.get(0, 0));
-            gb_kal.set(kj, 0, gb.get(kj, 0));
-            gb_kal_ret.set(kj, 0, gb.get(kj, 0));
+            gb_with_NaN.set(kj_local, 0, y.get(0, 0));
+            gb_kal.set(kj_local, 0, gb.get(kj_local, 0));
+            gb_kal_ret.set(kj_local, 0, gb.get(kj_local, 0));
 
-            RR.set(kj, 0, R);
+            RR.set(kj_local, 0, R);
 
             for (int i = 0; i < A.getColumnDimension(); i++) {
                 for (int j = 0; j < A.getRowDimension(); j++) {
-                    AA[i][j][kj] = A.get(i, j);
+                    AA[i][j][kj_local] = A.get(i, j);
                 }
             }
 
             for (int i = 0; i < C.getRowDimension(); i++) {
                 for (int j = 0; j < C.getColumnDimension(); j++) {
-                    CC[i][j][kj] = C.get(i, j);
+                    CC[i][j][kj_local] = C.get(i, j);
                 }
             }
 
             for (int i = 0; i < Q.getColumnDimension(); i++) {
                 for (int j = 0; j < Q.getRowDimension(); j++) {
-                    QQ[i][j][kj] = Q.get(i, j);
+                    QQ[i][j][kj_local] = Q.get(i, j);
                 }
             }
 
-            if (kj > 21) {
+            if (kj_local > 21) {
                 x_r = new Matrix(1, d2);
 
-                for (int i = kj - d2 + 1; i < kj + 1; i++) {
-                    x_r.set(0, i - (kj - d2 + 1), gb_with_NaN.get(i, 0));
+                for (int i = kj_local - d2 + 1; i < kj_local + 1; i++) {
+                    x_r.set(0, i - (kj_local - d2 + 1), gb_with_NaN.get(i, 0));
                 }
 
-                recording_w = DIAS.createnewMatrix(kj + 1, 1, recording_w);
-                ssP = DIAS.createnewMatrix(1, kj + 1, ssP);
-                gb_kal = DIAS.createnewMatrix(kj + 1, 1, gb_kal);
+                recording_w = DIAS.createnewMatrix(kj_local + 1, 1, recording_w);
+                ssP = DIAS.createnewMatrix(1, kj_local + 1, ssP);
+                gb_kal = DIAS.createnewMatrix(kj_local + 1, 1, gb_kal);
 
                 m2014_3_19_kf_JF mkfJF = new m2014_3_19_kf_JF(lamda, x_r, x_e, y, DIAS.matrixLastValueReturnXY(x_e)[1], sum_wyxT, sum_wxxT, sum_xxp, sum_xpxp, sum_wyy, sum_wyx, sum_xx, sum_xxpp, Q, R, A, C, a_w0, b_w0);
                 mkfJF.kf_JF();
 
-                recording_w.set(kj, 0, mkfJF.w);
-                ssP.set(0, kj, mkfJF.Sp);
-                gb_kal.set(kj, 0, mkfJF.y_p.get(0, 0));
+                recording_w.set(kj_local, 0, mkfJF.w);
+                ssP.set(0, kj_local, mkfJF.Sp);
+                gb_kal.set(kj_local, 0, mkfJF.y_p.get(0, 0));
             }
-            g_pls = DIAS.createnewMatrix(1, kj + 1, g_pls);
-            error_detection = DIAS.createnewMatrix(kj + 1, 4, error_detection);
+            g_pls = DIAS.createnewMatrix(1, kj_local + 1, g_pls);
+            error_detection = DIAS.createnewMatrix(kj_local + 1, 4, error_detection);
 
-            if (kj > 22) {
-                gb_angle_ret = DIAS.createnewMatrix(1, kj + 1, gb_angle_ret);
-                g_pls.set(0, kj, gb_kal.get(kj, 0) * std_gb + mean_gb);
-                gb = DIAS.createnewMatrix(kj + 1, 1, gb);
+            if (kj_local > 22) {
+                gb_angle_ret = DIAS.createnewMatrix(1, kj_local + 1, gb_angle_ret);
+                g_pls.set(0, kj_local, gb_kal.get(kj_local, 0) * std_gb + mean_gb);
+                gb = DIAS.createnewMatrix(kj_local + 1, 1, gb);
 
-                if (isNaN(gb.get(kj, 0)) || gb.get(kj, 0) == gb.get(kj - 1, 0)) {
-                    error_detection.set(kj, 0, 1);
-                    error_detection.set(kj, 1, 1);
-                    error_detection.set(kj, 2, 1);
-                    error_detection.set(kj, 3, 1);
+                if (isNaN(gb.get(kj_local, 0)) || gb.get(kj_local, 0) == gb.get(kj_local - 1, 0)) {
+                    error_detection.set(kj_local, 0, 1);
+                    error_detection.set(kj_local, 1, 1);
+                    error_detection.set(kj_local, 2, 1);
+                    error_detection.set(kj_local, 3, 1);
                 } else {
-                    sigma = DIAS.createnewMatrix(1, kj + 1, sigma);
+                    sigma = DIAS.createnewMatrix(1, kj_local + 1, sigma);
 
-                    sigma.set(0, kj, sigma_a);
+                    sigma.set(0, kj_local, sigma_a);
 
-                    if (Math.abs(gb_kal.get(kj, 0) - gb.get(kj, 0)) > 12 * sigma.get(0, kj)) {
-                        error_detection.set(kj, 0, 1);
+                    if (Math.abs(gb_kal.get(kj_local, 0) - gb.get(kj_local, 0)) > 12 * sigma.get(0, kj_local)) {
+                        error_detection.set(kj_local, 0, 1);
                     } else {
-                        error_detection.set(kj, 0, 0);
+                        error_detection.set(kj_local, 0, 0);
                     }
 
-                    if (Math.abs(g_pls.get(0, kj) - gb.get(kj, 0)) > 12 * sigma.get(0, kj)) {
-                        error_detection.set(kj, 1, 1);
+                    if (Math.abs(g_pls.get(0, kj_local) - gb.get(kj_local, 0)) > 12 * sigma.get(0, kj_local)) {
+                        error_detection.set(kj_local, 1, 1);
                     } else {
-                        error_detection.set(kj, 1, 0);
+                        error_detection.set(kj_local, 1, 0);
                     }
 
-                    error_detection.set(kj, 2, 0);
+                    error_detection.set(kj_local, 2, 0);
 
-                    if (Math.abs(gb.get(kj, 0) - gb.get(kj - 1, 0)) > 25) {
-                        error_detection.set(kj, 3, 1);
+                    if (Math.abs(gb.get(kj_local, 0) - gb.get(kj_local - 1, 0)) > 25) {
+                        error_detection.set(kj_local, 3, 1);
                     } else {
-                        error_detection.set(kj, 3, 0);
+                        error_detection.set(kj_local, 3, 0);
                     }
                 }
 
-                y1 = gb_kal.get(kj, 0);
-                y2 = 2 * gb_angle_ret.get(0, kj - 1) - gb_angle_ret.get(0, kj - 2);
-                yy = gb_angle_ret.get(0, kj - 1);
+                y1 = gb_kal.get(kj_local, 0);
+                y2 = 2 * gb_angle_ret.get(0, kj_local - 1) - gb_angle_ret.get(0, kj_local - 2);
+                yy = gb_angle_ret.get(0, kj_local - 1);
 
-                angle = DIAS.createnewMatrix(kj + 1, 4, angle);
+                angle = DIAS.createnewMatrix(kj_local + 1, 4, angle);
 
                 Angle_detection_JF adJF = new Angle_detection_JF(delta_x, yy, y1, y2);
-                angle.set(kj, 0, adJF.angle_detection_JF() / 3.14 * 180);
-                y1 = g_pls.get(0, kj);
+                angle.set(kj_local, 0, adJF.angle_detection_JF() / 3.14 * 180);
+                y1 = g_pls.get(0, kj_local);
                 adJF = new Angle_detection_JF(delta_x, yy, y1, y2);
-                angle.set(kj, 1, adJF.angle_detection_JF() / 3.14 * 180);
-                y1 = gb_with_NaN.get(kj, 0);
+                angle.set(kj_local, 1, adJF.angle_detection_JF() / 3.14 * 180);
+                y1 = gb_with_NaN.get(kj_local, 0);
                 adJF = new Angle_detection_JF(delta_x, yy, y1, y2);
-                angle.set(kj, 2, adJF.angle_detection_JF() / 3.14 * 180);
-                y1 = (gb_kal.get(kj, 0) + g_pls.get(0, kj)) / 2;
+                angle.set(kj_local, 2, adJF.angle_detection_JF() / 3.14 * 180);
+                y1 = (gb_kal.get(kj_local, 0) + g_pls.get(0, kj_local)) / 2;
                 adJF = new Angle_detection_JF(delta_x, yy, y1, y2);
-                angle.set(kj, 3, adJF.angle_detection_JF() / 3.14 * 180);
+                angle.set(kj_local, 3, adJF.angle_detection_JF() / 3.14 * 180);
 
-                if (isNaN(gb.get(kj, 0))) {
+                if (isNaN(gb.get(kj_local, 0))) {
 
-                    if (min3constant(angle.get(kj, 0), angle.get(kj, 1), angle.get(kj, 3)) == angle.get(kj, 1)) {
-                        gb_angle_ret.set(0, kj, g_pls.get(0, kj));
-                    } else if (min3constant(angle.get(kj, 0), angle.get(kj, 1), angle.get(kj, 3)) == angle.get(kj, 0)) {
-                        gb_angle_ret.set(0, kj, gb_kal.get(kj, 0));
+                    if (min3constant(angle.get(kj_local, 0), angle.get(kj_local, 1), angle.get(kj_local, 3)) == angle.get(kj_local, 1)) {
+                        gb_angle_ret.set(0, kj_local, g_pls.get(0, kj_local));
+                    } else if (min3constant(angle.get(kj_local, 0), angle.get(kj_local, 1), angle.get(kj_local, 3)) == angle.get(kj_local, 0)) {
+                        gb_angle_ret.set(0, kj_local, gb_kal.get(kj_local, 0));
                     } else {
-                        gb_angle_ret.set(0, kj, (gb_kal.get(kj, 0) + g_pls.get(0, kj)) / 2);
+                        gb_angle_ret.set(0, kj_local, (gb_kal.get(kj_local, 0) + g_pls.get(0, kj_local)) / 2);
                     }
                 } else {
-                    if (min4constant(angle.get(kj, 0), angle.get(kj, 1), angle.get(kj, 2), angle.get(kj, 3)) == angle.get(kj, 1) && (error_detection.get(kj, 0) + error_detection.get(kj, 1) > 1)) {
-                        gb_angle_ret.set(0, kj, g_pls.get(0, kj));
-                    } else if (min4constant(angle.get(kj, 0), angle.get(kj, 1), angle.get(kj, 2), angle.get(kj, 3)) == angle.get(kj, 0) && (error_detection.get(kj, 0) + error_detection.get(kj, 1) > 1)) {
-                        gb_angle_ret.set(0, kj, gb_kal.get(kj, 0));
-                    } else if (min4constant(angle.get(kj, 0), angle.get(kj, 1), angle.get(kj, 2), angle.get(kj, 3)) == angle.get(kj, 3) && (error_detection.get(kj, 0) + error_detection.get(kj, 1) > 1)) {
-                        gb_angle_ret.set(0, kj, (gb_kal.get(kj, 0) + g_pls.get(0, kj)) / 2);
+                    if (min4constant(angle.get(kj_local, 0), angle.get(kj_local, 1), angle.get(kj_local, 2), angle.get(kj_local, 3)) == angle.get(kj_local, 1) && (error_detection.get(kj_local, 0) + error_detection.get(kj_local, 1) > 1)) {
+                        gb_angle_ret.set(0, kj_local, g_pls.get(0, kj_local));
+                    } else if (min4constant(angle.get(kj_local, 0), angle.get(kj_local, 1), angle.get(kj_local, 2), angle.get(kj_local, 3)) == angle.get(kj_local, 0) && (error_detection.get(kj_local, 0) + error_detection.get(kj_local, 1) > 1)) {
+                        gb_angle_ret.set(0, kj_local, gb_kal.get(kj_local, 0));
+                    } else if (min4constant(angle.get(kj_local, 0), angle.get(kj_local, 1), angle.get(kj_local, 2), angle.get(kj_local, 3)) == angle.get(kj_local, 3) && (error_detection.get(kj_local, 0) + error_detection.get(kj_local, 1) > 1)) {
+                        gb_angle_ret.set(0, kj_local, (gb_kal.get(kj_local, 0) + g_pls.get(0, kj_local)) / 2);
                     } else {
-                        gb_angle_ret.set(0, kj, gb_with_NaN.get(kj, 0));
+                        gb_angle_ret.set(0, kj_local, gb_with_NaN.get(kj_local, 0));
                     }
 
                     int sum = 0;
                     int sum2 = 0;
 
                     for (int i = 0; i < 9; i++) {
-                        if (gb_angle_ret.get(0, kj - i) != gb_with_NaN.get(kj - i, 0)) {
+                        if (gb_angle_ret.get(0, kj_local - i) != gb_with_NaN.get(kj_local - i, 0)) {
                             sum++;
                         }
                     }
 
                     for (int i = 8; i < 2; i++) {
-                        if (gb_angle_ret.get(0, kj - i) != gb_with_NaN.get(kj - i, 0)) {
+                        if (gb_angle_ret.get(0, kj_local - i) != gb_with_NaN.get(kj_local - i, 0)) {
                             sum2++;
                         }
                     }
 
-                    if (angle.get(kj, 2) < phi_max || sum > 4 || sum2 > 0 && gb_angle_ret.get(kj - 1, 0) == gb_with_NaN.get(kj - 1, 0)) {
-                        gb_angle_ret.set(0, kj, gb_with_NaN.get(kj, 0));
+                    if (angle.get(kj_local, 2) < phi_max || sum > 4 || sum2 > 0 && gb_angle_ret.get(kj_local - 1, 0) == gb_with_NaN.get(kj_local - 1, 0)) {
+                        gb_angle_ret.set(0, kj_local, gb_with_NaN.get(kj_local, 0));
                     }
 
                 }
 
-                error_detectino_real = DIAS.createnewMatrix(1, kj + 1, error_detectino_real);
+                error_detectino_real = DIAS.createnewMatrix(1, kj_local + 1, error_detectino_real);
 
-                if (gb_angle_ret.get(0, kj) != gb_with_NaN.get(kj, 0) && isNaN(gb.get(kj, 0))) {
-                    error_detectino_real.set(0, kj, 1);
+                if (gb_angle_ret.get(0, kj_local) != gb_with_NaN.get(kj_local, 0) && isNaN(gb.get(kj_local, 0))) {
+                    error_detectino_real.set(0, kj_local, 1);
                 } else {
-                    error_detectino_real.set(0, kj, 0);
+                    error_detectino_real.set(0, kj_local, 0);
                 }
 
             } else {
 
-                error_detectino_real = DIAS.createnewMatrix(1, kj + 1, error_detectino_real);
-                gb_angle_ret = DIAS.createnewMatrix(1, kj + 1, gb_angle_ret);
+                error_detectino_real = DIAS.createnewMatrix(1, kj_local + 1, error_detectino_real);
+                gb_angle_ret = DIAS.createnewMatrix(1, kj_local + 1, gb_angle_ret);
 
-                error_detectino_real.set(0, kj, 0);
-                gb_angle_ret.set(0, kj, gb_with_NaN.get(kj, 0));
+                error_detectino_real.set(0, kj_local, 0);
+                gb_angle_ret.set(0, kj_local, gb_with_NaN.get(kj_local, 0));
             }
 
-            if (kj > M_pls) {
-                double stepp = kj - M_pls;
+            if (kj_local > M_pls) {
+                double stepp = kj_local - M_pls;
 
                 int frameSize = 6;
                 int displaced = (frameSize - 1) / 2;
@@ -788,9 +790,9 @@ public class CGM__SEDFR_JF {
                     }
                 }
 
-                gb_plss = DIAS.createnewMatrix(kj + 1, 1, gb_plss);
-                CGM_change_pls = DIAS.createnewMatrix(kj + 1, 1, CGM_change_pls);
-                temp_gb_plss = DIAS.createnewMatrix(kj + 1, 1, temp_gb_plss);
+                gb_plss = DIAS.createnewMatrix(kj_local + 1, 1, gb_plss);
+                CGM_change_pls = DIAS.createnewMatrix(kj_local + 1, 1, CGM_change_pls);
+                temp_gb_plss = DIAS.createnewMatrix(kj_local + 1, 1, temp_gb_plss);
 
                 for (int i = 0; i < finalResult.length; i++) {
                     gb_plss.set(i, 0, finalResult[i]);
@@ -811,24 +813,24 @@ public class CGM__SEDFR_JF {
                 Zmu_other_JF zmu1 = new Zmu_other_JF(mean_CGM_change, std_CGM_change, CGM_change_pls.transpose());
                 CGM_change_pls = zmu1.zmu_other_JF();
 
-                x_sample = DIAS.createnewMatrix((int) M_pls * 3 + 1, kj + 1, x_sample);
+                x_sample = DIAS.createnewMatrix((int) M_pls * 3 + 1, kj_local + 1, x_sample);
 
-                for (int i = (int) (kj - M_pls); i < kj; i++) {
-                    x_sample.set(i - (int) (kj - M_pls), kj, gb_plss.get(0, i + 1));
+                for (int i = (int) (kj_local - M_pls); i < kj_local; i++) {
+                    x_sample.set(i - (int) (kj_local - M_pls), kj_local, gb_plss.get(0, i + 1));
                 }
 
-                for (int i = (int) (kj - M_pls - 1); i < kj - 1; i++) {
-                    x_sample.set(i - (int) (kj - M_pls - 1 - (kj - (kj - M_pls))), kj, inss.get(i + 1, 0));
+                for (int i = (int) (kj_local - M_pls - 1); i < kj_local - 1; i++) {
+                    x_sample.set(i - (int) (kj_local - M_pls - 1 - (kj_local - (kj_local - M_pls))), kj_local, inss.get(i + 1, 0));
                 }
 
-                for (int i = (int) (kj - M_pls); i < kj; i++) {
-                    x_sample.set(i - (int) (kj - M_pls - (kj - (kj - M_pls - 1 - (kj - (kj - M_pls))))), kj, CGM_change_pls.get(0, i + 1));
+                for (int i = (int) (kj_local - M_pls); i < kj_local; i++) {
+                    x_sample.set(i - (int) (kj_local - M_pls - (kj_local - (kj_local - M_pls - 1 - (kj_local - (kj_local - M_pls))))), kj_local, CGM_change_pls.get(0, i + 1));
                 }
 
-                x_sampletemp = DIAS.createnewMatrix((int) M_pls, kj + 1, x_sampletemp);
+                x_sampletemp = DIAS.createnewMatrix((int) M_pls, kj_local + 1, x_sampletemp);
 
                 for (int i = 0; i < M_pls; i++) {
-                    x_sampletemp.set(i, 0, x_sample.get(i, kj));
+                    x_sampletemp.set(i, 0, x_sample.get(i, kj_local));
                 }
 
                 cluster1 clJF = new cluster1(x_sampletemp.transpose());
@@ -837,15 +839,15 @@ public class CGM__SEDFR_JF {
                 double X_cross;
                 double Y_cross;
 
-                cluster = DIAS.createnewMatrix(1, kj + 1, cluster);
-                yp = DIAS.createnewMatrix(1, kj + 1, yp);
+                cluster = DIAS.createnewMatrix(1, kj_local + 1, cluster);
+                yp = DIAS.createnewMatrix(1, kj_local + 1, yp);
 
                 X_cross = clJF.X;
                 Y_cross = clJF.Y;
 
-                cluster.set(0, kj, clJF.T);
+                cluster.set(0, kj_local, clJF.T);
 
-                y_p = DIAS.createnewMatrix(1, kj + 1, y_p);
+                y_p = DIAS.createnewMatrix(1, kj_local + 1, y_p);
 
                 //    online_sim_3_6_JF onlinesJF =new online_sim_3_6_JF(x_sample,(int) R_pls,(int) M_pls,(int) phi_pls,(int) I_pls,(int) J_pls, (int) alpha_pls,sigma1,sigma2,cluster.get(0,kj));
                 /*     load_plsdata730_R_12_withcluster lpls = new load_plsdata730_R_12_withcluster ();
@@ -860,22 +862,22 @@ public class CGM__SEDFR_JF {
             double sum = 0;
             double sum2 = 0;
             double sum3 = 0;
-            if (kj > 22) {
-                if (noisel.get(kj - 1, 0) == 1) {
+            if (kj_local > 22) {
+                if (noisel.get(kj_local - 1, 0) == 1) {
 
-                    for (int i = kj - length_add + 1; i < kj; i++) {
+                    for (int i = kj_local - length_add + 1; i < kj_local; i++) {
                         sum = error_detectino_real.get(0, i) + sum;
                     }
 
                     if (sum > 0) {
 
-                        for (int i = kj - length_add + 1; i < kj; i++) {
+                        for (int i = kj_local - length_add + 1; i < kj_local; i++) {
                             if (Math.abs(gb_angle_ret.get(0, i) - gb_real.get(0, i)) < Math.abs(gb.get(0, i) - gb_with_NaN.get(0, i))) {
                                 sum2++;
                             }
                         }
 
-                        for (int i = kj - length_add + 1; i < kj; i++) {
+                        for (int i = kj_local - length_add + 1; i < kj_local; i++) {
                             if (Math.abs(gb_angle_ret.get(0, i) - gb_real.get(0, i)) < 10) {
                                 sum3++;
                             }
@@ -903,7 +905,7 @@ public class CGM__SEDFR_JF {
                         score_returning.set(DIAS.matrixLastValueReturnXY(score_returning)[0], 3, 0);
                     }
 
-                } else if (error_detectino_real.get(0, kj) == 1 && error_detectino_real.get(0, kj - 1) == 0 && noisel.get(0, kj) == 0) {
+                } else if (error_detectino_real.get(0, kj_local) == 1 && error_detectino_real.get(0, kj_local - 1) == 0 && noisel.get(0, kj_local) == 0) {
                     score_returning.set(DIAS.matrixLastValueReturnXY(score_returning)[0], 0, 0);
                     score_returning.set(DIAS.matrixLastValueReturnXY(score_returning)[0], 1, 0);
                     score_returning.set(DIAS.matrixLastValueReturnXY(score_returning)[0], 2, 0);
@@ -959,7 +961,7 @@ public class CGM__SEDFR_JF {
             tnoise.sum_xxpp = sum_xxpp;
             tnoise.R = R;
             tnoise.Q = Q;
-            tnoise.kj = kj;
+            tnoise.kj = kj_local;
             tnoise.x_e = x_e;
             tnoise.A = A;
             tnoise.C = C;
@@ -1032,7 +1034,7 @@ public class CGM__SEDFR_JF {
             tnonoise.sum_xxpp = sum_xxpp;
             tnonoise.R = R;
             tnonoise.Q = Q;
-            tnonoise.kj = kj;
+            tnonoise.kj = kj_local;
             tnonoise.x_e = x_e;
             tnonoise.A = A;
             tnonoise.C = C;
@@ -1065,7 +1067,7 @@ public class CGM__SEDFR_JF {
         }
 
         if ((DIAS.matrixLastValueReturnXY(gb_angle_ret)[1] + 1) > 0) {
-            CGM_retuning = gb_angle_ret.get(kj - 1, 0);
+            CGM_retuning = gb_angle_ret.get(kj_local - 1, 0);
         } else {
             CGM_retuning = 88;
         }
