@@ -6,6 +6,7 @@
 package dias;
 
 import Jama.Matrix;
+import de.xypron.jcobyla.CobylaExitStatus;
 
 /**
  *
@@ -21,8 +22,9 @@ public class OptInputs {
     private double lamda; 
     private double[] upperlimit; 
     private double[] lowerlimit; 
+    private CobylaExitStatus exit;
 
-    public OptInputs(double Y, Matrix phi, Matrix Q, Matrix P, double lamda, double err, double[] upperlimit, double[] lowerlimit) {
+    public OptInputs(double Y, Matrix phi, Matrix Q, Matrix P, double lamda, double err, double[] upperlimit, double[] lowerlimit, CobylaExitStatus res) {
         this.Y = Y;
         this.phi = phi;
         this.err = err;
@@ -31,6 +33,7 @@ public class OptInputs {
         this.lamda = lamda;
         this.upperlimit = upperlimit;
         this.lowerlimit = lowerlimit;
+        this.exit = res;
     }
 
     public double y() { 
@@ -63,6 +66,10 @@ public class OptInputs {
     }
     public double err(){
         return err;
+    }
+    
+    public CobylaExitStatus cobylaExit(){
+        return exit;
     }
     
 }

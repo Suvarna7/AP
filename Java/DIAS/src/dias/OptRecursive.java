@@ -123,6 +123,7 @@ public class OptRecursive {
         //Qintermediate =  
         fresult = new Matrix(1, 1);
         Q_values = new ArrayList<Double[]>();
+        constraintValues = new ArrayList<Double[]>();
         iterations = 0;
     }
     
@@ -290,7 +291,7 @@ public class OptRecursive {
         //Return the values normally printed out if debug mode is on.
         // XXX DEBUG -- there are quite a few variables with similar names. 
         // Not sure that this is the correct set of variables to return. 
-        OptInputs inputs = new OptInputs(this.Y, this.phi, this.Q_res, this.P, this.lamda, this.err, this.upperlimit, this.lowerlimit); 
+        OptInputs inputs = new OptInputs(this.Y, this.phi, this.Q_res, this.P, this.lamda, this.err, this.upperlimit, this.lowerlimit, result); 
         return inputs; 
 
     }
