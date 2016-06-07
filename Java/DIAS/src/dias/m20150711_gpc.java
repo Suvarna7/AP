@@ -6,11 +6,12 @@
 package dias;
 
 import Jama.Matrix;
+import de.xypron.jcobyla.CobylaExitStatus;
 import dias.MemoryStaticVariables.m20150711_load_global_variables;
 
-
 /**
- * m20150711 GPC class - 
+ * m20150711 GPC class -
+ *
  * @author Mert
  */
 public class m20150711_gpc {
@@ -73,65 +74,66 @@ public class m20150711_gpc {
     public m20150711_gpc() {
 
     }
-/**
- * Constructor. 
- * 
- * Creates a new instance of the m20150711_gpc class. 
- * 
- * @param gs                            Matrix of glucose level data
- * @param ee                            Matrix of energy expenditure data
- * @param gsr                           Matrix of galvanic skin response data
- * @param kj                            Int
- * @param phi                           Matrix
- * @param phi_ee                        Matrix
- * @param phi_gsr                       Matrix 
- * @param armax_parameters              Matrix
- * @param armax_covariance              double[][][]
- * @param armax_lamda                   Matrix
- * @param armax_error                   Matrix
- * @param armax_parameters_ee           Matrix
- * @param arma_lamda_ee                 Matrix 
- * @param arma_covariance_ee            double[][][]
- * @param arma_err_ee                   Matrix
- * @param arma_parameters_gsr           Matrix
- * @param arma_lamda_gsr                Matrix
- * @param arma_covariance_gsr           double[][][]
- * @param arma_err_gsr                  Matrix
- * @param A_state                       double[][][]
- * @param A_state_ee                    double[][][]
- * @param A_state_gsr                   double[][][]
- * @param C_state                       double[][][]
- * @param C_state_ee                    double[][][]
- * @param C_state_gsr                   double[][][]
- * @param B_state                       double[][][]
- * @param K_state                       double[][][]
- * @param K_state_ee                    double[][][]
- * @param K_state_gsr                   double[][][]
- * @param M                             double[][][]
- * @param L                             double[][][]
- * @param L_ee                          double[][][]
- * @param L_gsr                         double[][][]
- * @param M_ee                          double[][][]
- * @param M_gsr                         double[][][]
- * @param X_state                       Matrix
- * @param X_state_ee                    Matrix
- * @param X_state_gsr                   Matrix
- * @param ee_prediction                 Matrix
- * @param gsr_prediction                Matrix
- * @param g_prediction                  Matrix
- * @param reference_glucose             Matrix
- * @param insulin_sensitivity_constant  Matrix
- * @param basal_insulin                 Matrix
- * @param IOB_prediction                Matrix
- * @param max_insulin                   Matrix
- * @param total_daily_unit              Matrix
- * @param insulin_sensitivity_factor    Matrix
- * @param body_weight                   double, patient body weight
- * @param meal_gpc_mu                   Matrix
- * @param bolus_insulin                 Matrix
- * @param flag_constrains               double
- * @param g_prediction_feedback         Matrix 
- */
+
+    /**
+     * Constructor.
+     *
+     * Creates a new instance of the m20150711_gpc class.
+     *
+     * @param gs Matrix of glucose level data
+     * @param ee Matrix of energy expenditure data
+     * @param gsr Matrix of galvanic skin response data
+     * @param kj Int
+     * @param phi Matrix
+     * @param phi_ee Matrix
+     * @param phi_gsr Matrix
+     * @param armax_parameters Matrix
+     * @param armax_covariance double[][][]
+     * @param armax_lamda Matrix
+     * @param armax_error Matrix
+     * @param armax_parameters_ee Matrix
+     * @param arma_lamda_ee Matrix
+     * @param arma_covariance_ee double[][][]
+     * @param arma_err_ee Matrix
+     * @param arma_parameters_gsr Matrix
+     * @param arma_lamda_gsr Matrix
+     * @param arma_covariance_gsr double[][][]
+     * @param arma_err_gsr Matrix
+     * @param A_state double[][][]
+     * @param A_state_ee double[][][]
+     * @param A_state_gsr double[][][]
+     * @param C_state double[][][]
+     * @param C_state_ee double[][][]
+     * @param C_state_gsr double[][][]
+     * @param B_state double[][][]
+     * @param K_state double[][][]
+     * @param K_state_ee double[][][]
+     * @param K_state_gsr double[][][]
+     * @param M double[][][]
+     * @param L double[][][]
+     * @param L_ee double[][][]
+     * @param L_gsr double[][][]
+     * @param M_ee double[][][]
+     * @param M_gsr double[][][]
+     * @param X_state Matrix
+     * @param X_state_ee Matrix
+     * @param X_state_gsr Matrix
+     * @param ee_prediction Matrix
+     * @param gsr_prediction Matrix
+     * @param g_prediction Matrix
+     * @param reference_glucose Matrix
+     * @param insulin_sensitivity_constant Matrix
+     * @param basal_insulin Matrix
+     * @param IOB_prediction Matrix
+     * @param max_insulin Matrix
+     * @param total_daily_unit Matrix
+     * @param insulin_sensitivity_factor Matrix
+     * @param body_weight double, patient body weight
+     * @param meal_gpc_mu Matrix
+     * @param bolus_insulin Matrix
+     * @param flag_constrains double
+     * @param g_prediction_feedback Matrix
+     */
     public m20150711_gpc(Matrix gs, Matrix ee, Matrix gsr, int kj, Matrix phi, Matrix phi_ee, Matrix phi_gsr, Matrix armax_parameters, double[][][] armax_covariance, Matrix armax_lamda, Matrix armax_error, Matrix armax_parameters_ee, Matrix arma_lamda_ee, double[][][] arma_covariance_ee, Matrix arma_err_ee, Matrix arma_parameters_gsr, Matrix arma_lamda_gsr, double[][][] arma_covariance_gsr, Matrix arma_err_gsr, double[][][] A_state, double[][][] A_state_ee, double[][][] A_state_gsr, double[][][] C_state, double[][][] C_state_ee, double[][][] C_state_gsr, double[][][] B_state, double[][][] K_state, double[][][] K_state_ee, double[][][] K_state_gsr, double[][][] M, double[][][] L, double[][][] L_ee, double[][][] L_gsr, double[][][] M_ee, double[][][] M_gsr, Matrix X_state, Matrix X_state_ee, Matrix X_state_gsr, Matrix ee_prediction, Matrix gsr_prediction, Matrix g_prediction, Matrix reference_glucose, Matrix insulin_sensitivity_constant, Matrix basal_insulin, Matrix IOB_prediction, Matrix max_insulin, Matrix total_daily_unit, Matrix insulin_sensitivity_factor, double body_weight, Matrix meal_gpc_mu, Matrix bolus_insulin, double flag_constrains, Matrix g_prediction_feedback) {
         this.arma_lamda_ee = arma_lamda_ee;
         this.arma_lamda_gsr = arma_lamda_gsr;
@@ -194,9 +196,10 @@ public class m20150711_gpc {
         this.flag_constrains = flag_constrains;
         this.g_prediction_feedback = g_prediction_feedback;
     }
-/**
- * 
- */
+
+    /**
+     *
+     */
     public void gpc() {
 
         /* /////////////////////////////////////////////////////INPUTS//////////////////////////////////////////////////////////////////////////////////
@@ -331,7 +334,7 @@ public class m20150711_gpc {
        printMatrix(g_prediction_feedback,"g_prediction_feedback");
        printMatrix(meal_gpc_mu,"meal_gpc_mu");
      /////////////////////////////////////////////////Test///////////////////////////////////////////////////////////////////////////////////////  */
-        phi = createnewMatrix(na + nb1 + nb2 + nb2 + nc, kj + 1, phi);
+        phi = createNewMatrix(na + nb1 + nb2 + nb2 + nc, kj + 1, phi);
 
         for (int i = 0; i < na; i++) {
             phi.set((na - 1) - i, kj, gs.get(0, kj - na - 2 + i) * (-1));
@@ -353,8 +356,8 @@ public class m20150711_gpc {
             phi.set((na + nb1 + nb2 + nb2 + nc - 1) - i + na + nb1 + nb2 + nb2, kj, armax_error.get(kj - nc + i - 2 - (na + nb1 + nb2 + nb2), 0));
         }
 
-        phi_ee = createnewMatrix(4, kj + 1, phi_ee);
-        phi_gsr = createnewMatrix(4, kj + 1, phi_gsr);
+        phi_ee = createNewMatrix(4, kj + 1, phi_ee);
+        phi_gsr = createNewMatrix(4, kj + 1, phi_gsr);
 
         phi_ee.set(0, kj, -ee.get(0, kj - 2));
         phi_ee.set(1, kj, -ee.get(0, kj - 3));
@@ -395,8 +398,8 @@ public class m20150711_gpc {
         }
 // <editor-fold defaultstate="collapsed" desc=" Run nonlinear optimization (OptRecursive class's .runOptimization method) based on armax parameters.Set lgvariables armax properties based on output.  ">
 
-        OptInputs inputs = new OptInputs((gs.get(0, kj - 1)), phitemp, 
-                armax_parameterstemp, armax_covariancetemp, (armax_lamda.get(kj - 1, 0)), 0,upperlim, lowerlim);        
+        OptInputs inputs = new OptInputs((gs.get(0, kj - 1)), phitemp,
+                armax_parameterstemp, armax_covariancetemp, (armax_lamda.get(kj - 1, 0)), 0, upperlim, lowerlim, null);
         //TODO Call he other function!!! 
         //set the inputs to be the output of the current run. 
         inputs = runOptimizationInStages(inputs);
@@ -409,15 +412,18 @@ public class m20150711_gpc {
         lgvariables.armax_parameters = DIAS.createnewMatrix(inputs.q().getRowDimension(), kj + 1, lgvariables.armax_parameters);
         lgvariables.armax_lamda = DIAS.createnewMatrix(kj + 1, 1, armax_lamda);
         lgvariables.armax_err = DIAS.createnewMatrix(kj + 1, 1, armax_error);
-        lgvariables.armax_covariance = createnew3Dmatrix(lgvariables.armax_covariance, inputs.p().getRowDimension(), inputs.q().getColumnDimension(), kj + 1);
+        //TODO Is it inputs.p() ?
+        System.out.println("armax: " + lgvariables.armax_covariance.length + " x " + lgvariables.armax_covariance[0].length + " x " + lgvariables.armax_covariance[0][0].length);
+        lgvariables.armax_covariance = createnew3Dmatrix(lgvariables.armax_covariance, inputs.p().getRowDimension(), inputs.p().getColumnDimension(), kj + 1);
         lgvariables.armax_lamda.set(kj, 0, inputs.lamda());
         lgvariables.armax_err.set(kj, 0, inputs.err());
 
         //2. Update their values:
+        // Q = ARMAX_PARAMETERS
         for (int i = 0; i < inputs.q().getRowDimension(); i++) {
             lgvariables.armax_parameters.set(i, kj, inputs.q().get(i, 0));
         }
-        
+        // P = ARMAX_COVARIANCES
         for (int i = 0; i < inputs.p().getColumnDimension(); i++) {
             for (int j = 0; j < inputs.p().getRowDimension(); j++) {
                 lgvariables.armax_covariance[i][j][kj] = inputs.p().get(i, j);
@@ -425,42 +431,40 @@ public class m20150711_gpc {
         }
 
 // </editor-fold>
-
 // <editor-fold defaultstate="collapsed" desc=" Set up variables for opt_recursive_arm.optrecursive processing based on energy expenditure. ">
         Matrix phi_temp = new Matrix(phi_ee_trans.getColumnDimension(), 1);
-        
+
         for (int i = 0; i < phi_ee_trans.getColumnDimension(); i++) {
             phi_temp.set(i, 0, phi_ee_trans.get(kj, i));
         }
-        
+
         Matrix armax_parameters_ee_temp = new Matrix(armax_parameters_ee.getRowDimension(), 1);
-        
+
         for (int i = 0; i < armax_parameters_ee.getRowDimension(); i++) {
             armax_parameters_ee_temp.set(i, 0, armax_parameters_ee.get(i, kj - 1));
         }
-        
+
         Matrix arma_covariance_ee_temp = new Matrix((lastvaluereturnxyz(arma_covariance_ee)[1] + 1), (lastvaluereturnxyz(arma_covariance_ee)[2] + 1));
-        
+
         for (int i = 0; i < (lastvaluereturnxyz(arma_covariance_ee)[1] + 1); i++) {
             for (int j = 0; j < (lastvaluereturnxyz(arma_covariance_ee)[2] + 1); j++) {
                 arma_covariance_ee_temp.set(i, j, arma_covariance_ee[i][j][kj - 1]);
             }
         }
-        
+
         for (int i = 0; i < armax_parameters_ee.getRowDimension(); i++) {
             armax_parameters_ee_temp.set(i, 0, armax_parameters_ee.get(i, kj - 1));
         }
-        
+
         double[] onesmatrice = new double[4];
         double[] minusonesmatrice = new double[4];
-        
+
         for (int i = 0; i < 4; i++) {
             onesmatrice[i] = 1;
             minusonesmatrice[i] = -1;
         }
 
 // </editor-fold>
-        
 // <editor-fold defaultstate="collapsed" desc=" Run opt_recursive_arm.optrecursive based on energy expenditure. Set lgvariables energy expenditure properties based on output. ">
 /* 
 We create a new instance of opt_recursive_arm called "orarm" (NB that the last three variables of the constructor are hardcoded).
@@ -472,7 +476,7 @@ Now that the new instance of opt_recursive_arm ("orarm") has been set, we initia
     arma_err_ee gets the lgvariables.arma_err_ee value
     The kj / 0th place in arma_lamda_ee gets the orarm.lamda value
     The kj / 0th place in arma_err_ee gets the orarm.err value
-*/
+         */
         opt_recursive_arm orarm = new opt_recursive_arm(ee.get(0, kj), phi_temp, armax_parameters_ee_temp, arma_covariance_ee_temp, arma_lamda_ee.get(kj - 1, 0), arma_err_ee.get(kj - 1, 0), onesmatrice, minusonesmatrice, 0.99, 0.9, 0.005);
         orarm.optrecursive();
 
@@ -489,7 +493,7 @@ Now that the new instance of opt_recursive_arm ("orarm") has been set, we initia
         for (int i = 0; i < orarm.Q_res.getRowDimension(); i++) {
             lgvariables.arma_parameters_ee.set(i, kj, orarm.Q_res.get(i, 0));
         }
-        
+
         for (int i = 0; i < orarm.P.getColumnDimension(); i++) {
             for (int j = 0; j < orarm.P.getRowDimension(); j++) {
                 lgvariables.arma_covariance_ee[i][j][kj] = orarm.P.get(i, j);
@@ -499,19 +503,19 @@ Now that the new instance of opt_recursive_arm ("orarm") has been set, we initia
 // </editor-fold>
 //<editor-fold defaultstate="collapsed" desc=" Set up variables for opt_recursive_arm.optrecursive processing based on galvanic skin response.  ">
         Matrix phi_gsr_temp = new Matrix(phi_gsr_trans.getColumnDimension(), 1);
-        
+
         for (int i = 0; i < phi_gsr_trans.getColumnDimension(); i++) {
             phi_gsr_temp.set(i, 0, phi_gsr_trans.get(kj, i));
         }
-        
+
         Matrix armax_parameters_gsr_temp = new Matrix(arma_parameters_gsr.getRowDimension(), 1);
-        
+
         for (int i = 0; i < arma_parameters_gsr.getRowDimension(); i++) {
             armax_parameters_gsr_temp.set(i, 0, arma_parameters_gsr.get(i, kj - 1));
         }
-        
+
         Matrix arma_covariance_gsr_temp = new Matrix((lastvaluereturnxyz(arma_covariance_gsr)[1] + 1), (lastvaluereturnxyz(arma_covariance_gsr)[2] + 1));
-        
+
         for (int i = 0; i < (lastvaluereturnxyz(arma_covariance_gsr)[1] + 1); i++) {
             for (int j = 0; j < (lastvaluereturnxyz(arma_covariance_gsr)[2] + 1); j++) {
                 arma_covariance_gsr_temp.set(i, j, arma_covariance_gsr[i][j][kj - 1]);
@@ -519,36 +523,35 @@ Now that the new instance of opt_recursive_arm ("orarm") has been set, we initia
         }
 
 // </editor-fold>
-
 // <editor-fold defaultstate="collapsed" desc=" Run opt_recursive_arm.optrecursive based on galvanic skin response. Set lgvariables galvanic skin response properties based on output. ">
 
-/* 
+        /* 
 We now instantiate a new opt_recursive_arm, "orarm2" with the same parameters as orarm, except the following : 
     Instead of phi_ee_trans, the phi parameter is based on phi_gsr_trans. 
     Instead of armax_parameters_ee, the armax parameter is based on armax_parameters_gsr. 
 The optrecursive() method of orarm2 is triggered, and returns control immediately to this method, so that this method can use the orarm2 parameters altered by the optrecursive() method.
-*/
+         */
         opt_recursive_arm orarm2 = new opt_recursive_arm(gsr.get(0, kj), phi_gsr_temp, armax_parameters_gsr_temp, arma_covariance_gsr_temp, arma_lamda_gsr.get(kj - 1, 0), arma_err_gsr.get(kj - 1, 0), onesmatrice, minusonesmatrice, 0.99, 0.9, 0.005);
         orarm2.optrecursive();
-/* 
+        /* 
 With orarm2.optrecursive() complete, the properties of lgvariables now get set the following way : 
     arma_parameters_gsr gets the value of orarm2.Q_res
     arma_lamda_gsr gets the value of orarm2.lamda
     arma_covariance_gsr gets the value of orarm2.P
     arma_err_gsr gets the value of orarm2.err
-*/
+         */
         lgvariables.arma_parameters_gsr = DIAS.createnewMatrix(orarm2.Q_res.getRowDimension(), kj + 1, lgvariables.arma_parameters_gsr);
         lgvariables.arma_lamda_gsr = DIAS.createnewMatrix(kj + 1, 1, lgvariables.arma_lamda_gsr);
         lgvariables.arma_covariance_gsr = createnew3Dmatrix(lgvariables.arma_covariance_gsr, orarm2.P.getRowDimension(), orarm2.P.getColumnDimension(), kj + 1);
         lgvariables.arma_err_gsr = DIAS.createnewMatrix(kj + 1, 1, lgvariables.arma_err_gsr);
-        
+
         lgvariables.arma_lamda_gsr.set(kj, 0, orarm2.lamda);
         lgvariables.arma_err_gsr.set(kj, 0, orarm2.err);
-        
+
         for (int i = 0; i < orarm2.Q_res.getRowDimension(); i++) {
             lgvariables.arma_parameters_gsr.set(i, kj, orarm2.Q_res.get(i, 0));
         }
-        
+
         for (int i = 0; i < orarm2.P.getColumnDimension(); i++) {
             for (int j = 0; j < orarm2.P.getRowDimension(); j++) {
                 lgvariables.arma_covariance_gsr[i][j][kj] = orarm2.P.get(i, j);
@@ -558,7 +561,7 @@ With orarm2.optrecursive() complete, the properties of lgvariables now get set t
 // </editor-fold>
 // <editor-fold defaultstate="collapsed" desc=" Set up a bunch of short-term matrices based on lgvariable properties, and also do some updates of those properties based on the optimization that just occurred. We'll use these for future processing. ">
 
-/* 
+        /* 
 Build a bunch of new matrices based on the updated lgvariables properties.
     The first set of source properties were those updated by the OptRecursive optimization based on glucose levels (gs) : 
     From lgvariables.armax_parameters : 
@@ -573,7 +576,7 @@ Build a bunch of new matrices based on the updated lgvariables properties.
     From lgvariables.armax_parameters_gsr : 
             Values 0-2 go to matrix "Agsr". 
             Value 3 goes to matrix "Cgsr".
-*/
+         */
         Matrix A = new Matrix(1, 3);
         Matrix Aee = new Matrix(1, 3);
         Matrix Agsr = new Matrix(1, 3);
@@ -583,38 +586,38 @@ Build a bunch of new matrices based on the updated lgvariables properties.
         double C;
         double Cee;
         double Cgsr;
-        
+
         for (int i = 0; i < 3; i++) {
             A.set(0, i, lgvariables.armax_parameters.get(i, kj));
         }
-        
+
         for (int i = 3; i < 15; i++) {
             B1.set(0, i - 3, lgvariables.armax_parameters.get(i, kj));
         }
-        
+
         for (int i = 15; i < 19; i++) {
             B2.set(0, i - 15, lgvariables.armax_parameters.get(i, kj));
         }
-        
+
         for (int i = 19; i < 23; i++) {
             B3.set(0, i - 19, lgvariables.armax_parameters.get(i, kj));
         }
-        
+
         C = lgvariables.armax_parameters.get(23, kj);
-        
+
         for (int i = 0; i < 3; i++) {
             Aee.set(0, i, lgvariables.arma_parameters_ee.get(i, kj));
         }
-        
+
         Cee = lgvariables.arma_parameters_ee.get(3, kj);
-        
+
         for (int i = 0; i < 3; i++) {
             Agsr.set(0, i, lgvariables.arma_parameters_gsr.get(i, kj));
         }
-        
+
         Cgsr = lgvariables.arma_parameters_gsr.get(3, kj);
 
-/*
+        /*
 Update lgvariables again. The following lgvariables properties are initialized with the values passed as parameters to the m20150711_gpc constructor. Then they get updated as follows : 
     lgvariables.A_state gets a subset of values from matrix "A" (multiplied by -1), matrix "B1", matrix "B2", matrix "B3", and "C", and then gets what looks like a 3D diagonal set to ones. 
     lgvariables.A_state_ee gets a subset of values from Aee and Cee. 
@@ -624,7 +627,7 @@ Update lgvariables again. The following lgvariables properties are initialized w
     lgvariables.C_state_gsr gets a subset of values from A_state_gsr. 
     lgvariables.B_state gets a subset of values from "B1", "B2", and "B3". 
     lgvariables.K_state, K_state_ee, and K_state_gsr get their initialized values, but are overlaid with a certain pattern of ones and zeroes, which produce something like a partial (?) 3D identity matrix.
-*/
+         */
         A_state = createnew3Dmatrix(A_state, 22, 24, kj + 1);
         A_state_ee = createnew3Dmatrix(A_state_ee, 4, 4, kj + 1);
         A_state_gsr = createnew3Dmatrix(A_state_gsr, 4, 4, kj + 1);
@@ -823,7 +826,7 @@ We first build a couple of temp matrices in preparation for creating a controlle
     lgvriables.L is updated with values from cont_hor.LL
     lgvariables.L_ee is updated with values from cont_hor.LL_ee
     lgvariables.L_gsr is updated with values from cont_hor.LL_gsr
-*/
+         */
         Matrix A_state_temp = new Matrix(21, 21);
 
         for (int i = 0; i < 21; i++) {
@@ -848,9 +851,9 @@ We first build a couple of temp matrices in preparation for creating a controlle
             }
         }
 
-        if (DIAS.verboseMode) { 
-            System.out.println("N1-N2 and Nu: "+ (N1-N2) + " X " + Nu);
-        } 
+        if (DIAS.verboseMode) {
+            System.out.println("N1-N2 and Nu: " + (N1 - N2) + " X " + Nu);
+        }
         controller_horizons cont_hor = new controller_horizons(A_state_temp, B_state_temp, C_state_temp, N1, N2, Nu);
         cont_hor.calculateHorizons();
 
@@ -858,7 +861,6 @@ We first build a couple of temp matrices in preparation for creating a controlle
         lgvariables.L_ee = createnew3Dmatrix(lgvariables.L_ee, cont_hor.LL_ee.getRowDimension(), cont_hor.LL_ee.getColumnDimension(), kj + 1);
         lgvariables.L_gsr = createnew3Dmatrix(lgvariables.L_gsr, cont_hor.LL_gsr.getRowDimension(), cont_hor.LL_gsr.getColumnDimension(), kj + 1);
         lgvariables.M = createnew3Dmatrix(lgvariables.M, cont_hor.M.getRowDimension(), cont_hor.M.getColumnDimension(), kj + 1);
-
 
         for (int i = 0; i < cont_hor.M.getRowDimension(); i++) {
             for (int j = 0; j < cont_hor.M.getColumnDimension(); j++) {
@@ -884,7 +886,7 @@ We first build a couple of temp matrices in preparation for creating a controlle
             }
         }
 // </editor-fold>
-        
+
 // <editor-fold defaultstate="collapsed" desc=" Get prediction horizon based on energy expenditure and update lgvariables.M_ee. ">
 /* 
 In preparation for instantiating a new predication_horizon, we set up some new matrices : 
@@ -893,7 +895,7 @@ In preparation for instantiating a new predication_horizon, we set up some new m
 
     The "p_hor" instance of prediction_horizon is now instantiated, using A_state_temp_ee, C_state_temp_ee, N1, and N2. 
     The output of p_hor's prediction_horizons() method is stored in a new matrix, M_ee_temp. This matrix is used to update lgvariables.M_ee. 
-*/
+         */
         Matrix A_state_temp_ee = new Matrix(4, 4);
 
         for (int i = 0; i < 4; i++) {
@@ -921,7 +923,7 @@ In preparation for instantiating a new predication_horizon, we set up some new m
             }
         }
 // </editor-fold>
-        
+
 // <editor-fold defaultstate="collapsed" desc=" Get prediction horizon based on GSR and update lgvariables.M_gsr. ">
 /* 
 In preparation for instantiating another prediction_horizon, we set up some new matrices : 
@@ -930,7 +932,7 @@ In preparation for instantiating another prediction_horizon, we set up some new 
 
     The "p_hor2" instance of prediction_horizon is now instantiated, using A_state_temp_gsr, C_state_temp_gsr, N1, and N2. The output of p_hor2's prediction_horizons() method is stored in the new variable M_gsr_temp. This output is used to update lgvariables : 
     lgvariables.M_gsr gets values from M_gsr_temp. 
-*/
+         */
         Matrix A_state_temp_gsr = new Matrix(4, 4);
 
         for (int i = 0; i < 4; i++) {
@@ -968,7 +970,7 @@ Remember phi? It was passed as a parameter to the m20150711_gpc constructor, and
     lgvariables.X_state gets the value of our X_state. 
     lgvariables.X_state_ee gets the value of our X_state_ee. 
     lgvariables.X_state_gsr gets the value of our X_state_gsr. 
-*/
+         */
         X_state = new Matrix(21, kj + 1);
         X_state_ee = new Matrix(phi_ee_trans.getColumnDimension(), kj + 1);
         X_state_gsr = new Matrix(phi_gsr_trans.getColumnDimension(), kj + 1);
@@ -1034,7 +1036,7 @@ First we build a new matrix, K_state_ee_temp, which is a one-column vector that 
     (M_ee_temp x K_state_ee_temp x the value in the kj_th column of the 0th row in ee)
 
 The instance variable ee_prediction, which was passed through the constructor, gets (partially?) loaded with values from ee_prediction_temp. lgvariables.ee_prediction then gets set to the value of ee_prediction. 
-*/
+         */
         Matrix K_state_ee_temp = new Matrix((lastvaluereturnxyz(K_state_ee))[1] + 1, (lastvaluereturnxyz(K_state_ee))[2] + 1);
 
         for (int i = 0; i < (lastvaluereturnxyz(K_state_ee))[1] + 1; i++) {
@@ -1052,7 +1054,7 @@ The instance variable ee_prediction, which was passed through the constructor, g
         Matrix ee_prediction_temp;
         ee_prediction_temp = (M_ee_temp.times((A_state_temp_ee).minus((K_state_ee_temp).times(C_state_temp_ee))).times(X_state_ee_temp)).plus((M_ee_temp).times(K_state_ee_temp).times(ee.get(0, kj)));
 
-        ee_prediction = createnewMatrix(ee_prediction_temp.getRowDimension(), kj + 1, ee_prediction);
+        ee_prediction = createNewMatrix(ee_prediction_temp.getRowDimension(), kj + 1, ee_prediction);
 
         for (int i = 0; i < ee_prediction_temp.getRowDimension(); i++) {
             for (int j = 0; j < ee_prediction_temp.getColumnDimension(); j++) {
@@ -1062,10 +1064,10 @@ The instance variable ee_prediction, which was passed through the constructor, g
 
         lgvariables.ee_prediction = ee_prediction;
 // </editor-fold>      
-        
+
 // <editor-fold defaultstate="collapsed" desc=" Build a new value for lgvariables.gsr_prediction. ">
 
-/* 
+        /* 
 With lgvariables.ee_prediction set, we start building a new value for lgvariables.gsr_prediction. This process is very similar to the process used to build lgvariables.ee_prediction. 
     We create a new matrix, K_state_gsr_temp, which gets its values from 3D array K_state_gsr. 
     We also create a new matrix, X_state_gsr_temp, which gets its values from X_state_gsr (which was passed through the constructor, but got some updated values earlier in this method). 
@@ -1077,7 +1079,7 @@ With lgvariables.ee_prediction set, we start building a new value for lgvariable
 The instance variable gsr_prediction, which was passed through the constructor, gets (partially?) loaded with values from gsr_prediction_temp. 
 
 Finally, lgvariables.gsr_prediction now gets set to the value of gsr_prediction_temp. 
-*/
+         */
         Matrix K_state_gsr_temp = new Matrix((lastvaluereturnxyz(K_state_gsr))[1] + 1, (lastvaluereturnxyz(K_state_gsr))[2] + 1);
 
         for (int i = 0; i < (lastvaluereturnxyz(K_state_gsr))[1] + 1; i++) {
@@ -1094,7 +1096,7 @@ Finally, lgvariables.gsr_prediction now gets set to the value of gsr_prediction_
 
         Matrix gsr_prediction_temp = (M_gsr_temp.times((A_state_temp_gsr).minus((K_state_gsr_temp).times(C_state_temp_gsr))).times(X_state_gsr_temp)).plus((M_gsr_temp).times(K_state_gsr_temp).times(gsr.get(0, kj)));
 
-        gsr_prediction = createnewMatrix(gsr_prediction_temp.getRowDimension(), kj + 1, gsr_prediction);
+        gsr_prediction = createNewMatrix(gsr_prediction_temp.getRowDimension(), kj + 1, gsr_prediction);
 
         for (int i = 0; i < gsr_prediction_temp.getRowDimension(); i++) {
             for (int j = 0; j < gsr_prediction_temp.getColumnDimension(); j++) {
@@ -1102,13 +1104,13 @@ Finally, lgvariables.gsr_prediction now gets set to the value of gsr_prediction_
             }
         }
 
-        lgvariables.gsr_prediction = createnewMatrix(gsr_prediction_temp.getRowDimension(), kj + 1, lgvariables.gsr_prediction);
+        lgvariables.gsr_prediction = createNewMatrix(gsr_prediction_temp.getRowDimension(), kj + 1, lgvariables.gsr_prediction);
         lgvariables.gsr_prediction = gsr_prediction;
 // </editor-fold>
 
 // <editor-fold defaultstate="collapsed" desc=" Set up variable g_prediction for future use. ">
 
-/* 
+        /* 
 Now we're going to set up matrix "g_prediction_temp". This got the similarly-named value passed through the constructor, but we're essentially going to overwrite its values. It gets loaded with the result of a bunch of matrix math, for which we set up a bunch of temporary variables : 
     M_temp, based on lgvariables.M
     K_temp, based on lgvariables.K_state
@@ -1121,7 +1123,7 @@ Now we're going to set up matrix "g_prediction_temp". This got the similarly-nam
     (M_temp x (A_state_temp - (K_temp x C_state_temp)) x X_state_temp) + 
     (M_temp x K_temp x the value in the kj_th column of the 0th row in gs)
 Finally, the variable g_prediction gets updated based on the values in g_prediction_temp.
-*/
+         */
         Matrix M_temp = new Matrix(8, 21);
 
         for (int i = 0; i < 8; i++) {
@@ -1178,7 +1180,7 @@ Finally, the variable g_prediction gets updated based on the values in g_predict
 
         Matrix g_prediction_temp = (M_temp.times((A_state_temp).minus((K_temp).times(C_state_temp))).times(X_state_temp)).plus((M_temp).times(K_temp).times(gs.get(0, kj - 2)));
 
-        g_prediction = createnewMatrix(g_prediction_temp.getRowDimension(), kj + 1, g_prediction);
+        g_prediction = createNewMatrix(g_prediction_temp.getRowDimension(), kj + 1, g_prediction);
 
         for (int i = 0; i < g_prediction_temp.getRowDimension(); i++) {
             for (int j = 0; j < g_prediction_temp.getColumnDimension(); j++) {
@@ -1189,84 +1191,81 @@ Finally, the variable g_prediction gets updated based on the values in g_predict
 
 // <editor-fold defaultstate="collapsed" desc=" Update g_prediction and build supporting variables based on it. Update lgvariables.reference_glucose. ">
 
-/* 
+        /* 
 We now build a couple more temporary matrices for processing. 
     eetemp, based on ee_temp and ee_prediction
     gsrtemp, based on gsr_temp and gsr_prediction
 We update g_prediction based on L_ee_temp, L_gsr_temp, and g_prediction_feedback.
-*/
+         */
         Matrix eetemp = new Matrix(ee_prediction.getRowDimension() - d2 + 1, 1);
-        
+
         eetemp.set(0, 0, ee_temp.get(0, 0));
-        
+
         for (int i = 0; i < ee_prediction.getRowDimension() - d2; i++) {
             eetemp.set(i + 1, 0, ee_prediction.get(i, kj));
         }
-        
+
         Matrix gsrtemp = new Matrix(gsr_prediction.getRowDimension() - d2 + 1, 1);
-        
+
         gsrtemp.set(0, 0, gsr_temp.get(0, 0));
-        
+
         for (int i = 0; i < gsr_prediction.getRowDimension() - d2; i++) {
             gsrtemp.set(i + 1, 0, gsr_prediction.get(i, kj));
         }
-        
+
         for (int i = 0; i < g_prediction.getRowDimension(); i++) {
             g_prediction.set(i, kj, (L_ee_temp.times(eetemp).plus(L_gsr_temp.times(gsrtemp))).get(i, 0) + g_prediction.get(i, kj));
         }
-        
+
         for (int i = 0; i < g_prediction.getRowDimension(); i++) {
             g_prediction.set(i, kj, g_prediction_feedback.get(i, 0) + g_prediction.get(i, kj));
         }
-        
-/* 
+
+        /* 
 We now create an instance of reference_trajectory, "ref_trajectory", based on gs, N1, N2, and meal_gpc_mu. NB that there's a hardcoded "110" value being passed through here, which is interesting. The output of running the referencetrajectory() method of ref_trajectory gets stored in reference_glucose_temp. lgvariables.reference_glucose gets updated values from reference_glucose_temp. 
-*/
-        
+         */
         reference_trajectory ref_trajectory = new reference_trajectory(gs.get(0, kj - 2), 110, (N2 - N1), meal_gpc_mu.get(kj, 0));
-        
+
         Matrix reference_glucose_temp = ref_trajectory.referencetrajectory();
-        
-        lgvariables.reference_glucose = createnewMatrix(8, kj + 1, lgvariables.reference_glucose);
-        
+
+        lgvariables.reference_glucose = createNewMatrix(8, kj + 1, lgvariables.reference_glucose);
+
         for (int i = 0; i < 8; i++) {
             lgvariables.reference_glucose.set(i, kj, reference_glucose_temp.get(i, 0));
         }
 
 // </editor-fold>
-
 // <editor-fold defaultstate="collapsed" desc=" Update lgvariables.insulin_sensitivity_constant. ">
 
-/* 
+        /* 
 Set up local matrices : 
 dividematrix, based on g_prediction and reference_glucose_temp
 g_predictionkj, a subset of g_prediction
 We then use the matricecompareconstantmax() function on dividematrix to set the value of lgvariables.insulin_sensitivity_constant (NB that there's a hardcoded value 0.1 being supplied to the function)
-*/
-
+         */
         Matrix dividematrix = new Matrix(g_prediction_temp.getRowDimension(), 1);
-        
+
         for (int i = 0; i < g_prediction.getRowDimension(); i++) {
             dividematrix.set(i, 0, g_prediction.get(i, kj) / reference_glucose_temp.get(i, 0));
         }
-        
+
         Matrix g_predictionkj = new Matrix(g_prediction.getRowDimension(), 1);
-        
+
         for (int i = 0; i < g_prediction.getRowDimension(); i++) {
             g_predictionkj.set(i, 0, g_prediction.get(i, kj));
         }
-        
-        Matrix insulin_sensitivity_constant_temp = matricecompareconstantmax(0.1, dividematrix);
-        
-        lgvariables.insulin_sensitivity_constant = createnewMatrix(8, kj + 1, lgvariables.insulin_sensitivity_constant);
-        
+
+        Matrix insulin_sensitivity_constant_temp = matrixCompareConstantMax(0.1, dividematrix);
+
+        lgvariables.insulin_sensitivity_constant = createNewMatrix(8, kj + 1, lgvariables.insulin_sensitivity_constant);
+
         for (int i = 0; i < insulin_sensitivity_constant_temp.getRowDimension(); i++) {
             lgvariables.insulin_sensitivity_constant.set(i, kj, insulin_sensitivity_constant_temp.get(i, 0));
         }
 // </editor-fold>
 
-        System.out.println("L: "+ (lgvariables.L.length + 1) + " x " +
-                + (lgvariables.L[0].length + 1) + " x " + (lgvariables.L[0][0].length + 1));
+        System.out.println("L: " + (lgvariables.L.length + 1) + " x "
+                + +(lgvariables.L[0].length + 1) + " x " + (lgvariables.L[0][0].length + 1));
         Matrix L_matrix = new Matrix((lastvaluereturnxyz(lgvariables.L)[1] + 1), (lastvaluereturnxyz(lgvariables.L)[2] + 1));
 
         for (int i = 0; i < (lastvaluereturnxyz(lgvariables.L)[1] + 1); i++) {
@@ -1285,12 +1284,12 @@ We then use the matricecompareconstantmax() function on dividematrix to set the 
         printMatrix(cont.umaxx,"cont.umaxx");
         printMatrix(cont.total_daily_unit,"cont.total_daily_unit");
         printMatrix(cont.insulin_sensitivity_factor,"cont.insulin_sensitivity_factor");*/
-        lgvariables.basal_insulin = createnewMatrix(cont.ins.getRowDimension(), kj + 1, lgvariables.basal_insulin);
-        lgvariables.IOB_prediction = createnewMatrix(cont.IOB_pred.getRowDimension(), kj + 1, lgvariables.IOB_prediction);
-        lgvariables.maximum_insulin = createnewMatrix(cont.umaxx.getRowDimension(), kj + 1, lgvariables.maximum_insulin);
-        lgvariables.total_daily_unit = createnewMatrix(cont.total_daily_unit.getRowDimension(), kj + 1, lgvariables.total_daily_unit);
-        lgvariables.insulin_sensitivity_factor = createnewMatrix(cont.insulin_sensitivity_factor.getRowDimension(), kj + 1, lgvariables.insulin_sensitivity_factor);
-        lgvariables.g_prediction = createnewMatrix(cont.g_prediction.getRowDimension(), kj + 1, lgvariables.g_prediction);
+        lgvariables.basal_insulin = createNewMatrix(cont.ins.getRowDimension(), kj + 1, lgvariables.basal_insulin);
+        lgvariables.IOB_prediction = createNewMatrix(cont.IOB_pred.getRowDimension(), kj + 1, lgvariables.IOB_prediction);
+        lgvariables.maximum_insulin = createNewMatrix(cont.umaxx.getRowDimension(), kj + 1, lgvariables.maximum_insulin);
+        lgvariables.total_daily_unit = createNewMatrix(cont.total_daily_unit.getRowDimension(), kj + 1, lgvariables.total_daily_unit);
+        lgvariables.insulin_sensitivity_factor = createNewMatrix(cont.insulin_sensitivity_factor.getRowDimension(), kj + 1, lgvariables.insulin_sensitivity_factor);
+        lgvariables.g_prediction = createNewMatrix(cont.g_prediction.getRowDimension(), kj + 1, lgvariables.g_prediction);
 
         for (int i = 0; i < lgvariables.g_prediction.getRowDimension(); i++) {
             for (int j = 0; j < lgvariables.g_prediction.getColumnDimension(); j++) {
@@ -1306,7 +1305,7 @@ We then use the matricecompareconstantmax() function on dividematrix to set the 
         for (int i = 0; i < cont.ins.getRowDimension(); i++) {
             m20150711_load_global_variables.basal_insulin.set(i, kj, cont.ins.get(i, 0));
         }
-        DIAS.printMatrix ( m20150711_load_global_variables.basal_insulin, "gpc module basal" );
+        DIAS.printMatrix(m20150711_load_global_variables.basal_insulin, "gpc module basal");
 
         for (int i = 0; i < cont.IOB_pred.getRowDimension(); i++) {
             lgvariables.IOB_prediction.set(i, kj, cont.IOB_pred.get(i, 0));
@@ -1389,7 +1388,6 @@ We then use the matricecompareconstantmax() function on dividematrix to set the 
         return innermatrix;
     }
 
-
     public int[] lastvaluereturnxyz(double s[][][]) {
         int lastvaluex = 0;
         int lastvaluey = 0;
@@ -1416,73 +1414,20 @@ We then use the matricecompareconstantmax() function on dividematrix to set the 
 
     public double[][][] createnew3Dmatrix(double s[][][], int newx, int newy, int newz) {
 
-        double[][][] newdoublematrice = new double[newx][newy][newz];
+        double[][][] newdoublematrix = new double[newx][newy][newz];
 
         for (int i = 0; i < s.length; i++) {
             for (int j = 0; j < s[0].length; j++) {
                 for (int z = 0; z < s[0][0].length; z++) {
-                    newdoublematrice[i][j][z] = s[i][j][z];
+                    newdoublematrix[i][j][z] = s[i][j][z];
                 }
             }
         }
 
-        return newdoublematrice;
+        return newdoublematrix;
     }
 
-    public void print3Dmatrice(double x[][][], String matricename) {
-
-        int[] valuex;
-        valuex = lastvaluereturnxyz(x);
-
-        System.out.println(matricename);
-
-        for (int k = 0; k < valuex[3] + 1; k++) {
-            for (int i = 0; i < valuex[1] + 1; i++) {
-                for (int j = 0; j < valuex[2] + 1; j++) {
-                    System.out.print("\t\t\t" + x[i][j][k]);
-                }
-                System.out.println();
-            }
-            System.out.println("Matrice State:  " + (k + 1));
-        }
-        System.out.println("Matrice has written");
-
-    }
-
-    public void print3DMatrice(double x[][][], String matricename) {
-
-        System.out.println(matricename);
-
-        for (int k = 0; k < x[0][0].length; k++) {
-            for (int j = 0; j < x.length; j++) {
-                for (int i = 0; i < x[0].length; i++) {
-                    System.out.print("\t\t\t" + x[j][i][k]);
-                }
-                System.out.println();
-            }
-            System.out.println("Matrice State:  " + (k + 1));
-        }
-        System.out.println("Matrice has written");
-
-    }
-
-    public void print3Dmatriceother(double x[][][], String matricename, int t, int y, int z) {
-        System.out.println(matricename);
-
-        for (int k = 0; k < z; k++) {
-            for (int i = 0; i < y; i++) {
-                for (int j = 0; j < t; j++) {
-                    System.out.print("\t\t\t" + x[i][j][k]);
-                }
-                System.out.println();
-            }
-            System.out.println("Matrice State:  " + (k + 1));
-        }
-        System.out.println("Matrice has written");
-
-    }
-
-    public Matrix matricecompareconstantmax(double constant, Matrix matrice) {
+    public Matrix matrixCompareConstantMax(double constant, Matrix matrice) {
         Matrix resultmatrice = new Matrix(matrice.getRowDimension(), matrice.getColumnDimension());
 
         for (int i = 0; i < matrice.getRowDimension(); i++) {
@@ -1498,7 +1443,7 @@ We then use the matricecompareconstantmax() function on dividematrix to set the 
         return resultmatrice;
     }
 
-    public Matrix createnewMatrix(int newdimensionx, int newdimensiony, Matrix oldmatrice) {
+    public Matrix createNewMatrix(int newdimensionx, int newdimensiony, Matrix oldmatrice) {
         Matrix newMatrice = new Matrix(newdimensionx, newdimensiony);
 
         for (int i = 0; i < oldmatrice.getRowDimension(); i++) {
@@ -1509,31 +1454,44 @@ We then use the matricecompareconstantmax() function on dividematrix to set the 
 
         return newMatrice;
     }
-    
+
     /**
      * Function to run the Optimization using 5 optimization stages
+     *
      * @param in Optimization Inputs
-     * @return 
+     * @return
      */
     private OptInputs runOptimizationInStages(OptInputs in) {
         OptRecursive optRecursiveCons = new OptRecursive(in);
-        optRecursiveCons.runOptimization();
-        optRecursiveCons.saveOptRecursiveVariables();
-        //Second optimization:
-        optRecursiveCons.updateParameters(optRecursiveCons.Q_res, optRecursiveCons.P, 1.0e-2, 1.49011611938477e-6, 5000);
-        optRecursiveCons.runOptimization();
-        //Third optimization:
-        optRecursiveCons.updateParameters(optRecursiveCons.Q_res, optRecursiveCons.P, 1.0e-1, 1.49011611938477e-8, 5000);
-        optRecursiveCons.runOptimization();
-        //Fourth optimization:
-        optRecursiveCons.updateParameters(optRecursiveCons.Q_res, optRecursiveCons.P, 0.5, 1.49011611938477e-4, 5000);
-        optRecursiveCons.runOptimization();
-        //Fifth optimization:
-        optRecursiveCons.updateParameters(optRecursiveCons.Q_res, optRecursiveCons.P, 1.0e-4, 1.49011611938477e-8, 5000);
         OptInputs res = optRecursiveCons.runOptimization();
-        optRecursiveCons.saveOptRecursiveResults();
-        return res;
+        optRecursiveCons.saveOptRecursiveVariables();
+        if (res.cobylaExit() != CobylaExitStatus.NORMAL) {
+            //Second optimization:
+            optRecursiveCons.updateParameters(optRecursiveCons.Q_res, optRecursiveCons.P, 1.0e-2, 1.49011611938477e-6, 5000);
+            res = optRecursiveCons.runOptimization();
+            if (res.cobylaExit() != CobylaExitStatus.NORMAL) {
+                //Third optimization:
+                optRecursiveCons.updateParameters(optRecursiveCons.Q_res, optRecursiveCons.P, 1.0e-1, 1.49011611938477e-8, 5000);
+                res = optRecursiveCons.runOptimization();
+                if (res.cobylaExit() != CobylaExitStatus.NORMAL) {
+                    //Fourth optimization:
+                    optRecursiveCons.updateParameters(optRecursiveCons.Q_res, optRecursiveCons.P, 0.5, 1.49011611938477e-4, 5000);
+                    res = optRecursiveCons.runOptimization();
+
+                    if (res.cobylaExit() != CobylaExitStatus.NORMAL) {
+                        //Fifth optimization:
+                        optRecursiveCons.updateParameters(optRecursiveCons.Q_res, optRecursiveCons.P, 1.0e-4, 1.49011611938477e-8, 5000);
+                        res = optRecursiveCons.runOptimization();
+                    }
+                }
+            }
+            //Last optimization:
+            optRecursiveCons.updateParameters(optRecursiveCons.Q_res, optRecursiveCons.P, 1.0e-4, 1.49011611938477e-8, 5000);
+            res = optRecursiveCons.runOptimization();
+            optRecursiveCons.saveOptRecursiveResults();
+            }
+            return res;
+
+        }
 
     }
-
-}
