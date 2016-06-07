@@ -24,7 +24,7 @@ public class OptInputs {
     private double[] lowerlimit; 
     private CobylaExitStatus exit;
 
-    public OptInputs(double Y, Matrix phi, Matrix Q, Matrix P, double lamda, double err, double[] upperlimit, double[] lowerlimit, CobylaExitStatus res) {
+    public OptInputs(double Y, Matrix phi, Matrix Q, Matrix P, double lamda, double err, double[] upperlimit, double[] lowerlimit, CobylaExitStatus exit) {
         this.Y = Y;
         this.phi = phi;
         this.err = err;
@@ -33,7 +33,7 @@ public class OptInputs {
         this.lamda = lamda;
         this.upperlimit = upperlimit;
         this.lowerlimit = lowerlimit;
-        this.exit = res;
+        this.exit = exit;
     }
 
     public double y() { 
@@ -68,7 +68,7 @@ public class OptInputs {
         return err;
     }
     
-    public CobylaExitStatus cobylaExit(){
+    public CobylaExitStatus exit(){
         return exit;
     }
     

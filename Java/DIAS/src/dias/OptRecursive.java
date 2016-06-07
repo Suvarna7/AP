@@ -123,7 +123,6 @@ public class OptRecursive {
         //Qintermediate =  
         fresult = new Matrix(1, 1);
         Q_values = new ArrayList<Double[]>();
-        constraintValues = new ArrayList<Double[]>();
         iterations = 0;
     }
     
