@@ -52,8 +52,42 @@ public class DIAS {
         // variables. 
         boolean configureOK = configureSession();
 
-        System.out.println(excelFilePath + " : " + new File(excelFilePath).exists());
-        System.out.println(bodymediaFileUrl + " : " + new File(bodymediaFileUrl).exists());
+        System.out.print("Excel file master directory : " + excelFilePath); 
+        if (new File(excelFilePath).exists()) { 
+            System.out.println(" (directory exists : true)"); 
+        } 
+        else { 
+            if (!(new File(excelFilePath).mkdirs())) { 
+                System.out.println(" ... but this directory could not be created."); 
+                configureOK = false; 
+            } 
+            else { 
+                System.out.println(" (directory created)"); 
+            }
+        }
+            
+        System.out.print("Excel files will load from directory : " + DIAS.excelFilePath + DIAS.excelSubdirectory);
+        if (!(new File(DIAS.excelFilePath + DIAS.excelSubdirectory).exists())) { 
+            if (!(new File(DIAS.excelFilePath + DIAS.excelSubdirectory).mkdirs())) { 
+            System.out.println("... but this directory could not be created."); 
+            configureOK = false; 
+            }
+            else { 
+                System.out.println(" (directory created)"); 
+            }
+        }
+        else { 
+            System.out.println(" (directory exists : true)"); 
+        } 
+        System.out.print("Biometric data will read from file : " + bodymediaFileUrl); 
+        if (!(new File(bodymediaFileUrl).exists())) { 
+            System.out.println(" (file does not exist!)"); 
+            configureOK = false; 
+        } 
+        else { 
+            System.out.println(" (file exists)");
+        } 
+        if (!(configureOK)) { System.out.println("Configuration failed. Exiting application."); } 
 
         //Start Graphical interface
         //XXX restore this next line before merging with master. 
