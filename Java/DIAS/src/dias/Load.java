@@ -6,6 +6,7 @@
 package dias;
 
 import Jama.Matrix;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -35,7 +36,7 @@ public class Load {
          try {
     
       //String fileName= "D:\\Phd\\Research\\Kamuran`s Code\\"+filepath+"\\"+filename+t+".xlsx" ; 
-      String fileName= DIAS.excelFilePath+"\\" +filepath+"\\"+filename+".xlsx" ; 
+      String fileName= DIAS.excelFilePath+ File.separator +filepath+ File.separator +filename+".xlsx" ; 
 fis = new FileInputStream(fileName);
 XSSFWorkbook calismaKitap = new XSSFWorkbook(fis);
 XSSFSheet sheet = calismaKitap.getSheetAt(0);
@@ -79,7 +80,7 @@ catch (IOException e) {
             
          try {
             //String fileName= "D:\\Phd\\Research\\Kamuran`s Code\\"+filepath+"\\"+filename+t+".xlsx" ; 
-             String fileName= DIAS.excelFilePath+"\\" +filepath+"\\"+filename+".xlsx" ;
+             String fileName= DIAS.excelFilePath+ File.separator +filepath+ File.separator +filename+".xlsx" ;
              
 fis = new FileInputStream(fileName);
 XSSFWorkbook calismaKitap = new XSSFWorkbook(fis);
@@ -138,7 +139,7 @@ catch (IOException e) {
          FileInputStream fis = null;
          try {
              //String fileName= "D:\\Phd\\Research\\Kamuran`s Code\\"+filepath+"\\"+filename+t+".xlsx" ; 
-            String fileName= DIAS.excelFilePath+"\\" + DIAS.excelSubdirectory +"\\"+filename+".xlsx" ;
+            String fileName= DIAS.excelFilePath+ File.separator + DIAS.excelSubdirectory + File.separator +filename+".xlsx" ;
 fis = new FileInputStream(fileName);
 XSSFWorkbook calismaKitap = new XSSFWorkbook(fis);
 XSSFSheet sheet = calismaKitap.getSheetAt(0);
@@ -177,7 +178,7 @@ catch (IOException e) {
          FileInputStream fis = null;
          try {
             //String fileName= "D:\\Phd\\Research\\Kamuran`s Code\\"+filepath+"\\"+filename+t+".xlsx" ; 
-            String fileName= DIAS.excelFilePath+"\\" + DIAS.excelSubdirectory +"\\"+filename+".xlsx" ;
+            String fileName= DIAS.excelFilePath+ File.separator + DIAS.excelSubdirectory + File.separator +filename+".xlsx" ;
 fis = new FileInputStream(fileName);
 XSSFWorkbook calismaKitap = new XSSFWorkbook(fis);
 XSSFSheet sheet = calismaKitap.getSheetAt(0);
