@@ -1,5 +1,6 @@
 package dias;
 
+import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
 import de.xypron.jcobyla.Calcfc;
 import de.xypron.jcobyla.Cobyla;
@@ -18,13 +19,10 @@ import org.apache.commons.lang3.ArrayUtils;
  */
 public class OptRecursive {
 
-    //TODO Output file
+     //TODO Output file
     private final String outputOpt = "outputOpt";
-
     //Size of Q matrix
     private static final int Q_SIZE = 24;
-    
-    private static boolean printed;
 
     //Variables for the optimization
     //INPUTS:
@@ -42,7 +40,7 @@ public class OptRecursive {
     private Matrix pP;
 
     //EIGEN VALUE CONSTRAINT
-    private static final double EIGEN_CONSTRAIN_VALUE = 0.99;
+    private static final double EIGEN_CONSTRAIN_VALUE = 0.9999;
 
     //**********************************************
     //Parameters of the Cobyla optimization
@@ -55,19 +53,21 @@ public class OptRecursive {
     // **** NOTE - RHO_BEG is used in the first N_VARIABLES evaluation of the fuction:
     //      - First: evaluate Q0
     //      - Then: add RHO_BEG to each single sample
-   
-    private final double _RHO_BEG =  1.0e-4;
+    //private final double _RHO_BEG = 1e-6;
+    private  double _RHO_BEG = 1.0e-4;
+
     //TrustRegionRadiusEnd  : (default = 1.0e-6)
     //We were using default RHO_END = 1.0e-4
     //MATLAB - RHO_END
     //private final double _RHO_END = 1.49011611938477e-08;
-    private final double _RHO_END = 1.49011611938477e-08;
-
-    private final int iprint = 1;
+    private  double _RHO_END = 1.49011611938477e-8;
+    
     //TODO Max_function - max recursive loop
-    private final static int MAX_FUNC = 50000;
+    private int MAX_FUNC = 5000;
+    
+    private final int iprint = 1;
     private final static int N_VARIABLES = 24;
-    private final static int M_CONSTRAINTS = 0;
+    private final static int M_CONSTRAINTS = 1;
 
     //******************************************
     //Results of the optimization
@@ -82,12 +82,11 @@ public class OptRecursive {
     private final Matrix Q_optimizing_keepValue = new Matrix(Q_SIZE, 1);
     public Matrix Q_res;
     private Matrix fresult;
-    
+
     //DEBUG FUNCTIONS !!!!
     private List<Double[]> Q_values;
+    private List<Double[]> constraintValues;
     private double iterations;
-    private double Vinitial;
-    private boolean firstIteration;
 
     /**
      * Create the opt_recursive object with the given parameters
@@ -123,11 +122,38 @@ public class OptRecursive {
                                        -2, -2, -2, -2};*/
         //Qintermediate =  
         fresult = new Matrix(1, 1);
-        
-        printed = false;
-        firstIteration = true;
         Q_values = new ArrayList<Double[]>();
         iterations = 0;
+    }
+    
+    /**
+     * Update optimization main parameters
+     * @param Q_old X0
+     * @param P_old P0
+     * @param rho_beg Rho_begin
+     * @param rho_end Rho_end
+     * @param max max_iteration_function
+     */
+    public void updateParameters(Matrix Q_old, Matrix P_old, double rho_beg,  double rho_end, int max){
+        this.Q_old = Q_old;
+        //Update its double array version:
+        double[][] previousQold = Q_old.getArray();
+        Q_old_ARRAY = new double[Q_SIZE];
+        for (int i = 0; i < previousQold.length; i++) {
+            Q_old_ARRAY[i] = previousQold[i][0];
+        }
+        this.P_old = P_old;
+        _RHO_BEG = rho_beg;
+        _RHO_END = rho_end;
+        MAX_FUNC = max;
+        //Build the P matrix and its pseudo-inverse (pP) from phi and P_old
+        //P=(1/(lamda_old))*(P_old-(P_old*phi*pinv(lamda_old+phi'*P_old*phi)*phi'*P_old))
+        //Intermediate result: partialResult = pinv(lamda_old+phi'*P_old*phi)
+        double partialResult = 1 / ((((phi.transpose()).times(P_old)).times(phi)).get(0, 0) + lamda_old);
+        P = (P_old.minus(P_old.times(phi).times(partialResult).times(phi.transpose()).times(P_old))).times(1 / lamda_old);
+        //pP is the pseudo-inverse of P
+        //Returns the seudoinvers of P only if P is not square
+        pP = P.inverse();
     }
 
     public OptInputs runOptimization() {
@@ -166,36 +192,39 @@ public class OptRecursive {
                 //1. Get constraints for Q
                 //Returns: (max(Astatetemp) - 0.99)
                 //Cobyla constraint: con[0] >= 0
-                 /*con[0] = getConstraintValue(Q);
-                 System.out.println("Constraints: "+ con[0]);
+                //System.out.println("Con before :" +con[0]);
+                //con[0] = -10;
+                //TODO NOTE - COBYLA constraint behaviour:
+                // con[0] + RHO_END >= 0
+                
+                con[0] = getConstraintValue(Q) ;
+                //con[1] = getConstraintValue(Q);
+
+                // System.out.println("Con afterwards: "+con[0]);
+
+                /*System.out.println("Constraints: "+ con[0]);
                  con[1]= 3;*/
-                 //con[0] = -1;
-                 
+                //con[0] = -1;
+
                 //2. Upper and lower limits
                 /*double[] limits = limitsConstraint(Q);
                 for (int i = 0; i < m-1; i ++)
                     con[i+1] = limits[i];
                 //2. Set the function to optimize - V*/
                 double opt = optimizationFunctionV(Q);
-                double[] Q_V = new double[N_VARIABLES +2];
+                double[] Q_V = new double[N_VARIABLES + 2];
                 Q_V[0] = iterations;
                 Q_V[1] = opt;
-                for (int i =2; i < N_VARIABLES +2; i ++)
-                    Q_V [i] = Q[i-2];
+                for (int i = 2; i < N_VARIABLES + 2; i++) {
+                    Q_V[i] = Q[i - 2];
+                }
                 Double[] doubleArray = ArrayUtils.toObject(Q_V);
                 Q_values.add(doubleArray);
-                iterations ++;
-                
-                //3. We make sure V stays the same:
-               /* if (firstIteration){
-                    Vinitial = opt;
-                    firstIteration = false;
-                }
-                con[1] =  equalVConstraint(Q);*/
+                iterations++;
                 
                 //System.out.println("V: "+opt );
                 //printDoubleArrayMatrix(  new double[][] {Q}, "Q");
-                return opt; 
+                return opt;
             }
         };
 
@@ -217,24 +246,30 @@ public class OptRecursive {
 
         //Exit status: DIVERGING ROUNDING ERRORS / MAX ITERATION REACH / NORMAL
         if (DIAS.verboseMode) { System.out.println("COBYLA EXIT: " + result); }
-        /**
-         * *********************************************
-         * Save the result of Cobyla optimization
+        /***********************************************
+         * Compute the results of Cobyla optimization
          */
-        Save save1 = new Save("testnonlier");
-        try {
-            save1.save(fresult, "testnonlier");
-        } catch (IOException e) {
-            if (DIAS.verboseMode) { System.out.print("Opt recursive: " + e.getMessage()); }
-        }
-
+        
         Q_res = new Matrix(Q_SIZE, 1);
-
         //RECOVER Q value:
         //Q_res = Q_optimizing = Q
         for (int i = 0; i < Q_SIZE; i++) {
             Q_res.set(i, 0, Q_optimizing_keepValue.get(i, 0));
         }
+        err = Y - (phi.transpose().times(Q_res)).get(0, 0);
+        Y_model = (phi.transpose().times(Q_res));
+        lamda1 = 0.9 * lamda_old + (1 - 0.9) * 0.99;
+        lamda2 = Math.exp(-(err * err) / (1000));
+        lamda = lamda1 * lamda2;
+
+        if (lamda < 0.005) {
+            lamda = 0.005;
+        }
+         /***********************************************
+         * Save the required outputs
+         */
+        //saveOptRecursiveVariables();
+        //saveOptRecursiveResults();
 
         err = Y - (phi.transpose().times(Q_res)).get(0, 0);
         Y_model = (phi.transpose().times(Q_res));
@@ -250,17 +285,41 @@ public class OptRecursive {
             this.printOutputs(); 
         }
 
+      
+        
+        //Return the values normally printed out if debug mode is on.
+        // XXX DEBUG -- there are quite a few variables with similar names. 
+        // Not sure that this is the correct set of variables to return. 
+        OptInputs inputs = new OptInputs(this.Y, this.phi, this.Q_res, this.P, this.lamda, this.err, this.upperlimit, this.lowerlimit); 
+        return inputs; 
+
+    }
+
+/**
+     * Save initial variables of OPT_RECURSIVE optimization
+     */
+    public void saveOptRecursiveVariables(){
         //TODO Debug - Save all matrices in an excel file, to use later on in MATLAB
         try {
             Save saveManager = new Save(outputOpt);
 
-            //Save intermediate results
-            Matrix Q_valuesMatrix = new Matrix ( Q_values.size(), N_VARIABLES +2);
-            for (int i = 0 ; i <iterations; i ++)
-                for (int j = 0; j < N_VARIABLES +2; j ++)
+            //Save intermediate results of the optimization
+            Matrix Q_valuesMatrix = new Matrix(Q_values.size(), N_VARIABLES + 2);
+            for (int i = 0; i < iterations; i++) {
+                for (int j = 0; j < N_VARIABLES + 2; j++) {
                     Q_valuesMatrix.set(i, j, Q_values.get(i)[j]);
-                
-            saveManager.save(Q_valuesMatrix, "Optimization_Steps");
+                }
+            }
+
+            saveManager.save(Q_valuesMatrix, "Optimization_Steps_Cons");
+            //Save the result of the constraint
+            Matrix Cons_valuesMatrix = new Matrix(constraintValues.size(), N_VARIABLES + 1);
+            for (int i = 0; i < iterations; i++) {
+                for (int j = 0; j < N_VARIABLES + 1; j++) {
+                    Cons_valuesMatrix.set(i, j, constraintValues.get(i)[j]);
+                }
+            }
+//            saveManager.save(Cons_valuesMatrix, "Constraint_Steps_Cons");
             //Save the inputs
             Matrix Y_m = new Matrix(1, 1);
             Y_m.set(0, 0, Y);
@@ -289,13 +348,40 @@ public class OptRecursive {
         } catch (Exception e) {
             System.out.println("Error saving inputOut: " + e);
         }
-        
-        //Return the values normally printed out if debug mode is on.
-        // XXX DEBUG -- there are quite a few variables with similar names. 
-        // Not sure that this is the correct set of variables to return. 
-        OptInputs inputs = new OptInputs(this.Y, this.phi, this.Q_res, this.P, this.lamda, this.upperlimit, this.lowerlimit); 
-        return inputs; 
+    }
+    
+     /**
+     * Save initial variables of OPT_RECURSIVE optimization
+     */
+    public void saveOptRecursiveResults(){
+        //TODO Debug - Save all matrices in an excel file, to use later on in MATLAB
+        try {
+            Save saveManager = new Save(outputOpt);
 
+            //Save intermediate results of the optimization
+            Matrix Q_valuesMatrix = new Matrix(Q_values.size(), N_VARIABLES + 2);
+            for (int i = 0; i < iterations; i++) {
+                for (int j = 0; j < N_VARIABLES + 2; j++) {
+                    Q_valuesMatrix.set(i, j, Q_values.get(i)[j]);
+                }
+            }
+
+            saveManager.save(Q_valuesMatrix, "Optimization_Steps_Cons2");
+            //Save the result of the constraint
+            Matrix Cons_valuesMatrix = new Matrix(constraintValues.size(), N_VARIABLES + 1);
+            for (int i = 0; i < iterations; i++) {
+                for (int j = 0; j < N_VARIABLES + 1; j++) {
+                    Cons_valuesMatrix.set(i, j, constraintValues.get(i)[j]);
+                }
+            }
+//            saveManager.save(Cons_valuesMatrix, "Constraint_Steps_Cons");
+           
+
+            //Save the Q result
+            saveManager.save(Q_res, "Q_res");
+        } catch (Exception e) {
+            System.out.println("Error saving inputOut: " + e);
+        }
     }
 
     /**
@@ -303,10 +389,16 @@ public class OptRecursive {
      * so that all of its eigen values are < 1
      * We return the 0.99 - maxEigen so the algorithm can check if it is >=0
      *
-     * @param x - Q
+     * @param x input Q
      * @return (0.99 - maxEigen)
      */
     public double getConstraintValue(double[] x) {
+        //Create the double list with:
+        // - [0,23]: input x
+        // - [24]: constraint result (1 or -1)
+        double[] consInter = new double[N_VARIABLES + 1];
+        //Store X value:
+        System.arraycopy(x, 0, consInter, 0, x.length);
         //double [][] A_state = new double[21][21];
         double[][] A_state = new double[Q_SIZE - 2][Q_SIZE - 2];
 
@@ -367,99 +459,107 @@ public class OptRecursive {
         //Matrix to use in this operations AstateModify
         Matrix AstateModify = new Matrix(A_state);
         Matrix AstatetEigen = new Matrix(21, 1);
+        
+        EigenvalueDecomposition eigenDec =  new EigenvalueDecomposition(AstateModify);
+        //Matrix vDec = eigenDec.getD();
+        Matrix eigenReal= new Matrix(new double[][]{eigenDec.getRealEigenvalues()} );
+        Matrix eigenIm= new Matrix(new double[][]{eigenDec.getImagEigenvalues()} );
 
         //Check if eigen values are valid
         for (int z = 0; z < 21; z++) {
             //Use absolute values of eigen values
             //A = V D V^T.
-            AstatetEigen.set(z, 0, Math.abs(AstateModify.eig().getD().get(z, z)));
+            //AstatetEigen.set(z, 0, Math.abs(AstateModify.eig().getD().get(z, z)));
+            AstatetEigen.set(z, 0, Math.abs(Math.sqrt(Math.pow(eigenReal.get(0, z),2) 
+                                            + Math.pow(eigenIm.get(0,z),2))));
             //AstatetEigen.print(9, 6);
         }
-        //if(!printed){
-        
-            if (DIAS.verboseMode ) { 
-                printMatrix(AstatetEigen, "Eigen matrix: ");
-                printDoubleArrayMatrix(A_state, "A_state matrix: ");
-                printDoubleArrayMatrix(new double[][]{x}, "Q state matrix:");
-                printed = true;
-            }
-        //}
+
+        //printMatrix(AstatetEigen, "Eigen matrix: ");
+        //printDoubleArrayMatrix(A_state, "A_state matrix: ");
+        //printDoubleArrayMatrix(new double[][]{x}, "Q state matrix:");
         //  printMatrix(Astatetemp,"Astatetemp");
         //double c = (max(Astatetemp) - 0.99);
         //We want: max(AstateEigen) -0.99 <= 0
-        return (EIGEN_CONSTRAIN_VALUE - max(AstatetEigen) );
+
+        double resultC = (EIGEN_CONSTRAIN_VALUE - max(AstatetEigen));
+        //double resultC = -1;
+        //Save values of this step:
+        consInter[24] = resultC;
+        constraintValues.add(ArrayUtils.toObject(consInter));
+        return resultC;
     }
-    
-    private double[] limitsConstraint(double[] X){
-        double [] limitsResult = new double[N_VARIABLES];
-        for (int i = 0; i < X.length; i ++){
-            if (X[i] <= upperlimit[i] && X[i]>= lowerlimit[i]){
+    /**
+     * Method to emulate the effecto of upper and lower bounds as constraints
+     * 
+     * @param X 
+     * @return double[] array with the result of X samples vs bounds
+     */
+
+    private double[] limitsConstraint(double[] X) {
+        double[] limitsResult = new double[N_VARIABLES];
+        for (int i = 0; i < X.length; i++) {
+            if (X[i] <= upperlimit[i] && X[i] >= lowerlimit[i]) {
                 //Normal behaviour - 
                 limitsResult[i] = 1;
-            }
-            else
+            } else {
                 limitsResult[i] = -1;
+            }
         }
         return limitsResult;
     }
+
+
     /**
-     * 
-     * @param x
-     * @return 
+     * Returns the values of the optimization function V
+     * @param Q  input value 
+     * @return  V(X)
      */
-    private double equalVConstraint(double[] x){
-        double newV = optimizationFunctionV (x);
-        if (newV == Vinitial)
-            return 1;
-        else
-            return -1;
-        
-        
-    }
 
-    private double optimizationFunctionV (double [] Q){
+    public double optimizationFunctionV(double[] Q) {
         // V = (Q- Qold)'*(pseudo-inv(P)*(Q-Q_old) + (Y-phi'*Q)'*(Y-phi'*Q);
-                //Update other variables: f, f1 /V= f + fi
-                //differenceMatrix: Q - Qold
-                //phiQ = phi'*Q
-                Matrix differenceMatrix;
-                differenceMatrix = new Matrix(Q_old.getRowDimension(), 1);
-                for (int s1 = 0; s1 < Q_old.getRowDimension(); s1++) {
-                    differenceMatrix.set(s1, 0, Q[s1] - Q_old.get(s1, 0));
-                }
-                //First part of V. f = (Q - Qold)'*pseudoinvP*(Q-Qold)
-                double f = (((differenceMatrix.transpose()).times(pP)).times(differenceMatrix)).get(0, 0);
-                //Middle term - temp = phi'*Q
-                double phiQ = 0;
-                //Do the multiplication manually:
-                for (int a = 0; a < Q.length; a++) {
-                    phiQ = phi.get(a, 0) * Q[a] + phiQ;
-                }
-                //System.out.println("PhiQ: "+ phiQ);
-                //Partial function to optimize =(Y-phi'*Q)'*(Y-phi'*Q)
-                double f1 = (Y - phiQ) * (Y - phiQ);
-                //SAVE LOCAL VALUE OF Q:
-                //Q_optimizing = Q
-                for (int i = 0; i < Q.length; i++) {
-                    Q_optimizing_keepValue.set(i, 0, Q[i]);
-                }
-                //DEBUG - result matrix to save
-                fresult = new Matrix(fresult.getRowDimension() + 1, 1);
-                fresult.set(fresult.getRowDimension() - 1, 0, f + f1);
+        //Update other variables: f, f1 /V= f + fi
+        //differenceMatrix: Q - Qold
+        //phiQ = phi'*Q
+        Matrix differenceMatrix;
+        differenceMatrix = new Matrix(Q_old.getRowDimension(), 1);
+        for (int s1 = 0; s1 < Q_old.getRowDimension(); s1++) {
+            differenceMatrix.set(s1, 0, Q[s1] - Q_old.get(s1, 0));
+        }
+        //First part of V. f = (Q - Qold)'*pseudoinvP*(Q-Qold)
+        double f = (((differenceMatrix.transpose()).times(pP)).times(differenceMatrix)).get(0, 0);
+        //Middle term - temp = phi'*Q
+        double phiQ = 0;
+        //Do the multiplication manually:
+        for (int a = 0; a < Q.length; a++) {
+            phiQ = phi.get(a, 0) * Q[a] + phiQ;
+        }
+        //System.out.println("PhiQ: "+ phiQ);
+        //Partial function to optimize =(Y-phi'*Q)'*(Y-phi'*Q)
+        double f1 = (Y - phiQ) * (Y - phiQ);
+        //SAVE LOCAL VALUE OF Q:
+        //Q_optimizing = Q
+        for (int i = 0; i < Q.length; i++) {
+            Q_optimizing_keepValue.set(i, 0, Q[i]);
+        }
+        //DEBUG - result matrix to save
+        fresult = new Matrix(fresult.getRowDimension() + 1, 1);
+        fresult.set(fresult.getRowDimension() - 1, 0, f + f1);
 
-                //REAL: 
-                //return (f + f1);
-                //TODO DEBUG: 
-                return (f + f1);
-                /*} else {
+        //REAL: 
+        //return (f + f1);
+        //TODO DEBUG: 
+        return (f + f1);
+        /*} else {
                 return 0;
             }*/
     }
+
     /**
      * printMatrix() - auxiliar function for debugging purposes Prints the given
      * matrix on the console
      *
-     * @param m
+     * @param m matrix
      * @param name
      */
     public static void printMatrix(Matrix m, String name) {
@@ -473,19 +573,18 @@ public class OptRecursive {
         System.out.println("}");
     }
 
-
     /**
      * max() - obtains the maximum value of the matrix
      *
      * @param matrix
-     * @return
+     * @return maximum
      */
     public double max(Matrix matrix) {
         //Init with the first value
         double max = matrix.get(0, 0);
         //Iterate thru values
-        for (double[] row: matrix.getArray() ) {
-            for (double val: row) {
+        for (double[] row : matrix.getArray()) {
+            for (double val : row) {
                 //If it is greater than the previous, update max
                 if (val > max) {
                     max = val;
@@ -509,7 +608,7 @@ public class OptRecursive {
             System.out.print("\n");
         }
     }
-    
+
     private void printInputs() { 
         System.out.println("///////////////////INPUTS OPT_RECURSIVE/////////////");
         System.out.println(Y + "Y");

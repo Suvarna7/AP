@@ -395,32 +395,32 @@ public class m20150711_gpc {
         }
 // <editor-fold defaultstate="collapsed" desc=" Run nonlinear optimization (OptRecursive class's .runOptimization method) based on armax parameters.Set lgvariables armax properties based on output.  ">
 
-        OptInputs inputs = new OptInputs((gs.get(0, kj - 1)), phitemp,
-                armax_parameterstemp, armax_covariancetemp, (armax_lamda.get(kj - 1, 0)), upperlim, lowerlim);        
-        OptRecursive opt_r = new OptRecursive(inputs);
+        OptInputs inputs = new OptInputs((gs.get(0, kj - 1)), phitemp, 
+                armax_parameterstemp, armax_covariancetemp, (armax_lamda.get(kj - 1, 0)), 0,upperlim, lowerlim);        
+        //TODO Call he other function!!! 
         //set the inputs to be the output of the current run. 
-        inputs = opt_r.runOptimization();
-
+        inputs = runOptimizationInStages(inputs);
+        //TODO !!!
         //Load variables 
         m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
 
         //Update the values with Q and results of the optimization:
         //1. Initializate matrices
-        lgvariables.armax_parameters = DIAS.createnewMatrix(opt_r.Q_res.getRowDimension(), kj + 1, lgvariables.armax_parameters);
+        lgvariables.armax_parameters = DIAS.createnewMatrix(inputs.q().getRowDimension(), kj + 1, lgvariables.armax_parameters);
         lgvariables.armax_lamda = DIAS.createnewMatrix(kj + 1, 1, armax_lamda);
         lgvariables.armax_err = DIAS.createnewMatrix(kj + 1, 1, armax_error);
-        lgvariables.armax_covariance = createnew3Dmatrix(lgvariables.armax_covariance, opt_r.P.getRowDimension(), opt_r.P.getColumnDimension(), kj + 1);
-        lgvariables.armax_lamda.set(kj, 0, opt_r.lamda);
-        lgvariables.armax_err.set(kj, 0, opt_r.err);
+        lgvariables.armax_covariance = createnew3Dmatrix(lgvariables.armax_covariance, inputs.p().getRowDimension(), inputs.q().getColumnDimension(), kj + 1);
+        lgvariables.armax_lamda.set(kj, 0, inputs.lamda());
+        lgvariables.armax_err.set(kj, 0, inputs.err());
 
         //2. Update their values:
-        for (int i = 0; i < opt_r.Q_res.getRowDimension(); i++) {
-            lgvariables.armax_parameters.set(i, kj, opt_r.Q_res.get(i, 0));
+        for (int i = 0; i < inputs.q().getRowDimension(); i++) {
+            lgvariables.armax_parameters.set(i, kj, inputs.q().get(i, 0));
         }
         
-        for (int i = 0; i < opt_r.P.getColumnDimension(); i++) {
-            for (int j = 0; j < opt_r.P.getRowDimension(); j++) {
-                lgvariables.armax_covariance[i][j][kj] = opt_r.P.get(i, j);
+        for (int i = 0; i < inputs.p().getColumnDimension(); i++) {
+            for (int j = 0; j < inputs.p().getRowDimension(); j++) {
+                lgvariables.armax_covariance[i][j][kj] = inputs.p().get(i, j);
             }
         }
 
@@ -1508,6 +1508,32 @@ We then use the matricecompareconstantmax() function on dividematrix to set the 
         }
 
         return newMatrice;
+    }
+    
+    /**
+     * Function to run the Optimization using 5 optimization stages
+     * @param in Optimization Inputs
+     * @return 
+     */
+    private OptInputs runOptimizationInStages(OptInputs in) {
+        OptRecursive optRecursiveCons = new OptRecursive(in);
+        optRecursiveCons.runOptimization();
+        optRecursiveCons.saveOptRecursiveVariables();
+        //Second optimization:
+        optRecursiveCons.updateParameters(optRecursiveCons.Q_res, optRecursiveCons.P, 1.0e-2, 1.49011611938477e-6, 5000);
+        optRecursiveCons.runOptimization();
+        //Third optimization:
+        optRecursiveCons.updateParameters(optRecursiveCons.Q_res, optRecursiveCons.P, 1.0e-1, 1.49011611938477e-8, 5000);
+        optRecursiveCons.runOptimization();
+        //Fourth optimization:
+        optRecursiveCons.updateParameters(optRecursiveCons.Q_res, optRecursiveCons.P, 0.5, 1.49011611938477e-4, 5000);
+        optRecursiveCons.runOptimization();
+        //Fifth optimization:
+        optRecursiveCons.updateParameters(optRecursiveCons.Q_res, optRecursiveCons.P, 1.0e-4, 1.49011611938477e-8, 5000);
+        OptInputs res = optRecursiveCons.runOptimization();
+        optRecursiveCons.saveOptRecursiveResults();
+        return res;
+
     }
 
 }
