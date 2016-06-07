@@ -21,7 +21,6 @@ public class OptRecursive_Cons {
 
     //TODO Output file
     private final String outputOpt = "outputOpt";
-
     //Size of Q matrix
     private static final int Q_SIZE = 24;
 
@@ -55,19 +54,20 @@ public class OptRecursive_Cons {
     //      - First: evaluate Q0
     //      - Then: add RHO_BEG to each single sample
     //private final double _RHO_BEG = 1e-6;
-    private final double _RHO_BEG = 1.0e-3;
+    private  double _RHO_BEG = 1.0e-4;
 
     //TrustRegionRadiusEnd  : (default = 1.0e-6)
     //We were using default RHO_END = 1.0e-4
     //MATLAB - RHO_END
     //private final double _RHO_END = 1.49011611938477e-08;
-    private final double _RHO_END = 1.49011611938477e-9;
-
-    private final int iprint = 1;
+    private  double _RHO_END = 1.49011611938477e-8;
+    
     //TODO Max_function - max recursive loop
-    private final static int MAX_FUNC = 50000;
+    private int MAX_FUNC = 5000;
+    
+    private final int iprint = 1;
     private final static int N_VARIABLES = 24;
-    private final static int M_CONSTRAINTS = 2;
+    private final static int M_CONSTRAINTS = 1;
 
     //******************************************
     //Results of the optimization
@@ -87,8 +87,6 @@ public class OptRecursive_Cons {
     private List<Double[]> Q_values;
     private List<Double[]> constraintValues;
     private double iterations;
-    private double Vinitial;
-    private boolean firstIteration;
 
     /**
      * Create the opt_recursive object with the given parameters
@@ -117,22 +115,10 @@ public class OptRecursive_Cons {
         //TODO
         this.upperlimit = upperlimit;
         this.lowerlimit = lowerlimit;
-        //TODO DEBUG VALUES:
-        /*this.upperlimit = new double[]{2, 2, 2, 2, 2, 
-                                       2, 2, 2, 2, 2,
-                                       2, 2, 2, 2, 2, 
-                                       2, 2, 2, 2, 2,
-                                       2, 2, 2, 2};
-        this.lowerlimit = new double[] {-2, -2, -2, -2, -2, 
-                                       -2, -2, -2, -2, -2,
-                                       -2, -2, -2, -2, -2, 
-                                       -2, -2, -2, -2, -2,
-                                       -2, -2, -2, -2};*/
-       //Generate the parameter matrix
-       //1. Build the P matrix and its pseudo-inverse (pP) from phi and P_old
+        
+        //Build the P matrix and its pseudo-inverse (pP) from phi and P_old
         //P=(1/(lamda_old))*(P_old-(P_old*phi*pinv(lamda_old+phi'*P_old*phi)*phi'*P_old))
         //Intermediate result: partialResult = pinv(lamda_old+phi'*P_old*phi)
-        System.out.println("Size of phi: " + phi.getRowDimension() + "x" + phi.getColumnDimension());
         double partialResult = 1 / ((((phi.transpose()).times(P_old)).times(phi)).get(0, 0) + lamda_old);
         P = (P_old.minus(P_old.times(phi).times(partialResult).times(phi.transpose()).times(P_old))).times(1 / lamda_old);
 
@@ -146,17 +132,47 @@ public class OptRecursive_Cons {
         constraintValues = new ArrayList<Double[]>();
         iterations = 0;
     }
+    
     /**
-     * Method to run the optimization for the parameters in the OptRecursive instance
-     * Implements Cobyla optimization algorithm
+     * Update optimization main parameters
+     * @param Q_old X0
+     * @param P_old P0
+     * @param rho_beg Rho_begin
+     * @param rho_end Rho_end
+     * @param max max_iteration_function
+     */
+    public void updateParameters(Matrix Q_old, Matrix P_old, double rho_beg,  double rho_end, int max){
+        this.Q_old = Q_old;
+        //Update its double array version:
+        double[][] previousQold = Q_old.getArray();
+        Q_old_ARRAY = new double[Q_SIZE];
+        for (int i = 0; i < previousQold.length; i++) {
+            Q_old_ARRAY[i] = previousQold[i][0];
+        }
+        this.P_old = P_old;
+        _RHO_BEG = rho_beg;
+        _RHO_END = rho_end;
+        MAX_FUNC = max;
+        //Build the P matrix and its pseudo-inverse (pP) from phi and P_old
+        //P=(1/(lamda_old))*(P_old-(P_old*phi*pinv(lamda_old+phi'*P_old*phi)*phi'*P_old))
+        //Intermediate result: partialResult = pinv(lamda_old+phi'*P_old*phi)
+        double partialResult = 1 / ((((phi.transpose()).times(P_old)).times(phi)).get(0, 0) + lamda_old);
+        P = (P_old.minus(P_old.times(phi).times(partialResult).times(phi.transpose()).times(P_old))).times(1 / lamda_old);
+        //pP is the pseudo-inverse of P
+        //Returns the seudoinvers of P only if P is not square
+        pP = P.inverse();
+    }
+    /**
+     * Method to run the optimization. Use parameters included the OptRecursive instance.
+     * (Implements Cobyla optimization algorithm)
      * 
      */
 
     public void runOptimization() {
 
-        /**
-         ********************************************
-         * PRINT THE INPUT VALUES ******************************************
+        /******************************************
+         * PRINT THE INPUT VALUES 
+         ******************************************
          */
         System.out.println("///////////////////INPUTS OPT_RECURSIVE/////////////");
         System.out.println(Y + "Y");
@@ -178,7 +194,7 @@ public class OptRecursive_Cons {
 
         /**
          * ************************************************************
-         * Run the optimization algorithm
+         * Run optimization algorithm
          * ************************************************************
          */
         
@@ -206,9 +222,9 @@ public class OptRecursive_Cons {
                 // con[0] + RHO_END >= 0
                 
                 con[0] = getConstraintValue(Q) ;
-                con[1] = getConstraintValue(Q);
+                //con[1] = getConstraintValue(Q);
 
-                 System.out.println("Con afterwards: "+con[0]);
+                // System.out.println("Con afterwards: "+con[0]);
 
                 /*System.out.println("Constraints: "+ con[0]);
                  con[1]= 3;*/
@@ -229,7 +245,6 @@ public class OptRecursive_Cons {
                 Double[] doubleArray = ArrayUtils.toObject(Q_V);
                 Q_values.add(doubleArray);
                 iterations++;
-
                 
                 //System.out.println("V: "+opt );
                 //printDoubleArrayMatrix(  new double[][] {Q}, "Q");
@@ -256,17 +271,12 @@ public class OptRecursive_Cons {
 
         //Exit status: DIVERGING ROUNDING ERRORS / MAX ITERATION REACH / NORMAL
         System.out.println("COBYLA EXIT: " + result);
+       
         /**
          * *********************************************
          * Save the result of Cobyla optimization
          */
-        Save save1 = new Save("testnonlier");
-        try {
-            save1.save(fresult, "testnonlier");
-        } catch (IOException e) {
-            System.out.print("Opt recursive: " + e);
-        }
-
+        
         Q_res = new Matrix(Q_SIZE, 1);
 
         //RECOVER Q value:
@@ -300,7 +310,16 @@ public class OptRecursive_Cons {
         System.out.println("Pinv sizes: " + pP.getColumnDimension() + "x" + pP.getRowDimension());
         printMatrix(phi, "phi");
         System.out.println("\n////////////////////OUTPUT OPT_RECURSIVE///////////");
+        //saveOptRecursiveVariables();
+        //saveOptRecursiveResults();
 
+
+    }
+    
+    /**
+     * Save initial variables of OPT_RECURSIVE optimization
+     */
+    public void saveOptRecursiveVariables(){
         //TODO Debug - Save all matrices in an excel file, to use later on in MATLAB
         try {
             Save saveManager = new Save(outputOpt);
@@ -350,7 +369,40 @@ public class OptRecursive_Cons {
         } catch (Exception e) {
             System.out.println("Error saving inputOut: " + e);
         }
+    }
+    
+     /**
+     * Save initial variables of OPT_RECURSIVE optimization
+     */
+    public void saveOptRecursiveResults(){
+        //TODO Debug - Save all matrices in an excel file, to use later on in MATLAB
+        try {
+            Save saveManager = new Save(outputOpt);
 
+            //Save intermediate results of the optimization
+            Matrix Q_valuesMatrix = new Matrix(Q_values.size(), N_VARIABLES + 2);
+            for (int i = 0; i < iterations; i++) {
+                for (int j = 0; j < N_VARIABLES + 2; j++) {
+                    Q_valuesMatrix.set(i, j, Q_values.get(i)[j]);
+                }
+            }
+
+            saveManager.save(Q_valuesMatrix, "Optimization_Steps_Cons2");
+            //Save the result of the constraint
+            Matrix Cons_valuesMatrix = new Matrix(constraintValues.size(), N_VARIABLES + 1);
+            for (int i = 0; i < iterations; i++) {
+                for (int j = 0; j < N_VARIABLES + 1; j++) {
+                    Cons_valuesMatrix.set(i, j, constraintValues.get(i)[j]);
+                }
+            }
+//            saveManager.save(Cons_valuesMatrix, "Constraint_Steps_Cons");
+           
+
+            //Save the Q result
+            saveManager.save(Q_res, "Q_res");
+        } catch (Exception e) {
+            System.out.println("Error saving inputOut: " + e);
+        }
     }
 
     /**
@@ -444,9 +496,9 @@ public class OptRecursive_Cons {
             //AstatetEigen.print(9, 6);
         }
 
-        printMatrix(AstatetEigen, "Eigen matrix: ");
+        //printMatrix(AstatetEigen, "Eigen matrix: ");
         //printDoubleArrayMatrix(A_state, "A_state matrix: ");
-        printDoubleArrayMatrix(new double[][]{x}, "Q state matrix:");
+        //printDoubleArrayMatrix(new double[][]{x}, "Q state matrix:");
         //  printMatrix(Astatetemp,"Astatetemp");
         //double c = (max(Astatetemp) - 0.99);
         //We want: max(AstateEigen) -0.99 <= 0
@@ -478,23 +530,10 @@ public class OptRecursive_Cons {
         return limitsResult;
     }
 
-    /**
-     *
-     * @param x
-     * @return
-     */
-    private double equalVConstraint(double[] x) {
-        double newV = optimizationFunctionV(x);
-        if (newV == Vinitial) {
-            return 1;
-        } else {
-            return -1;
-        }
 
-    }
     /**
      * Returns the values of the optimization function V
-     * @param Q - input value 
+     * @param Q  input value 
      * @return  V(X)
      */
 

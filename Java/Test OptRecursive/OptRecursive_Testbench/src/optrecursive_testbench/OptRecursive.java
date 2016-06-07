@@ -252,12 +252,7 @@ public class OptRecursive {
          * *********************************************
          * Save the result of Cobyla optimization
          */
-        Save save1 = new Save("testnonlier");
-        try {
-            save1.save(fresult, "testnonlier");
-        } catch (IOException e) {
-            System.out.print("Opt recursive: " + e);
-        }
+       
 
         Q_res = new Matrix(Q_SIZE, 1);
 

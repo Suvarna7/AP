@@ -17,13 +17,15 @@ public class OptInputs {
     private Matrix phi; 
     private Matrix Q; 
     private Matrix P; 
+    private double err;
     private double lamda; 
     private double[] upperlimit; 
     private double[] lowerlimit; 
 
-    public OptInputs(double Y, Matrix phi, Matrix Q, Matrix P, double lamda, double[] upperlimit, double[] lowerlimit) {
+    public OptInputs(double Y, Matrix phi, Matrix Q, Matrix P, double lamda, double err, double[] upperlimit, double[] lowerlimit) {
         this.Y = Y;
         this.phi = phi;
+        this.err = err;
         this.Q = Q;
         this.P = P;
         this.lamda = lamda;
@@ -58,6 +60,9 @@ public class OptInputs {
 
     public double[] lowerLimit() {
         return lowerlimit;
+    }
+    public double err(){
+        return err;
     }
     
 }

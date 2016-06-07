@@ -152,6 +152,7 @@ Vinitial = 0;
     function V=objective(Q)
         V=(Q-Q_old)'*pinvP*(Q-Q_old)+(Y-phi'*Q)'*(Y-phi'*Q);
         i = i +1;
+        Q_all(i, 27)= 101;
         Q_all(i, 3:26)= Q;
         Q_all(i, 1)= i;
         Q_all(i, 2)= V;
@@ -199,6 +200,7 @@ Vinitial = 0;
                 zeros(1,21)];
         %D = eig(A_state,'matrix')
         eigA=abs(eig(A_state));
+        Q_all (i+1,29) = 101';
         Q_all (i+1,30:50) = eigA';
         A_states((i-1)*21 +1, 1) = i;
         A_states((i-1)*21 +1: i*21, 2:22) = A_state;
@@ -222,11 +224,12 @@ end
 %% 4. RUN FMINCON - ALGORITHM MINIMIZATION
 %Available algorithms: 'interior-point', 'active-set', 'sqp', 'trust-region-reflective')
 %FinDiffRelStep - default 'Forward finite differences steps 
-%                 delta = v.*sign?(x).*max(abs(x),TypicalX)'
+%                 delta = v.*sign'c(x).*max(abs(x),TypicalX)'
 %                 v(default) is sqrt(eps)
 %                 eps = 2.2204e-16
 %                 TypicalX (default) =  ones = (numberofvariables,1)
-options=optimset('Algorithm','interior-point','Display','iter-detailed');
+%'PlotFcn', @optimplotstepsize
+options=optimset('Algorithm','interior-point','Display','iter-detailed' );
 %Find minimum of constrained nonlinear multivariable function:
 % Q = fmincon(fun,x0,A,b,Aeq,beq,lb,ub,nonlcon,options)
 
