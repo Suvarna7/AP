@@ -68,7 +68,7 @@ public class OptInputs {
         return err;
     }
     
-    public CobylaExitStatus cobylaExit(){
+    public CobylaExitStatus exit(){
         return exit;
     }
     

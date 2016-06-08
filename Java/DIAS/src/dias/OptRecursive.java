@@ -19,7 +19,7 @@ import org.apache.commons.lang3.ArrayUtils;
  */
 public class OptRecursive {
 
-     //TODO Output file
+    //TODO Output file
     private final String outputOpt = "outputOpt";
     //Size of Q matrix
     private static final int Q_SIZE = 24;
@@ -54,17 +54,17 @@ public class OptRecursive {
     //      - First: evaluate Q0
     //      - Then: add RHO_BEG to each single sample
     //private final double _RHO_BEG = 1e-6;
-    private  double _RHO_BEG = 1.0e-4;
+    private double _RHO_BEG = 1.0e-4;
 
     //TrustRegionRadiusEnd  : (default = 1.0e-6)
     //We were using default RHO_END = 1.0e-4
     //MATLAB - RHO_END
     //private final double _RHO_END = 1.49011611938477e-08;
-    private  double _RHO_END = 1.49011611938477e-8;
-    
+    private double _RHO_END = 1.49011611938477e-8;
+
     //TODO Max_function - max recursive loop
     private int MAX_FUNC = 5000;
-    
+
     private final int iprint = 1;
     private final static int N_VARIABLES = 24;
     private final static int M_CONSTRAINTS = 1;
@@ -122,20 +122,22 @@ public class OptRecursive {
                                        -2, -2, -2, -2};*/
         //Qintermediate =  
         fresult = new Matrix(1, 1);
-        Q_values = new ArrayList<Double[]>();
         constraintValues = new ArrayList<Double[]>();
+
+        Q_values = new ArrayList<Double[]>();
         iterations = 0;
     }
-    
+
     /**
      * Update optimization main parameters
+     *
      * @param Q_old X0
      * @param P_old P0
      * @param rho_beg Rho_begin
      * @param rho_end Rho_end
      * @param max max_iteration_function
      */
-    public void updateParameters(Matrix Q_old, Matrix P_old, double rho_beg,  double rho_end, int max){
+    public void updateParameters(Matrix Q_old, Matrix P_old, double rho_beg, double rho_end, int max) {
         this.Q_old = Q_old;
         //Update its double array version:
         double[][] previousQold = Q_old.getArray();
@@ -159,7 +161,9 @@ public class OptRecursive {
 
     public OptInputs runOptimization() {
 
-        if (DIAS.verboseMode) { this.printInputs(); }
+        if (DIAS.verboseMode) {
+            this.printInputs();
+        }
 
         /**
          * ************************************************************
@@ -169,7 +173,9 @@ public class OptRecursive {
         //1. Build the P matrix and its pseudo-inverse (pP) from phi and P_old
         //P=(1/(lamda_old))*(P_old-(P_old*phi*pinv(lamda_old+phi'*P_old*phi)*phi'*P_old))
         //Intermediate result: partialResult = pinv(lamda_old+phi'*P_old*phi)
-        if (DIAS.verboseMode) { System.out.println("Size of phi: "+ phi.getRowDimension() + "x" + phi.getColumnDimension() ); }
+        if (DIAS.verboseMode) {
+            System.out.println("Size of phi: " + phi.getRowDimension() + "x" + phi.getColumnDimension());
+        }
         double partialResult = 1 / ((((phi.transpose()).times(P_old)).times(phi)).get(0, 0) + lamda_old);
         P = (P_old.minus(P_old.times(phi).times(partialResult).times(phi.transpose()).times(P_old))).times(1 / lamda_old);
 
@@ -183,11 +189,8 @@ public class OptRecursive {
             //TODO use con for constrains ????
             @Override
             /**
-             * Compute:
-             * n - number of samples
-             * m - number of constrains
-             * Q - X value for f(x)
-             * con - constrains . con[i]>= 0 for all i
+             * Compute: n - number of samples m - number of constrains Q - X
+             * value for f(x) con - constrains . con[i]>= 0 for all i
              */
             public double compute(int n, int m, double[] Q, double[] con) {
                 //1. Get constraints for Q
@@ -197,8 +200,8 @@ public class OptRecursive {
                 //con[0] = -10;
                 //TODO NOTE - COBYLA constraint behaviour:
                 // con[0] + RHO_END >= 0
-                
-                con[0] = getConstraintValue(Q) ;
+
+                con[0] = getConstraintValue(Q);
                 //con[1] = getConstraintValue(Q);
 
                 // System.out.println("Con afterwards: "+con[0]);
@@ -206,7 +209,6 @@ public class OptRecursive {
                 /*System.out.println("Constraints: "+ con[0]);
                  con[1]= 3;*/
                 //con[0] = -1;
-
                 //2. Upper and lower limits
                 /*double[] limits = limitsConstraint(Q);
                 for (int i = 0; i < m-1; i ++)
@@ -222,7 +224,7 @@ public class OptRecursive {
                 Double[] doubleArray = ArrayUtils.toObject(Q_V);
                 Q_values.add(doubleArray);
                 iterations++;
-                
+
                 //System.out.println("V: "+opt );
                 //printDoubleArrayMatrix(  new double[][] {Q}, "Q");
                 return opt;
@@ -236,21 +238,28 @@ public class OptRecursive {
         double[] Q_oldMIN = new double[Q_SIZE];
         for (int i = 0; i < previousQold.length; i++) {
             Q_oldMIN[i] = previousQold[i][0];
-            if (DIAS.verboseMode) { System.out.print(i + ", "); }
+            if (DIAS.verboseMode) {
+                System.out.print(i + ", ");
+            }
         }
         //Update Qold to be equal to previous one
 
-        if (DIAS.verboseMode) { System.out.println("Size Qold " + Q_oldMIN.length + " - "); }
+        if (DIAS.verboseMode) {
+            System.out.println("Size Qold " + Q_oldMIN.length + " - ");
+        }
         //Run the optimization
         CobylaExitStatus result = Cobyla.findMinimum(calcfc, N_VARIABLES, M_CONSTRAINTS, Q_old_ARRAY, _RHO_BEG, _RHO_END, iprint, MAX_FUNC);
         //  result1 = cobyla.findMinimum(calcfc, 24,2*Q_old.getRowDimension()+1, Q_oldtemp, rhobeg, rhoend, iprint, maxfun);  
 
         //Exit status: DIVERGING ROUNDING ERRORS / MAX ITERATION REACH / NORMAL
-        if (DIAS.verboseMode) { System.out.println("COBYLA EXIT: " + result); }
-        /***********************************************
+        if (DIAS.verboseMode) {
+            System.out.println("COBYLA EXIT: " + result);
+        }
+        /**
+         * *********************************************
          * Compute the results of Cobyla optimization
          */
-        
+
         Q_res = new Matrix(Q_SIZE, 1);
         //RECOVER Q value:
         //Q_res = Q_optimizing = Q
@@ -266,7 +275,8 @@ public class OptRecursive {
         if (lamda < 0.005) {
             lamda = 0.005;
         }
-         /***********************************************
+        /**
+         * *********************************************
          * Save the required outputs
          */
         //saveOptRecursiveVariables();
@@ -282,24 +292,22 @@ public class OptRecursive {
             lamda = 0.005;
         }
 
-        if (DIAS.verboseMode) { 
-            this.printOutputs(); 
+        if (DIAS.verboseMode) {
+            this.printOutputs();
         }
 
-      
-        
         //Return the values normally printed out if debug mode is on.
         // XXX DEBUG -- there are quite a few variables with similar names. 
         // Not sure that this is the correct set of variables to return. 
-        OptInputs inputs = new OptInputs(this.Y, this.phi, this.Q_res, this.P, this.lamda, this.err, this.upperlimit, this.lowerlimit, result); 
-        return inputs; 
+        OptInputs inputs = new OptInputs(this.Y, this.phi, this.Q_res, this.P, this.lamda, this.err, this.upperlimit, this.lowerlimit, result);
+        return inputs;
 
     }
 
-/**
+    /**
      * Save initial variables of OPT_RECURSIVE optimization
      */
-    public void saveOptRecursiveVariables(){
+    public void saveOptRecursiveVariables() {
         //TODO Debug - Save all matrices in an excel file, to use later on in MATLAB
         try {
             Save saveManager = new Save(outputOpt);
@@ -350,11 +358,11 @@ public class OptRecursive {
             System.out.println("Error saving inputOut: " + e);
         }
     }
-    
-     /**
+
+    /**
      * Save initial variables of OPT_RECURSIVE optimization
      */
-    public void saveOptRecursiveResults(){
+    public void saveOptRecursiveResults() {
         //TODO Debug - Save all matrices in an excel file, to use later on in MATLAB
         try {
             Save saveManager = new Save(outputOpt);
@@ -376,7 +384,6 @@ public class OptRecursive {
                 }
             }
 //            saveManager.save(Cons_valuesMatrix, "Constraint_Steps_Cons");
-           
 
             //Save the Q result
             saveManager.save(Q_res, "Q_res");
@@ -460,19 +467,19 @@ public class OptRecursive {
         //Matrix to use in this operations AstateModify
         Matrix AstateModify = new Matrix(A_state);
         Matrix AstatetEigen = new Matrix(21, 1);
-        
-        EigenvalueDecomposition eigenDec =  new EigenvalueDecomposition(AstateModify);
+
+        EigenvalueDecomposition eigenDec = new EigenvalueDecomposition(AstateModify);
         //Matrix vDec = eigenDec.getD();
-        Matrix eigenReal= new Matrix(new double[][]{eigenDec.getRealEigenvalues()} );
-        Matrix eigenIm= new Matrix(new double[][]{eigenDec.getImagEigenvalues()} );
+        Matrix eigenReal = new Matrix(new double[][]{eigenDec.getRealEigenvalues()});
+        Matrix eigenIm = new Matrix(new double[][]{eigenDec.getImagEigenvalues()});
 
         //Check if eigen values are valid
         for (int z = 0; z < 21; z++) {
             //Use absolute values of eigen values
             //A = V D V^T.
             //AstatetEigen.set(z, 0, Math.abs(AstateModify.eig().getD().get(z, z)));
-            AstatetEigen.set(z, 0, Math.abs(Math.sqrt(Math.pow(eigenReal.get(0, z),2) 
-                                            + Math.pow(eigenIm.get(0,z),2))));
+            AstatetEigen.set(z, 0, Math.abs(Math.sqrt(Math.pow(eigenReal.get(0, z), 2)
+                    + Math.pow(eigenIm.get(0, z), 2))));
             //AstatetEigen.print(9, 6);
         }
 
@@ -482,7 +489,6 @@ public class OptRecursive {
         //  printMatrix(Astatetemp,"Astatetemp");
         //double c = (max(Astatetemp) - 0.99);
         //We want: max(AstateEigen) -0.99 <= 0
-
         double resultC = (EIGEN_CONSTRAIN_VALUE - max(AstatetEigen));
         //double resultC = -1;
         //Save values of this step:
@@ -490,10 +496,11 @@ public class OptRecursive {
         constraintValues.add(ArrayUtils.toObject(consInter));
         return resultC;
     }
+
     /**
      * Method to emulate the effecto of upper and lower bounds as constraints
-     * 
-     * @param X 
+     *
+     * @param X
      * @return double[] array with the result of X samples vs bounds
      */
 
@@ -510,13 +517,12 @@ public class OptRecursive {
         return limitsResult;
     }
 
-
     /**
      * Returns the values of the optimization function V
-     * @param Q  input value 
-     * @return  V(X)
+     *
+     * @param Q input value
+     * @return V(X)
      */
-
     public double optimizationFunctionV(double[] Q) {
         // V = (Q- Qold)'*(pseudo-inv(P)*(Q-Q_old) + (Y-phi'*Q)'*(Y-phi'*Q);
         //Update other variables: f, f1 /V= f + fi
@@ -610,7 +616,7 @@ public class OptRecursive {
         }
     }
 
-    private void printInputs() { 
+    private void printInputs() {
         System.out.println("///////////////////INPUTS OPT_RECURSIVE/////////////");
         System.out.println(Y + "Y");
         printMatrix(P_old, "P_old");
@@ -628,48 +634,39 @@ public class OptRecursive {
         }
         System.out.println("\n///////////////////INPUTS OPT_RECURSIVE/////////////");
     }
-    
-    private void printOutputs() { 
-            System.out.println("////////////////////OUTPUT OPT_RECURSIVE///////////");
-            printMatrix(Q_res, "Q_res");
-            System.out.println(err + "  err");
-            printMatrix(Y_model, "  Y_model");
-            System.out.println(lamda1 + "  lamda1");
-            System.out.println(lamda2 + "  lamda2");
-            System.out.println(lamda + "  lamda");
-            printMatrix(P, "P");
-            printMatrix(pP, "Pinv");
-            System.out.println("Pinv sizes: " + pP.getColumnDimension() + "x" + pP.getRowDimension());
-            printMatrix(phi, "phi");
-            System.out.println("\n////////////////////OUTPUT OPT_RECURSIVE///////////");
+
+    private void printOutputs() {
+        System.out.println("////////////////////OUTPUT OPT_RECURSIVE///////////");
+        printMatrix(Q_res, "Q_res");
+        System.out.println(err + "  err");
+        printMatrix(Y_model, "  Y_model");
+        System.out.println(lamda1 + "  lamda1");
+        System.out.println(lamda2 + "  lamda2");
+        System.out.println(lamda + "  lamda");
+        printMatrix(P, "P");
+        printMatrix(pP, "Pinv");
+        System.out.println("Pinv sizes: " + pP.getColumnDimension() + "x" + pP.getRowDimension());
+        printMatrix(phi, "phi");
+        System.out.println("\n////////////////////OUTPUT OPT_RECURSIVE///////////");
     }
-    
-    /*************************************************************************
+
+    /**
+     * ***********************************************************************
      * **********************************************************************
      * APACHE OPTIMIZATION:
-     * 
+     *
      * http://stackoverflow.com/questions/16950115/apache-commons-optimization-troubles
-     *  double[] point = {1.,2.};
-    double[] cost = {3., 2.};
-    MultivariateFunction function = new MultivariateFunction() {
-            public double value(double[] point) {
-                    double x = point[0];
-                    double y = point[1];
-                    return x * y;
-            }
-    };
-
-
-    MultivariateOptimizer optimize = new BOBYQAOptimizer(5);
-    optimize.optimize(
-            new MaxEval(200),
-            GoalType.MAXIMIZE,
-            new InitialGuess(point),
-            new ObjectiveFunction(function),
-            new LinearConstraint(cost, Relationship.EQ, 30));
-     * 
-     * 
+     * double[] point = {1.,2.}; double[] cost = {3., 2.}; MultivariateFunction
+     * function = new MultivariateFunction() { public double value(double[]
+     * point) { double x = point[0]; double y = point[1]; return x * y; } };
+     *
+     *
+     * MultivariateOptimizer optimize = new BOBYQAOptimizer(5);
+     * optimize.optimize( new MaxEval(200), GoalType.MAXIMIZE, new
+     * InitialGuess(point), new ObjectiveFunction(function), new
+     * LinearConstraint(cost, Relationship.EQ, 30));
+     *
+     *
      * **********************************************************************
      */
-
 }
