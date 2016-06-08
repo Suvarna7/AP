@@ -189,11 +189,8 @@ public class OptRecursive {
             //TODO use con for constrains ????
             @Override
             /**
-             * Compute:
-             * n - number of samples
-             * m - number of constrains
-             * Q - X value for f(x)
-             * con - constrains . con[i]>= 0 for all i
+             * Compute: n - number of samples m - number of constrains Q - X
+             * value for f(x) con - constrains . con[i]>= 0 for all i
              */
             public double compute(int n, int m, double[] Q, double[] con) {
                 //1. Get constraints for Q
