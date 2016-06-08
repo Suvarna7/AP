@@ -79,7 +79,7 @@ public class VirtualCgm {
 
     private void setGS1Values(){
         //Before 21
-        gs1[0][0] = 202;
+        gs1[0][0] = 183;
         gs1[0][1] = 180;
         gs1[0][2] = 176;
         gs1[0][3] = 170;
@@ -90,6 +90,7 @@ public class VirtualCgm {
         gs1[0][8] = 168;
         gs1[0][9] = 175;
         gs1[0][10] = 179;
+        
         gs1[0][11] = 180;
         gs1[0][12] = 176;
         gs1[0][13] = 170;
@@ -100,8 +101,9 @@ public class VirtualCgm {
         gs1[0][18] = 300;
         gs1[0][19] = 345;
         gs1[0][20] = 398;
-        gs1[0][21] = 183;
         //After 21
+        //After 21
+        gs1[0][21] = 183;
         gs1[0][22] = 190;
         gs1[0][23] = 206;
         gs1[0][24] = 220;
