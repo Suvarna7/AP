@@ -1232,6 +1232,7 @@ We now create an instance of reference_trajectory, "ref_trajectory", based on gs
         }
 
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc=" Update lgvariables.insulin_sensitivity_constant. ">
 
         /* 

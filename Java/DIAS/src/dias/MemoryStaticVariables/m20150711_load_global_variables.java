@@ -107,7 +107,8 @@ public class m20150711_load_global_variables {
     public static double phys_act_in;   ///Before the experiment we should arrange
     ///////////////////////////////////////////////////////////////////
     
-    public void m20150711_load_global_variables(){
+    public m20150711_load_global_variables(){
+        System.out.println("foo"); 
         gs = new Matrix (1,1);
         
     /*  gs_in=298;
