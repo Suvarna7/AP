@@ -459,9 +459,7 @@ public class GUI extends javax.swing.JFrame {
     private void ClearHistoryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ClearHistoryButtonActionPerformed
         // TODO add your handling code here:
         m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
-        lgvariables.m20150711_load_global_variables();
-
-
+        lgvariables.setup();
     }//GEN-LAST:event_ClearHistoryButtonActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
@@ -606,8 +604,8 @@ public class GUI extends javax.swing.JFrame {
         // CGM__SEDFR_JF cs = new CGM__SEDFR_JF();
         
 // m20150711_load_global_variables constructor mostly initializes boilerplate objects. 
-// One thing to note is that the kj value, which gets used -many- times in subsequent methods, gets a hardcoded value of 20 from the constructor. This means that it's immediately updated to 21 after attempting to load data. 
         m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
+        lgvariables.setup();
 
         Load loaddata = new Load(DIAS.excelSubdirectory);
         try {
@@ -617,7 +615,9 @@ public class GUI extends javax.swing.JFrame {
                 System.out.println(lgvariables.kj + "     lgvariables.kj");
             } 
 
-            lgvariables.basal_insulin = DIAS.createnewMatrix(8, lgvariables.kj, lgvariables.basal_insulin);
+            Matrix foo = lgvariables.basal_insulin; 
+            
+            lgvariables.basal_insulin = DIAS.createnewMatrix(8, lgvariables.kj, loaddata.load(lgvariables.basal_insulin, "basal_insulin"));
 
             if (DIAS.verboseMode) { 
                 DIAS.printMatrix(lgvariables.basal_insulin, "lgvariables.basal_insulin");
@@ -837,7 +837,7 @@ public class GUI extends javax.swing.JFrame {
         lgvariables.phys_act_in = Double.parseDouble(jTextField5.getText());
         lgvariables.body_weight = Double.parseDouble(jTextField6.getText());
 
-        lgvariables.m20150711_load_global_variables();
+        lgvariables.setup();
     }//GEN-LAST:event_GetInputsButtonActionPerformed
 
     /**

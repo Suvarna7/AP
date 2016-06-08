@@ -90,11 +90,8 @@ System.out.println("////////////////////////////////////Inputs of Run_meal_detec
          m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
          kj=lgvariables.kj;   
          
-
-         
          lgvariables.meal_gpc_mu= DIAS.createnewMatrix(meal_gpc_mu.getRowDimension()+1, 1 ,lgvariables.meal_gpc_mu);
       
-         
          if(kj>(12)){
               lgvariables.meal_g_basal= DIAS.createnewMatrix(meal_g_basal.getRowDimension()+1,1,lgvariables.meal_g_basal );
               
