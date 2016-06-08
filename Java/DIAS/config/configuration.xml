@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <configuration>
   <environment>
-    <env>dev_cl</env>
-    <verbose>false</verbose>
+    <env>dev_zm</env>
+    <verbose>true</verbose>
   </environment>
   <processing env="dev_cl">
     <paths>
