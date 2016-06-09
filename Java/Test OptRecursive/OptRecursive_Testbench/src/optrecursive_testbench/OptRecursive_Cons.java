@@ -5,6 +5,7 @@ import Jama.EigenvalueDecomposition;
 import de.xypron.jcobyla.Calcfc;
 import de.xypron.jcobyla.Cobyla;
 import de.xypron.jcobyla.CobylaExitStatus;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.ArrayUtils;
