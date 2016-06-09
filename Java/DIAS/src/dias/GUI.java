@@ -305,6 +305,7 @@ public class GUI extends javax.swing.JFrame {
 
         //Virtual CGM generator:
         VirtualCgm vcgm = new VirtualCgm(DIAS.gs_initial);
+        // XXX OPTIMIZE : note that we increment kj right away. 
         m20150711_load_global_variables.kj++;
         vcgm.generateVirtualCGMValues(m20150711_load_global_variables.kj, m20150711_load_global_variables.gs_in); 
         
@@ -843,7 +844,7 @@ public class GUI extends javax.swing.JFrame {
     private void GetInputsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GetInputsButtonActionPerformed
         // Load global variables
         m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
-        lgvariables.gs_in = DIAS.gs_initial; 
+        lgvariables.gs_in = Double.parseDouble(jTextField1.getText()); 
         lgvariables.ee_in = Double.parseDouble(jTextField2.getText());
         lgvariables.gsr_in = Double.parseDouble(jTextField3.getText());
         lgvariables.sleep_in = Double.parseDouble(jTextField4.getText());

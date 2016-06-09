@@ -15,15 +15,15 @@ import java.util.Arrays;
  */
 public class VirtualCgm {
 
-    
     //gs -- stores readings from GUI
     //1.Initial values
-    private final int INIT_SIZE = 21;
+    // We assume that Matlab is putting in 20 initial values, and starting on the 21st. 
+    private final int INIT_SIZE = 20;
     //GS Matrices: 
     //1. Virtually generated GS 
     private double[][] gsVirtual = new double[1][3 * 24 * 12];
     //2. 
-    double[][] gs2 = new double[1][INIT_SIZE+1];
+    //double[][] gs2 = new double[1][INIT_SIZE+1];
     //3.
     public Matrix gstemp;
     //2. gs stores the las 21 samples
@@ -44,10 +44,10 @@ public class VirtualCgm {
     public void generateVirtualCGMValues(int kj, double initialGS) { 
         //initially use all gsVirtual values
         double[][] gsVirtual_part = new double[1][]; 
-        gsVirtual_part[0] = Arrays.copyOfRange(gsVirtual[0], 0, kj);
+        gsVirtual_part[0] = Arrays.copyOfRange(gsVirtual[0], 0, Math.max(INIT_SIZE + 1, kj));
         gstemp = new Matrix(gsVirtual_part); 
         //Overwrite first samples with input value
-        for (int i = 0; i < kj; i++) {
+        for (int i = 0; i <= INIT_SIZE; i++) {
             gstemp.set(0, i, initialGS);
         }
     }
