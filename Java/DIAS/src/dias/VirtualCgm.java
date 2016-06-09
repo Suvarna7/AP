@@ -43,7 +43,9 @@ public class VirtualCgm {
 
     public void generateVirtualCGMValues(int kj, double initialGS) { 
         //initially use all gsVirtual values
-        gstemp = new Matrix(Arrays.copyOfRange(gsVirtual, 0, kj + 1)); 
+        double[][] gsVirtual_part = new double[1][]; 
+        gsVirtual_part[0] = Arrays.copyOfRange(gsVirtual[0], 0, kj);
+        gstemp = new Matrix(gsVirtual_part); 
         //Overwrite first samples with input value
         for (int i = 0; i < kj; i++) {
             gstemp.set(0, i, initialGS);
