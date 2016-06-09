@@ -5,6 +5,9 @@
     <verbose>true</verbose>
   </environment>
   <processing env="dev_cl">
+    <defaults>
+      <gs_initial>188</gs_initial>
+    </defaults>
     <paths>
       <excelFilePath>C:\Users\Cat\Desktop\Java-MATLAB</excelFilePath>
       <excelSubdirectory>Test Save</excelSubdirectory>
@@ -18,6 +21,9 @@
     </optrecursive>
   </processing>
   <processing env="dev_ms">
+    <defaults>
+      <gs_initial>188</gs_initial>
+    </defaults>
     <paths>
       <excelFilePath>Mert's file location</excelFilePath>
       <excelSubdirectory>Test Save</excelSubdirectory>
@@ -31,6 +37,9 @@
     </optrecursive>
   </processing>
   <processing env="dev_zm">
+    <defaults>
+      <gs_initial>200</gs_initial>
+    </defaults>
     <paths>
       <excelFilePath>/Users/zachariemaloney/NetBeansProjects/Current_Source/Excel_Files/</excelFilePath>
       <excelSubdirectory>Test Save</excelSubdirectory>
