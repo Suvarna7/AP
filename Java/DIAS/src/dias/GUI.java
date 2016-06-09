@@ -21,6 +21,8 @@ public class GUI extends javax.swing.JFrame {
      */
     public GUI() {
         initComponents();
+        //set up default values based on configuration file
+        jTextField1.setText(Integer.toString(DIAS.gs_initial));
     }
 
     /**
@@ -296,7 +298,7 @@ public class GUI extends javax.swing.JFrame {
         m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
 
         //Virtual CGM generator:
-        VirtualCgm vcgm = new VirtualCgm(m20150711_load_global_variables.kj);
+        VirtualCgm vcgm = new VirtualCgm(m20150711_load_global_variables.kj, DIAS.gs_initial);
         m20150711_load_global_variables.kj++;
         vcgm.gstemp = DIAS.createnewMatrix(1, m20150711_load_global_variables.kj, vcgm.getVirtualCgmValue());
         
@@ -478,7 +480,7 @@ public class GUI extends javax.swing.JFrame {
     private void SaveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveButtonActionPerformed
         // TODO add your handling code here:
         m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
-        VirtualCgm vcgm = new VirtualCgm(lgvariables.kj);
+        VirtualCgm vcgm = new VirtualCgm(lgvariables.kj, DIAS.gs_initial);
 
         Save savedata = new Save(DIAS.excelSubdirectory);
 
@@ -798,7 +800,6 @@ public class GUI extends javax.swing.JFrame {
         // m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
         // lgvariables.gs_in=Double.parseDouble (jTextField1.getText());
 
-
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
@@ -827,6 +828,12 @@ public class GUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField6ActionPerformed
 
+    /** 
+     * Updates the lgvariables (m20150711_load_global_variables) static properties : 
+     * gs_in, ee_in, gsr_in, sleep_in, phys_act_in, body_weight
+     * 
+     * @param evt ActionEvent from the action button
+     */
     private void GetInputsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GetInputsButtonActionPerformed
         // Load global variables
         m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();

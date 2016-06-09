@@ -17,7 +17,6 @@ public class VirtualCgm {
     
     //gs -- stores readings from GUI
     //1.Initial values
-    private final double initialGS = 188;
     private final int INIT_SIZE = 20;
     //GS Matrices: 
     //1. Virtually generated GS 
@@ -32,7 +31,7 @@ public class VirtualCgm {
     public Matrix gsconstant = new Matrix(1, INIT_SIZE+1);
     public static int kj;
 
-    public VirtualCgm(int kj_in) {
+    public VirtualCgm(int kj_in, int initialGS) {
         kj = kj_in;
         
         //Init gstemp matrix -- 21 values equals to init GS

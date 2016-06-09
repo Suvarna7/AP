@@ -43,7 +43,9 @@ public class DIAS {
     //Property: Email to receive messages
     public static String[] privateMails;
     
-
+    //Default values for the GUI
+    public static int gs_initial; 
+   
     /**
      * @param args the command line arguments
      */
@@ -123,6 +125,9 @@ public class DIAS {
             List<String> emails = config.getList(String.class, "processing[@env='" + configurationEnvironment + "']/emails/email");
             privateMails = new String[emails.size()];
             privateMails = emails.toArray(privateMails);
+            
+            gs_initial = config.getInt("processing[@env='" + configurationEnvironment + "']/defaults/gs_initial"); 
+            
             output = true;
         } catch (ConfigurationException cex) {
             //Something went wrong; we should probably check to see if the configuration file wasn't found, 

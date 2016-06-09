@@ -100,6 +100,7 @@ public class m20150711_load_global_variables {
     public static double CGM_retuning_with_noise_generator;
     public static double CGM_retuning_without_noise_generator;
     /////////////////////////////////////////////////////////////////////
+    // The following variables get updated from the GUI in GetInputsButtonActionPerformed()
     public static double gs_in;     ///Before the experiment we should arrange
     public static double ee_in;    ///Before the experiment we should arrange
     public static double gsr_in;   ///Before the experiment we should arrange

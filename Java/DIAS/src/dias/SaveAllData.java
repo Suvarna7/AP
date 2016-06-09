@@ -20,7 +20,6 @@ public class SaveAllData{
     public void saveall(){
     
     m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
-        VirtualCgm vcgm = new VirtualCgm(lgvariables.kj);
        
         Save savedata = new Save ("Test Save");
         prevdata_error_summation prdata = new prevdata_error_summation();
