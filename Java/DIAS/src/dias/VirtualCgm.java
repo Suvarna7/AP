@@ -7,6 +7,7 @@ package dias;
 
 import Jama.Matrix;
 import dias.MemoryStaticVariables.m20150711_load_global_variables;
+import java.util.Arrays;
 
 /**
  *
@@ -24,7 +25,7 @@ public class VirtualCgm {
     //2. 
     double[][] gs2 = new double[1][INIT_SIZE+1];
     //3.
-    public Matrix gs_values;
+    public Matrix gstemp;
     //2. gs stores the las 21 samples
     public Matrix gs;
 
@@ -42,12 +43,16 @@ public class VirtualCgm {
 
     public void generateVirtualCGMValues(int kj, double initialGS) { 
         //initially use all gsVirtual values
-        gs_values = new Matrix(gsVirtual); 
+        gstemp = new Matrix(Arrays.copyOfRange(gsVirtual, 0, kj + 1)); 
         //Overwrite first samples with input value
         for (int i = 0; i < kj; i++) {
-            gs_values.set(0, i, initialGS);
+            gstemp.set(0, i, initialGS);
         }
     }
+    
+    public void updateVirtualCGMValue(int kj, double newValue) { 
+        gstemp.set(0, kj, newValue); 
+    } 
 
     private void generateGSVirtual(){
         //Before 21
