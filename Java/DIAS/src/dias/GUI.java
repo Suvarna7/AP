@@ -293,17 +293,24 @@ public class GUI extends javax.swing.JFrame {
      */
     private void RunInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RunInputActionPerformed
 
+        //set gs_initial to the input from GUI, if user has overridden default. 
+        DIAS.gs_initial = Integer.parseInt(jTextField1.getText()); 
+        //and disable the text field so we can't input again. 
+        jTextField1.setEditable(false);
+        jTextField1.setEnabled(false); 
+        
         //1. CGM Prediction
         CGM__SEDFR_JF cs = new CGM__SEDFR_JF();
         m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
 
         //Virtual CGM generator:
-        VirtualCgm vcgm = new VirtualCgm(m20150711_load_global_variables.kj, DIAS.gs_initial);
+        VirtualCgm vcgm = new VirtualCgm(DIAS.gs_initial);
         m20150711_load_global_variables.kj++;
-        vcgm.gstemp = DIAS.createnewMatrix(1, m20150711_load_global_variables.kj, vcgm.getVirtualCgmValue());
+        vcgm.generateVirtualCGMValues(m20150711_load_global_variables.kj, m20150711_load_global_variables.gs_in); 
         
+        //XXX OPTIMIZE : Not sure why this line is here, since the .gs parameter gets overwritten immediately. 
         m20150711_load_global_variables.gs = DIAS.createnewMatrix(1, m20150711_load_global_variables.kj, m20150711_load_global_variables.gs);
-        m20150711_load_global_variables.gs = vcgm.gstemp;
+        m20150711_load_global_variables.gs = vcgm.gs_values;
 
         int flag_noise = 1;
 
@@ -377,19 +384,19 @@ public class GUI extends javax.swing.JFrame {
                ////////////////////////////////OUTPUTS IOB_CALCULATE////////////////////////////////////////////////////////////////////////////////////*/
        //TODO Meal detection:
        // CGM values - from gstemp
-        m20150711_run_meal_detection_bolus_algorithm rmdetectionbolusalgorithm = new m20150711_run_meal_detection_bolus_algorithm(lgvariables.meal_states, lgvariables.meal_covariance, lgvariables.bolus_insulin, lgvariables.meal_bolus_amount, lgvariables.meal_detection, lgvariables.meal_detection_time, lgvariables.correction_bolus_amount, lgvariables.correction_detection, lgvariables.correction_detection_time, lgvariables.correction_limit, vcgm.gstemp, lgvariables.kj, lgvariables.meal_g_basal, lgvariables.meal_gpc_gs_slope_degree, lgvariables.meal_gpc_mu, lgvariables.sleep, lgvariables.phys_act, lgvariables.IOB_total, lgvariables.body_weight);
+        m20150711_run_meal_detection_bolus_algorithm rmdetectionbolusalgorithm = new m20150711_run_meal_detection_bolus_algorithm(lgvariables.meal_states, lgvariables.meal_covariance, lgvariables.bolus_insulin, lgvariables.meal_bolus_amount, lgvariables.meal_detection, lgvariables.meal_detection_time, lgvariables.correction_bolus_amount, lgvariables.correction_detection, lgvariables.correction_detection_time, lgvariables.correction_limit, vcgm.gs_values, lgvariables.kj, lgvariables.meal_g_basal, lgvariables.meal_gpc_gs_slope_degree, lgvariables.meal_gpc_mu, lgvariables.sleep, lgvariables.phys_act, lgvariables.IOB_total, lgvariables.body_weight);
         rmdetectionbolusalgorithm.run_meal_detection_bolus_algorithm();
 
         //TODO GPC 
         // CGM values - from gstemp
         Matrix matrixGPC = new Matrix(8, 1);
-        m20150711_gpc m_gpc = new m20150711_gpc(vcgm.gstemp, lgvariables.ee, lgvariables.gsr, lgvariables.kj, lgvariables.phi, lgvariables.phi_ee, lgvariables.phi_gsr, lgvariables.armax_parameters, lgvariables.armax_covariance, lgvariables.armax_lamda, lgvariables.armax_err, lgvariables.arma_parameters_ee, lgvariables.arma_lamda_ee, lgvariables.arma_covariance_ee, lgvariables.arma_err_ee, lgvariables.arma_parameters_gsr, lgvariables.arma_lamda_gsr, lgvariables.arma_covariance_gsr, lgvariables.arma_err_gsr, lgvariables.A_state, lgvariables.A_state_ee, lgvariables.A_state_gsr, lgvariables.C_state, lgvariables.C_state_ee, lgvariables.C_state_gsr, lgvariables.B_state, lgvariables.K_state, lgvariables.K_state_ee, lgvariables.K_state_gsr, lgvariables.M, lgvariables.L, lgvariables.L_ee, lgvariables.L_gsr, lgvariables.M_ee, lgvariables.M_gsr, lgvariables.X_state, lgvariables.X_state_ee, lgvariables.X_state_gsr, lgvariables.ee_prediction, lgvariables.gsr_prediction, lgvariables.g_prediction, lgvariables.reference_glucose, lgvariables.insulin_sensitivity_constant, lgvariables.basal_insulin, lgvariables.IOB_prediction, lgvariables.maximum_insulin, lgvariables.total_daily_unit, lgvariables.insulin_sensitivity_factor, lgvariables.body_weight, lgvariables.meal_gpc_mu, lgvariables.bolus_insulin, 0, matrixGPC);
+        m20150711_gpc m_gpc = new m20150711_gpc(vcgm.gs_values, lgvariables.ee, lgvariables.gsr, lgvariables.kj, lgvariables.phi, lgvariables.phi_ee, lgvariables.phi_gsr, lgvariables.armax_parameters, lgvariables.armax_covariance, lgvariables.armax_lamda, lgvariables.armax_err, lgvariables.arma_parameters_ee, lgvariables.arma_lamda_ee, lgvariables.arma_covariance_ee, lgvariables.arma_err_ee, lgvariables.arma_parameters_gsr, lgvariables.arma_lamda_gsr, lgvariables.arma_covariance_gsr, lgvariables.arma_err_gsr, lgvariables.A_state, lgvariables.A_state_ee, lgvariables.A_state_gsr, lgvariables.C_state, lgvariables.C_state_ee, lgvariables.C_state_gsr, lgvariables.B_state, lgvariables.K_state, lgvariables.K_state_ee, lgvariables.K_state_gsr, lgvariables.M, lgvariables.L, lgvariables.L_ee, lgvariables.L_gsr, lgvariables.M_ee, lgvariables.M_gsr, lgvariables.X_state, lgvariables.X_state_ee, lgvariables.X_state_gsr, lgvariables.ee_prediction, lgvariables.gsr_prediction, lgvariables.g_prediction, lgvariables.reference_glucose, lgvariables.insulin_sensitivity_constant, lgvariables.basal_insulin, lgvariables.IOB_prediction, lgvariables.maximum_insulin, lgvariables.total_daily_unit, lgvariables.insulin_sensitivity_factor, lgvariables.body_weight, lgvariables.meal_gpc_mu, lgvariables.bolus_insulin, 0, matrixGPC);
         m_gpc.gpc();
 
         //TODO CPA module
         // CGM values - from gstemp
 
-        CPA_Module_paralleled_calculation_JF CPA_module_paralleled_cal = new CPA_Module_paralleled_calculation_JF(vcgm.gstemp, lgvariables.ee, lgvariables.gsr, lgvariables.kj, lgvariables.phi, lgvariables.phi_ee, lgvariables.phi_gsr, lgvariables.armax_parameters, lgvariables.armax_covariance, lgvariables.armax_lamda, lgvariables.armax_err, lgvariables.arma_parameters_ee, lgvariables.arma_lamda_ee, lgvariables.arma_covariance_ee, lgvariables.arma_err_ee, lgvariables.arma_parameters_gsr, lgvariables.arma_lamda_gsr, lgvariables.arma_covariance_gsr, lgvariables.arma_err_gsr, lgvariables.A_state, lgvariables.A_state_ee, lgvariables.A_state_gsr, lgvariables.C_state, lgvariables.C_state_ee, lgvariables.C_state_gsr, lgvariables.B_state, lgvariables.K_state, lgvariables.K_state_ee, lgvariables.K_state_gsr, lgvariables.M, lgvariables.L, lgvariables.L_ee, lgvariables.L_gsr, lgvariables.M_ee, lgvariables.M_gsr, lgvariables.X_state, lgvariables.X_state_ee, lgvariables.X_state_gsr, lgvariables.ee_prediction, lgvariables.gsr_prediction, lgvariables.g_prediction, lgvariables.reference_glucose, lgvariables.insulin_sensitivity_constant, lgvariables.basal_insulin, lgvariables.IOB_prediction, lgvariables.maximum_insulin, lgvariables.total_daily_unit, lgvariables.insulin_sensitivity_factor, lgvariables.body_weight, lgvariables.meal_gpc_mu, lgvariables.bolus_insulin);
+        CPA_Module_paralleled_calculation_JF CPA_module_paralleled_cal = new CPA_Module_paralleled_calculation_JF(vcgm.gs_values, lgvariables.ee, lgvariables.gsr, lgvariables.kj, lgvariables.phi, lgvariables.phi_ee, lgvariables.phi_gsr, lgvariables.armax_parameters, lgvariables.armax_covariance, lgvariables.armax_lamda, lgvariables.armax_err, lgvariables.arma_parameters_ee, lgvariables.arma_lamda_ee, lgvariables.arma_covariance_ee, lgvariables.arma_err_ee, lgvariables.arma_parameters_gsr, lgvariables.arma_lamda_gsr, lgvariables.arma_covariance_gsr, lgvariables.arma_err_gsr, lgvariables.A_state, lgvariables.A_state_ee, lgvariables.A_state_gsr, lgvariables.C_state, lgvariables.C_state_ee, lgvariables.C_state_gsr, lgvariables.B_state, lgvariables.K_state, lgvariables.K_state_ee, lgvariables.K_state_gsr, lgvariables.M, lgvariables.L, lgvariables.L_ee, lgvariables.L_gsr, lgvariables.M_ee, lgvariables.M_gsr, lgvariables.X_state, lgvariables.X_state_ee, lgvariables.X_state_gsr, lgvariables.ee_prediction, lgvariables.gsr_prediction, lgvariables.g_prediction, lgvariables.reference_glucose, lgvariables.insulin_sensitivity_constant, lgvariables.basal_insulin, lgvariables.IOB_prediction, lgvariables.maximum_insulin, lgvariables.total_daily_unit, lgvariables.insulin_sensitivity_factor, lgvariables.body_weight, lgvariables.meal_gpc_mu, lgvariables.bolus_insulin);
         try {
             CPA_module_paralleled_cal.CPA();
         } catch (Exception ex) {
@@ -398,7 +405,7 @@ public class GUI extends javax.swing.JFrame {
 
         //Hypo glucemia alarm calculator
         // CGM values - from gstemp
-        hypo_alarm hypo = new hypo_alarm(lgvariables.hypo_threshold.transpose(), lgvariables.hypo_slope_degree.transpose(), lgvariables.hypo_alarm.transpose(), lgvariables.carb_amount, lgvariables.carb_type, lgvariables.hypo_phase.transpose(), lgvariables.hypo_phase_old.transpose(), lgvariables.repeated_immediate_alarm.transpose(), vcgm.gstemp, lgvariables.kj, lgvariables.g_prediction, lgvariables.phys_act, lgvariables.sleep);
+        hypo_alarm hypo = new hypo_alarm(lgvariables.hypo_threshold.transpose(), lgvariables.hypo_slope_degree.transpose(), lgvariables.hypo_alarm.transpose(), lgvariables.carb_amount, lgvariables.carb_type, lgvariables.hypo_phase.transpose(), lgvariables.hypo_phase_old.transpose(), lgvariables.repeated_immediate_alarm.transpose(), vcgm.gs_values, lgvariables.kj, lgvariables.g_prediction, lgvariables.phys_act, lgvariables.sleep);
         hypo.m20150711_hypo_alarm();
 
         if (lgvariables.phys_act.get(0, lgvariables.kj - 1) == 1) {
@@ -446,7 +453,7 @@ public class GUI extends javax.swing.JFrame {
 
         //////////////////////////OUTPUTS///////////////////////////////////////////////////////////////////////////////////////////////////////////
         System.out.println("Kj: " + m20150711_load_global_variables.kj);
-        DIAS.printMatrix(vcgm.gstemp, "vcgm.gstemp");
+        DIAS.printMatrix(vcgm.gs_values, "vcgm.gstemp");
         DIAS.printMatrix(m20150711_load_global_variables.bolus_insulin, "lgvariables.bolus_insulin");
         DIAS.printMatrix(m20150711_load_global_variables.basal_insulin, "lgvariables.basal_insulin");
         //TODO Update output values in GUI
@@ -480,7 +487,6 @@ public class GUI extends javax.swing.JFrame {
     private void SaveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveButtonActionPerformed
         // TODO add your handling code here:
         m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
-        VirtualCgm vcgm = new VirtualCgm(lgvariables.kj, DIAS.gs_initial);
 
         Save savedata = new Save(DIAS.excelSubdirectory);
 
@@ -837,7 +843,7 @@ public class GUI extends javax.swing.JFrame {
     private void GetInputsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GetInputsButtonActionPerformed
         // Load global variables
         m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
-        lgvariables.gs_in = Double.parseDouble(jTextField1.getText());
+        lgvariables.gs_in = DIAS.gs_initial; 
         lgvariables.ee_in = Double.parseDouble(jTextField2.getText());
         lgvariables.gsr_in = Double.parseDouble(jTextField3.getText());
         lgvariables.sleep_in = Double.parseDouble(jTextField4.getText());

@@ -17,73 +17,39 @@ public class VirtualCgm {
     
     //gs -- stores readings from GUI
     //1.Initial values
-    private final int INIT_SIZE = 20;
+    private final int INIT_SIZE = 21;
     //GS Matrices: 
     //1. Virtually generated GS 
-    double[][] gsVirtual = new double[1][3 * 24 * 12];
+    private double[][] gsVirtual = new double[1][3 * 24 * 12];
     //2. 
     double[][] gs2 = new double[1][INIT_SIZE+1];
     //3.
-    public Matrix gstemp;
+    public Matrix gs_values;
     //2. gs stores the las 21 samples
     public Matrix gs;
 
-    public Matrix gsconstant = new Matrix(1, INIT_SIZE+1);
-    public static int kj;
-
-    public VirtualCgm(int kj_in, int initialGS) {
-        kj = kj_in;
-        
-        //Init gstemp matrix -- 21 values equals to init GS
-        for (int i = 0; i <= INIT_SIZE; i++) {
-            gs2[0][i] = initialGS;
-        }
-        gstemp = new Matrix(gs2);
-        
-        //Initialize the virtually generated values
-        setGSVirtualValues();
-
+/** 
+ * Creates a new instance of VirtualCgm
+ * Sets the first INIT_SIZE values to the value supplied as initialGS, but then pulls all other values from the private gsVirtual vector. 
+ * This may cause a problem if we want to wrap around to the beginning of the CGM list, but we'll get there when we get there. 
+ * 
+ * @param initialGS     int, initial glucose value
+ */
+    public VirtualCgm(int initialGS) {
+        //Initialize the virtually generated values so we can use them later. 
+        generateGSVirtual();
     }
 
-    public Matrix getVirtualCgmValue() {
-
-
-        //GS temporal  - copied from gs1
-        Matrix result = DIAS.createnewMatrix(1, kj + 1, gstemp);
-        //21 First samples - input value
-        for (int i = 0; i < kj + 1 ; i++) {
-            result.set(0, i, gsVirtual[0][i]);
+    public void generateVirtualCGMValues(int kj, double initialGS) { 
+        //initially use all gsVirtual values
+        gs_values = new Matrix(gsVirtual); 
+        //Overwrite first samples with input value
+        for (int i = 0; i < kj; i++) {
+            gs_values.set(0, i, initialGS);
         }
-
-        return result;
-    }
-    
-    public Matrix getVirtualCgmValueFromInput() {
-
-        setGSVirtualValues();
-        Matrix gs1Matrix = new Matrix(gsVirtual);
-
-        //Constant matrix with input value 21 times stored
-        for (int i = 0; i <= INIT_SIZE; i++) {
-            gs2[0][i] = m20150711_load_global_variables.gs_in;
-        }
-        gsconstant = new Matrix(gs2);
-        
-        //GS temporal 
-        gstemp = DIAS.createnewMatrix(1, kj + 1, gstemp);
-        //21 First samples - input value
-        for (int i = 0; i < 21; i++) {
-            gstemp.set(0, i, m20150711_load_global_variables.gs_in);
-        }
-       //After 21 first samples - old gs values
-        for (int i = 21; i < kj + 1; i++) {
-            gstemp.set(0, i, gs1Matrix.get(0, i));
-        }
-
-        return gstemp;
     }
 
-    private void setGSVirtualValues(){
+    private void generateGSVirtual(){
         //Before 21
         gsVirtual[0][0] = 183;
         gsVirtual[0][1] = 180;
