@@ -1,4 +1,3 @@
-
 package dias;
 
 import Jama.Matrix;
