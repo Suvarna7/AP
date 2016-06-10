@@ -13,6 +13,7 @@ import java.util.Arrays;
  *
  * @author Mert
  */
+//Next up for development : set a flag for "initial load," so that when we're -not- doing the initial load, we just yank a new CGM value from wherever (not the UI, probably the hardcoded values, or wherever our CGM values are coming from). 
 public class VirtualCgm {
 
     //gs -- stores readings from GUI
@@ -36,8 +37,9 @@ public class VirtualCgm {
  * 
  * @param initialGS     int, initial glucose value
  */
-    public VirtualCgm(int initialGS) {
+    public VirtualCgm(double initialGS) {
         //Initialize the virtually generated values so we can use them later. 
+        //Currently, the initialGS parameter isn't used, but it's here if we want to roll in the call to generateVirtualCGMValues() here. 
         generateGSVirtual();
     }
 

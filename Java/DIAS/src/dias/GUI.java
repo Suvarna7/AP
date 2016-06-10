@@ -22,7 +22,12 @@ public class GUI extends javax.swing.JFrame {
     public GUI() {
         initComponents();
         //set up default values based on configuration file
-        jTextField1.setText(Integer.toString(DIAS.gs_initial));
+        jTextField1.setText(Double.toString(DIAS.gs_initial));
+        jTextField2.setText(Double.toString(DIAS.ee_in)); 
+        jTextField3.setText(Double.toString(DIAS.gsr_in)); 
+        jTextField4.setText(Double.toString(DIAS.sleep_in)); 
+        jTextField5.setText(Double.toString(DIAS.phys_act_in)); 
+        jTextField6.setText(Double.toString(DIAS.body_weight)); 
     }
 
     /**
@@ -293,11 +298,9 @@ public class GUI extends javax.swing.JFrame {
      */
     private void RunInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RunInputActionPerformed
 
-        //set gs_initial to the input from GUI, if user has overridden default. 
-        DIAS.gs_initial = Integer.parseInt(jTextField1.getText()); 
-        //and disable the text field so we can't input again. 
-        jTextField1.setEditable(false);
-        jTextField1.setEnabled(false); 
+        GetInitialValuesFromUI(); 
+        
+        DisableInputFields(); 
         
         //1. CGM Prediction
         CGM__SEDFR_JF cs = new CGM__SEDFR_JF();
@@ -472,6 +475,19 @@ public class GUI extends javax.swing.JFrame {
         lgvariables.setup();
     }//GEN-LAST:event_ClearHistoryButtonActionPerformed
 
+    private void DisableInputFields() { 
+        jTextField1.setEditable(false);
+        jTextField1.setEnabled(false); 
+        jTextField2.setEditable(false);
+        jTextField2.setEnabled(false); 
+        jTextField3.setEditable(false);
+        jTextField3.setEnabled(false); 
+        jTextField4.setEditable(false);
+        jTextField4.setEnabled(false); 
+        jTextField5.setEditable(false);
+        jTextField5.setEnabled(false);
+    }
+    
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
         load_plsdata730_R_12_withcluster lpls = new load_plsdata730_R_12_withcluster();
@@ -835,6 +851,16 @@ public class GUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField6ActionPerformed
 
+    private void GetInitialValuesFromUI() { 
+        //set initial values to the inputs from GUI, if user has overridden defaults. 
+        DIAS.gs_initial = Double.parseDouble(jTextField1.getText()); 
+        DIAS.ee_in = Double.parseDouble(jTextField2.getText()); 
+        DIAS.gsr_in = Double.parseDouble(jTextField3.getText()); 
+        DIAS.sleep_in = Double.parseDouble(jTextField4.getText()); 
+        DIAS.phys_act_in = Double.parseDouble(jTextField5.getText()); 
+        DIAS.body_weight = Double.parseDouble(jTextField6.getText()); 
+    } 
+    
     /** 
      * Updates the lgvariables (m20150711_load_global_variables) static properties : 
      * gs_in, ee_in, gsr_in, sleep_in, phys_act_in, body_weight
