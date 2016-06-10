@@ -21,26 +21,24 @@ import com.empatica.empalink.delegate.EmpaDataDelegate;
 import com.empatica.empalink.delegate.EmpaStatusDelegate;
 
 
-public class MainActivity extends AppCompatActivity implements EmpaDataDelegate, EmpaStatusDelegate {
+public class MainActivity extends AppCompatActivity implements EmpaStatusDelegate   {
 
     private static final int REQUEST_ENABLE_BT = 1;
-    private static final long STREAMING_TIME = 10000; // Stops streaming 10 seconds after connection
+    private static final long STREAMING_TIME = 600000; // Stops streaming 10 min after connection
+    public static final String EMPATICA_API_KEY = "f92ddb7260a54f5790038ba90ef4d1ad"; // TODO insert your API Key here
 
-    private static final String EMPATICA_API_KEY = ""; // TODO insert your API Key here
 
-    private EmpaDeviceManager deviceManager;
-
-    private TextView accel_xLabel;
-    private TextView accel_yLabel;
-    private TextView accel_zLabel;
-    private TextView bvpLabel;
-    private TextView edaLabel;
-    private TextView ibiLabel;
-    private TextView temperatureLabel;
-    private TextView batteryLabel;
-    private TextView statusLabel;
-    private TextView deviceNameLabel;
-    private RelativeLayout dataCnt;
+    public TextView accel_xLabel;
+    public TextView accel_yLabel;
+    public TextView accel_zLabel;
+    public TextView bvpLabel;
+    public TextView edaLabel;
+    public TextView ibiLabel;
+    public TextView temperatureLabel;
+    public TextView batteryLabel;
+    public TextView statusLabel;
+    public TextView deviceNameLabel;
+    public RelativeLayout dataCnt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,22 +58,30 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
         batteryLabel = (TextView) findViewById(R.id.battery);
         deviceNameLabel = (TextView) findViewById(R.id.deviceName);
 
-        // Create a new EmpaDeviceManager. MainActivity is both its data and status delegate.
-        deviceManager = new EmpaDeviceManager(getApplicationContext(), this, this);
-        // Initialize the Device Manager using your API key. You need to have Internet access at this point.
-        deviceManager.authenticateWithAPIKey(EMPATICA_API_KEY);
+
+        BGService.initContext(this);
+
+        if (!BGService.serviceStarted) {
+            //Start background service
+            startService(new Intent(this, BGService.class));
+        }
+
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        deviceManager.stopScanning();
+        BGService.deviceManager.stopScanning();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        deviceManager.cleanUp();
+        //BGService.deviceManager.cleanUp();
+        //Stop service
+        //stopService(new Intent(this, BGService.class));
+
     }
 
     @Override
@@ -85,10 +91,10 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
         // https://www.empatica.com/connect/developer.php
         if (allowed) {
             // Stop scanning. The first allowed device will do.
-            deviceManager.stopScanning();
+            BGService.deviceManager.stopScanning();
             try {
                 // Connect to the device
-                deviceManager.connectDevice(bluetoothDevice);
+                BGService.deviceManager.connectDevice(bluetoothDevice);
                 updateLabel(deviceNameLabel, "To: " + deviceName);
             } catch (ConnectionNotAllowedException e) {
                 // This should happen only if you try to connect when allowed == false.
@@ -128,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
         if (status == EmpaStatus.READY) {
             updateLabel(statusLabel, status.name() + " - Turn on your device");
             // Start scanning
-            deviceManager.startScanning();
+            BGService.deviceManager.startScanning();
         // The device manager has established a connection
         } else if (status == EmpaStatus.CONNECTED) {
             // Stop streaming after STREAMING_TIME
@@ -140,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
                         @Override
                         public void run() {
                             // Disconnect device
-                            deviceManager.disconnect();
+                            BGService.deviceManager.disconnect();
                         }
                     }, STREAMING_TIME);
                 }
@@ -151,40 +157,9 @@ public class MainActivity extends AppCompatActivity implements EmpaDataDelegate,
         }
     }
 
-    @Override
-    public void didReceiveAcceleration(int x, int y, int z, double timestamp) {
-        updateLabel(accel_xLabel, "" + x);
-        updateLabel(accel_yLabel, "" + y);
-        updateLabel(accel_zLabel, "" + z);
-    }
-
-    @Override
-    public void didReceiveBVP(float bvp, double timestamp) {
-        updateLabel(bvpLabel, "" + bvp);
-    }
-
-    @Override
-    public void didReceiveBatteryLevel(float battery, double timestamp) {
-        updateLabel(batteryLabel, String.format("%.0f %%", battery * 100));
-    }
-
-    @Override
-    public void didReceiveGSR(float gsr, double timestamp) {
-        updateLabel(edaLabel, "" + gsr);
-    }
-
-    @Override
-    public void didReceiveIBI(float ibi, double timestamp) {
-        updateLabel(ibiLabel, "" + ibi);
-    }
-
-    @Override
-    public void didReceiveTemperature(float temp, double timestamp) {
-        updateLabel(temperatureLabel, "" + temp);
-    }
 
     // Update a label with some text, making sure this is run in the UI thread
-    private void updateLabel(final TextView label, final String text) {
+    public void updateLabel(final TextView label, final String text) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- From: file:/C:/Users/Caterina/Documents/IIT/PhD%20Research/Trabajo/Android/gecko-mobile-client/gecko-mobile-client/res/values/devices_array.xml -->
+    <eat-comment/>
+    <array name="devices_array">
+        <item>Zephyr</item>
+        <item>BodyMedia</item>
+        <item>DexCom</item>
+    </array>
+    <!-- From: file:/C:/Users/Caterina/Documents/IIT/PhD%20Research/Trabajo/Android/gecko-mobile-client/gecko-mobile-client/res/values/arrays.xml -->
+    <eat-comment/>
+    <string-array name="usb_current_level_names">       
+        <item>100 mA</item>
+        <item>500 mA (Default)</item>
+        <item>Max</item>
+        <item>Suspend</item>
+    </string-array>
+    <string-array name="usb_current_level_values">       
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+    <!-- From: file:/C:/Users/Caterina/Documents/IIT/PhD%20Research/Trabajo/Android/gecko-mobile-client/gecko-mobile-client/res/values/colors.xml -->
+    <eat-comment/>
+    <color name="basic_orange">#ffFF8800</color>
+    <color name="cool_green">#ff669900</color>
+    <color name="pairing_mode">#ffffb016</color>
+    <color name="recovery_red">#ffd61c2a</color>
+    <!-- From: file:/C:/Users/Caterina/Documents/IIT/PhD%20Research/Trabajo/Android/gecko-mobile-client/gecko-mobile-client/res/values/dimens.xml -->
+    <eat-comment/>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="domain_label_font_size">13dp</dimen>
+    <dimen name="domain_tick_label_font_size">15dp</dimen>
+    <dimen name="legend_text_font_size">20dp</dimen>
+    <dimen name="pie_segment_label_font_size">10dp</dimen>
+    <dimen name="range_label_font_size">13dp</dimen>
+    <dimen name="range_tick_label_font_size">15dp</dimen>
+    <dimen name="title_font_size">20dp</dimen>
+    <!-- From: file:/C:/Users/Caterina/Documents/IIT/PhD%20Research/Trabajo/Android/gecko-mobile-client/gecko-mobile-client/res/values/strings.xml -->
+    <eat-comment/>
+    <item name="current_range_lower" type="id"/>
+    <item name="current_range_upper" type="id"/>
+    <item name="max_range_upper" type="id"/>
+    <item name="min_range_lower" type="id"/>
+    <string name="action_disconnect">Disconnect</string>
+    <string name="action_pair">Pair</string>
+    <string name="app_name">Sensors Connection</string>
+    <string name="armband_disconnected">The armband has disconnected.</string>
+    <string name="armband_disconnected_during_pairing">Armband has been disconnected since you started a Pairing flow.</string>
+    <string name="autoconnect_dialog_id">autoconnect_dialog</string>
+    <string name="cancel">Cancel</string>
+    <string name="clear_log_title">Clear log</string>
+    <string name="command_yes">YES</string>
+    <string name="connected_device">Connected Device</string>
+    <string name="crash_dialog_prompt">Please add any additional comments about what happened below:</string>
+    <string name="crash_dialog_text">An unexpected error occurred, forcing the application to stop.</string>
+    <string name="crash_dialog_title">Submit Crash Log</string>
+    <string name="device_time">Device time</string>
+    <string name="dialog_reconnect_title">Armband is reconnecting</string>
+    <string name="done">DONE</string>
+    <string name="get_egv">Get EGVs</string>
+    <string name="get_meter">Get meter records</string>
+    <string name="go">GO</string>
+    <string name="high_rate_title">High Rate streaming</string>
+    <string name="insertDeviceSerial">Insert device serial number:</string>
+    <string name="insertPatient">Insert user ID:</string>
+    <string name="labelHeartRate">Heart Rate</string>
+    <string name="labelPeakAcc">Peak Acceleration</string>
+    <string name="labelPosture">Posture</string>
+    <string name="labelRespRate">Respiration Rate</string>
+    <string name="labelStatusMsg"> . </string>
+    <string name="menu_show_device_configuration">Device Configuration</string>
+    <string name="menu_show_device_info">Device Info</string>
+    <string name="menu_show_high_rate_screen">High Rate</string>
+    <string name="menu_show_minute_rate_screen">Minute Rate</string>
+    <string name="minute_rate_title">Minute Rate streaming</string>
+    <string name="minutes_hint">minutes</string>
+    <string name="pair_progress_confirm">Your Armand was found!\nPush your Armband button to confirm pairing.</string>
+    <string name="pair_progress_enable">Press and hold your Armband button.\nRelease after you hear a beep.</string>
+    <string name="pair_progress_scanning">Looking for Armbands in pairing mode.</string>
+    <string name="pair_successfull">Pair successful!</string>
+    <string name="pairing_press_registration">Pair Device</string>
+    <string name="pick_device">Select one Device</string>
+    <string name="ping">Ping Receiver</string>
+    <string name="plot_activity">PlotSensorValues</string>
+    <string name="plot_title_accelerometer">Accelerometer</string>
+    <string name="plot_title_ecg">ECG</string>
+    <string name="plot_title_gsr">GSR</string>
+    <string name="plot_title_temperature">Temperature</string>
+    <string name="preferences">Preferences</string>
+    <string name="press_to_set_time">Press to set</string>
+    <string name="refresh">Refresh</string>
+    <string name="remove_paired">Remove paired device?</string>
+    <string name="save_title">Save</string>
+    <string name="scan_device">Scan for Devices</string>
+    <string name="search">Find Receiver</string>
+    <string name="select_cached_device">Select Device</string>
+    <string name="service_preferences">Receiver Service Preferences</string>
+    <string name="service_status">Service Status</string>
+    <string name="service_update_interval">Service Update Interval</string>
+    <string name="spinner_title">Type of Device</string>
+    <string name="status">Status</string>
+    <string name="stream_cover_label">Cover</string>
+    <string name="stream_ecg_calibrated_label">ECG</string>
+    <string name="stream_forward_label">Forward</string>
+    <string name="stream_gsr_label">GSR</string>
+    <string name="stream_longitudinal_label">Longitudinal</string>
+    <string name="stream_skin_label">Skin</string>
+    <string name="stream_transverse_label">Transverse</string>
+    <string name="trend_arrow">Trend Arrow</string>
+    <string name="usb_power_level">USB Current Level</string>
+    <string name="user_info">User Info</string>
+    <string name="warning_configure_armband">You need to configure your armband first!</string>
+    <!-- From: file:/C:/Users/Caterina/Documents/IIT/PhD%20Research/Trabajo/Android/gecko-mobile-client/gecko-mobile-client/res/values/styles.xml -->
+    <eat-comment/>
+    <style name="AppBaseTheme" parent="android:Theme.Holo.Light.DarkActionBar">
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+        -->
+    </style>
+    <style name="AppTheme" parent="AppBaseTheme">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+        <item name="android:windowBackground">@drawable/app_background</item>
+    </style>
+    <style name="NotificationText" parent="android:TextAppearance.StatusBar.EventContent"/>
+    <style name="NotificationTitle" parent="android:TextAppearance.StatusBar.EventContent.Title"/>
+    <style name="StripedProgressBarHorizontal" parent="android:Widget.Holo.ProgressBar.Horizontal">
+        <item name="android:progressDrawable">@drawable/striped_progress</item>
+        <item name="android:minHeight">10dip</item>
+        <item name="android:maxHeight">25dip</item>
+    </style>
+    <style name="basicText">
+        <item name="android:textSize">16dp</item>
+        <item name="android:textColor">@color/basic_orange</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="blueText" parent="basicText">
+        <item name="android:textColor">@android:color/holo_blue_dark</item>
+        <item name="android:gravity">center|left</item>
+    </style>
+    <style name="defaultLayout">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:paddingBottom">@dimen/activity_horizontal_margin</item>
+        <item name="android:paddingTop">@dimen/activity_horizontal_margin</item>
+        <item name="android:paddingLeft">@dimen/activity_horizontal_margin</item>
+        <item name="android:paddingRight">@dimen/activity_horizontal_margin</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+    <style name="fragmentDefault">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_margin">10dp</item>
+    </style>
+    <style name="header" parent="blueText">
+        <item name="android:textSize">20dp</item>
+    </style>
+    <style name="tableRow">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:padding">10dp</item>
+    </style>
+</resources>

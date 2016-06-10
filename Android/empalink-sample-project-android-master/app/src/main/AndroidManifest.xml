@@ -17,6 +17,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Background service -->
+        <service
+            android:name="com.empatica.sample.BGService"
+            android:exported="true" />
     </application>
 
 </manifest>

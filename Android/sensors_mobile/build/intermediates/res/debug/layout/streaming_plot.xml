@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal">
+        <!--<AbsoluteLayout-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="100dp"-->
+            <!--android:background="#ff0000ff"></AbsoluteLayout>-->
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="250dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp">
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+"
+            android:id="@+id/plot_zoom_in"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="-"
+            android:id="@+id/plot_zoom_out"
+            android:layout_below="@+id/plot_zoom_in"
+            android:layout_centerHorizontal="true" />
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reset"
+            android:id="@+id/plot_zoom_reset"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true" />
+
+        <ToggleButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Auto"
+            android:id="@+id/plot_zoom_auto"
+            android:layout_centerHorizontal="true"
+            android:layout_above="@+id/plot_zoom_reset"
+            android:checked="false"
+            android:textOn="Auto"
+            android:textOff="Auto" />
+    </RelativeLayout>
+
+    <com.bodymedia.mobile.testapp.BM.widget.StreamPlot
+
+        android:id="@+id/streaming_plot"
+        android:layout_width="fill_parent"
+        android:layout_height="250dp"
+        android:layout_margin="0dp"
+
+        androidPlot.borderPaint.color="#FF222222"
+        androidPlot.backgroundPaint.color="#FF111111"
+
+        androidPlot.rangeLabel="g"
+        androidPlot.rangeLabelWidget.labelPaint.textSize="15dp"
+        androidPlot.rangeLabelWidget.marginLeft="10dp"
+        androidPlot.rangeLabelWidget.labelPaint.color="#99FFFFFF"
+
+        androidPlot.titleWidget.labelPaint.textSize="15dp"
+        androidPlot.titleWidget.marginTop="10dp"
+
+        androidPlot.graphWidget.marginTop="20dp"
+        androidPlot.graphWidget.marginLeft="30dp"
+        androidPlot.graphWidget.marginBottom="14dp"
+        androidPlot.graphWidget.marginRight="10dp"
+        androidPlot.graphWidget.backgroundPaint.color="#FF111111"
+        androidPlot.graphWidget.gridBackgroundPaint.color="#FF222222"
+        androidPlot.graphWidget.rangeGridLinePaint.color="#44FFFFFF"
+        androidPlot.graphWidget.rangeOriginLinePaint.color="#99FFFFFF"
+        androidPlot.graphWidget.rangeLabelPaint.textSize="12dp"
+        androidPlot.graphWidget.rangeLabelPaint.color="#99FFFFFF"
+        androidPlot.graphWidget.domainGridLinePaint.color="#44FFFFFF"
+        androidPlot.graphWidget.domainOriginLinePaint.color="#44FFFFFF"
+        androidPlot.graphWidget.rangeOriginLabelPaint.textSize="12dp"
+        androidPlot.graphWidget.rangeOriginLabelPaint.color="#99FFFFFF"
+
+        androidPlot.legendWidget.textPaint.textSize="15dp"
+        androidPlot.legendWidget.iconSizeMetrics.heightMetric.value="15dp"
+        androidPlot.legendWidget.iconSizeMetrics.widthMetric.value="15dp"
+        androidPlot.legendWidget.heightMetric.value="25dp"
+        androidPlot.legendWidget.marginBottom="10dp"
+        />
+
+</LinearLayout><!-- From: file:/C:/Users/Caterina/Documents/IIT/PhD%20Research/Trabajo/Android/gecko-mobile-client/gecko-mobile-client/res/layout/streaming_plot.xml -->
