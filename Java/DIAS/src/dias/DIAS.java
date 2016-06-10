@@ -44,7 +44,12 @@ public class DIAS {
     public static String[] privateMails;
     
     //Default values for the GUI
-    public static int gs_initial; 
+    public static Double gs_initial; 
+    public static Double ee_in; 
+    public static Double gsr_in; 
+    public static Double sleep_in; 
+    public static Double phys_act_in; 
+    public static Double body_weight;
    
     /**
      * @param args the command line arguments
@@ -126,8 +131,13 @@ public class DIAS {
             privateMails = new String[emails.size()];
             privateMails = emails.toArray(privateMails);
             
-            gs_initial = config.getInt("processing[@env='" + configurationEnvironment + "']/defaults/gs_initial"); 
-            
+            gs_initial = config.getDouble("processing[@env='" + configurationEnvironment + "']/defaults/gs_initial"); 
+            ee_in = config.getDouble("processing[@env='" + configurationEnvironment + "']/defaults/ee_in"); 
+           gsr_in = config.getDouble("processing[@env='" + configurationEnvironment + "']/defaults/gsr_in");  
+           sleep_in = config.getDouble("processing[@env='" + configurationEnvironment + "']/defaults/sleep_in");  
+           phys_act_in = config.getDouble("processing[@env='" + configurationEnvironment + "']/defaults/phys_act_in");  
+           body_weight = config.getDouble("processing[@env='" + configurationEnvironment + "']/defaults/body_weight"); 
+           
             output = true;
         } catch (ConfigurationException cex) {
             //Something went wrong; we should probably check to see if the configuration file wasn't found, 
