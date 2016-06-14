@@ -39,14 +39,14 @@ public class m20150711_get_armband_data {
     }
     
     
-     public Matrix m20150711_get_armband_data (){
-         
-         eedouble=0;
-         gsrdouble=0;
-         phys_actdouble=0;
-         sleepdouble=0;
+    public Matrix m20150711_get_armband_data (){
+
+        eedouble=0;
+        gsrdouble=0;
+        phys_actdouble=0;
+        sleepdouble=0;
                
-try {
+    try {
     FileInputStream file = new FileInputStream(new File(DIAS.bodymediaFileUrl));
 
     HSSFWorkbook workbook = new HSSFWorkbook(file);
@@ -58,13 +58,13 @@ try {
     int i=0;
     int j=0;
     int kx=0;
-   while(rowIterator.hasNext()) {
+    while(rowIterator.hasNext()) {
         Row row = rowIterator.next();
         Iterator<org.apache.poi.ss.usermodel.Cell> cellIterator = row.cellIterator();
         i++;
         s=0; 
         while(cellIterator.hasNext()) {
-              j++;
+            j++;
             org.apache.poi.ss.usermodel.Cell cell = cellIterator.next();
             switch(cell.getCellType()) {
                 case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BOOLEAN:
@@ -98,41 +98,41 @@ try {
                 case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_STRING:
                     if(cell.getStringCellValue().equals("NAN")){
                         if(s==0){
-                        i--;
-                        s=1;
+                            i--;
+                            s=1;
+                            }
                         }
-                    }
-break;
+                break;
+                }
             }
+            kx=0;
+            j=0;
         }
-        kx=0;
-        j=0;
+
+        file.close();
+        s=0;
+
+        eedouble=0;
+        gsrdouble=0;
+        sleepdouble=0;
+        phys_actdouble=0;
+
+        //XXX OPTIMIZE : These are hardcoded to get the last row with real data. If we're feeling ambitious, let's make it target the last nonzero row. Anyway.
+        eedouble= armband_data.get(7164,18);
+        gsrdouble= armband_data.get(7164,14);
+        sleepdouble= armband_data.get(7164,16);
+        phys_actdouble= armband_data.get(7164,17);
+
+
+        } catch (FileNotFoundException e) {
+        e.printStackTrace();
+    } catch (IOException e) {
+        e.printStackTrace(); 
     }
-   
-    file.close();
-s=0;
 
+    return armband_data;
 
-         eedouble=0;
-         gsrdouble=0;
-         sleepdouble=0;
-         phys_actdouble=0;
-
-    eedouble= armband_data.get(7164,18);
-    gsrdouble= armband_data.get(7164,14);
-    sleepdouble= armband_data.get(7164,16);
-    phys_actdouble= armband_data.get(7164,17);
- 
-    
-    } catch (FileNotFoundException e) {
-    e.printStackTrace();
-} catch (IOException e) {
-    e.printStackTrace(); 
-}
-
-return armband_data;
-
-       }
+   }
     
            public static int[] lastvaluereturnx (Matrix s){
            int lastvaluex=0;

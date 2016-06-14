@@ -15,6 +15,10 @@ import dias.MemoryStaticVariables.*;
  * @author Mert
  */
 public class GUI extends javax.swing.JFrame {
+    
+    //an instance of the GUI has its own vcgm that it uses. 
+    // No other class directly uses this VirtualCgm class, so it's OK to assume that this one holds all the values necessary to run the algorithm. 
+    private VirtualCgm vcgm; 
 
     /**
      * Creates new form GUI
@@ -62,6 +66,10 @@ public class GUI extends javax.swing.JFrame {
         jBasalLabel = new javax.swing.JLabel();
         jBolusValue = new javax.swing.JLabel();
         jBasalValue = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel_kj_display = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel_cgm_display = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -181,6 +189,14 @@ public class GUI extends javax.swing.JFrame {
 
         jBasalValue.setText("0");
 
+        jLabel8.setText("Current KJ value");
+
+        jLabel_kj_display.setText("_______");
+
+        jLabel9.setText("Current CGM value");
+
+        jLabel_cgm_display.setText("_______");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -202,10 +218,19 @@ public class GUI extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(SaveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(LoadButton, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jBolusLabel)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jBolusValue))
+                                    .addComponent(LoadButton, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jBasalLabel)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jBasalValue)))
                                 .addGap(11, 11, 11))))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(254, 254, 254)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -214,10 +239,7 @@ public class GUI extends javax.swing.JFrame {
                                     .addComponent(jLabel4))
                                 .addGap(22, 22, 22)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(92, 92, 92)
-                                        .addComponent(jBolusLabel))
+                                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addGroup(layout.createSequentialGroup()
@@ -228,18 +250,23 @@ public class GUI extends javax.swing.JFrame {
                                     .addComponent(jLabel7))
                                 .addGap(18, 18, 18)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jBasalLabel))
+                                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(GetInputsButton))))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jBolusValue)
-                            .addComponent(jBasalValue))
-                        .addGap(0, 135, Short.MAX_VALUE))))
+                        .addGap(0, 309, Short.MAX_VALUE))))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(39, 39, 39)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel9)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel_cgm_display))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel8)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel_kj_display)))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -252,16 +279,32 @@ public class GUI extends javax.swing.JFrame {
                     .addComponent(SaveButton)
                     .addComponent(LoadButton)
                     .addComponent(RunInput, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(50, 50, 50)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3)
-                    .addComponent(jBolusLabel)
-                    .addComponent(jBolusValue))
+                    .addComponent(jLabel8)
+                    .addComponent(jLabel_kj_display))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel9)
+                    .addComponent(jLabel_cgm_display))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel2))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jBolusLabel)
+                            .addComponent(jBolusValue))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jBasalLabel)
+                            .addComponent(jBasalValue))))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -272,9 +315,7 @@ public class GUI extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel5)
-                            .addComponent(jBasalLabel)
-                            .addComponent(jBasalValue))
+                            .addComponent(jLabel5))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel6)
@@ -307,14 +348,21 @@ public class GUI extends javax.swing.JFrame {
         m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
 
         //Virtual CGM generator:
-        VirtualCgm vcgm = new VirtualCgm(DIAS.gs_initial);
+        // Have we built a VirtualCgm object already? If not, build one. This will bang out our necessary initial value(s) from the UI. 
+        if (vcgm == null) { 
+            vcgm = new VirtualCgm(DIAS.gs_initial);
+        } 
         // XXX OPTIMIZE : note that we increment kj right away. 
         m20150711_load_global_variables.kj++;
+        
         vcgm.generateVirtualCGMValues(m20150711_load_global_variables.kj, m20150711_load_global_variables.gs_in); 
         
         //XXX OPTIMIZE : Not sure why this line is here, since the .gs parameter gets overwritten immediately. 
         m20150711_load_global_variables.gs = DIAS.createnewMatrix(1, m20150711_load_global_variables.kj, m20150711_load_global_variables.gs);
         m20150711_load_global_variables.gs = vcgm.gstemp;
+        
+        UpdateKJLabel(m20150711_load_global_variables.kj, this); 
+        UpdateCGMLabel(lgvariables.gs.get(0, lgvariables.kj - 1), this); 
 
         int flag_noise = 1;
 
@@ -388,19 +436,19 @@ public class GUI extends javax.swing.JFrame {
                ////////////////////////////////OUTPUTS IOB_CALCULATE////////////////////////////////////////////////////////////////////////////////////*/
        //TODO Meal detection:
        // CGM values - from gstemp
-        m20150711_run_meal_detection_bolus_algorithm rmdetectionbolusalgorithm = new m20150711_run_meal_detection_bolus_algorithm(lgvariables.meal_states, lgvariables.meal_covariance, lgvariables.bolus_insulin, lgvariables.meal_bolus_amount, lgvariables.meal_detection, lgvariables.meal_detection_time, lgvariables.correction_bolus_amount, lgvariables.correction_detection, lgvariables.correction_detection_time, lgvariables.correction_limit, vcgm.gstemp, lgvariables.kj, lgvariables.meal_g_basal, lgvariables.meal_gpc_gs_slope_degree, lgvariables.meal_gpc_mu, lgvariables.sleep, lgvariables.phys_act, lgvariables.IOB_total, lgvariables.body_weight);
+        m20150711_run_meal_detection_bolus_algorithm rmdetectionbolusalgorithm = new m20150711_run_meal_detection_bolus_algorithm(lgvariables.meal_states, lgvariables.meal_covariance, lgvariables.bolus_insulin, lgvariables.meal_bolus_amount, lgvariables.meal_detection, lgvariables.meal_detection_time, lgvariables.correction_bolus_amount, lgvariables.correction_detection, lgvariables.correction_detection_time, lgvariables.correction_limit, lgvariables.gs, lgvariables.kj, lgvariables.meal_g_basal, lgvariables.meal_gpc_gs_slope_degree, lgvariables.meal_gpc_mu, lgvariables.sleep, lgvariables.phys_act, lgvariables.IOB_total, lgvariables.body_weight);
         rmdetectionbolusalgorithm.run_meal_detection_bolus_algorithm();
 
         //TODO GPC 
         // CGM values - from gstemp
         Matrix matrixGPC = new Matrix(8, 1);
-        m20150711_gpc m_gpc = new m20150711_gpc(vcgm.gstemp, lgvariables.ee, lgvariables.gsr, lgvariables.kj, lgvariables.phi, lgvariables.phi_ee, lgvariables.phi_gsr, lgvariables.armax_parameters, lgvariables.armax_covariance, lgvariables.armax_lamda, lgvariables.armax_err, lgvariables.arma_parameters_ee, lgvariables.arma_lamda_ee, lgvariables.arma_covariance_ee, lgvariables.arma_err_ee, lgvariables.arma_parameters_gsr, lgvariables.arma_lamda_gsr, lgvariables.arma_covariance_gsr, lgvariables.arma_err_gsr, lgvariables.A_state, lgvariables.A_state_ee, lgvariables.A_state_gsr, lgvariables.C_state, lgvariables.C_state_ee, lgvariables.C_state_gsr, lgvariables.B_state, lgvariables.K_state, lgvariables.K_state_ee, lgvariables.K_state_gsr, lgvariables.M, lgvariables.L, lgvariables.L_ee, lgvariables.L_gsr, lgvariables.M_ee, lgvariables.M_gsr, lgvariables.X_state, lgvariables.X_state_ee, lgvariables.X_state_gsr, lgvariables.ee_prediction, lgvariables.gsr_prediction, lgvariables.g_prediction, lgvariables.reference_glucose, lgvariables.insulin_sensitivity_constant, lgvariables.basal_insulin, lgvariables.IOB_prediction, lgvariables.maximum_insulin, lgvariables.total_daily_unit, lgvariables.insulin_sensitivity_factor, lgvariables.body_weight, lgvariables.meal_gpc_mu, lgvariables.bolus_insulin, 0, matrixGPC);
+        m20150711_gpc m_gpc = new m20150711_gpc(lgvariables.gs, lgvariables.ee, lgvariables.gsr, lgvariables.kj, lgvariables.phi, lgvariables.phi_ee, lgvariables.phi_gsr, lgvariables.armax_parameters, lgvariables.armax_covariance, lgvariables.armax_lamda, lgvariables.armax_err, lgvariables.arma_parameters_ee, lgvariables.arma_lamda_ee, lgvariables.arma_covariance_ee, lgvariables.arma_err_ee, lgvariables.arma_parameters_gsr, lgvariables.arma_lamda_gsr, lgvariables.arma_covariance_gsr, lgvariables.arma_err_gsr, lgvariables.A_state, lgvariables.A_state_ee, lgvariables.A_state_gsr, lgvariables.C_state, lgvariables.C_state_ee, lgvariables.C_state_gsr, lgvariables.B_state, lgvariables.K_state, lgvariables.K_state_ee, lgvariables.K_state_gsr, lgvariables.M, lgvariables.L, lgvariables.L_ee, lgvariables.L_gsr, lgvariables.M_ee, lgvariables.M_gsr, lgvariables.X_state, lgvariables.X_state_ee, lgvariables.X_state_gsr, lgvariables.ee_prediction, lgvariables.gsr_prediction, lgvariables.g_prediction, lgvariables.reference_glucose, lgvariables.insulin_sensitivity_constant, lgvariables.basal_insulin, lgvariables.IOB_prediction, lgvariables.maximum_insulin, lgvariables.total_daily_unit, lgvariables.insulin_sensitivity_factor, lgvariables.body_weight, lgvariables.meal_gpc_mu, lgvariables.bolus_insulin, 0, matrixGPC);
         m_gpc.gpc();
 
         //TODO CPA module
         // CGM values - from gstemp
 
-        CPA_Module_paralleled_calculation_JF CPA_module_paralleled_cal = new CPA_Module_paralleled_calculation_JF(vcgm.gstemp, lgvariables.ee, lgvariables.gsr, lgvariables.kj, lgvariables.phi, lgvariables.phi_ee, lgvariables.phi_gsr, lgvariables.armax_parameters, lgvariables.armax_covariance, lgvariables.armax_lamda, lgvariables.armax_err, lgvariables.arma_parameters_ee, lgvariables.arma_lamda_ee, lgvariables.arma_covariance_ee, lgvariables.arma_err_ee, lgvariables.arma_parameters_gsr, lgvariables.arma_lamda_gsr, lgvariables.arma_covariance_gsr, lgvariables.arma_err_gsr, lgvariables.A_state, lgvariables.A_state_ee, lgvariables.A_state_gsr, lgvariables.C_state, lgvariables.C_state_ee, lgvariables.C_state_gsr, lgvariables.B_state, lgvariables.K_state, lgvariables.K_state_ee, lgvariables.K_state_gsr, lgvariables.M, lgvariables.L, lgvariables.L_ee, lgvariables.L_gsr, lgvariables.M_ee, lgvariables.M_gsr, lgvariables.X_state, lgvariables.X_state_ee, lgvariables.X_state_gsr, lgvariables.ee_prediction, lgvariables.gsr_prediction, lgvariables.g_prediction, lgvariables.reference_glucose, lgvariables.insulin_sensitivity_constant, lgvariables.basal_insulin, lgvariables.IOB_prediction, lgvariables.maximum_insulin, lgvariables.total_daily_unit, lgvariables.insulin_sensitivity_factor, lgvariables.body_weight, lgvariables.meal_gpc_mu, lgvariables.bolus_insulin);
+        CPA_Module_paralleled_calculation_JF CPA_module_paralleled_cal = new CPA_Module_paralleled_calculation_JF(lgvariables.gs, lgvariables.ee, lgvariables.gsr, lgvariables.kj, lgvariables.phi, lgvariables.phi_ee, lgvariables.phi_gsr, lgvariables.armax_parameters, lgvariables.armax_covariance, lgvariables.armax_lamda, lgvariables.armax_err, lgvariables.arma_parameters_ee, lgvariables.arma_lamda_ee, lgvariables.arma_covariance_ee, lgvariables.arma_err_ee, lgvariables.arma_parameters_gsr, lgvariables.arma_lamda_gsr, lgvariables.arma_covariance_gsr, lgvariables.arma_err_gsr, lgvariables.A_state, lgvariables.A_state_ee, lgvariables.A_state_gsr, lgvariables.C_state, lgvariables.C_state_ee, lgvariables.C_state_gsr, lgvariables.B_state, lgvariables.K_state, lgvariables.K_state_ee, lgvariables.K_state_gsr, lgvariables.M, lgvariables.L, lgvariables.L_ee, lgvariables.L_gsr, lgvariables.M_ee, lgvariables.M_gsr, lgvariables.X_state, lgvariables.X_state_ee, lgvariables.X_state_gsr, lgvariables.ee_prediction, lgvariables.gsr_prediction, lgvariables.g_prediction, lgvariables.reference_glucose, lgvariables.insulin_sensitivity_constant, lgvariables.basal_insulin, lgvariables.IOB_prediction, lgvariables.maximum_insulin, lgvariables.total_daily_unit, lgvariables.insulin_sensitivity_factor, lgvariables.body_weight, lgvariables.meal_gpc_mu, lgvariables.bolus_insulin);
         try {
             CPA_module_paralleled_cal.CPA();
         } catch (Exception ex) {
@@ -409,7 +457,7 @@ public class GUI extends javax.swing.JFrame {
 
         //Hypo glucemia alarm calculator
         // CGM values - from gstemp
-        hypo_alarm hypo = new hypo_alarm(lgvariables.hypo_threshold.transpose(), lgvariables.hypo_slope_degree.transpose(), lgvariables.hypo_alarm.transpose(), lgvariables.carb_amount, lgvariables.carb_type, lgvariables.hypo_phase.transpose(), lgvariables.hypo_phase_old.transpose(), lgvariables.repeated_immediate_alarm.transpose(), vcgm.gstemp, lgvariables.kj, lgvariables.g_prediction, lgvariables.phys_act, lgvariables.sleep);
+        hypo_alarm hypo = new hypo_alarm(lgvariables.hypo_threshold.transpose(), lgvariables.hypo_slope_degree.transpose(), lgvariables.hypo_alarm.transpose(), lgvariables.carb_amount, lgvariables.carb_type, lgvariables.hypo_phase.transpose(), lgvariables.hypo_phase_old.transpose(), lgvariables.repeated_immediate_alarm.transpose(), lgvariables.gs, lgvariables.kj, lgvariables.g_prediction, lgvariables.phys_act, lgvariables.sleep);
         hypo.m20150711_hypo_alarm();
 
         if (lgvariables.phys_act.get(0, lgvariables.kj - 1) == 1) {
@@ -457,7 +505,7 @@ public class GUI extends javax.swing.JFrame {
 
         //////////////////////////OUTPUTS///////////////////////////////////////////////////////////////////////////////////////////////////////////
         System.out.println("Kj: " + m20150711_load_global_variables.kj);
-        DIAS.printMatrix(vcgm.gstemp, "vcgm.gstemp");
+        DIAS.printMatrix(m20150711_load_global_variables.gs, "lgvariables.gs");
         DIAS.printMatrix(m20150711_load_global_variables.bolus_insulin, "lgvariables.bolus_insulin");
         DIAS.printMatrix(m20150711_load_global_variables.basal_insulin, "lgvariables.basal_insulin");
         //TODO Update output values in GUI
@@ -486,6 +534,8 @@ public class GUI extends javax.swing.JFrame {
         jTextField4.setEnabled(false); 
         jTextField5.setEditable(false);
         jTextField5.setEnabled(false);
+        jTextField6.setEditable(false);
+        jTextField6.setEnabled(false);
     }
     
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
@@ -623,6 +673,16 @@ public class GUI extends javax.swing.JFrame {
 
     }//GEN-LAST:event_SaveButtonActionPerformed
 
+    private void UpdateKJLabel(int kj, javax.swing.JFrame ui) { 
+        jLabel_kj_display.setText(Integer.toString(kj)); 
+        ui.repaint(); //not sure why setText() isn't always doing what it should and repainting. 
+    } 
+    
+    private void UpdateCGMLabel(double gs, javax.swing.JFrame ui) { 
+        jLabel_cgm_display.setText(Double.toString(gs)); 
+        ui.repaint(); //not sure why setText() isn't always doing what it should and repainting. 
+    } 
+    
     private void LoadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoadButtonActionPerformed
         // TODO add your handling code here:
 // There used to be a call to the CGM__SEDFR_JF constructor here, but the variable was never used, so I removed it. 
@@ -630,20 +690,22 @@ public class GUI extends javax.swing.JFrame {
         
 // m20150711_load_global_variables constructor mostly initializes boilerplate objects. 
         m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
-        lgvariables.setup();
-
+        int kj_temp = 20; // XXX OPTIMIZE : Maybe set this as a config value, too. 
         Load loaddata = new Load(DIAS.excelSubdirectory);
+        try { kj_temp = (int) loaddata.loaddouble("kj"); } 
+        catch (IOException ex) {
+            Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            return; //we failed to load a kj, so fail out and have the calling application get the error. 
+        }
+        lgvariables.setup(kj_temp);
+        
         try {
-            lgvariables.kj = (int) (loaddata.loaddouble("kj") + 1);
+            lgvariables.kj = (int) (kj_temp + 1);
             
-            if (DIAS.verboseMode) { 
-                System.out.println(lgvariables.kj + "     lgvariables.kj");
-            } 
-
-            Matrix foo = lgvariables.basal_insulin; 
+            //why are we loading basal_insulin here in the parameter? That's our problem -- it's still got the old dimensions from before we incremented kj. 
+            //lgvariables.basal_insulin = DIAS.createnewMatrix(8, lgvariables.kj, loaddata.load(lgvariables.basal_insulin, "basal_insulin"));
+            lgvariables.basal_insulin = DIAS.createnewMatrix(8, lgvariables.kj, lgvariables.basal_insulin); 
             
-            lgvariables.basal_insulin = DIAS.createnewMatrix(8, lgvariables.kj, loaddata.load(lgvariables.basal_insulin, "basal_insulin"));
-
             if (DIAS.verboseMode) { 
                 DIAS.printMatrix(lgvariables.basal_insulin, "lgvariables.basal_insulin");
             } 
@@ -665,10 +727,10 @@ public class GUI extends javax.swing.JFrame {
             lgvariables.meal_g_basal = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.meal_g_basal);
             lgvariables.meal_gpc_gs_slope_degree = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.meal_gpc_gs_slope_degree);
             lgvariables.meal_gpc_mu = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.meal_gpc_mu);
-            lgvariables.phi = DIAS.createnewMatrix(24, 21, lgvariables.phi);
-            lgvariables.phi_ee = DIAS.createnewMatrix(4, 21, lgvariables.phi_ee);
-            lgvariables.phi_gsr = DIAS.createnewMatrix(4, 21, lgvariables.phi_gsr);
-            lgvariables.armax_parameters = DIAS.createnewMatrix(24, lgvariables.kj, lgvariables.armax_parameters);
+            lgvariables.phi = DIAS.createnewMatrix(lgvariables.phi.getRowDimension(), lgvariables.phi.getColumnDimension(), lgvariables.phi);
+            lgvariables.phi_ee = DIAS.createnewMatrix(lgvariables.phi_ee.getRowDimension(), lgvariables.phi_ee.getColumnDimension(), lgvariables.phi_ee);
+            lgvariables.phi_gsr = DIAS.createnewMatrix(lgvariables.phi_gsr.getRowDimension(), lgvariables.phi_gsr.getColumnDimension(), lgvariables.phi_gsr);
+            lgvariables.armax_parameters = DIAS.createnewMatrix(lgvariables.armax_parameters.getRowDimension(), lgvariables.kj, lgvariables.armax_parameters);
             lgvariables.armax_lamda = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.armax_lamda);
             lgvariables.armax_err = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.armax_err);
             lgvariables.arma_parameters_ee = DIAS.createnewMatrix(4, lgvariables.kj, lgvariables.arma_parameters_ee);
@@ -699,7 +761,6 @@ public class GUI extends javax.swing.JFrame {
             lgvariables.bolus_insulin_calculated = DIAS.createnewMatrix(lgvariables.kj, 1, lgvariables.bolus_insulin_calculated);
             lgvariables.basal_insulin_calculated = DIAS.createnewMatrix(8, lgvariables.kj, lgvariables.basal_insulin_calculated);
             lgvariables.gs = DIAS.createnewMatrix(1, lgvariables.kj, lgvariables.gs);
-
             lgvariables.basal_insulin = loaddata.load(lgvariables.basal_insulin, "basal_insulin");
             lgvariables.bolus_insulin = loaddata.load(lgvariables.bolus_insulin, "bolus_insulin");
             lgvariables.ee = loaddata.load(lgvariables.ee, "ee");
@@ -781,7 +842,6 @@ public class GUI extends javax.swing.JFrame {
 
             DIAS.print3DMatrix(lgvariables.meal_covariance, "lgvariables.meal_covariance");
             DIAS.printMatrix(lgvariables.meal_states, "lgvariables.meal_states");
-
             lgvariables.meal_covariance = loaddata.load3D(lgvariables.meal_covariance, "meal_covariance", lgvariables.kj);
             lgvariables.armax_covariance = loaddata.load3D(lgvariables.armax_covariance, "armax_covariance", lgvariables.kj);
             lgvariables.arma_covariance_ee = loaddata.load3D(lgvariables.arma_covariance_ee, "arma_covariance_ee", lgvariables.kj);
@@ -809,8 +869,12 @@ public class GUI extends javax.swing.JFrame {
 
             DIAS.print3DMatrix(lgvariables.meal_covariance, "lgvariables.meal_covariance");
             DIAS.printMatrix(lgvariables.meal_states, "lgvariables.meal_states");
-
+            
+            //XXX DEBUG : Is this going to be an off-by-one error? 
+            UpdateKJLabel(lgvariables.kj, this); 
             lgvariables.kj = lgvariables.kj - 1;
+            UpdateCGMLabel(lgvariables.gs.get(0, lgvariables.kj), this); 
+            
 
         } catch (IOException ex) {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
@@ -853,12 +917,16 @@ public class GUI extends javax.swing.JFrame {
 
     private void GetInitialValuesFromUI() { 
         //set initial values to the inputs from GUI, if user has overridden defaults. 
-        DIAS.gs_initial = Double.parseDouble(jTextField1.getText()); 
+        Double gs_initial_UI = Double.parseDouble(jTextField1.getText()); 
+        DIAS.gs_initial = gs_initial_UI; 
         DIAS.ee_in = Double.parseDouble(jTextField2.getText()); 
         DIAS.gsr_in = Double.parseDouble(jTextField3.getText()); 
         DIAS.sleep_in = Double.parseDouble(jTextField4.getText()); 
         DIAS.phys_act_in = Double.parseDouble(jTextField5.getText()); 
         DIAS.body_weight = Double.parseDouble(jTextField6.getText()); 
+        
+        //and set up a new VirtualCgm object with the initial values from the UI. This is just in case we've changed those values -- this may be unnecessary, depending on how we manage the UI workflow. 
+        vcgm = new VirtualCgm(gs_initial_UI); 
     } 
     
     /** 
@@ -870,6 +938,7 @@ public class GUI extends javax.swing.JFrame {
     private void GetInputsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GetInputsButtonActionPerformed
         // Load global variables
         m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
+        UpdateKJLabel(lgvariables.kj, this); 
         lgvariables.gs_in = Double.parseDouble(jTextField1.getText()); 
         lgvariables.ee_in = Double.parseDouble(jTextField2.getText());
         lgvariables.gsr_in = Double.parseDouble(jTextField3.getText());
@@ -934,6 +1003,10 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JLabel jLabel_cgm_display;
+    private javax.swing.JLabel jLabel_kj_display;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;

@@ -6,6 +6,7 @@
 package dias.MemoryStaticVariables;
 
 import Jama.Matrix;
+import java.util.*; 
 
 /**
  *
@@ -112,7 +113,19 @@ public class m20150711_load_global_variables {
     public m20150711_load_global_variables(){
     } 
     
-    public void setup(){
+    /** 
+     * Overloaded version of setup() -- supplies kj value of 20 by default. 
+     */
+    public void setup() { 
+        this.setup(20);
+    } 
+    
+    /** 
+     * Sets up all matrices to default sizes; loads no data. 
+     * 
+     * @param kj_in KJ value for matrix creation. 
+     */
+    public void setup(int kj_in){
         gs = new Matrix (1,1);
         
     /*  gs_in=298;
@@ -127,7 +140,7 @@ public class m20150711_load_global_variables {
         batch_CL[i]="Other";
         }
         
-        kj=20;
+        kj= kj_in; 
         
      //   gs=ones(1,21).times(gs_in);
         ee=ones(1,21).times(ee_in);
@@ -169,11 +182,11 @@ public class m20150711_load_global_variables {
         correction_detection_time= new Matrix(21,1);
         correction_limit = new Matrix(21,1);
           
-        phi= new Matrix(24,21);
-        phi_ee= new Matrix(4,21);
-        phi_gsr= new Matrix(4,21);
-        armax_parameters= new Matrix(24,21);
-        arma_parameters_ee= new Matrix(4,21);
+        phi= new Matrix(24,kj + 1);
+        phi_ee= new Matrix(4,kj + 1);
+        phi_gsr= new Matrix(4,kj + 1);
+        armax_parameters= new Matrix(24,kj + 1);
+        arma_parameters_ee= new Matrix(4,kj + 1);
           
         armax_covariance= new double [24][24][21];
           

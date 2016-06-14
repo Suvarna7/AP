@@ -27,8 +27,6 @@ public class VirtualCgm {
     //double[][] gs2 = new double[1][INIT_SIZE+1];
     //3.
     public Matrix gstemp;
-    //2. gs stores the las 21 samples
-    public Matrix gs;
 
 /** 
  * Creates a new instance of VirtualCgm
@@ -43,6 +41,12 @@ public class VirtualCgm {
         generateGSVirtual();
     }
 
+    /** 
+     * Generates the first (kj) values from VirtualCGM, where the first INIT_SIZE values are replaced with (initialGS) 
+     * 
+     * @param kj
+     * @param initialGS 
+     */
     public void generateVirtualCGMValues(int kj, double initialGS) { 
         //initially use all gsVirtual values
         double[][] gsVirtual_part = new double[1][]; 

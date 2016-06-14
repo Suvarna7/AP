@@ -28,7 +28,7 @@ public class Load {
 
         FileInputStream fis = null;
         try {
-
+            //XXX OPTIMIZE : check to make sure that defaults always check their own location when set up.
             //String fileName= "D:\\Phd\\Research\\Kamuran`s Code\\"+filepath+"\\"+filename+t+".xlsx" ; 
             String fileName = DIAS.excelFilePath + File.separator + filepath + File.separator + filename + ".xlsx";
             fis = new FileInputStream(fileName);
@@ -70,7 +70,7 @@ public class Load {
 
             try {
                 //String fileName= "D:\\Phd\\Research\\Kamuran`s Code\\"+filepath+"\\"+filename+t+".xlsx" ; 
-                String fileName = DIAS.excelFilePath + File.separator + filepath + File.separator + filename + ".xlsx";
+                String fileName = DIAS.excelFilePath + File.separator + filepath + File.separator + filename + Integer.toString(t) +".xlsx";
 
                 fis = new FileInputStream(fileName);
                 XSSFWorkbook calismaKitap = new XSSFWorkbook(fis);
