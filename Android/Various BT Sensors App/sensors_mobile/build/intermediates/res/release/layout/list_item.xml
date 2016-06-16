@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/listItemText"
+    android:textSize="12dp"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent" /><!-- From: file:/C:/Users/Caterina/Documents/IIT/PhD%20Research/Trabajo/Android/gecko-mobile-client/gecko-mobile-client/res/layout/list_item.xml -->

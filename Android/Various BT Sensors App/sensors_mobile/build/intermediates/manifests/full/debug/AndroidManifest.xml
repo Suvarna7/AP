@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.bodymedia.mobile.testapp"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="17"
+        android:targetSdkVersion="17" />
+
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_LOGS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="true" />
+    <uses-feature android:name="android.hardware.usb.host" />
+
+    <application
+        android:name="com.bodymedia.mobile.testapp.BM.SenseWearApplication"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <uses-library
+            android:name="com.samsung.android.sdk.bt"
+            android:required="false" />
+
+        <activity
+            android:name="com.bodymedia.mobile.testapp.InitActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.bodymedia.mobile.testapp.BM.MainActivityBM"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="Main BodyMedia"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.bodymedia.mobile.testapp.zephyr.MainActivityZephyr"
+            android:configChanges="keyboardHidden|orientation"
+            android:label="Main Zephyr"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.bodymedia.mobile.testapp.zephyr.PlotActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:label="@string/plot_activity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <!--
+        <activity
+                android:name=".MultipleCommunication.MainActivityMultiple"
+                android:label="Multiple"
+                android:configChanges="keyboardHidden|orientation|screenSize"
+                android:screenOrientation="portrait">
+
+        </activity>
+
+        <activity
+                android:name=".Dexcom.G4DevKitTestAppActivity"
+                android:launchMode="singleTop"
+                android:label="Main Dexcom" >
+
+
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
+            </intent-filter>
+
+            <meta-data
+                    android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                    android:resource="@xml/device_filter" />
+        </activity>
+
+        <activity
+                android:name=".Dexcom.AppPreferences"
+                android:launchMode="singleTop"
+                android:label="@string/preferences" >
+
+
+        </activity>
+        -->
+
+
+        <!-- QA -->
+        <activity
+            android:name="org.acra.CrashReportDialog"
+            android:excludeFromRecents="true"
+            android:finishOnTaskLaunch="true"
+            android:launchMode="singleInstance"
+            android:theme="@android:style/Theme.Dialog" />
+
+        <receiver
+            android:name="com.bodymedia.mobile.testapp.Database.DataStoring"
+            android:enabled="true"
+            android:exported="false" >
+        </receiver>
+
+        <!--
+            <service
+                android:name="com.dexcom.G4DevKit.ReceiverUpdateService"
+                android:enabled="true" />
+        -->
+
+    </application>
+
+</manifest>

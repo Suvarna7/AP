@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+
+    <!-- Text Label -->
+    <TextView
+            android:id="@+id/spinnerLabel"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dip"
+            android:text="Device:"
+            android:layout_marginBottom="5dp"
+            />
+
+    <!-- Spinner Element -->
+    <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:prompt="@string/spinner_title"
+            android:layout_below="@+id/spinnerLabel"
+            />
+
+    <TextView
+    android:id="@+id/patientIdLabel"
+    android:layout_width="200dp"
+    android:layout_height="wrap_content"
+    android:text="Insert table ID"
+    android:layout_marginTop = "50dp"
+    android:layout_below="@+id/spinner"
+            />
+        
+    <EditText
+    android:id="@+id/patientId"
+    android:layout_width="200dp"
+    android:layout_height="wrap_content"
+    android:inputType="text"
+    android:layout_below="@+id/patientIdLabel" 
+    android:layout_marginTop = "10dp" />
+    
+    <Button android:text="@string/done" 
+    android:id="@+id/ButtonPatient" 
+    android:layout_toEndOf="@id/patientId"
+    android:layout_alignTop="@id/patientId"
+    android:layout_width="wrap_content" 
+    android:layout_height="wrap_content"
+    android:layout_marginLeft = "30dp"></Button>
+    
+    <TextView
+    android:id="@+id/secondaryLabel"
+    android:layout_width="200dp"
+    android:layout_height="wrap_content"
+    android:text="Insert device serial number"
+    android:layout_below="@+id/patientId" 
+    android:layout_marginTop = "50dp" />
+     <EditText
+    android:id="@+id/deviceId"
+    android:layout_width="200dp"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/secondaryLabel"
+    android:inputType="text" 
+    android:layout_marginTop = "10dp" />
+    
+    <Button android:text="@string/done" 
+    android:id="@+id/ButtonZephyr" 
+    android:layout_toEndOf="@id/deviceId"
+    android:layout_alignTop="@id/deviceId"
+    android:layout_width="wrap_content" 
+    android:layout_height="wrap_content" 
+    android:layout_marginLeft = "30dp"></Button>
+
+    <Button
+        android:id="@+id/ButtonGo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/deviceId"
+        android:text="@string/go"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop = "50dp"> </Button>
+
+    
+</RelativeLayout><!-- From: file:/C:/Users/Caterina/Documents/IIT/PhD%20Research/Trabajo/Android/gecko-mobile-client/gecko-mobile-client/res/layout/init.xml -->
