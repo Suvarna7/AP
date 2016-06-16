@@ -792,13 +792,14 @@ public class GUI extends javax.swing.JFrame {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
             return false; //we failed to load a kj, so fail out and have the calling application get the error. 
         }
-        //Set the starting KJ value to be the value we got from the loaded files, and the ending kj value to be (whatever's already in the "end" value, or the loaded kj value, whichever is greater). 
-        // We do also want to nuke whatever's in lgvariables right now, so that our loaded values totally overwrite what's there. 
-        Integer kj_to_temp = Math.max(this.GetUIValue_KJ_To(), kj_from_temp); 
-        RefreshKJValues(lgvariables, kj_from_temp, kj_to_temp, true); 
         
         try {
-            lgvariables.kj = (int) (kj_from_temp + 1);
+            //Set the starting KJ value to be the value we got from the loaded files + 1, and the ending kj value to be (whatever's already in the "end" value, or the loaded kj value, whichever is greater). 
+            // We do also want to nuke whatever's in lgvariables right now, so that our loaded values totally overwrite what's there. 
+            Integer kj_to_temp = Math.max(this.GetUIValue_KJ_To(), kj_from_temp); 
+            RefreshKJValues(lgvariables, kj_from_temp, kj_to_temp, true);
+            // The file has the last used KJ value in it. We need to increment by one, since all the matrices need their dimensions to be based on the current processing value of kj. Fun! 
+            lgvariables.kj = (int) (kj_from_temp + 1); 
             
             //why are we loading basal_insulin here in the parameter? That's our problem -- it's still got the old dimensions from before we incremented kj. 
             //lgvariables.basal_insulin = DIAS.createnewMatrix(8, lgvariables.kj, loaddata.load(lgvariables.basal_insulin, "basal_insulin"));
