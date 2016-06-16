@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <configuration>
   <environment>
-    <env>dev_cl</env>
+    <env>dev_zm</env>
     <verbose>true</verbose>
   </environment>
   <processing env="dev_cl">
     <defaults>
+      <kj_start>20</kj_start>
       <gs_initial>188</gs_initial>
       <ee_in>0.3</ee_in>
       <gsr_in>0.2</gsr_in>
@@ -27,6 +28,7 @@
   </processing>
   <processing env="dev_ms">
     <defaults>
+      <kj_start>20</kj_start>
       <gs_initial>188</gs_initial>
       <ee_in>0.3</ee_in>
       <gsr_in>0.2</gsr_in>
@@ -48,6 +50,7 @@
   </processing>
   <processing env="dev_zm">
     <defaults>
+      <kj_start>20</kj_start>
       <gs_initial>188</gs_initial>
       <ee_in>0.3</ee_in>
       <gsr_in>0.2</gsr_in>

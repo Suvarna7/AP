@@ -9,6 +9,7 @@ import Jama.Matrix;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane; 
 import dias.MemoryStaticVariables.*;
 /**
  *
@@ -32,6 +33,10 @@ public class GUI extends javax.swing.JFrame {
         jTextField4.setText(Double.toString(DIAS.sleep_in)); 
         jTextField5.setText(Double.toString(DIAS.phys_act_in)); 
         jTextField6.setText(Double.toString(DIAS.body_weight)); 
+        
+        //initially, use the default DIAS kj_start value for both the start and end kj values. 
+        this.jTextField_kj_from.setText(Integer.toString(DIAS.kj_start)); 
+        this.jTextField_kj_to.setText(Integer.toString(DIAS.kj_start)); 
     }
 
     /**
@@ -70,6 +75,11 @@ public class GUI extends javax.swing.JFrame {
         jLabel_kj_display = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         jLabel_cgm_display = new javax.swing.JLabel();
+        jSeparator1 = new javax.swing.JSeparator();
+        jLabel10 = new javax.swing.JLabel();
+        jTextField_kj_from = new javax.swing.JTextField();
+        jLabel11 = new javax.swing.JLabel();
+        jTextField_kj_to = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -197,97 +207,122 @@ public class GUI extends javax.swing.JFrame {
 
         jLabel_cgm_display.setText("_______");
 
+        jLabel10.setText("From KJ");
+
+        jTextField_kj_from.setText("jTextField7");
+
+        jLabel11.setText("to");
+
+        jTextField_kj_to.setText("jTextField7");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(25, 25, 25)
+                .addGap(39, 39, 39)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(RunInput, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addGap(123, 123, 123))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(ClearHistoryButton, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(SaveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jBolusLabel)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jBolusValue))
-                                    .addComponent(LoadButton, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jBasalLabel)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jBasalValue)))
-                                .addGap(11, 11, 11))))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(254, 254, 254)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(jLabel2)
-                                    .addComponent(jLabel3)
-                                    .addComponent(jLabel4))
-                                .addGap(22, 22, 22)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(jLabel3)))
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(226, 226, 226)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel6)
-                                    .addComponent(jLabel5)
-                                    .addComponent(jLabel7))
-                                .addGap(18, 18, 18)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(GetInputsButton))))
-                        .addGap(0, 309, Short.MAX_VALUE))))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel8)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jLabel_kj_display))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel9)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jLabel_cgm_display)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel4)))
+                        .addGap(22, 22, 22)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(226, 226, 226)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel7))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(GetInputsButton))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addGap(0, 427, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
-                .addGap(39, 39, 39)
+                .addGap(31, 31, 31)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(25, 25, 25)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel9)
+                        .addComponent(jLabel10)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel_cgm_display))
+                        .addComponent(jTextField_kj_from, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel11)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField_kj_to, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel1)
+                        .addGap(123, 123, 123))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel8)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(RunInput, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 318, Short.MAX_VALUE)
+                        .addComponent(ClearHistoryButton, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel_kj_display)))
-                .addGap(0, 0, Short.MAX_VALUE))
+                        .addComponent(SaveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jBolusLabel)
+                                .addGap(18, 18, 18)
+                                .addComponent(jBolusValue))
+                            .addComponent(LoadButton, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jBasalLabel)
+                                .addGap(18, 18, 18)
+                                .addComponent(jBasalValue)))
+                        .addGap(11, 11, 11))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addComponent(jLabel1)
-                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(20, 20, 20)
+                        .addComponent(jLabel1)
+                        .addGap(18, 18, 18))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel10)
+                            .addComponent(jTextField_kj_from, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel11)
+                            .addComponent(jTextField_kj_to, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(4, 4, 4)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(ClearHistoryButton)
                     .addComponent(SaveButton)
                     .addComponent(LoadButton)
                     .addComponent(RunInput, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel8)
-                    .addComponent(jLabel_kj_display))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel9)
-                    .addComponent(jLabel_cgm_display))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(38, 38, 38)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -306,26 +341,36 @@ public class GUI extends javax.swing.JFrame {
                             .addComponent(jBasalLabel)
                             .addComponent(jBasalValue))))
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4))
-                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel5))
+                            .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel6)
-                            .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(16, 16, 16)
+                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel5))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel6)
+                                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(16, 16, 16)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel7)
+                                    .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(18, 18, 18)
+                        .addComponent(GetInputsButton))
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel7)
-                            .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(18, 18, 18)
-                .addComponent(GetInputsButton)
+                            .addComponent(jLabel8)
+                            .addComponent(jLabel_kj_display))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel9)
+                            .addComponent(jLabel_cgm_display))))
                 .addGap(74, 74, 74))
         );
 
@@ -333,7 +378,8 @@ public class GUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     /**
-     * Action perform to run the control algorithm
+     * Triggered by hitting the "run" button. Gets initial values from UI, disables input fields, and runs the main process itself. 
+     * Meant for single-run interaction. 
      *
      * @param evt
      */
@@ -343,6 +389,16 @@ public class GUI extends javax.swing.JFrame {
         
         DisableInputFields(); 
         
+        RunMainProcess(); 
+        
+    }//GEN-LAST:event_RunInputActionPerformed
+
+    /** 
+     * Runs the optimizer and prediction algorithm based on current inputs. 
+     * Responsible for getting its own inputs, running the optimizer, etc. 
+     * Previously, this was inside the RunInputActionPerformed() method, but we're breaking it out here so we can call it with other triggers. 
+     */
+    private void RunMainProcess() { 
         //1. CGM Prediction
         CGM__SEDFR_JF cs = new CGM__SEDFR_JF();
         m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
@@ -515,12 +571,12 @@ public class GUI extends javax.swing.JFrame {
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-    }//GEN-LAST:event_RunInputActionPerformed
-
+    }
+    
     private void ClearHistoryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ClearHistoryButtonActionPerformed
         // TODO add your handling code here:
         m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
-        lgvariables.setup();
+        lgvariables.setup(DIAS.kj_start); //set kj back to default start value. 
     }//GEN-LAST:event_ClearHistoryButtonActionPerformed
 
     private void DisableInputFields() { 
@@ -552,6 +608,10 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void SaveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveButtonActionPerformed
+        Boolean savedOK = SaveStateToFile(); 
+    }//GEN-LAST:event_SaveButtonActionPerformed
+
+    private Boolean SaveStateToFile() { 
         // TODO add your handling code here:
         m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
 
@@ -668,34 +728,56 @@ public class GUI extends javax.swing.JFrame {
 
         } catch (IOException ex) {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            return false; 
         }
-
-
-    }//GEN-LAST:event_SaveButtonActionPerformed
-
+        return true; 
+    }
+    
+    private void ShowInfoBox(String infoMessage, String titleBar)
+    {
+        JOptionPane.showMessageDialog(null, infoMessage, "InfoBox: " + titleBar, JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+    private void UpdateCGMLabel(double gs, javax.swing.JFrame ui) { 
+        jLabel_cgm_display.setText(Double.toString(gs)); 
+        ui.repaint(); 
+    } 
+    
     private void UpdateKJLabel(int kj, javax.swing.JFrame ui) { 
         jLabel_kj_display.setText(Integer.toString(kj)); 
         ui.repaint(); //not sure why setText() isn't always doing what it should and repainting. 
     } 
     
-    private void UpdateCGMLabel(double gs, javax.swing.JFrame ui) { 
-        jLabel_cgm_display.setText(Double.toString(gs)); 
-        ui.repaint(); //not sure why setText() isn't always doing what it should and repainting. 
-    } 
+    private void UpdateKJ_FromLabel(int kj, javax.swing.JFrame ui) { 
+        this.jTextField_kj_from.setText(Integer.toString(kj)); 
+        ui.repaint(); 
+    }
+    
+    private void UpdateKJ_ToLabel(int kj, javax.swing.JFrame ui) { 
+        this.jTextField_kj_to.setText(Integer.toString(kj)); 
+        ui.repaint(); 
+    }
     
     private void LoadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoadButtonActionPerformed
-        // TODO add your handling code here:
+        Boolean loadedOK = LoadVariablesFromFiles(); 
+    }//GEN-LAST:event_LoadButtonActionPerformed
+
+    /** 
+     * 
+     * @return Boolean : false if failure occurred during file load; true if load completed successfully. 
+     */
+    private Boolean LoadVariablesFromFiles() { 
 // There used to be a call to the CGM__SEDFR_JF constructor here, but the variable was never used, so I removed it. 
         // CGM__SEDFR_JF cs = new CGM__SEDFR_JF();
         
 // m20150711_load_global_variables constructor mostly initializes boilerplate objects. 
         m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
-        int kj_temp = 20; // XXX OPTIMIZE : Maybe set this as a config value, too. 
+        int kj_temp = DIAS.kj_start; //Yeah, we overwrite this immediately, but it's a good way to start with a valid value. 
         Load loaddata = new Load(DIAS.excelSubdirectory);
         try { kj_temp = (int) loaddata.loaddouble("kj"); } 
         catch (IOException ex) {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-            return; //we failed to load a kj, so fail out and have the calling application get the error. 
+            return false; //we failed to load a kj, so fail out and have the calling application get the error. 
         }
         lgvariables.setup(kj_temp);
         
@@ -878,10 +960,11 @@ public class GUI extends javax.swing.JFrame {
 
         } catch (IOException ex) {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            return false; 
         }
-
-    }//GEN-LAST:event_LoadButtonActionPerformed
-
+        return true; 
+    } 
+    
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
         // TODO add your handling code here:
         // m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
@@ -936,9 +1019,14 @@ public class GUI extends javax.swing.JFrame {
      * @param evt ActionEvent from the action button
      */
     private void GetInputsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GetInputsButtonActionPerformed
+        //Check to make sure that the UI is in a good state. 
+        UIValidation validation = new UIValidation(this); 
+        if (!(validation.Valid())) { 
+            ShowInfoBox(validation.Valid_Msg(), "GetInputsButtonActionPerformed"); 
+            return; 
+        } 
         // Load global variables
         m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
-        UpdateKJLabel(lgvariables.kj, this); 
         lgvariables.gs_in = Double.parseDouble(jTextField1.getText()); 
         lgvariables.ee_in = Double.parseDouble(jTextField2.getText());
         lgvariables.gsr_in = Double.parseDouble(jTextField3.getText());
@@ -946,9 +1034,37 @@ public class GUI extends javax.swing.JFrame {
         lgvariables.phys_act_in = Double.parseDouble(jTextField5.getText());
         lgvariables.body_weight = Double.parseDouble(jTextField6.getText());
 
-        lgvariables.setup();
+        Integer kj_input = GetUIValue_KJ_From(); 
+        lgvariables.setup(Integer.parseInt(this.jTextField_kj_from.getText()));  
+        UpdateKJLabel(lgvariables.kj, this); 
+        UpdateKJ_FromLabel(lgvariables.kj, this); //overwrite the "from" kj value in UI. 
+        UpdateKJ_ToLabel(lgvariables.kj, this); //overwrite the "to" kj value in UI. 
     }//GEN-LAST:event_GetInputsButtonActionPerformed
 
+    /**
+     * A simple call to get the KJ "from" value from the UI. If the value in the KJ "from" text field is not a parseable integer, returns NULL. 
+     * @return Valid integer, or NULL. 
+     */
+    private Integer GetUIValue_KJ_From() { 
+        try {
+            return Integer.parseInt(this.jTextField_kj_from.getText());
+          } catch (NumberFormatException e) {
+            return null;
+          }
+    }
+    
+        /**
+     * A simple call to get the KJ "to" value from the UI. If the value in the KJ "to" text field is not a parseable integer, returns NULL. 
+     * @return Valid integer, or NULL. 
+     */
+    private Integer GetUIValue_KJ_To() { 
+        try {
+            return Integer.parseInt(this.jTextField_kj_to.getText());
+          } catch (NumberFormatException e) {
+            return null;
+          }
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -997,6 +1113,8 @@ public class GUI extends javax.swing.JFrame {
     public static javax.swing.JLabel jBolusValue;
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -1007,11 +1125,53 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel jLabel_cgm_display;
     private javax.swing.JLabel jLabel_kj_display;
+    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField jTextField5;
     private javax.swing.JTextField jTextField6;
+    private javax.swing.JTextField jTextField_kj_from;
+    private javax.swing.JTextField jTextField_kj_to;
     // End of variables declaration//GEN-END:variables
+
+    /** 
+     * A class to encapsulate all validation of an instance of the dias.GUI class. 
+     * Performs its validation as part of the constructor, which gets passed the instance of the dias.GUI which it is meant to validate. 
+     */
+    private class UIValidation { 
+        private String Valid_Msg; 
+        private Boolean Valid; 
+        public UIValidation(GUI ui) { 
+            Integer kj_from_tmp = 0; 
+            Integer kj_to_tmp = 0; 
+            this.Valid = false; //be pessimistic
+            this.Valid_Msg = "Validation not yet completed."; 
+            kj_from_tmp = ui.GetUIValue_KJ_From(); 
+            kj_to_tmp = ui.GetUIValue_KJ_To(); 
+            if (kj_from_tmp == null) { 
+                this.Valid_Msg = "KJ 'from' value is not an valid integer."; 
+                return; 
+            } 
+            if (kj_to_tmp == null) { 
+                this.Valid_Msg = "KJ 'to' value is not a valid integer."; 
+                return; 
+            } 
+            if (kj_from_tmp > kj_to_tmp) { //OK to do this here, since we already checked for nulls.
+                this.Valid_Msg = "KJ 'from' value is greater than KJ 'to' value."; 
+                return; 
+            } 
+            //get past all our checks? OK, it's valid. 
+            this.Valid = true; 
+        }
+        
+        public Boolean Valid() { 
+            return this.Valid; 
+        } 
+        
+        public String Valid_Msg() { 
+            return this.Valid_Msg;
+        } 
+    }
 }

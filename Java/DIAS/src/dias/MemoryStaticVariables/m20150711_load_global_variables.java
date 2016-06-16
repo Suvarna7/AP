@@ -114,13 +114,6 @@ public class m20150711_load_global_variables {
     } 
     
     /** 
-     * Overloaded version of setup() -- supplies kj value of 20 by default. 
-     */
-    public void setup() { 
-        this.setup(20);
-    } 
-    
-    /** 
      * Sets up all matrices to default sizes; loads no data. 
      * 
      * @param kj_in KJ value for matrix creation. 

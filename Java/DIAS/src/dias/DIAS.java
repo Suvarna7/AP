@@ -50,6 +50,9 @@ public class DIAS {
     public static Double sleep_in; 
     public static Double phys_act_in; 
     public static Double body_weight;
+    
+    //Default values for processing
+    public static int kj_start; 
    
     /**
      * @param args the command line arguments
@@ -64,24 +67,28 @@ public class DIAS {
             System.out.println(" (directory exists : true)"); 
         } 
         else { 
-            if (!(new File(excelFilePath).mkdirs())) { 
-                System.out.println(" ... but this directory could not be created."); 
-                configureOK = false; 
-            } 
-            else { 
-                System.out.println(" (directory created)"); 
-            }
+//            if (!(new File(excelFilePath).mkdirs())) { 
+//                System.out.println(" ... but this directory could not be created."); 
+//                configureOK = false; 
+//            } 
+//            else { 
+//                System.out.println(" (directory created)"); 
+//            }
+            System.out.println(" (directory does not exist!)"); 
+            configureOK = false; 
         }
             
-        System.out.print("Excel files will load from directory : " + DIAS.excelFilePath + DIAS.excelSubdirectory);
-        if (!(new File(DIAS.excelFilePath + DIAS.excelSubdirectory).exists())) { 
-            if (!(new File(DIAS.excelFilePath + DIAS.excelSubdirectory).mkdirs())) { 
-            System.out.println("... but this directory could not be created."); 
+        System.out.print("Excel files will load from directory : " + DIAS.excelFilePath + File.separator + DIAS.excelSubdirectory);
+        if (!(new File(DIAS.excelFilePath + File.separator + DIAS.excelSubdirectory).exists())) { 
+//            if (!(new File(DIAS.excelFilePath + File.separator + DIAS.excelSubdirectory).mkdirs())) { 
+//            System.out.println("... but this directory could not be created."); 
+//            configureOK = false; 
+//            }
+//            else { 
+//                System.out.println(" (directory created)"); 
+//            }
+            System.out.println(" (directory does not exist!)"); 
             configureOK = false; 
-            }
-            else { 
-                System.out.println(" (directory created)"); 
-            }
         }
         else { 
             System.out.println(" (directory exists : true)"); 
@@ -131,6 +138,7 @@ public class DIAS {
             privateMails = new String[emails.size()];
             privateMails = emails.toArray(privateMails);
             
+            kj_start = config.getInt("processing[@env='" + configurationEnvironment + "']/defaults/kj_start"); 
             gs_initial = config.getDouble("processing[@env='" + configurationEnvironment + "']/defaults/gs_initial"); 
             ee_in = config.getDouble("processing[@env='" + configurationEnvironment + "']/defaults/ee_in"); 
            gsr_in = config.getDouble("processing[@env='" + configurationEnvironment + "']/defaults/gsr_in");  
