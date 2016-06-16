@@ -26,13 +26,15 @@ public class GUI extends javax.swing.JFrame {
      */
     public GUI() {
         initComponents();
+        
+        this.RunInput.setEnabled(false);
         //set up default values based on configuration file
-        jTextField1.setText(Double.toString(DIAS.gs_initial));
-        jTextField2.setText(Double.toString(DIAS.ee_in)); 
-        jTextField3.setText(Double.toString(DIAS.gsr_in)); 
-        jTextField4.setText(Double.toString(DIAS.sleep_in)); 
-        jTextField5.setText(Double.toString(DIAS.phys_act_in)); 
-        jTextField6.setText(Double.toString(DIAS.body_weight)); 
+        jTextField_GS_In.setText(Double.toString(DIAS.gs_initial));
+        jTextField_EE_In.setText(Double.toString(DIAS.ee_in)); 
+        jTextField_GSR_In.setText(Double.toString(DIAS.gsr_in)); 
+        jTextField_Sleep_In.setText(Double.toString(DIAS.sleep_in)); 
+        JTextField_Phys_Act_In.setText(Double.toString(DIAS.phys_act_in)); 
+        jTextField_Body_Weight.setText(Double.toString(DIAS.body_weight)); 
         
         //initially, use the default DIAS kj_start value for both the start and end kj values. 
         this.jTextField_kj_from.setText(Integer.toString(DIAS.kj_start)); 
@@ -54,18 +56,18 @@ public class GUI extends javax.swing.JFrame {
         SaveButton = new javax.swing.JButton();
         LoadButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
-        jTextField4 = new javax.swing.JTextField();
-        jTextField5 = new javax.swing.JTextField();
+        jTextField_GS_In = new javax.swing.JTextField();
+        jTextField_EE_In = new javax.swing.JTextField();
+        jTextField_GSR_In = new javax.swing.JTextField();
+        jTextField_Sleep_In = new javax.swing.JTextField();
+        JTextField_Phys_Act_In = new javax.swing.JTextField();
+        jTextField_Body_Weight = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        jTextField6 = new javax.swing.JTextField();
         GetInputsButton = new javax.swing.JButton();
         jBolusLabel = new javax.swing.JLabel();
         jBasalLabel = new javax.swing.JLabel();
@@ -128,39 +130,46 @@ public class GUI extends javax.swing.JFrame {
         jLabel1.setForeground(new java.awt.Color(255, 0, 51));
         jLabel1.setText("CLEAR HISTORY & SAVE-LOAD");
 
-        jTextField1.setText("185");
-        jTextField1.setToolTipText("");
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        jTextField_GS_In.setText("185");
+        jTextField_GS_In.setToolTipText("");
+        jTextField_GS_In.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                jTextField_GS_InActionPerformed(evt);
             }
         });
 
-        jTextField2.setText("0.3");
-        jTextField2.addActionListener(new java.awt.event.ActionListener() {
+        jTextField_EE_In.setText("0.3");
+        jTextField_EE_In.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField2ActionPerformed(evt);
+                jTextField_EE_InActionPerformed(evt);
             }
         });
 
-        jTextField3.setText("0.2");
-        jTextField3.addActionListener(new java.awt.event.ActionListener() {
+        jTextField_GSR_In.setText("0.2");
+        jTextField_GSR_In.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField3ActionPerformed(evt);
+                jTextField_GSR_InActionPerformed(evt);
             }
         });
 
-        jTextField4.setText("0");
-        jTextField4.addActionListener(new java.awt.event.ActionListener() {
+        jTextField_Sleep_In.setText("0");
+        jTextField_Sleep_In.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField4ActionPerformed(evt);
+                jTextField_Sleep_InActionPerformed(evt);
             }
         });
 
-        jTextField5.setText("0");
-        jTextField5.addActionListener(new java.awt.event.ActionListener() {
+        JTextField_Phys_Act_In.setText("0");
+        JTextField_Phys_Act_In.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField5ActionPerformed(evt);
+                JTextField_Phys_Act_InActionPerformed(evt);
+            }
+        });
+
+        jTextField_Body_Weight.setText("85");
+        jTextField_Body_Weight.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField_Body_WeightActionPerformed(evt);
             }
         });
 
@@ -175,13 +184,6 @@ public class GUI extends javax.swing.JFrame {
         jLabel6.setText("Phys_act_in");
 
         jLabel7.setText("Body_weight");
-
-        jTextField6.setText("85");
-        jTextField6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField6ActionPerformed(evt);
-            }
-        });
 
         GetInputsButton.setText("GetInputs");
         GetInputsButton.setToolTipText("");
@@ -220,47 +222,6 @@ public class GUI extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(39, 39, 39)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(254, 254, 254)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jLabel3)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel8)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel_kj_display))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel9)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel_cgm_display)))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel4)))
-                        .addGap(22, 22, 22)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(226, 226, 226)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel6)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel7))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(GetInputsButton))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addGap(0, 427, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
                 .addGap(31, 31, 31)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -298,6 +259,51 @@ public class GUI extends javax.swing.JFrame {
                                 .addGap(18, 18, 18)
                                 .addComponent(jBasalValue)))
                         .addGap(11, 11, 11))))
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel7))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jTextField_Sleep_In, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(JTextField_Phys_Act_In, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTextField_Body_Weight, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(39, 39, 39)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(254, 254, 254)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(jLabel2)
+                                            .addComponent(jLabel3)))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(jLabel8)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jLabel_kj_display))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(jLabel9)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jLabel_cgm_display)))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jLabel4)))
+                                .addGap(22, 22, 22)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jTextField_EE_In, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jTextField_GS_In, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jTextField_GSR_In, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(323, 323, 323)
+                                .addComponent(GetInputsButton)
+                                .addGap(0, 0, Short.MAX_VALUE)))))
+                .addGap(0, 427, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -326,11 +332,11 @@ public class GUI extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTextField_GS_In, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel2))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTextField_EE_In, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel3)))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -344,23 +350,23 @@ public class GUI extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTextField_GSR_In, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel4))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jTextField_Sleep_In, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel5))
                                 .addGap(18, 18, 18)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel6)
-                                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(JTextField_Phys_Act_In, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(16, 16, 16)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(jLabel7)
-                                    .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addComponent(jTextField_Body_Weight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(18, 18, 18)
                         .addComponent(GetInputsButton))
                     .addGroup(layout.createSequentialGroup()
@@ -389,7 +395,15 @@ public class GUI extends javax.swing.JFrame {
         
         DisableInputFields(); 
         
-        RunMainProcess(); 
+        m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
+        //XXX OPTIMIZE : We should never get here without either loading Excel data into lgvariables or pulling GUI data for initial condition, and incidentally setting up lgvariables. My dumb solution for now is to disable the "run" button until we've done either of those, but we should really check lgvariables and exit this function with a warning if nothing has been set up. 
+        
+        int i_start = this.GetUIValue_KJ_From(); 
+        int i_end = this.GetUIValue_KJ_To(); 
+        for (int i = i_start; i <= i_end; i++) { 
+            RefreshKJValues(lgvariables, this.GetUIValue_KJ_From(), this.GetUIValue_KJ_To(), false);
+            RunMainProcess(lgvariables); 
+        }
         
     }//GEN-LAST:event_RunInputActionPerformed
 
@@ -398,26 +412,19 @@ public class GUI extends javax.swing.JFrame {
      * Responsible for getting its own inputs, running the optimizer, etc. 
      * Previously, this was inside the RunInputActionPerformed() method, but we're breaking it out here so we can call it with other triggers. 
      */
-    private void RunMainProcess() { 
-        //1. CGM Prediction
-        CGM__SEDFR_JF cs = new CGM__SEDFR_JF();
-        m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
+    private void RunMainProcess(m20150711_load_global_variables lgvariables) { 
 
         //Virtual CGM generator:
         // Have we built a VirtualCgm object already? If not, build one. This will bang out our necessary initial value(s) from the UI. 
         if (vcgm == null) { 
             vcgm = new VirtualCgm(DIAS.gs_initial);
         } 
+        UpdateKJLabel(m20150711_load_global_variables.kj, this);
         // XXX OPTIMIZE : note that we increment kj right away. 
         m20150711_load_global_variables.kj++;
         
         vcgm.generateVirtualCGMValues(m20150711_load_global_variables.kj, m20150711_load_global_variables.gs_in); 
-        
-        //XXX OPTIMIZE : Not sure why this line is here, since the .gs parameter gets overwritten immediately. 
-        m20150711_load_global_variables.gs = DIAS.createnewMatrix(1, m20150711_load_global_variables.kj, m20150711_load_global_variables.gs);
-        m20150711_load_global_variables.gs = vcgm.gstemp;
-        
-        UpdateKJLabel(m20150711_load_global_variables.kj, this); 
+        m20150711_load_global_variables.gs = vcgm.gstemp;  
         UpdateCGMLabel(lgvariables.gs.get(0, lgvariables.kj - 1), this); 
 
         int flag_noise = 1;
@@ -564,7 +571,9 @@ public class GUI extends javax.swing.JFrame {
         DIAS.printMatrix(m20150711_load_global_variables.gs, "lgvariables.gs");
         DIAS.printMatrix(m20150711_load_global_variables.bolus_insulin, "lgvariables.bolus_insulin");
         DIAS.printMatrix(m20150711_load_global_variables.basal_insulin, "lgvariables.basal_insulin");
-        //TODO Update output values in GUI
+        //XXX OPTIMIZE Update output values in GUI. The KJ values in the UI also control which KJ values to use next time we run this function, if we're in a loop. 
+        Integer kj_to_temp = Math.max(this.GetUIValue_KJ_To(), lgvariables.kj); 
+        RefreshKJValues(lgvariables, lgvariables.kj , kj_to_temp, false);
         jBolusValue.setText("1"); 
         jBasalValue.setText("1"); 
 
@@ -577,21 +586,23 @@ public class GUI extends javax.swing.JFrame {
         // TODO add your handling code here:
         m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
         lgvariables.setup(DIAS.kj_start); //set kj back to default start value. 
+        this.jTextField_kj_from.setText(Integer.toString((int)DIAS.kj_start)); 
+        this.jTextField_kj_to.setText(Integer.toString((int)DIAS.kj_start));
     }//GEN-LAST:event_ClearHistoryButtonActionPerformed
 
     private void DisableInputFields() { 
-        jTextField1.setEditable(false);
-        jTextField1.setEnabled(false); 
-        jTextField2.setEditable(false);
-        jTextField2.setEnabled(false); 
-        jTextField3.setEditable(false);
-        jTextField3.setEnabled(false); 
-        jTextField4.setEditable(false);
-        jTextField4.setEnabled(false); 
-        jTextField5.setEditable(false);
-        jTextField5.setEnabled(false);
-        jTextField6.setEditable(false);
-        jTextField6.setEnabled(false);
+        jTextField_GS_In.setEditable(false);
+        jTextField_GS_In.setEnabled(false); 
+        jTextField_EE_In.setEditable(false);
+        jTextField_EE_In.setEnabled(false); 
+        jTextField_GSR_In.setEditable(false);
+        jTextField_GSR_In.setEnabled(false); 
+        jTextField_Sleep_In.setEditable(false);
+        jTextField_Sleep_In.setEnabled(false); 
+        JTextField_Phys_Act_In.setEditable(false);
+        JTextField_Phys_Act_In.setEnabled(false);
+        jTextField_Body_Weight.setEditable(false);
+        jTextField_Body_Weight.setEnabled(false);
     }
     
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
@@ -611,6 +622,7 @@ public class GUI extends javax.swing.JFrame {
         Boolean savedOK = SaveStateToFile(); 
     }//GEN-LAST:event_SaveButtonActionPerformed
 
+    //XXX OPTIMIZE -- is this made defunct by SaveAllData.java? 
     private Boolean SaveStateToFile() { 
         // TODO add your handling code here:
         m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
@@ -760,6 +772,7 @@ public class GUI extends javax.swing.JFrame {
     
     private void LoadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoadButtonActionPerformed
         Boolean loadedOK = LoadVariablesFromFiles(); 
+        if (loadedOK) { this.RunInput.setEnabled(true); } 
     }//GEN-LAST:event_LoadButtonActionPerformed
 
     /** 
@@ -772,17 +785,20 @@ public class GUI extends javax.swing.JFrame {
         
 // m20150711_load_global_variables constructor mostly initializes boilerplate objects. 
         m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
-        int kj_temp = DIAS.kj_start; //Yeah, we overwrite this immediately, but it's a good way to start with a valid value. 
+        int kj_from_temp = DIAS.kj_start; //Yeah, we overwrite this immediately, but it's a good way to start with a valid value. 
         Load loaddata = new Load(DIAS.excelSubdirectory);
-        try { kj_temp = (int) loaddata.loaddouble("kj"); } 
+        try { kj_from_temp = (int) loaddata.loaddouble("kj"); } 
         catch (IOException ex) {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
             return false; //we failed to load a kj, so fail out and have the calling application get the error. 
         }
-        lgvariables.setup(kj_temp);
+        //Set the starting KJ value to be the value we got from the loaded files, and the ending kj value to be (whatever's already in the "end" value, or the loaded kj value, whichever is greater). 
+        // We do also want to nuke whatever's in lgvariables right now, so that our loaded values totally overwrite what's there. 
+        Integer kj_to_temp = Math.max(this.GetUIValue_KJ_To(), kj_from_temp); 
+        RefreshKJValues(lgvariables, kj_from_temp, kj_to_temp, true); 
         
         try {
-            lgvariables.kj = (int) (kj_temp + 1);
+            lgvariables.kj = (int) (kj_from_temp + 1);
             
             //why are we loading basal_insulin here in the parameter? That's our problem -- it's still got the old dimensions from before we incremented kj. 
             //lgvariables.basal_insulin = DIAS.createnewMatrix(8, lgvariables.kj, loaddata.load(lgvariables.basal_insulin, "basal_insulin"));
@@ -952,9 +968,9 @@ public class GUI extends javax.swing.JFrame {
             DIAS.print3DMatrix(lgvariables.meal_covariance, "lgvariables.meal_covariance");
             DIAS.printMatrix(lgvariables.meal_states, "lgvariables.meal_states");
             
-            //XXX DEBUG : Is this going to be an off-by-one error? 
-            UpdateKJLabel(lgvariables.kj, this); 
+            //XXX DEBUG : Is this going to be an off-by-one error?  
             lgvariables.kj = lgvariables.kj - 1;
+            UpdateKJLabel(lgvariables.kj, this);
             UpdateCGMLabel(lgvariables.gs.get(0, lgvariables.kj), this); 
             
 
@@ -965,51 +981,59 @@ public class GUI extends javax.swing.JFrame {
         return true; 
     } 
     
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void jTextField_GS_InActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField_GS_InActionPerformed
         // TODO add your handling code here:
         // m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
         // lgvariables.gs_in=Double.parseDouble (jTextField1.getText());
 
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_jTextField_GS_InActionPerformed
 
-    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
+    private void jTextField_EE_InActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField_EE_InActionPerformed
         // TODO add your handling code here:
         //  m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
         // lgvariables.ee_in=Double.parseDouble (jTextField1.getText());
 
-    }//GEN-LAST:event_jTextField2ActionPerformed
+    }//GEN-LAST:event_jTextField_EE_InActionPerformed
 
-    private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
+    private void jTextField_GSR_InActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField_GSR_InActionPerformed
         // TODO add your handling code here:
         //  m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
         //  lgvariables.ee_in=Double.parseDouble (jTextField1.getText());
 
-    }//GEN-LAST:event_jTextField3ActionPerformed
+    }//GEN-LAST:event_jTextField_GSR_InActionPerformed
 
-    private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
+    private void jTextField_Sleep_InActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField_Sleep_InActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField4ActionPerformed
+    }//GEN-LAST:event_jTextField_Sleep_InActionPerformed
 
-    private void jTextField5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField5ActionPerformed
+    private void JTextField_Phys_Act_InActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JTextField_Phys_Act_InActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField5ActionPerformed
+    }//GEN-LAST:event_JTextField_Phys_Act_InActionPerformed
 
-    private void jTextField6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField6ActionPerformed
+    private void jTextField_Body_WeightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField_Body_WeightActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField6ActionPerformed
+    }//GEN-LAST:event_jTextField_Body_WeightActionPerformed
 
     private void GetInitialValuesFromUI() { 
-        //set initial values to the inputs from GUI, if user has overridden defaults. 
-        Double gs_initial_UI = Double.parseDouble(jTextField1.getText()); 
+        //Check to make sure that the UI is in a good state. 
+        UIValidation validation = new UIValidation(this); 
+        if (!(validation.Valid())) { 
+            ShowInfoBox(validation.Valid_Msg(), "GetInputsButtonActionPerformed"); 
+            return; 
+        }
+        
+        //Everything OK? Set initial values to the GUI inputs, if user has overridden the defaults. 
+        Double gs_initial_UI = this.GetUIValue_GS_In(); 
         DIAS.gs_initial = gs_initial_UI; 
-        DIAS.ee_in = Double.parseDouble(jTextField2.getText()); 
-        DIAS.gsr_in = Double.parseDouble(jTextField3.getText()); 
-        DIAS.sleep_in = Double.parseDouble(jTextField4.getText()); 
-        DIAS.phys_act_in = Double.parseDouble(jTextField5.getText()); 
-        DIAS.body_weight = Double.parseDouble(jTextField6.getText()); 
+        DIAS.ee_in = this.GetUIValue_EE_In(); 
+        DIAS.gsr_in = this.GetUIValue_GSR_In(); 
+        DIAS.sleep_in = this.GetUIValue_Sleep_In();  
+        DIAS.phys_act_in = this.GetUIValue_Phys_Act_In(); 
+        DIAS.body_weight = this.GetUIValue_Body_Weight(); 
         
         //and set up a new VirtualCgm object with the initial values from the UI. This is just in case we've changed those values -- this may be unnecessary, depending on how we manage the UI workflow. 
         vcgm = new VirtualCgm(gs_initial_UI); 
+       
     } 
     
     /** 
@@ -1025,22 +1049,85 @@ public class GUI extends javax.swing.JFrame {
             ShowInfoBox(validation.Valid_Msg(), "GetInputsButtonActionPerformed"); 
             return; 
         } 
-        // Load global variables
+        
+        // Load global variables with the UI inputs, overwriting whatever already exists in the global variables. 
         m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
-        lgvariables.gs_in = Double.parseDouble(jTextField1.getText()); 
-        lgvariables.ee_in = Double.parseDouble(jTextField2.getText());
-        lgvariables.gsr_in = Double.parseDouble(jTextField3.getText());
-        lgvariables.sleep_in = Double.parseDouble(jTextField4.getText());
-        lgvariables.phys_act_in = Double.parseDouble(jTextField5.getText());
-        lgvariables.body_weight = Double.parseDouble(jTextField6.getText());
-
-        Integer kj_input = GetUIValue_KJ_From(); 
-        lgvariables.setup(Integer.parseInt(this.jTextField_kj_from.getText()));  
-        UpdateKJLabel(lgvariables.kj, this); 
-        UpdateKJ_FromLabel(lgvariables.kj, this); //overwrite the "from" kj value in UI. 
-        UpdateKJ_ToLabel(lgvariables.kj, this); //overwrite the "to" kj value in UI. 
+        lgvariables.gs_in = this.GetUIValue_GS_In(); 
+        lgvariables.ee_in = this.GetUIValue_EE_In(); 
+        lgvariables.gsr_in = this.GetUIValue_GSR_In(); 
+        lgvariables.sleep_in = this.GetUIValue_Sleep_In(); 
+        lgvariables.phys_act_in = this.GetUIValue_Phys_Act_In(); 
+        lgvariables.body_weight = this.GetUIValue_Body_Weight(); 
+        
+        //get our "from" kj value and refresh lgvariables with it. Set both the "from" and "to" in the UI to that value. 
+        // We -do- want to nuke lgvariables with the setup() command here, so we supply True to SetupLGVariables. 
+        Integer kj_start = GetUIValue_KJ_From();
+        RefreshKJValues(lgvariables, kj_start, kj_start, true); 
+        
+        //Finally, now that we've gotten valid inputs and set up lgvariables, allow the "run" button to be used. 
+        this.RunInput.setEnabled(true);
     }//GEN-LAST:event_GetInputsButtonActionPerformed
 
+    private void RefreshKJValues(m20150711_load_global_variables lg, Integer kj_from, Integer kj_to, Boolean SetupLGVariables) {
+        if (SetupLGVariables) {
+            lg.setup(kj_from);  
+        } 
+        else { 
+            lg.kj = kj_from; 
+        } 
+        UpdateKJLabel(lg.kj, this); 
+        UpdateKJ_FromLabel(lg.kj, this); //overwrite the "from" kj value in UI. 
+        UpdateKJ_ToLabel(kj_to, this); //overwrite the "to" kj value in UI. 
+    }
+    
+    private Double GetUIValue_Body_Weight() { 
+        try {
+            return Double.parseDouble(this.jTextField_Body_Weight.getText());
+          } catch (NumberFormatException e) {
+            return null;
+          }
+    }
+    
+    private Double GetUIValue_EE_In() { 
+          try {
+            return Double.parseDouble(this.jTextField_EE_In.getText());
+          } catch (NumberFormatException e) {
+            return null;
+          }
+    }
+    
+    private Double GetUIValue_GS_In() { 
+        try {
+            return Double.parseDouble(this.jTextField_GS_In.getText());
+          } catch (NumberFormatException e) {
+            return null;
+          }
+    }
+    
+    private Double GetUIValue_GSR_In() { 
+          try {
+            return Double.parseDouble(this.jTextField_GSR_In.getText());
+          } catch (NumberFormatException e) {
+            return null;
+          }
+    } 
+    
+    private Double GetUIValue_Phys_Act_In() { 
+        try {
+            return Double.parseDouble(this.JTextField_Phys_Act_In.getText());
+          } catch (NumberFormatException e) {
+            return null;
+          }
+    }
+    
+    private Double GetUIValue_Sleep_In() { 
+          try {
+            return Double.parseDouble(this.jTextField_Sleep_In.getText());
+          } catch (NumberFormatException e) {
+            return null;
+          }
+    } 
+    
     /**
      * A simple call to get the KJ "from" value from the UI. If the value in the KJ "from" text field is not a parseable integer, returns NULL. 
      * @return Valid integer, or NULL. 
@@ -1104,6 +1191,7 @@ public class GUI extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ClearHistoryButton;
     private javax.swing.JButton GetInputsButton;
+    private javax.swing.JTextField JTextField_Phys_Act_In;
     private javax.swing.JButton LoadButton;
     private javax.swing.JButton RunInput;
     private javax.swing.JButton SaveButton;
@@ -1126,12 +1214,11 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel_cgm_display;
     private javax.swing.JLabel jLabel_kj_display;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
-    private javax.swing.JTextField jTextField5;
-    private javax.swing.JTextField jTextField6;
+    private javax.swing.JTextField jTextField_Body_Weight;
+    private javax.swing.JTextField jTextField_EE_In;
+    private javax.swing.JTextField jTextField_GSR_In;
+    private javax.swing.JTextField jTextField_GS_In;
+    private javax.swing.JTextField jTextField_Sleep_In;
     private javax.swing.JTextField jTextField_kj_from;
     private javax.swing.JTextField jTextField_kj_to;
     // End of variables declaration//GEN-END:variables
@@ -1162,6 +1249,37 @@ public class GUI extends javax.swing.JFrame {
                 this.Valid_Msg = "KJ 'from' value is greater than KJ 'to' value."; 
                 return; 
             } 
+            
+            if (ui.GetUIValue_Body_Weight() == null) { 
+                this.Valid_Msg = "Body weight value is not a valid number."; 
+                return; 
+            } 
+            
+            if (ui.GetUIValue_EE_In() == null) { 
+                this.Valid_Msg = "EE value is not a valid number."; 
+                return; 
+            } 
+            
+            if (ui.GetUIValue_GSR_In() == null) { 
+                this.Valid_Msg = "GSR value is not a valid number."; 
+                return; 
+            } 
+            
+            if (ui.GetUIValue_GS_In() == null) { 
+                this.Valid_Msg = "GS value is not a valid number."; 
+                return; 
+            } 
+            
+            if (ui.GetUIValue_Phys_Act_In() == null) { 
+                this.Valid_Msg = "Physical activity value is not a valid number."; 
+                return; 
+            } 
+            
+            if (ui.GetUIValue_Sleep_In() == null) { 
+                this.Valid_Msg = "Sleep value is not a valid number."; 
+                return; 
+            } 
+            
             //get past all our checks? OK, it's valid. 
             this.Valid = true; 
         }
