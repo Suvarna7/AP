@@ -1,0 +1,89 @@
+-- Merging decision tree log ---
+manifest
+ADDED from AndroidManifest.xml:2:1
+	package
+		ADDED from AndroidManifest.xml:5:2
+	android:versionName
+		ADDED from AndroidManifest.xml:4:2
+	android:versionCode
+		ADDED from AndroidManifest.xml:3:2
+		INJECTED from AndroidManifest.xml:0:0
+		INJECTED from AndroidManifest.xml:0:0
+	xmlns:android
+		ADDED from AndroidManifest.xml:2:11
+uses-sdk
+ADDED from AndroidManifest.xml:6:2
+	android:targetSdkVersion
+		ADDED from AndroidManifest.xml:6:38
+	android:minSdkVersion
+		ADDED from AndroidManifest.xml:6:12
+supports-screens
+ADDED from AndroidManifest.xml:8:5
+	android:largeScreens
+		ADDED from AndroidManifest.xml:11:3
+	android:smallScreens
+		ADDED from AndroidManifest.xml:9:3
+	android:normalScreens
+		ADDED from AndroidManifest.xml:10:3
+	android:resizeable
+		ADDED from AndroidManifest.xml:8:23
+	android:anyDensity
+		ADDED from AndroidManifest.xml:12:3
+permission#edu.read
+ADDED from AndroidManifest.xml:13:2
+	android:name
+		ADDED from AndroidManifest.xml:13:14
+permission#edu.write
+ADDED from AndroidManifest.xml:14:2
+	android:name
+		ADDED from AndroidManifest.xml:14:14
+uses-permission#edu.read
+ADDED from AndroidManifest.xml:15:2
+	android:name
+		ADDED from AndroidManifest.xml:15:19
+uses-permission#edu.write
+ADDED from AndroidManifest.xml:16:2
+	android:name
+		ADDED from AndroidManifest.xml:16:19
+uses-permission#android.permission.INTERNET
+ADDED from AndroidManifest.xml:18:2
+	android:name
+		ADDED from AndroidManifest.xml:18:19
+uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
+ADDED from AndroidManifest.xml:20:3
+	android:name
+		ADDED from AndroidManifest.xml:20:20
+uses-permission#android.permission.READ_EXTERNAL_STORAGE
+ADDED from AndroidManifest.xml:21:3
+	android:name
+		ADDED from AndroidManifest.xml:21:20
+uses-permission#android.permission.WAKE_LOCK
+ADDED from AndroidManifest.xml:22:3
+	android:name
+		ADDED from AndroidManifest.xml:22:20
+application
+ADDED from AndroidManifest.xml:25:3
+	android:label
+		ADDED from AndroidManifest.xml:25:46
+	android:icon
+		ADDED from AndroidManifest.xml:25:16
+service#edu.virginia.dtc.APCservice.IOMain
+ADDED from AndroidManifest.xml:26:3
+	android:enabled
+		ADDED from AndroidManifest.xml:29:5
+	android:exported
+		ADDED from AndroidManifest.xml:28:5
+	android:name
+		ADDED from AndroidManifest.xml:27:4
+intent-filter#DiAs.APCservice
+ADDED from AndroidManifest.xml:30:13
+action#DiAs.APCservice
+ADDED from AndroidManifest.xml:31:17
+	android:name
+		ADDED from AndroidManifest.xml:31:25
+meta-data#Version
+ADDED from AndroidManifest.xml:36:3
+	android:value
+		ADDED from AndroidManifest.xml:36:37
+	android:name
+		ADDED from AndroidManifest.xml:36:14

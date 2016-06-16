@@ -9,12 +9,11 @@ import android.widget.Toast;
 
 import com.empatica.empalink.EmpaDeviceManager;
 import com.empatica.empalink.delegate.EmpaDataDelegate;
-import com.empatica.sample.Database.Database;
+import com.empatica.sample.Database.IITDatabaseManager;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
@@ -70,7 +69,7 @@ public class BGService extends Service implements EmpaDataDelegate{
     private static int receivedNextSamples;
 
     //Database
-    public static Database myDB;
+    public static IITDatabaseManager myDB;
     public static final String empaticaTableName= "empatica";
     private static final String[] columnsTable = new String[]{"time_stamp", "Acc_x", "Acc_y", "Acc_z", "GSR", "BVP",
             "IBI", "temperature","battery_level"};
@@ -374,7 +373,7 @@ public class BGService extends Service implements EmpaDataDelegate{
      */
     private static void initDatabaseManager(Context context){
         //Create database object
-        myDB = new Database(context);
+        myDB = new IITDatabaseManager(context);
 
         //DELETE PREVIOUS TABLE:
         //myDB.updateDatabaseTable (empaticaTableName, null, false);
