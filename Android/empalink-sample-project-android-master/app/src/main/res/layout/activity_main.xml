@@ -153,6 +153,16 @@
             android:id="@+id/battery"
             android:text="@string/emptyText"/>
 
+
     </RelativeLayout>
+
+    <Button
+        android:id="@+id/connect_button"
+        android:visibility="gone"
+        android:layout_alignParentRight="true"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="@string/string_connect"
+        />
 
 </RelativeLayout>

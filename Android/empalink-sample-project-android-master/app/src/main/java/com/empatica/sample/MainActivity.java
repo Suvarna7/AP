@@ -8,17 +8,17 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.empatica.empalink.ConnectionNotAllowedException;
-import com.empatica.empalink.EmpaDeviceManager;
 import com.empatica.empalink.config.EmpaSensorStatus;
 import com.empatica.empalink.config.EmpaSensorType;
 import com.empatica.empalink.config.EmpaStatus;
-import com.empatica.empalink.delegate.EmpaDataDelegate;
 import com.empatica.empalink.delegate.EmpaStatusDelegate;
+
+
 
 
 public class MainActivity extends AppCompatActivity implements EmpaStatusDelegate   {
@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     private static final long STREAMING_TIME = 600000; // Stops streaming 10 min after connection
     public static final String EMPATICA_API_KEY = "f92ddb7260a54f5790038ba90ef4d1ad"; // TODO insert your API Key here
 
-
+    //GUI labels
     public TextView accel_xLabel;
     public TextView accel_yLabel;
     public TextView accel_zLabel;
@@ -39,6 +39,10 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     public TextView statusLabel;
     public TextView deviceNameLabel;
     public RelativeLayout dataCnt;
+
+    public static Button connectButton;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +62,11 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
         batteryLabel = (TextView) findViewById(R.id.battery);
         deviceNameLabel = (TextView) findViewById(R.id.deviceName);
 
+        // Initialize button
+        connectButton = (Button) findViewById(R.id.connect_button);
+        connectButton.setOnClickListener(connectListener);
+
+
 
         BGService.initContext(this);
 
@@ -69,20 +78,63 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
 
     }
 
+
+
+
     @Override
     protected void onPause() {
         super.onPause();
-        BGService.deviceManager.stopScanning();
+
+        if (BGService.deviceManager !=null)
+            BGService.deviceManager.stopScanning();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        //Update context
+        BGService.initContext(this);
+
+
     }
 
     @Override
     protected void onDestroy() {
+
         super.onDestroy();
         //BGService.deviceManager.cleanUp();
+
         //Stop service
-        //stopService(new Intent(this, BGService.class));
+        stopService(new Intent(this, BGService.class));
 
     }
+
+    @Override
+    public void onStop(){
+        //startStreamingPackets();
+        super.onStop();
+
+    }
+
+    @Override
+    public void onRestart(){
+        super.onRestart();
+        BGService.initContext(this);
+
+    }
+
+  /* *******************************
+  * EMULATE BACK AND HOME BUTTONS: Do not destroy app
+   */
+  @Override
+  public void onBackPressed() {
+      moveTaskToBack(true);
+  }
+
+    /* **********************************************************************
+     * Empatica Status callbacks
+     */
 
     @Override
     public void didDiscoverDevice(BluetoothDevice bluetoothDevice, String deviceName, int rssi, boolean allowed) {
@@ -96,6 +148,17 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                 // Connect to the device
                 BGService.deviceManager.connectDevice(bluetoothDevice);
                 updateLabel(deviceNameLabel, "To: " + deviceName);
+                //In case it does not connect...
+                //Connect button visible, except when connected
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //Hide read data
+                        //Display ONLY the connect button
+                        connectButton.setVisibility(View.VISIBLE);
+                    }
+                });
+
             } catch (ConnectionNotAllowedException e) {
                 // This should happen only if you try to connect when allowed == false.
                 Toast.makeText(MainActivity.this, "Sorry, you can't connect to this device", Toast.LENGTH_SHORT).show();
@@ -115,6 +178,8 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
         // The user chose not to enable Bluetooth
         if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_CANCELED) {
             // You should deal with this
+            updateLabel(statusLabel, "BLUETOOTH NOT ENABLED: \n Empatica can not connect");
+
             return;
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -130,36 +195,55 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
         // Update the UI
         updateLabel(statusLabel, status.name());
 
+
         // The device manager is ready for use
         if (status == EmpaStatus.READY) {
+            //Make sure connection button is not used
+            //See only conenct button
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    connectButton.setVisibility(View.INVISIBLE);
+                }
+            });
             updateLabel(statusLabel, status.name() + " - Turn on your device");
             // Start scanning
             BGService.deviceManager.startScanning();
-        // The device manager has established a connection
+            // The device manager has established a connection
         } else if (status == EmpaStatus.CONNECTED) {
             // Stop streaming after STREAMING_TIME
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    connectButton.setVisibility(View.INVISIBLE);
                     dataCnt.setVisibility(View.VISIBLE);
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            // Disconnect device
-                            BGService.deviceManager.disconnect();
+                            //TODO  Disconnect device
+                            //BGService.deviceManager.disconnect();
                         }
                     }, STREAMING_TIME);
                 }
             });
-        // The device manager disconnected from a device
+            // The device manager disconnected from a device
         } else if (status == EmpaStatus.DISCONNECTED) {
+            //See only conenct button
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    connectButton.setVisibility(View.VISIBLE);
+                    dataCnt.setVisibility(View.INVISIBLE);
+                }
+            });
             updateLabel(deviceNameLabel, "");
+
         }
     }
 
 
-    // Update a label with some text, making sure this is run in the UI thread
-    public void updateLabel(final TextView label, final String text) {
+                     // Update a label with some text, making sure this is run in the UI thread
+        public void updateLabel(final TextView label, final String text) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -167,4 +251,20 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
             }
         });
     }
+
+    /* ***********************************************************
+        OnClickListeners
+     */
+    private static View.OnClickListener connectListener = new View.OnClickListener() {
+        public void onClick(View view) {
+            if (BGService.deviceManager != null){
+                //If deviceManager is scanning, we stop it
+                BGService.deviceManager.stopScanning();
+                //Change empastatus to ready
+                BGService.deviceManager.authenticateWithAPIKey(EMPATICA_API_KEY);
+                //BGService.deviceManager.startScanning();
+            }
+
+        }
+    };
 }

@@ -5,40 +5,38 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * Database - manage connection to our SQLite database
+ * I can create new tables, erase table, update its connects
+ * Includes function to generate JSONs (that can later be send)
+ *
+ * NOTE: Contents on database should be of type 'value1', 'value2'...
+ *
+ * @autor Caterina Lazaro
+ * @version 2.0 Jun 2016
+ */
+
 public class Database {
 
-    public static List<String> zephyrColumns = new ArrayList();
-    public static List<String> bodymediaColumns = new ArrayList();
-    public static List<String> dexcomColumns = new ArrayList();
-    private static int first;
 
-    private static String zephyrColumnValues = "";
-    private static String bodymediaColumnValues = "";
-    private static String dexcomColumnValues = "";
 
     private static SQLiteDatabase db;
     private static Cursor cursorSync;
-    //private  SQLiteDatabase databaseSync;
-    public static String zephyrTableName = "zephyr";
-    public static String bodymediaTableName = "bodymedia";
-    public static String dexcomTableName = "dexcom";
-    public static String empaticaTableName = "empatica";
 
 
-    //Database
-    private static String DB_LOCAL_URL =  "/storage/emulated/legacy/direct/";
+    //Database info
+    private static String DB_LOCAL_URL =  "/storage/emulated/legacy/IIT_database/";
     public static String DB_NAME = "dbSensors.db";
 
     static String databaseFile;
+    private static final String updatedStatus = "'n'";
+    private static final String upDateColumn = "upDateStatus";
+    private static final String syncStatus = "'n'";
+    private static final String syncColumn = "synchronized";
     //static String  DBPath ;
     // static String DBName ;
     //static File db_file;
@@ -54,8 +52,8 @@ public class Database {
     private static boolean initialized = false;
 
     public Database(Context ctx){
-        first = 1;
         initDatabase(ctx);
+
     }
 
 
@@ -63,14 +61,16 @@ public class Database {
     * initDatabase ()
      */
     private void initDatabase(Context ctx){
-        first = 1;
         dbContext = ctx;
         //Update database file:
         databaseFile = DB_LOCAL_URL+DB_NAME;
+
         //Create database:
         db=ctx.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READWRITE, null);
+        db.execSQL("CREATE TABLE IF NOT EXISTS sample_table (created CHAR(1))");
         db.close();
         initialized= true;
+
     }
 
 
@@ -88,7 +88,8 @@ public class Database {
             storeValuesInTable(table, values);
         }else{
             //Delete table
-            String updateQuery1 = "DELETE * FROM "+ table ;
+            // String updateQuery1 = "DELETE * FROM "+ table ;
+            String updateQuery1 = "DROP TABLE "+ table ;
             db.execSQL(updateQuery1);
         }
         //Close db
@@ -105,8 +106,8 @@ public class Database {
 
     /**
      * Store values in Table
-     * @param table
-     * @param values
+     * @param table name of the table
+     * @param values List of the values: should be Strings of type 'value1', 'value2'...
      */
     private void storeValuesInTable(String table, List<String> values){
 
@@ -119,11 +120,13 @@ public class Database {
                 //Exec query if it does not include a null value and the last char is ")"
 
             }
-            //Last column: syncrhonized in phone = yes
-            inQueryValues += "'y')";
+            //Last column: updated in phone = no
+            inQueryValues += syncStatus + ", " +updatedStatus+")";
+            System.out.println(inQueryValues);
+
             //Execute query
             if (!inQueryValues.contains("null") && inQueryValues.substring(inQueryValues.length() - 1).equals(")"))
-                db.execSQL("INSERT INTO "+table+ " VALUES" + inQueryValues+";");
+                db.execSQL("INSERT INTO " + table + " VALUES" + inQueryValues + ";");
         }catch(SQLiteException e){
             System.out.println("SQLite Exception while storing in table: "+e);
 
@@ -136,19 +139,22 @@ public class Database {
      * @param table - name of the table to create
      * @param columnsOfTable - column names the table has
      */
-    public void createTable(String table, List<String> columnsOfTable){
-        String columnsQuery = prepareColumnsFromList(columnsOfTable);
-        db=dbContext.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READWRITE, null);
-        String initTable = "CREATE TABLE IF NOT EXISTS "+table+columnsQuery;
-        db.execSQL(initTable);
-        db.close();
+    public void createTable(String table, String keyColumnInTable, List<String> columnsOfTable){
+        if (initialized) {
+            //If database is initialized
+            String columnsQuery = prepareColumnsFromList(columnsOfTable, keyColumnInTable);
+            db = dbContext.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READWRITE, null);
+            String initTable = "CREATE TABLE IF NOT EXISTS " + table + columnsQuery;
+            db.execSQL(initTable);
+            db.close();
+        }
     }
     /**
      * Prepare columns to insert into a table
      * @param names
      * @return string with columns
      */
-    private String prepareColumnsFromList(List<String> names){
+    private String prepareColumnsFromList(List<String> names, String keyColumnInTable){
         String query = "( ";
         for (int i =0; i<names.size(); i++){
             //Get the column values
@@ -158,7 +164,10 @@ public class Database {
                 System.out.println("Get columns from JSON error: "+e);
             }
         }
-        query +="updated CHAR(5))";
+        //Add update and sync columns
+        query += syncColumn+ " CHAR(5), "+upDateColumn+ " CHAR(5), ";
+        //Add primary key
+        query += "PRIMARY KEY ("  + keyColumnInTable+"))";
         return query;
     }
 
@@ -249,10 +258,10 @@ public class Database {
         ArrayList<HashMap<String, String>> wordList = null;
         wordList = new ArrayList<HashMap<String, String>>();
         List<String> lastUpd = new ArrayList();
-        String selectQuery = "SELECT  * FROM " + table + " WHERE upDateStatus = '" + "no" + "'";
+        String selectQuery = "SELECT  * FROM " + table + " WHERE "+upDateColumn+" = '" + "no" + "'";
 
         //First case: for zephyr table
-        if (table.equals(zephyrTableName)) {
+        /*if (table.equals(zephyrTableName)) {
             //SQLiteDatabase database = ctx.openOrCreateDatabase(databaseFile, Context.MODE_WORLD_WRITEABLE, null);
             if (next == 0) {
                 db = ctx.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READWRITE, null);
@@ -393,7 +402,8 @@ public class Database {
 
             Gson gson = new GsonBuilder().create();
             //Use GSON to serialize Array List to JSON
-            return gson.toJson(wordList);
+            return gson.toJson(wordList);*/
+        return "";
         }
 
 
