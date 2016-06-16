@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Sensors Connection</string>
+
+    <string name="scan_device">Scan for Devices</string>
+    <string name="user_info">User Info</string>
+    <string name="connected_device">Connected Device</string>
+    <string name="action_disconnect">Disconnect</string>
+    <string name="action_pair">Pair</string>
+
+    <!-- ACRA -->
+    <string name="crash_dialog_title">Submit Crash Log</string>
+    <string name="crash_dialog_text">An unexpected error occurred, forcing the application to stop.</string>
+    <string name="crash_dialog_prompt">Please add any additional comments about what happened below:</string>
+
+    <!-- Init screen -->
+    <string name="pick_device">Select one Device</string>
+
+    <!-- Home screen -->
+
+    <string name="select_cached_device">Select Device</string>
+    <string name="pair_progress_enable">Press and hold your Armband button.\nRelease after you hear a beep.</string>
+    <string name="pair_progress_scanning">Looking for Armbands in pairing mode.</string>
+    <string name="pair_progress_confirm">Your Armand was found!\nPush your Armband button to confirm pairing.</string>
+
+    <!-- User Info -->
+    <string name="device_time">Device time</string>
+    <string name="press_to_set_time">Press to set</string>
+    <string name="armband_disconnected_during_pairing">Armband has been disconnected since you started a Pairing flow.</string>
+    <string name="pair_successfull">Pair successful!</string>
+    <string name="armband_disconnected">The armband has disconnected.</string>
+    <string name="save_title">Save</string>
+    <string name="warning_configure_armband">You need to configure your armband first!</string>
+
+    <!-- User targets -->
+    <string name="minutes_hint">minutes</string>
+
+    <!-- Radio Timings -->
+    <string name="stream_longitudinal_label">Longitudinal</string>
+    <string name="pairing_press_registration">Pair Device</string>
+
+    <string name="stream_transverse_label">Transverse</string>
+    <string name="stream_forward_label">Forward</string>
+    <string name="stream_cover_label">Cover</string>
+    <string name="stream_skin_label">Skin</string>
+    <string name="stream_ecg_calibrated_label">ECG</string>
+    <string name="stream_gsr_label">GSR</string>
+
+    <!-- Sensors -->
+    <string name="menu_show_device_configuration">Device Configuration</string>
+    <string name="menu_show_device_info">Device Info</string>
+    <string name="menu_show_minute_rate_screen">Minute Rate</string>
+    <string name="menu_show_high_rate_screen">High Rate</string>
+
+    <string name="plot_title_accelerometer">Accelerometer</string>
+    <string name="plot_title_temperature">Temperature</string>
+    <string name="plot_title_ecg">ECG</string>
+    <string name="plot_title_gsr">GSR</string>
+
+    <string name="remove_paired">Remove paired device?</string>
+    <string name="command_yes">YES</string>
+
+    <item type="id" name="min_range_lower" />
+    <item type="id" name="max_range_upper" />
+    <item type="id" name="current_range_lower" />
+    <item type="id" name="current_range_upper" />
+
+    <!-- Recordings -->
+    <string name="dialog_reconnect_title">Armband is reconnecting</string>
+    <string name="cancel">Cancel</string>
+    <string name="autoconnect_dialog_id">autoconnect_dialog</string>
+
+    <!-- Streaming -->
+    <string name="high_rate_title">High Rate streaming</string>
+    <string name="minute_rate_title">Minute Rate streaming</string>
+    <string name="clear_log_title">Clear log</string>
+
+    <!-- zephyr -->
+    <string name="plot_activity">PlotSensorValues</string>
+    <string name="labelHeartRate">Heart Rate</string>
+    <string name="labelRespRate">Respiration Rate</string>
+    <string name="labelPosture">Posture</string>
+    <string name="labelPeakAcc">Peak Acceleration</string>
+    <string name="labelStatusMsg"> . </string>
+    <string name="done">DONE</string>
+    <string name="go">GO</string>
+    <string name="insertPatient">Insert user ID:</string>
+    <string name="insertDeviceSerial">Insert device serial number:</string>
+    <string name="spinner_title">Type of Device</string>
+
+    <!-- Dexcom -->
+
+    <string name="search">Find Receiver</string>
+    <string name="ping">Ping Receiver</string>
+
+    <string name="get_egv">Get EGVs</string>
+    <string name="get_meter">Get meter records</string>
+    <string name="refresh">Refresh</string>
+    <string name="status">Status</string>
+    <string name="preferences">Preferences</string>
+
+    <string name="service_preferences">Receiver Service Preferences</string>
+    <string name="service_status">Service Status</string>
+    <string name="service_update_interval">Service Update Interval</string>
+
+    <string name="trend_arrow">Trend Arrow</string>
+
+    <string name="usb_power_level">USB Current Level</string>
+
+    <!-- Alert dialog -->
+    <string name = "dialog_title"> Title </string>
+    <string name = "dialog_message">Check BM</string>
+
+
+</resources>

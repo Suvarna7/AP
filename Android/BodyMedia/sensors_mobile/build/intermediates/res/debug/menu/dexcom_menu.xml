@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+            android:id="@+id/refresh"
+            android:showAsAction="ifRoom"
+            android:icon="@drawable/ic_menu_refresh"
+            android:title="@string/refresh"/>
+
+    <item
+            android:id="@+id/status"
+            android:showAsAction="ifRoom"
+            android:icon="@drawable/ic_menu_info_details"
+            android:title="@string/status"/>
+
+    <item
+            android:id="@+id/preferences"
+            android:showAsAction="ifRoom"
+            android:icon="@drawable/ic_menu_preferences"
+            android:title="@string/preferences"/>
+
+</menu><!-- From: file:/C:/Users/Cat/Dropbox/ECE_PhD%20Research/Artifitial%20Pancreas%20Work/Dias/BodyMedia%20App/Previous%20Versions/sensors_mobile/res/menu/dexcom_menu.xml -->

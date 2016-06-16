@@ -6,7 +6,7 @@ android {
     defaultConfig {
         applicationId 'com.empatica.empalinksample'
         minSdkVersion 19
-        targetSdkVersion 22
+        targetSdkVersion 21
         versionCode 1
         versionName "1.0"
     }
@@ -21,8 +21,9 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.loopj.android:android-async-http:1.4.6'
     compile project(':empalink-2.0')
+    compile files('C:/Users/Cat/Documents/GitHub/AP_IIT_2016/Android/empalink-sample-project-android-master/libs/gson-2.2.4.jar')
 }
