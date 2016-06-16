@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:orientation="horizontal" >
-
-</FrameLayout><!-- From: file:/C:/Users/Caterina/Documents/IIT/PhD%20Research/Trabajo/Android/gecko-mobile-client/gecko-mobile-client/res/layout/dexcom.xml -->

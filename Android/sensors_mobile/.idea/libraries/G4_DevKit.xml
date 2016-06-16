@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="G4 DevKit">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/libs/G4 DevKit.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
