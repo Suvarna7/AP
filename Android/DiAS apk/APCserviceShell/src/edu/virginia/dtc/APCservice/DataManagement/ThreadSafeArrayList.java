@@ -6,6 +6,10 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+/**
+ * ThreadSafeArrayList - ArrayList implementation to avoidd conflicts when different Threads are
+ * accessing
+ */
 public class ThreadSafeArrayList<String> {
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     private final Lock readLock = readWriteLock.readLock();
@@ -13,7 +17,10 @@ public class ThreadSafeArrayList<String> {
     private final List<String> list = new ArrayList<String>();
 
 
-
+    /**
+     * Write a new values in the Array
+     * @param o
+     */
     public void set(String o){
         writeLock.lock();
         try{
@@ -24,6 +31,11 @@ public class ThreadSafeArrayList<String> {
         }
     }
 
+    /**
+     * Get value at a given index
+     * @param i index
+     * @return String values
+     */
     public String get(int i){
         readLock.lock();
         try{
@@ -33,6 +45,9 @@ public class ThreadSafeArrayList<String> {
         }
     }
 
+    /**
+     * Clear array
+     */
     public void clear(){
         writeLock.lock();
         try{
@@ -43,6 +58,10 @@ public class ThreadSafeArrayList<String> {
         }
     }
 
+    /**
+     * Get size of the array
+     * @return size
+     */
     public int size(){
         readLock.lock();
         try{

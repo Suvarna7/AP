@@ -10,13 +10,15 @@
         android:id="@+id/status"
         android:layout_alignParentStart="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textColor="@color/lighter_red_paleta"/>
 
     <TextView
         android:id="@+id/deviceName"
         android:layout_below="@id/status"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textColor="@color/lighter_red_paleta"/>
 
     <RelativeLayout
         android:layout_marginTop="20dp"
@@ -159,10 +161,34 @@
     <Button
         android:id="@+id/connect_button"
         android:visibility="gone"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:text="@string/string_connect"
+        android:textColor = "@color/white_paleta"
+        android:background ="@color/ligher_green_paleta"
         />
+
+    <Button
+        android:id="@+id/stop_service_button"
+        android:layout_alignParentBottom="true"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:padding="10dp"
+        android:text="@string/string_stop_service"
+        android:textColor = "@color/white_paleta"
+        android:background="@color/ligher_green_paleta"
+        />
+    <Button
+        android:id="@+id/start_service_button"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:padding="10dp"
+        android:text="@string/string_start_service"
+        android:textColor = "@color/white_paleta"
+        android:background ="@color/dark_green_paleta"
+    />
 
 </RelativeLayout>

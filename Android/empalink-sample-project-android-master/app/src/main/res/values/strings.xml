@@ -11,4 +11,8 @@
     <string name="temp_label">Temperature</string>
     <string name="battery_label">Battery</string>
     <string name = "string_connect"> Connect </string>
+    <string name = "string_stop_service"> STOP service </string>
+    <string name = "string_start_service"> START service </string>
+
+
 </resources>

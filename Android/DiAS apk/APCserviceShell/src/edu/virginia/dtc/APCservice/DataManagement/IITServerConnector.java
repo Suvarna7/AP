@@ -40,8 +40,8 @@ public class IITServerConnector {
 	//JSON Identifier
 	public static final String JSON_ID_dias = "diasJSON";
 	//Server urls
-	public static final String IIT_SERVER_URL = "http://216.47.158.133/mysqlSync/insert_into_table.php";
-	public static final String IIT_SERVER_READ_TABLE = "http://216.47.158.133/mysqlSync/read_table_values.php";
+	public static final String IIT_SERVER_UPDATE_VALUES_URL = "http://216.47.158.133/mysqlSync/insert_into_table.php";
+	public static final String IIT_SERVER_READ_TABLE_URL = "http://216.47.158.133/mysqlSync/read_table_values.php";
 	//debug page private final String IIT_SERVER_URL =   "http://216.47.158.133/mysqlSync/insertzephyrvalues.php";
 	
 	private String JSON_ID;
@@ -92,8 +92,8 @@ public class IITServerConnector {
 	public IITServerConnector(Context ctx){
 		httpClient =  new AsyncHttpClient();
 		JSON_ID= JSON_ID_dias;
-		WRITE_URL = IIT_SERVER_URL;
-		READ_URL = IIT_SERVER_READ_TABLE;
+		WRITE_URL = IIT_SERVER_UPDATE_VALUES_URL;
+		READ_URL = IIT_SERVER_READ_TABLE_URL;
 		tableNames = new ArrayList<String>();
 		dbManager = new IITDatabaseManager(ctx, _SERVER_DB_NAME);
 		databaseContext =  ctx;
@@ -196,8 +196,8 @@ public class IITServerConnector {
 							//IOMain.notSynchValues.clear();
 							IOMain.notSynchValues =  new ArrayList<String>();
 							Debug.i("SERVER", "RECEIVED", "Server values: updated");
-							dbManager.updateSyncStatus(databaseContext, (String)jsonObj.get("table_name"),
-									(String)jsonObj.get("update_status"), (String)jsonObj.get("last_update"));
+							dbManager.updateSyncStatus(databaseContext, (String) jsonObj.get("table_name"),
+									(String) jsonObj.get("update_status"), (String) jsonObj.get("last_update"));
 
 								
 						}
@@ -260,7 +260,7 @@ public void readTableValuesIIT(String tableName, String url){
  * Function to convert the array of key maps to a JSON String format
  * 
  */
-public static String convertToJSON( List<Map<String, String>> args){
+public  String convertToJSON( List<Map<String, String>> args){
 	String json = "";
 	Gson gson = new GsonBuilder().create();
 	//Use GSON to serialize Array List to JSON
@@ -271,7 +271,7 @@ public static String convertToJSON( List<Map<String, String>> args){
 /**
  * convertToString()
  */
-private static String convertToString(byte[] args){
+private String convertToString(byte[] args){
 	String str = "";
 	try{
 		str = new String(args, "UTF-8"); // for UTF-8 encoding
@@ -287,7 +287,7 @@ private static String convertToString(byte[] args){
  * Return the current time with a String int the given format
  */
 
-static String getCurrentTime(){
+private String getCurrentTime(){
 	SimpleDateFormat simpleFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	Time time = new Time();
 	time.setToNow();

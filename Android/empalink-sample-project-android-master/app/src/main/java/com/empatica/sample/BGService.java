@@ -5,12 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.widget.Toast;
-
-
 import com.empatica.empalink.EmpaDeviceManager;
 import com.empatica.empalink.delegate.EmpaDataDelegate;
 import com.empatica.sample.Database.IITDatabaseManager;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,6 +41,7 @@ public class BGService extends Service implements EmpaDataDelegate{
     private static boolean connectionEstablishedFlag;
 
     //Fields to store received information
+    //Arrays:
     private static List<List<String>> receivedData;
     private static String[] xAccelValues;
     private static String[] yAccelValues;
@@ -53,11 +51,20 @@ public class BGService extends Service implements EmpaDataDelegate{
     private static String[] ibiValues;
     private static String[] temperatureValues;
     private static String[] batteryValues;
+    //Flags:
+    private static boolean accelerationNotReceived;
+    private static boolean gsrNotReceived;
+    private static boolean bvpNotReceived;
+    private static boolean ibiNotReceived;
+    private static boolean temperatureNotReceived;
+    private static boolean batteryNotReceived;
     private final static int TOTAL_VARIABLES = 8;
+    private static float last_IBI;
+    private static float last_GSR;
+    private static final float _ZERO_FLOAT = new Float(0.00000000);
 
     //Sample order
     private static final int CURRENT_SAMPLE = 0;
-    private static final int NEXT_SAMPLE = 1;
 
     //Timestamp
     private static double currentTimeStamp;
@@ -66,7 +73,6 @@ public class BGService extends Service implements EmpaDataDelegate{
 
     //Count all variables received for each timestamp
     private static int receivedSamples;
-    private static int receivedNextSamples;
 
     //Database
     public static IITDatabaseManager myDB;
@@ -116,11 +122,17 @@ public class BGService extends Service implements EmpaDataDelegate{
         currentTimeStamp = 0;
         receivedSamples = 0;
         nextTimeStamp = 0;
-        receivedNextSamples = 0;
         initArrayOfValues();
 
         //Init database fields
         initDatabaseManager(this);
+
+        //ibi
+        last_IBI = _ZERO_FLOAT;
+        last_GSR = _ZERO_FLOAT;
+
+        //Received flags:
+        resetReceivedFlags();
 
     }
 
@@ -165,9 +177,15 @@ public class BGService extends Service implements EmpaDataDelegate{
         mActivity.updateLabel(mActivity.accel_zLabel, "" + z);
 
         //Store sample:
-        storeNewSample("'"+x + "'", xAccelValues, time_stamp);
+        storeNewSample("'"+ x + "'", xAccelValues, time_stamp);
         storeNewSample("'" + y + "'", yAccelValues, time_stamp);
         storeNewSample("'" + z + "'", zAccelValues, time_stamp);
+
+        //Update number of received samples:
+        if (accelerationNotReceived){
+            receivedSamples ++;
+            accelerationNotReceived = false;
+        }
 
 
 
@@ -179,7 +197,18 @@ public class BGService extends Service implements EmpaDataDelegate{
         //Consider connection stablished when we receive GSR values:
         connectionEstablishedFlag = true;
 
-        storeNewSample("'" + gsr + "'", gsrValues, time_stamp);
+        if (gsr >  0.000000000) {
+            storeNewSample("'" + gsr + "'", gsrValues, time_stamp);
+            last_GSR = gsr;
+        }else
+           storeNewSample("'" + last_GSR + "'", gsrValues, time_stamp);
+
+        //Update number of received samples:
+        if (gsrNotReceived){
+            receivedSamples ++;
+            gsrNotReceived = false;
+        }
+
 
     }
 
@@ -187,16 +216,36 @@ public class BGService extends Service implements EmpaDataDelegate{
     public void didReceiveBVP(float bvp, double time_stamp) {
         mActivity.updateLabel(mActivity.bvpLabel, "" + bvp);
 
-        storeNewSample("'"+bvp + "'", bvpValues, time_stamp);
+        storeNewSample("'" + bvp + "'", bvpValues, time_stamp);
+
+        //Update number of received samples:
+        if (bvpNotReceived){
+            receivedSamples ++;
+            bvpNotReceived = false;
+        }
+
     }
 
     @Override
     public void didReceiveIBI(float ibi, double time_stamp) {
         mActivity.updateLabel(mActivity.ibiLabel, "" + ibi);
-        if (ibi < 0)
-            storeNewSample("'"+0+"'", ibiValues, time_stamp);
-        else
-            storeNewSample("'"+ibi+"'", ibiValues, time_stamp);
+        //NOTE: IBI is updated at a slower pace
+        if (ibi > _ZERO_FLOAT) {
+            last_IBI = ibi;
+            storeNewSample("'" + ibi + "'", ibiValues, time_stamp);
+
+        }
+       else {
+            storeNewSample("'" + last_IBI + "'", ibiValues, time_stamp);
+
+        }
+
+        //Update number of received samples:
+        if (ibiNotReceived){
+            receivedSamples += TOTAL_VARIABLES;
+            ibiNotReceived = false;
+        }
+
     }
 
     @Override
@@ -206,14 +255,29 @@ public class BGService extends Service implements EmpaDataDelegate{
             storeNewSample("'" + temp + "'", temperatureValues, time_stamp);
         else
             storeNewSample("'" + temp + "'", temperatureValues, time_stamp);
+
+        //Update number of received samples:
+        if (temperatureNotReceived){
+            receivedSamples ++;
+            temperatureNotReceived = false;
+        }
+
     }
 
 
 
     @Override
     public void didReceiveBatteryLevel(float battery, double time_stamp) {
+
         mActivity.updateLabel(mActivity.batteryLabel, String.format("%.0f %%", battery * 100));
         storeNewSample("'"+battery +"'", batteryValues, time_stamp);
+
+        //Update number of received samples:
+        if (batteryNotReceived){
+            receivedSamples ++;
+            batteryNotReceived = false;
+        }
+
 
 
     }
@@ -270,21 +334,23 @@ public class BGService extends Service implements EmpaDataDelegate{
 
     private static void resetArraysNextSample(){
         //Next sample should become current sample
-        xAccelValues[CURRENT_SAMPLE] = xAccelValues[NEXT_SAMPLE];
+       /* xAccelValues[CURRENT_SAMPLE] = xAccelValues[NEXT_SAMPLE];
         yAccelValues[CURRENT_SAMPLE] = yAccelValues[NEXT_SAMPLE];
         zAccelValues[CURRENT_SAMPLE] = zAccelValues[NEXT_SAMPLE];
         gsrValues[CURRENT_SAMPLE] =  gsrValues[NEXT_SAMPLE];
         bvpValues[CURRENT_SAMPLE]  = bvpValues[NEXT_SAMPLE];
         ibiValues[CURRENT_SAMPLE]  = ibiValues[NEXT_SAMPLE];
         temperatureValues[CURRENT_SAMPLE] = temperatureValues[NEXT_SAMPLE];
-        batteryValues[CURRENT_SAMPLE] =  batteryValues[NEXT_SAMPLE];
+        batteryValues[CURRENT_SAMPLE] =  batteryValues[NEXT_SAMPLE];*/
 
     }
 
     private void storeNewSample(String value, String[] array, double time_stamp){
+
         //Check here is no null value:
         if (value.contains("null"))
             value = "'0'";
+
         //Analyze time_stamp vs currentTimeStamp
         if (currentTimeStamp == 0.0)
             //Initialize
@@ -292,38 +358,41 @@ public class BGService extends Service implements EmpaDataDelegate{
         else if (currentTimeStamp == time_stamp) {
             //Current sample
             array[CURRENT_SAMPLE] = value;
-            receivedSamples ++;
         }
         else if (currentTimeStamp < time_stamp) {
             //Next sample
-            array[NEXT_SAMPLE] = value;
-            receivedNextSamples ++;
-            nextTimeStamp = time_stamp;
+            array[CURRENT_SAMPLE] = value;
+            currentTimeStamp = time_stamp;
         }
-        else {
+        else if (currentTimeStamp > time_stamp) {
             //Previous sample
+            array[CURRENT_SAMPLE] = value;
+
         }
 
         //Analyze # of received samples
-        if (receivedSamples == TOTAL_VARIABLES){
+        if (receivedSamples == TOTAL_VARIABLES + 4 || receivedSamples == TOTAL_VARIABLES + 5){
+            //Store samples as part of variables string
+            saveInGlobalList(CURRENT_SAMPLE, currentTimeStamp);
+            //Re-start counter
+            receivedSamples = 0;
+            currentTimeStamp =  nextTimeStamp;
+            //Move next samples to current sample position
+            //resetArraysNextSample();
+            resetReceivedFlags();
+        }else if (receivedSamples == TOTAL_VARIABLES  - 4 || receivedSamples == TOTAL_VARIABLES -3){
+            //Did not received an IBI update yet: update Array with last sample
+            ibiValues[0] = "'"+last_IBI+"'";
 
             //Store samples as part of variables string
             saveInGlobalList(CURRENT_SAMPLE, currentTimeStamp);
             //Re-start counter
-            receivedSamples = receivedNextSamples;
-            receivedNextSamples = 0;
+            receivedSamples = 0;
             currentTimeStamp =  nextTimeStamp;
             //Move next samples to current sample position
-            resetArraysNextSample();
-        } else if (receivedNextSamples == TOTAL_VARIABLES){
-            //We have missed one or more samples of current time stamp, but next sample is ready
-            //Store next samples
-            saveInGlobalList(NEXT_SAMPLE, nextTimeStamp);
+            //resetArraysNextSample();
+            resetReceivedFlags();
 
-            //Reset counters
-            receivedSamples = 0;
-            receivedNextSamples = 0;
-            currentTimeStamp = 0;
 
         }
 
@@ -331,7 +400,7 @@ public class BGService extends Service implements EmpaDataDelegate{
     }
 
     private static void saveInGlobalList(int sample, double time_stamp){
-        if (sample == CURRENT_SAMPLE || sample == NEXT_SAMPLE){
+        if (sample == CURRENT_SAMPLE ){
             List<String> tempList= new ArrayList<>();
 
             // Add to the list string:
@@ -340,7 +409,6 @@ public class BGService extends Service implements EmpaDataDelegate{
             /// DateTimeInstance dateTime = new DateTimeInstance();
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.sss", Locale.getDefault());
             String formatTimeStamp = dateFormat.format(time);
-            System.out.println("Timestamp: "+ formatTimeStamp);
             tempList.add("'"+ formatTimeStamp.substring(0, formatTimeStamp.length() - 4) +"'");
             //Add the other values
             tempList.add(xAccelValues[sample]);
@@ -361,6 +429,15 @@ public class BGService extends Service implements EmpaDataDelegate{
             //Error with the sample number
             System.out.println("Sample number should be current or next only!");
 
+    }
+
+    private void resetReceivedFlags(){
+        accelerationNotReceived = true;
+        gsrNotReceived = true;
+        bvpNotReceived =  true;
+        ibiNotReceived = true;
+        temperatureNotReceived = true;
+        batteryNotReceived = true;
     }
 
     /* **********************************************

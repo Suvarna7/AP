@@ -3,6 +3,7 @@ package com.empatica.sample;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,7 +20,14 @@ import com.empatica.empalink.config.EmpaStatus;
 import com.empatica.empalink.delegate.EmpaStatusDelegate;
 
 
-
+/**
+ * EmpaLink Main Activity
+ * Implements EmpaStatusDelegate and holds the GUI of the app
+ * Class modfied from the EmpaLink Sample code
+ *
+ * @author Caterina Lazaro
+ * @version 1.0 Jun 2016
+ */
 
 public class MainActivity extends AppCompatActivity implements EmpaStatusDelegate   {
 
@@ -39,9 +47,14 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     public TextView statusLabel;
     public TextView deviceNameLabel;
     public RelativeLayout dataCnt;
-
+    //Buttons
     public static Button connectButton;
+    private Button stopServiceButton;
+    private Button startServiceButton;
 
+
+    //App context
+    private Context appContext;
 
 
     @Override
@@ -61,15 +74,21 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
         temperatureLabel = (TextView) findViewById(R.id.temperature);
         batteryLabel = (TextView) findViewById(R.id.battery);
         deviceNameLabel = (TextView) findViewById(R.id.deviceName);
-
         // Initialize button
         connectButton = (Button) findViewById(R.id.connect_button);
         connectButton.setOnClickListener(connectListener);
 
+        stopServiceButton = (Button) findViewById(R.id.stop_service_button);
+        stopServiceButton.setOnClickListener(stopListener);
 
+        startServiceButton = (Button) findViewById(R.id.start_service_button);
+        startServiceButton.setOnClickListener(startListener);
 
+        //Set context
+        appContext = this;
+
+        //Start service
         BGService.initContext(this);
-
         if (!BGService.serviceStarted) {
             //Start background service
             startService(new Intent(this, BGService.class));
@@ -129,7 +148,16 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
    */
   @Override
   public void onBackPressed() {
-      moveTaskToBack(true);
+      if (statusLabel.getText().toString().contains(EmpaStatus.CONNECTED.toString()))
+          //CONNECTED
+        moveTaskToBack(true);
+      else {
+          //Any other state... destroy app
+          stopService(new Intent(this, BGService.class));
+          super.onDestroy();
+          finish();
+          System.exit(0);
+      }
   }
 
     /* **********************************************************************
@@ -255,14 +283,58 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     /* ***********************************************************
         OnClickListeners
      */
-    private static View.OnClickListener connectListener = new View.OnClickListener() {
+
+    /**
+     * Starts connection process when clicked
+     */
+    private  View.OnClickListener connectListener = new View.OnClickListener() {
         public void onClick(View view) {
+            view.setBackgroundColor(getResources().getColor(R.color.dark_green_paleta));
             if (BGService.deviceManager != null){
                 //If deviceManager is scanning, we stop it
                 BGService.deviceManager.stopScanning();
                 //Change empastatus to ready
                 BGService.deviceManager.authenticateWithAPIKey(EMPATICA_API_KEY);
                 //BGService.deviceManager.startScanning();
+                view.setVisibility(View.INVISIBLE);
+                view.setBackgroundColor(getResources().getColor(R.color.ligher_green_paleta));
+
+            }
+
+        }
+    };
+
+    /**
+     * Stops the background service when clicked
+     */
+    private View.OnClickListener stopListener = new View.OnClickListener() {
+        public void onClick(View view) {
+            if (BGService.serviceStarted ){
+                //Stop service
+                stopService(new Intent(appContext, BGService.class));
+                BGService.serviceStarted = false;
+                view.setBackgroundColor(getResources().getColor(R.color.dark_green_paleta));
+                startServiceButton.setBackgroundColor(getResources().getColor(R.color.ligher_green_paleta));
+
+
+            }
+
+        }
+    };
+
+    /**
+     * Starts the background service when clicked
+     */
+    private View.OnClickListener startListener = new View.OnClickListener() {
+        public void onClick(View view) {
+            if (!BGService.serviceStarted ){
+                //Stop service
+                startService(new Intent(appContext, BGService.class));
+                BGService.serviceStarted = true;
+                view.setBackgroundColor(getResources().getColor(R.color.dark_green_paleta));
+                stopServiceButton.setBackgroundColor(getResources().getColor(R.color.ligher_green_paleta));
+
+
             }
 
         }

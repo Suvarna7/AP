@@ -89,7 +89,7 @@ public class IOMain extends Service {
 
 	//APP Context
 	public static Context ctx;
-	final int PUMP_VAL_ID = 50;
+	//final int PUMP_VAL_ID = 50;
 
 
 	@Override
@@ -133,8 +133,8 @@ public class IOMain extends Service {
 		ctx = this.getApplicationContext();
 
 		//Init others
-		dArgs = new ArrayList<Map<String, String>>();
-		notSynchValues = new ArrayList<String>();
+		dArgs = new ArrayList<>();
+		notSynchValues = new ArrayList<>();
 
 		simpleFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -225,7 +225,7 @@ public class IOMain extends Service {
 
 
 							//Reset arguments table:
-							dArgs = new ArrayList<Map<String, String>>();
+							dArgs = new ArrayList<>();
 
 
 							/* **********************************************
@@ -241,7 +241,7 @@ public class IOMain extends Service {
 							toast.show();*/
 
 							//First include the sensor's reading
-							Map<String, String> dTable = new HashMap<String, String>();
+							Map<String, String> dTable = new HashMap<>();
 							long[] dexcomTime = new long [1];
 							sManager.readCGMTable(ctx, dTable, dexcomTime, cgmArray);
 
@@ -262,15 +262,15 @@ public class IOMain extends Service {
 							//Send dexcom values to IIT
 							if (dArgs !=null && dArgs.size()> 0){
 								//Add to the not syncrhonized values
-								String jToSend =IITServerConnector.convertToJSON(dArgs);
+								String jToSend =iitConnector.convertToJSON(dArgs);
 								notSynchValues.add(jToSend);
 								//Send to IIT
-								iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_URL);
+								iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
 							}else
 								Debug.i(TAG, FUNC_TAG, "No values to send to IIT");
 
 							//Prepare data for exercise
-							dArgs = new ArrayList<Map<String, String>>();
+							dArgs = new ArrayList<>();
 
 							//READ ACTIVITY FROM EXERCISE SENSOR: ZEPHYR
 							//Get Zephyr values
@@ -282,15 +282,15 @@ public class IOMain extends Service {
 							//Send Bioharness values to IIT server if there is something to send
 							if (dArgs !=null && dArgs.size()> 0){
 								//Add to the not syncrhonized values
-								String jToSend =IITServerConnector.convertToJSON(dArgs);
+								String jToSend =iitConnector.convertToJSON(dArgs);
 								notSynchValues.add(jToSend);
 								//Send to IIT
-								iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_URL);
+								iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
 							}
 							else
 								Debug.i(TAG, FUNC_TAG, "No values to send to IIT");
 							//Prepare data for next sensor
-							dArgs = new ArrayList<Map<String, String>>();
+							dArgs = new ArrayList<>();
 
 							/* ***********************************************
 							 *Read BodyMedia values
@@ -323,10 +323,10 @@ public class IOMain extends Service {
 							//Send all values to IIT server if there is something to send
 							if (dArgs !=null && dArgs.size()> 0){
 								//Add to the not syncrhonized values
-								String jToSend =IITServerConnector.convertToJSON(dArgs);
+								String jToSend =iitConnector.convertToJSON(dArgs);
 								notSynchValues.add(jToSend);
 								//Send to IIT
-								iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_URL);
+								iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
 							}else
 								Debug.i(TAG, FUNC_TAG, "No values to send to IIT");
 							//Prepare data for next sensor
@@ -505,16 +505,16 @@ public class IOMain extends Service {
 				//Send all bolus values to IIT server if there is something to send
 				if (dArgs !=null && dArgs.size()> 0){
 					//Add to the not syncrhonized values
-					String jToSend =IITServerConnector.convertToJSON(dArgs);
+					String jToSend =iitConnector.convertToJSON(dArgs);
 					notSynchValues.add(jToSend);
 					//Send to IIT
-					iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_URL);
+					iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
 				}else
 					Debug.i("Subbolus", "calculating", "No values to send to IIT");
 
 				// Send values that were not correctly updated on the server
 				for (String jsonToSend: notSynchValues){
-					iitConnector.sendToIIT(jsonToSend, IITServerConnector.IIT_SERVER_URL);
+					iitConnector.sendToIIT(jsonToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
 				}
 
 				//*************************************************
@@ -585,11 +585,14 @@ public class IOMain extends Service {
 
 	}
 
+	/**
+	 * Set up the arrays to be inputted int he algorithm
+	 */
 	private void setupAlgorithmArrays(){
 		//CGM ARRAY
-		cgmArray = new ArrayList<Double>();
+		cgmArray = new ArrayList<>();
 		//Bodymedia Array
-		bodymediaArray = new ArrayList<ArrayList<Double>>();
+		bodymediaArray = new ArrayList<>();
 		ArrayList<Double> updateArray = new ArrayList<Double>();
 		bodymediaArray.add(BodyMediaMatrix._EE, updateArray);
 		bodymediaArray.add(BodyMediaMatrix._GSR, updateArray);
@@ -597,7 +600,7 @@ public class IOMain extends Service {
 		bodymediaArray.add(BodyMediaMatrix._SLEEP, updateArray);
 
 		//Zephyr
-		zephyrArray= new ArrayList<Double>();
+		zephyrArray= new ArrayList<>();
 
 	}
 

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="yellow1">#F9E60E</color>
+    <color name="yellow2">#F9F89D</color>
+    <color name="orange4">#F7BE45</color>
+    <color name="orange5">#F7D896</color>
+    <color name="dark_blue">#1e316c</color>
+    <color name="blue2">#19FCDA</color>
+    <color name="blue25">#D9F7F2</color>
+    <color name="grey05">#ACA899</color>
+    <color name="white1">#FFFFFF</color>
+    <color name="white2">#DDDDDD</color>
+
+    <!-- Colors resources: paleta -->
+    <color name="dark_green_paleta">#3F7865</color>
+    <color name="ligher_green_paleta">#88B598</color>
+    <color name = "white_paleta"> #F9E7B9 </color>
+    <color name ="lighter_red_paleta">#94010b</color>
+    <color name="dark_red_paleta">#60030b</color>
+</resources>
