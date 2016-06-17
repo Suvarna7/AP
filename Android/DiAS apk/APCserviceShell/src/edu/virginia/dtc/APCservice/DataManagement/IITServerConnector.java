@@ -287,7 +287,7 @@ private String convertToString(byte[] args){
  * Return the current time with a String int the given format
  */
 
-private String getCurrentTime(){
+protected static String getCurrentTime(){
 	SimpleDateFormat simpleFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	Time time = new Time();
 	time.setToNow();

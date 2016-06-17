@@ -245,13 +245,13 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                 public void run() {
                     connectButton.setVisibility(View.INVISIBLE);
                     dataCnt.setVisibility(View.VISIBLE);
-                    new Handler().postDelayed(new Runnable() {
+                    /*new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             //TODO  Disconnect device
                             //BGService.deviceManager.disconnect();
                         }
-                    }, STREAMING_TIME);
+                    }, STREAMING_TIME);*/
                 }
             });
             // The device manager disconnected from a device

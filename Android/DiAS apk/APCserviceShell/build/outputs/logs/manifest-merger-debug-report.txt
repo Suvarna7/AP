@@ -63,27 +63,29 @@ ADDED from AndroidManifest.xml:22:3
 		ADDED from AndroidManifest.xml:22:20
 application
 ADDED from AndroidManifest.xml:25:3
+	android:sharedUserId
+		ADDED from AndroidManifest.xml:27:4
 	android:label
-		ADDED from AndroidManifest.xml:25:46
+		ADDED from AndroidManifest.xml:26:4
 	android:icon
 		ADDED from AndroidManifest.xml:25:16
 service#edu.virginia.dtc.APCservice.IOMain
-ADDED from AndroidManifest.xml:26:3
+ADDED from AndroidManifest.xml:28:3
 	android:enabled
-		ADDED from AndroidManifest.xml:29:5
+		ADDED from AndroidManifest.xml:31:5
 	android:exported
-		ADDED from AndroidManifest.xml:28:5
+		ADDED from AndroidManifest.xml:30:5
 	android:name
-		ADDED from AndroidManifest.xml:27:4
+		ADDED from AndroidManifest.xml:29:4
 intent-filter#DiAs.APCservice
-ADDED from AndroidManifest.xml:30:13
+ADDED from AndroidManifest.xml:32:13
 action#DiAs.APCservice
-ADDED from AndroidManifest.xml:31:17
+ADDED from AndroidManifest.xml:33:17
 	android:name
-		ADDED from AndroidManifest.xml:31:25
+		ADDED from AndroidManifest.xml:33:25
 meta-data#Version
-ADDED from AndroidManifest.xml:36:3
+ADDED from AndroidManifest.xml:38:3
 	android:value
-		ADDED from AndroidManifest.xml:36:37
+		ADDED from AndroidManifest.xml:38:37
 	android:name
-		ADDED from AndroidManifest.xml:36:14
+		ADDED from AndroidManifest.xml:38:14

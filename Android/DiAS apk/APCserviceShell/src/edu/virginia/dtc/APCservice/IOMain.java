@@ -259,15 +259,15 @@ public class IOMain extends Service {
 							dArgs.add(dTable);
 
 
-							//Send dexcom values to IIT
-							if (dArgs !=null && dArgs.size()> 0){
+							//TODO Send dexcom values to IIT
+							/*if (dArgs !=null && dArgs.size()> 0){
 								//Add to the not syncrhonized values
 								String jToSend =iitConnector.convertToJSON(dArgs);
 								notSynchValues.add(jToSend);
 								//Send to IIT
 								iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
 							}else
-								Debug.i(TAG, FUNC_TAG, "No values to send to IIT");
+								Debug.i(TAG, FUNC_TAG, "No values to send to IIT");*/
 
 							//Prepare data for exercise
 							dArgs = new ArrayList<>();
@@ -279,8 +279,8 @@ public class IOMain extends Service {
 							long[] zephyrTime = new long [1];
 							sManager.readExerciseTable(ctx, dArgs, zephyrTime, simpleFormat, zephyrArray);
 
-							//Send Bioharness values to IIT server if there is something to send
-							if (dArgs !=null && dArgs.size()> 0){
+							//TODO Send Bioharness values to IIT server if there is something to send
+							/*if (dArgs !=null && dArgs.size()> 0){
 								//Add to the not syncrhonized values
 								String jToSend =iitConnector.convertToJSON(dArgs);
 								notSynchValues.add(jToSend);
@@ -288,7 +288,7 @@ public class IOMain extends Service {
 								iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
 							}
 							else
-								Debug.i(TAG, FUNC_TAG, "No values to send to IIT");
+								Debug.i(TAG, FUNC_TAG, "No values to send to IIT");*/
 							//Prepare data for next sensor
 							dArgs = new ArrayList<>();
 
@@ -320,15 +320,15 @@ public class IOMain extends Service {
 
 							 }*/
 
-							//Send all values to IIT server if there is something to send
-							if (dArgs !=null && dArgs.size()> 0){
+							//TODO Send all values to IIT server if there is something to send
+							/*if (dArgs !=null && dArgs.size()> 0){
 								//Add to the not syncrhonized values
 								String jToSend =iitConnector.convertToJSON(dArgs);
 								notSynchValues.add(jToSend);
 								//Send to IIT
 								iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
 							}else
-								Debug.i(TAG, FUNC_TAG, "No values to send to IIT");
+								Debug.i(TAG, FUNC_TAG, "No values to send to IIT");*/
 							//Prepare data for next sensor
 							dArgs = new ArrayList<Map<String, String>>();
 
@@ -427,13 +427,14 @@ public class IOMain extends Service {
 							//}*/
 
 							//TODO Call algorithm 
-							correction = 0.5;
+							correction = 0;
 							//correction = AlgorithmManager.runAlgorithm(cgmArray.get(cgmArray.size()-1) ,getArrayFixed(bodymediaArray.get(BodyMediaMatrix._EE)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._GSR)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._ACT)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._SLEEP)));
 							if (cgmArray.size()>0){
 								aManager.testAlgorithmInputs(ctx, cgmArray.get(cgmArray.size()-1) ,getArrayFixed(bodymediaArray.get(BodyMediaMatrix._EE)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._GSR)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._ACT)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._SLEEP)));
-								correction = aManager.runAlgorithm(cgmArray.get(cgmArray.size()-1) ,getArrayFixed(bodymediaArray.get(BodyMediaMatrix._EE)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._GSR)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._ACT)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._SLEEP)));
-								Matrix res = aManager.testAlgortihm(ctx, cgm, ee, gsr, sleep, phys_act,subject.weight);								
-								correction = res.get(0, 0);
+								//correction = aManager.runAlgorithm(cgmArray.get(cgmArray.size()-1) ,getArrayFixed(bodymediaArray.get(BodyMediaMatrix._EE)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._GSR)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._ACT)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._SLEEP)));
+								aManager.runAlgorithm(cgmArray.get(cgmArray.size()-1) ,getArrayFixed(bodymediaArray.get(BodyMediaMatrix._EE)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._GSR)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._ACT)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._SLEEP)));
+								Matrix res = aManager.testAlgortihm(ctx, cgm, ee, gsr, sleep, phys_act,subject.weight);
+								//correction = res.get(0, 0);
 								/*diff_rate = Result.get(0, 1);*/
 
 							}else{
@@ -502,8 +503,8 @@ public class IOMain extends Service {
 				//Process subboluses
 				dArgs = SubBolusCreator.handleBolusValue( correction,   asynchronous, getContentResolver(), ctx);
 
-				//Send all bolus values to IIT server if there is something to send
-				if (dArgs !=null && dArgs.size()> 0){
+				//TODO Send all bolus values to IIT server if there is something to send
+				/*if (dArgs !=null && dArgs.size()> 0){
 					//Add to the not syncrhonized values
 					String jToSend =iitConnector.convertToJSON(dArgs);
 					notSynchValues.add(jToSend);
@@ -515,7 +516,7 @@ public class IOMain extends Service {
 				// Send values that were not correctly updated on the server
 				for (String jsonToSend: notSynchValues){
 					iitConnector.sendToIIT(jsonToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
-				}
+				}*/
 
 				//*************************************************
 				// BASAL
