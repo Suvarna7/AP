@@ -44,6 +44,8 @@ public class IITSensorsManager {
 	public static final String _SERVER_TABLE_NAME_DE = "sample_table_dexcom";
 	private String _SERVER_TABLE_NAME_ZE = "sample_table_zephyr";
 	private String _SERVER_TABLE_NAME_BM = "sample_table_bm";
+	private String _SERVER_TABLE_NAME_EM = "sample_table_empatica";
+
 
 
 	//private final double max_bolus_sent = Constraints.MAX_CORR;
@@ -252,54 +254,55 @@ public class IITSensorsManager {
 	 */
 
 
-	public void readIITDatabaseTable(List<Map<String, String>> sendArgs, String tableName, ArrayList<ArrayList<Double>> bmAlgorithm){
+	public List<Map<String, String>> readIITDatabaseTable(List<Map<String, String>> sendArgs, String tableName, ArrayList<ArrayList<Double>> algorithmArray){
 
 		//Get all samples not synchronized
 		List<Map<String, String>> readValues = dbManager.readFromTableNotSyncRows(tableName, _SERVER_TABLE_NAME_BM);
 
 		if (readValues != null){
 			//Extract the necessary values for the algorithm and to send
-			for (Map<String, String> sample : readValues){
+			/*for (Map<String, String> sample : readValues){
 
 				//Get a row - add to the arguments to send
 				sendArgs.add(sample);
 
-				//Get the values we need for the algorithm:
+				//Update the values we need for the algorithm:
 				//EE
-				ArrayList<Double> updated_column1 = bmAlgorithm.get(BodyMediaMatrix._EE);
+				ArrayList<Double> updated_column1 = algorithmArray.get(BodyMediaMatrix._EE);
 				//updated_column1.add(Double.parseDouble("1.0"));
 				updated_column1.add(Double.parseDouble(sample.get(bmEE)));
 
 
 				//GSR
-				ArrayList<Double> updated_column2 =  bmAlgorithm.get(BodyMediaMatrix._GSR);
+				ArrayList<Double> updated_column2 =  algorithmArray.get(BodyMediaMatrix._GSR);
 				//updated_column2.add(Double.parseDouble("1.0"));
 				updated_column2.add(Double.parseDouble(sample.get(bmGSR)));
 
 				//VIGOROUS ACTIVITY
-				ArrayList<Double> updated_column3 = bmAlgorithm.get(BodyMediaMatrix._ACT);
+				ArrayList<Double> updated_column3 = algorithmArray.get(BodyMediaMatrix._ACT);
 				//updated_column3.add((double)Integer.parseInt(sample.get(bmACT)));
 				updated_column3.add((double)Integer.parseInt(sample.get(bmACT)) );
 
 
 				//SLEEP
-				ArrayList<Double> updated_column4 =  bmAlgorithm.get(BodyMediaMatrix._SLEEP);
+				ArrayList<Double> updated_column4 =  algorithmArray.get(BodyMediaMatrix._SLEEP);
 				//updated_column4.add((double)Integer.parseInt("1")));
 				updated_column4.add((double)Integer.parseInt(sample.get(bmSLEEP)) );
 
 
 
 				//Add values to the array
-				bmAlgorithm.clear();
-				bmAlgorithm.add(BodyMediaMatrix._EE, updated_column1);
-				bmAlgorithm.add(BodyMediaMatrix._GSR, updated_column2);
-				bmAlgorithm.add(BodyMediaMatrix._ACT, updated_column3);
-				bmAlgorithm.add(BodyMediaMatrix._SLEEP, updated_column4);
+				//algorithmArray.clear();
+				algorithmArray.add(BodyMediaMatrix._EE, updated_column1);
+				algorithmArray.add(BodyMediaMatrix._GSR, updated_column2);
+				algorithmArray.add(BodyMediaMatrix._ACT, updated_column3);
+				algorithmArray.add(BodyMediaMatrix._SLEEP, updated_column4);
 
 
 
-			}
+			}*/
 		}
+		return readValues;
 
 	}
 

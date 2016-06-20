@@ -9,11 +9,11 @@
         <dex dex="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\build\intermediates\pre-dexed\debug\sysman-b4503be1b9adf531162add770df6959d056d7466.jar" />
     </item>
     <item
-        jar="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\libs\Jama-1.0.3.jar"
+        jar="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\libs\jcobyla-1.1.jar"
         jumboMode="false"
         revision="22.0.1"
-        sha1="4e7b3b81770450a21b4295e27c2ccb802ab537e1">
-        <dex dex="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\build\intermediates\pre-dexed\debug\Jama-1.0.3-34e5567af4df10f01cc19ea74c9a618348e933af.jar" />
+        sha1="d7e2576261d4a4337c6841c7d570e9c9931d0f5d">
+        <dex dex="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\build\intermediates\pre-dexed\debug\jcobyla-1.1-f7507f13d5f26b498bda053d69e2a36eb3f48a25.jar" />
     </item>
     <item
         jar="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\libs\commons-math3-3.5.jar"
@@ -23,11 +23,11 @@
         <dex dex="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\build\intermediates\pre-dexed\debug\commons-math3-3.5-fdfa5180742e0223f04c0a8495ab2cc4eb0a7b50.jar" />
     </item>
     <item
-        jar="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\libs\jcobyla-1.1.jar"
+        jar="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\libs\junit.jar"
         jumboMode="false"
         revision="22.0.1"
-        sha1="d7e2576261d4a4337c6841c7d570e9c9931d0f5d">
-        <dex dex="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\build\intermediates\pre-dexed\debug\jcobyla-1.1-f7507f13d5f26b498bda053d69e2a36eb3f48a25.jar" />
+        sha1="543b0ae86f3e65fbf14ecac169d0c87cbb622e71">
+        <dex dex="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\build\intermediates\pre-dexed\debug\junit-3fe7529bead4e8e302a774caf61523d4e963a446.jar" />
     </item>
     <item
         jar="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\libs\javax.mail-api-1.4.7.jar"
@@ -37,11 +37,11 @@
         <dex dex="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\build\intermediates\pre-dexed\debug\javax.mail-api-1.4.7-c416e1240c0e3fcc2d5c35080f6e67331eb28a57.jar" />
     </item>
     <item
-        jar="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\libs\junit.jar"
+        jar="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\libs\android-async-http-1.4.6.jar"
         jumboMode="false"
         revision="22.0.1"
-        sha1="543b0ae86f3e65fbf14ecac169d0c87cbb622e71">
-        <dex dex="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\build\intermediates\pre-dexed\debug\junit-3fe7529bead4e8e302a774caf61523d4e963a446.jar" />
+        sha1="a845a88238be0b5be9d238652c1bc0605ef91f52">
+        <dex dex="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\build\intermediates\pre-dexed\debug\android-async-http-1.4.6-ca08fb7584ecfb59bd4f458aa52eed76356fccda.jar" />
     </item>
     <item
         jar="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\libs\joptimizer-3.3.0.jar"
@@ -51,18 +51,11 @@
         <dex dex="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\build\intermediates\pre-dexed\debug\joptimizer-3.3.0-5ec6cf95924ce4b52ca345dad566399a5c6d7b65.jar" />
     </item>
     <item
-        jar="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\libs\android-async-http-1.4.6.jar"
+        jar="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\libs\gson-2.2.4.jar"
         jumboMode="false"
         revision="22.0.1"
-        sha1="a845a88238be0b5be9d238652c1bc0605ef91f52">
-        <dex dex="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\build\intermediates\pre-dexed\debug\android-async-http-1.4.6-ca08fb7584ecfb59bd4f458aa52eed76356fccda.jar" />
-    </item>
-    <item
-        jar="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\libs\android-support-v4.jar"
-        jumboMode="false"
-        revision="22.0.1"
-        sha1="bd6479f5dd592790607e0504e66e0f31c2b4d308">
-        <dex dex="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\build\intermediates\pre-dexed\debug\android-support-v4-bfbd802ab8e497d75a8ad97e3af9dfb65eb6a4a9.jar" />
+        sha1="973e832af433b44c3ed11c426f2f390b29f3f3f8">
+        <dex dex="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\build\intermediates\pre-dexed\debug\gson-2.2.4-9525d7576485965507283309277cad023295c719.jar" />
     </item>
     <item
         jar="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\libs\ojalgo-31.0.jar"
@@ -72,11 +65,18 @@
         <dex dex="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\build\intermediates\pre-dexed\debug\ojalgo-31.0-946dc40b8e1085ee5087561a3c3842d0a5df5b7d.jar" />
     </item>
     <item
-        jar="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\libs\gson-2.2.4.jar"
+        jar="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\libs\Jama-1.0.3.jar"
         jumboMode="false"
         revision="22.0.1"
-        sha1="973e832af433b44c3ed11c426f2f390b29f3f3f8">
-        <dex dex="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\build\intermediates\pre-dexed\debug\gson-2.2.4-9525d7576485965507283309277cad023295c719.jar" />
+        sha1="4e7b3b81770450a21b4295e27c2ccb802ab537e1">
+        <dex dex="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\build\intermediates\pre-dexed\debug\Jama-1.0.3-34e5567af4df10f01cc19ea74c9a618348e933af.jar" />
+    </item>
+    <item
+        jar="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\libs\android-support-v4.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="bd6479f5dd592790607e0504e66e0f31c2b4d308">
+        <dex dex="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Android\DiAS apk\APCserviceShell\build\intermediates\pre-dexed\debug\android-support-v4-bfbd802ab8e497d75a8ad97e3af9dfb65eb6a4a9.jar" />
     </item>
 
 </items>
