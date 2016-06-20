@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/BRMserviceShell/res/raw
+END
+sensor1.csv
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/BRMserviceShell/res/raw/sensor1.csv
+END
+sensor2.csv
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/BRMserviceShell/res/raw/sensor2.csv
+END

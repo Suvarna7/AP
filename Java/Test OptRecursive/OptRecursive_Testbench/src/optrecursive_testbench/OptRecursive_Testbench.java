@@ -6,6 +6,7 @@
 package optrecursive_testbench;
 
 import Jama.Matrix;
+import de.xypron.jcobyla.CobylaExitStatus;
 import java.io.File;
 import java.util.List;
 
@@ -208,7 +209,7 @@ public class OptRecursive_Testbench {
         phi = new Matrix(phiDoubleArray);
 
         //Q_old matrix 24x1
-        double[][] Q_oldArray = new double[][]{{0},
+        double[][] Q_oldArray = new double[][]{{1},
         {0},
         {0},
         {0},
@@ -430,12 +431,32 @@ public class OptRecursive_Testbench {
 
     }
 
+    /**
+     * 
+     * @param Qin
+     * @param Pin 
+     */
     private static void optimizeFunctionStages(Matrix Qin, Matrix Pin) {
+        //First step, we do it manually
         testOptRecursiveCons = new OptRecursive_Cons(Y, phi, Qin, Pin, lamda_old, upperlimit, lowerlimit);
-        testOptRecursiveCons.runOptimization();
+        CobylaExitStatus exit = testOptRecursiveCons.runOptimization();
         testOptRecursiveCons.saveOptRecursiveVariables();
+        
+        //Next ones, we use the stage function
+        double next_rho =  calculateNextRhoBeg(testOptRecursiveCons.Q_res);
+        Matrix next_Q = testOptRecursiveCons.Q_res;
+        
+        //We stay in the loop until Cobyla optimization has a NORMAL exit
+        while (exit.compareTo(CobylaExitStatus.NORMAL)==0){
+                exit = optimizeFunctionSingleStage(testOptRecursiveCons, next_rho);
+                next_rho = calculateNextRhoBeg(testOptRecursiveCons.Q_res);
+                next_Q = testOptRecursiveCons.Q_res;
+
+        }
+        
+        //We save outputs
         //Second optimization:
-        testOptRecursiveCons.updateParameters(testOptRecursiveCons.Q_res, testOptRecursiveCons.P, 1.0e-2, 1.49011611938477e-6, 5000);
+        /*testOptRecursiveCons.updateParameters(testOptRecursiveCons.Q_res, testOptRecursiveCons.P, 1.0e-2, 1.49011611938477e-6, 5000);
         testOptRecursiveCons.runOptimization();
         //Third optimization:
         testOptRecursiveCons.updateParameters(testOptRecursiveCons.Q_res, testOptRecursiveCons.P, 1.0e-1, 1.49011611938477e-8, 5000);
@@ -446,8 +467,22 @@ public class OptRecursive_Testbench {
         //Fifth optimization:
         testOptRecursiveCons.updateParameters(testOptRecursiveCons.Q_res, testOptRecursiveCons.P, 1.0e-4, 1.49011611938477e-8, 5000);
         testOptRecursiveCons.runOptimization();
-        testOptRecursiveCons.saveOptRecursiveResults();
+        testOptRecursiveCons.saveOptRecursiveResults();*/
 
     }
+    private static CobylaExitStatus optimizeFunctionSingleStage(OptRecursive_Cons optim, double rho_beg){
+        double next_rho_beg = 0;
+        testOptRecursiveCons.updateParameters(optim.Q_res, optim.P, 1.0e-10, rho_beg, 5000);        
+        return testOptRecursiveCons.runOptimization() ;
+    
+    }
+    private static double calculateNextRhoBeg(Matrix Qold){
+        double rho = 0 ;
+        return rho;
+    }
+    
+    private static int sign(Double input) {
+       return (input < 0 ? -1 : 1);
+   }
 
 }

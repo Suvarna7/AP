@@ -292,14 +292,20 @@ public class IITDatabaseManager {
 		//Prepare values to return
 		List<Map <String, String>> resultArgs = new ArrayList <Map <String, String>>();
 		//Open database
+		Debug.i("IIT_DATABASE", "readFromTalbeNotSyncRows", "Open db");
 		db=dbContext.openOrCreateDatabase(databaseFile,SQLiteDatabase.OPEN_READWRITE, null);
 
 		if (db !=null){
+			//TODO Verify table exists in the db
+
 			//Create Cursor
-			Cursor c = db.rawQuery("SELECT * FROM " + tableRead +" WHERE "+syncColumn+" = "+syncStatusNo, null);
+			//String query = "SELECT * FROM " + tableRead +" WHERE "+syncColumn+ " = " + syncStatusNo + ";";
+			String query = "SELECT * FROM " + tableRead ;
+			//TODO!!! Failing queryDebug.i("IIT_DATABASE", "readFromTalbeNotSyncRows", "Read query:"+ query);
+			//Cursor c = db.rawQuery(query, null);
 
 			//If Cursor is valid
-			if (c != null ) {
+			/*if (c != null ) {
 				String[] cols = c.getColumnNames();
 				//Move cursor to first row
 				if  (c.moveToFirst()) {
@@ -317,7 +323,7 @@ public class IITDatabaseManager {
 							//Get the corresponding value
 							if (column.equals("synchronized")){
 								//The syncrhonized value will be add in when it is stored
-								val = "y";
+								val = syncStatusYes;
 								//val = c.getString(c.getColumnIndex(column));
 							}else {
 								val = c.getString(c.getColumnIndex(column));
@@ -333,7 +339,7 @@ public class IITDatabaseManager {
 							//updateQuery += " "+val +",";
 						}
 						//Update syncrhonized value
-						updateSyncInTable(tableRead, update);
+						//TODO updateSyncInTable(tableRead, update);
 
 						//Include table values
 						partial.put("table_name", tableNameOnServer);
@@ -342,7 +348,7 @@ public class IITDatabaseManager {
 				}
 			}
 			//Close cursor and database
-			c.close();
+			c.close();*/
 			db.close();
 		}
 
@@ -358,7 +364,9 @@ public class IITDatabaseManager {
 
 	private void updateSyncInTable(String table, List<String> lasUpdates){
 		//"Update users set udpateStatus = '"+ status +"' where userId="+"'"+ id +"'"
+
 		for (String id: lasUpdates){
+			Debug.i("IIT_DATABASE", "readFromTalbeNotSyncRows", "Read update value:"+ table);
 			db.execSQL("UPDATE "+table+ " SET synchronized = "+syncStatusYes+" WHERE last_update = " + id +" ;");
 
 		}

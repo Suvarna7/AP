@@ -149,17 +149,10 @@ Vinitial = 0;
 %% 2. FUNCTION TO BE OPTIMIZED - V = OBJECTIVE(Q)
 %Function we will be optimizing: 
     %V = (Q- Qold)'*(pseudo-inv(P)*(Q-Q_old) + (Y-phi'*Q)*(Y-phi'*Q);
-    function V=objective(Q)
+ function V=objective(Q)
         V=(Q-Q_old)'*pinvP*(Q-Q_old)+(Y-phi'*Q)'*(Y-phi'*Q);
-        i = i +1;
-        Q_all(i, 27)= 101;
-        Q_all(i, 3:26)= Q;
-        Q_all(i, 1)= i;
-        Q_all(i, 2)= V;
-
-
-       
     end
+   
 % Debug function - simple Q_old
     function V = debugObj(Q)
         V =  (Y-phi'*Q)'*(Y-phi'*Q);
@@ -170,72 +163,56 @@ Vinitial = 0;
     end
 %% 3. CONSTRAINT FUNCTION DEFINITION - C, CEQ = CONSTRAINT(Q)
 %   Function defining the constraints for our opimization:
-    function [c, ceq]=constraint(Q)
-        A=Q(1:3,1)';
-        B1=Q(4:15,1)';
-        B2=Q(16:19,1)';
-        B3=Q(20:23,1)';
-        C=Q(24,1)';
-        % Converting to State Space
+     function [c, ceq]=constraint(Q)
+        A=Q(1:3,1)';B1=Q(4:15,1)';B2=Q(16:19,1)';B3=Q(20:23,1)';C=Q(24,1)';
+        %% Converting to State Space
         A_state=[-A B1(2:end) B2(2:end) B3(2:end) C;...
-                1 zeros(1,20);...
-                zeros(1,1) 1 zeros(1,19);...
-                zeros(1,21);...
-                zeros(1,3) 1 zeros(1,17);...
-                zeros(1,4) 1 zeros(1,16);...
-                zeros(1,5) 1 zeros(1,15);...
-                zeros(1,6) 1 zeros(1,14);...
-                zeros(1,7) 1 zeros(1,13);...
-                zeros(1,8) 1 zeros(1,12);...
-                zeros(1,9) 1 zeros(1,11);...
-                zeros(1,10) 1 zeros(1,10);...
-                zeros(1,11) 1 zeros(1,9);...
-                zeros(1,12) 1 zeros(1,8);...
-                zeros(1,21);...
-                zeros(1,14) 1 zeros(1,6);...
-                zeros(1,15) 1 zeros(1,5);...
-                zeros(1,21);...
-                zeros(1,17) 1 zeros(1,3);...
-                zeros(1,18) 1 zeros(1,2);...
-                zeros(1,21)];
-        %D = eig(A_state,'matrix')
+            1 zeros(1,20);...
+            zeros(1,1) 1 zeros(1,19);...
+            zeros(1,21);...
+            zeros(1,3) 1 zeros(1,17);...
+            zeros(1,4) 1 zeros(1,16);...
+            zeros(1,5) 1 zeros(1,15);...
+            zeros(1,6) 1 zeros(1,14);...
+            zeros(1,7) 1 zeros(1,13);...
+            zeros(1,8) 1 zeros(1,12);...
+            zeros(1,9) 1 zeros(1,11);...
+            zeros(1,10) 1 zeros(1,10);...
+            zeros(1,11) 1 zeros(1,9);...
+            zeros(1,12) 1 zeros(1,8);...
+            zeros(1,21);...
+            zeros(1,14) 1 zeros(1,6);...
+            zeros(1,15) 1 zeros(1,5);...
+            zeros(1,21);...
+            zeros(1,17) 1 zeros(1,3);...
+            zeros(1,18) 1 zeros(1,2);...
+            zeros(1,21)];
         eigA=abs(eig(A_state));
-        Q_all (i+1,29) = 101';
-        Q_all (i+1,30:50) = eigA';
-        A_states((i-1)*21 +1, 1) = i;
-        A_states((i-1)*21 +1: i*21, 2:22) = A_state;
-        Eigen_all(i,1) = i;
-        Eigen_all(i,2:22) = eigA';
-        %if (printedFirst < 10)
-           % Q
-           % A_state
-           % eigA
-           % printedFirst  = printedFirst +1
-        %end
-        Q_all(i+1, 28) = max(eigA)-0.99;
         c=max(eigA)-0.99;
         ceq = [];
     end
-
 function [c, ceq]=no_constraint(Q)
         c=[];
         ceq = [];
 end
 %% 4. RUN FMINCON - ALGORITHM MINIMIZATION
 %Available algorithms: 'interior-point', 'active-set', 'sqp', 'trust-region-reflective')
-%FinDiffRelStep - default 'Forward finite differences steps 
+%FinDiffRelStep=FiniteDifferenceStepSize - default 'Forward finite differences steps 
 %                 delta = v.*sign'c(x).*max(abs(x),TypicalX)'
 %                 v(default) is sqrt(eps)
 %                 eps = 2.2204e-16
 %                 TypicalX (default) =  ones = (numberofvariables,1)
 %'PlotFcn', @optimplotstepsize
-options=optimset('Algorithm','interior-point','Display','iter-detailed' );
-%Find minimum of constrained nonlinear multivariable function:
+options1=optimset('Algorithm','interior-point','Display','iter');
+options2=optimset('Algorithm','interior-point','Display','iter','FinDiffRelStep', sqrt(eps) );
+
+
 % Q = fmincon(fun,x0,A,b,Aeq,beq,lb,ub,nonlcon,options)
-
-%[Q, fval, exitflag]=fmincon(@objective,Q_old,[],[],[],[],lowerlim,upperlim,@constraint,options);
-[Q, fval, exitflag]=fmincon(@objective,Q_old,[],[],[],[],[],[],@constraint,options);
-
+%[Q, fval, exitflag]=fmincon(@objective,Q_old,[],[],[],[],lowerlim,upperlim,@constraint,options);%Find minimum of constrained nonlinear multivariable function:
+[Q, fval, exitflag]=fmincon(@objective,Q_old,[],[],[],[],[],[],@constraint,options1);%Find minimum of constrained nonlinear multivariable function:
+[Q2, fval2, exitflag2]=fmincon(@objective,Q_old,[],[],[],[],[],[],@constraint,options2);%Find minimum of constrained nonlinear multivariable function:
+%NOTE Constraint tolerance = 1.e-6
+assignin('base', 'options', options2);
 assignin('base', 'Q_values', Q_all);
 %assignin('base', 'Eigen_values', Eigen_all);
 %assignin('base', 'A_states', A_states);
@@ -249,13 +226,12 @@ exitflag;
 %values:
 %Err
 err=Y-phi'*Q;
-%Y_odel
 Y_model=phi'*Q;
 %Lambda values
 lamda1=0.9*lamda_old+(1-0.9)*0.99;
 lamda2=exp(-(err^2)/(1000));
 lamda=lamda1*lamda2;
-if lamda<0.005;lamda=0.005;end
+if lamda<0.005;lamda=0.005;end%Y_model
 
 OUT = 'CONSTRAINT FUNCTION'
 

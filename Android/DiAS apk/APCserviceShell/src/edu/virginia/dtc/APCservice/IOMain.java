@@ -22,11 +22,13 @@ import edu.virginia.dtc.APCservice.DataManagement.IITSensorsManager;
 import edu.virginia.dtc.APCservice.DataManagement.SubBolusCreator;
 
 
+import edu.virginia.dtc.SysMan.Biometrics;
 import edu.virginia.dtc.SysMan.Controllers;
 import edu.virginia.dtc.SysMan.Debug;
 import edu.virginia.dtc.SysMan.Event;
 import edu.virginia.dtc.SysMan.Log;
 import edu.virginia.dtc.SysMan.Params;
+import edu.virginia.dtc.SysMan.Safety;
 import edu.virginia.dtc.SysMan.State;
 import Jama.Matrix;
 
@@ -34,6 +36,7 @@ import android.content.Context;
 import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Messenger;
@@ -64,8 +67,8 @@ public class IOMain extends Service {
 
 	//Additional database for other devices
 	private IITServerConnector iitConnector;
-	public static final String _TABLE_NAME_BM = "bodymedia";
-	public static final String _TABLE_NAME_EM = "empatica";
+	public static final String _TABLE_NAME_BM = "'bodymedia'";
+	public static final String _TABLE_NAME_EM = "'empatica'";
 
 	//Sensors reader
 	private IITSensorsManager sManager;
@@ -229,7 +232,7 @@ public class IOMain extends Service {
 
 
 							/* **********************************************
-							 * Read data from University of Virginia Server
+							 * Read data from University of Virginia Database
 							 * Get data and send to IIT
 							 * ************************************************/
 
@@ -308,7 +311,6 @@ public class IOMain extends Service {
 							 */
 
 
-							//TODO
 							sManager.readIITDatabaseTable(dArgs, _TABLE_NAME_BM, bodymediaArray);
 
 							//Get all samples not synchronized
@@ -330,12 +332,11 @@ public class IOMain extends Service {
 							}else
 								Debug.i(TAG, FUNC_TAG, "No values to send to IIT");*/
 							//Prepare data for next sensor
-							dArgs = new ArrayList<Map<String, String>>();
+							dArgs = new ArrayList<>();
 
 							/* ***********************************************
 							 *Read Empatica values
 							 * ***********************************************/
-							//TODO
 							sManager.readIITDatabaseTable(dArgs, _TABLE_NAME_EM, empaticaArray);
 
 
@@ -378,13 +379,13 @@ public class IOMain extends Service {
 							Toast toast1 = Toast.makeText(ctx,  "Algorithm params: cgm-"+cgm+" hr-"+HR, 100);
 							toast1.show();*/
 
-							double cgm;
+							/*double cgm;
 							correction = 0;
 							if (cgmArray.size()>0)
 								cgm = cgmArray.get(cgmArray.size() - 1);
 							else
 								cgm = 50;
-							Random rand = new Random();
+							Random rand = new Random();*/
 							/*		 Random rand = new Random();
 					         int min=90;
 							 int max=250;
@@ -394,7 +395,7 @@ public class IOMain extends Service {
 
 
 							//TODO Debug values to test the algorithm
-							double phys_act=0;
+							/*double phys_act=0;
 							double sleep=0;
 							double ee;
 							double gsr;
@@ -405,7 +406,7 @@ public class IOMain extends Service {
 							int mingsr=0;
 							int maxgsr=7;
 							// nextInt is normally exclusive of the top value,  so add 1 to make it inclusive
-							gsr = (rand.nextInt((maxgsr - mingsr) + 1) + mingsr)/10;
+							gsr = (rand.nextInt((maxgsr - mingsr) + 1) + mingsr)/10;*/
 
 							/* ********************************************
 							 * ALGORITHM AND INSULIN CORRECTION
@@ -430,10 +431,10 @@ public class IOMain extends Service {
 							correction = 0;
 							//correction = AlgorithmManager.runAlgorithm(cgmArray.get(cgmArray.size()-1) ,getArrayFixed(bodymediaArray.get(BodyMediaMatrix._EE)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._GSR)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._ACT)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._SLEEP)));
 							if (cgmArray.size()>0){
-								aManager.testAlgorithmInputs(ctx, cgmArray.get(cgmArray.size()-1) ,getArrayFixed(bodymediaArray.get(BodyMediaMatrix._EE)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._GSR)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._ACT)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._SLEEP)));
+								//aManager.testAlgorithmInputs(ctx, cgmArray.get(cgmArray.size()-1) ,getArrayFixed(bodymediaArray.get(BodyMediaMatrix._EE)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._GSR)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._ACT)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._SLEEP)));
 								//correction = aManager.runAlgorithm(cgmArray.get(cgmArray.size()-1) ,getArrayFixed(bodymediaArray.get(BodyMediaMatrix._EE)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._GSR)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._ACT)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._SLEEP)));
-								aManager.runAlgorithm(cgmArray.get(cgmArray.size()-1) ,getArrayFixed(bodymediaArray.get(BodyMediaMatrix._EE)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._GSR)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._ACT)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._SLEEP)));
-								Matrix res = aManager.testAlgortihm(ctx, cgm, ee, gsr, sleep, phys_act,subject.weight);
+								//aManager.runAlgorithm(cgmArray.get(cgmArray.size()-1) ,getArrayFixed(bodymediaArray.get(BodyMediaMatrix._EE)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._GSR)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._ACT)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._SLEEP)));
+								//Matrix res = aManager.testAlgortihm(ctx, cgm, ee, gsr, sleep, phys_act,subject.weight);
 								//correction = res.get(0, 0);
 								/*diff_rate = Result.get(0, 1);*/
 
@@ -441,7 +442,7 @@ public class IOMain extends Service {
 								//correction = 4;
 							}
 							//Reset arrays
-							setupAlgorithmArrays();
+							//setupAlgorithmArrays();
 							
 
 							// (�command�,TempBasal.TEMP_BASAL_START);
@@ -490,6 +491,92 @@ public class IOMain extends Service {
 					new_rate = false;
 				}
 
+				//****************************************************************************************
+				//
+				//****************************************************************************************
+				//***********************
+				// Calculate traffic lights here!!!
+				//***********************
+				int hypoLight = Safety.GREEN_LIGHT;
+				int hyperLight = Safety.GREEN_LIGHT;
+				Cursor c = getContentResolver().query(Biometrics.CGM_URI, null, null, null, null);
+				if(c != null) {
+					if(c.moveToLast()) {
+						int cgm_value = (int)c.getDouble(c.getColumnIndex("cgm"));
+
+						if (cgm_value <= 70) {
+							hypoLight = Safety.RED_LIGHT;
+							hyperLight = Safety.GREEN_LIGHT;
+						} else if (cgm_value <= 90) {
+							hypoLight = Safety.YELLOW_LIGHT;
+							hyperLight = Safety.GREEN_LIGHT;
+						} else if (cgm_value < 250) {
+							hypoLight = Safety.GREEN_LIGHT;
+							hyperLight = Safety.GREEN_LIGHT;
+						} else if (cgm_value < 300) {
+							hypoLight = Safety.GREEN_LIGHT;
+							hyperLight = Safety.YELLOW_LIGHT;
+						} else {
+							hypoLight = Safety.GREEN_LIGHT;
+							hyperLight = Safety.RED_LIGHT;
+						}
+					}
+				}
+				c.close();
+
+				Bundle  responseBundle;
+				//Message response;
+
+
+				//response = Message.obtain(null, APC_PROCESSING_STATE_NORMAL, 0, 0);
+				responseBundle = new Bundle();
+				responseBundle.putBoolean("doesBolus", false);
+				responseBundle.putBoolean("doesRate", true);
+				responseBundle.putBoolean("doesCredit", false);
+				responseBundle.putDouble("recommended_bolus", 0.0);
+				responseBundle.putDouble("creditRequest", 0.0);
+				responseBundle.putDouble("spendRequest", 0.0);
+				responseBundle.putBoolean("new_differential_rate", false);
+				responseBundle.putDouble("differential_basal_rate", 0.0);
+				responseBundle.putDouble("IOB", 0.0);
+				responseBundle.putBoolean("extendedBolus", false);
+				responseBundle.putDouble("extendedBolusMealInsulin", 0.0);
+				responseBundle.putDouble("extendedBolusCorrInsulin", 0.0);
+				responseBundle.putInt("stoplight", hypoLight);
+				responseBundle.putInt("stoplight2", hyperLight);
+
+				// Log the parameters for IO testing
+				if (Params.getBoolean(getContentResolver(), "enableIO", false)) {
+					Bundle b = new Bundle();
+					b.putString(	"description", "(APCservice) >> DiAsService, IO_TEST"+", "+FUNC_TAG+", "+
+									"APC_PROCESSING_STATE_NORMAL"+", "+
+									"doesBolus="+responseBundle.getBoolean("doesBolus")+", "+
+									"doesRate="+responseBundle.getBoolean("doesRate")+", "+
+									"doesCredit="+responseBundle.getBoolean("doesCredit")+", "+
+									"recommended_bolus="+responseBundle.getDouble("recommended_bolus")+", "+
+									"creditRequest="+responseBundle.getDouble("creditRequest")+", "+
+									"spendRequest="+responseBundle.getDouble("spendRequest")+", "+
+									"new_differential_rate="+responseBundle.getBoolean("new_differential_rate")+", "+
+									"differential_basal_rate="+responseBundle.getDouble("differential_basal_rate")+", "+
+									"IOB="+responseBundle.getDouble("IOB")+", "+
+									"stoplight="+responseBundle.getInt("stoplight")+", "+
+									"stoplight2="+responseBundle.getInt("stoplight2")+", "+
+									"extendedBolus="+responseBundle.getDouble("extendedBolus")+", "+
+									"extendedBolusMealInsulin="+responseBundle.getDouble("extendedBolusMealInsulin")+", "+
+									"extendedBolusCorrInsulin="+responseBundle.getDouble("extendedBolusCorrInsulin")
+					);
+					Event.addEvent(getApplicationContext(), Event.EVENT_SYSTEM_IO_TEST, Event.makeJsonString(b), Event.SET_LOG);
+				}
+				responseBundle.putBoolean("asynchronous", asynchronous);
+
+				// Send response to DiAsService
+				/*response.setData(responseBundle);
+				try {
+					mMessengerToClient.send(response);
+				}
+				catch (RemoteException e) {
+					e.printStackTrace();
+				}*/
 				//************************************************************************************************ 
 				// Build the message to respond to DIAS_SERVICE
 				//************************************************************************************************
@@ -501,7 +588,7 @@ public class IOMain extends Service {
 				//Prepare data for insulin bolus
 				dArgs = new ArrayList<Map<String, String>>();
 				//Process subboluses
-				dArgs = SubBolusCreator.handleBolusValue( correction,   asynchronous, getContentResolver(), ctx);
+				//dArgs = SubBolusCreator.handleBolusValue( correction,   asynchronous, getContentResolver(), ctx);
 
 				//TODO Send all bolus values to IIT server if there is something to send
 				/*if (dArgs !=null && dArgs.size()> 0){
