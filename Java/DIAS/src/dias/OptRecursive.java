@@ -7,7 +7,9 @@ import de.xypron.jcobyla.Cobyla;
 import de.xypron.jcobyla.CobylaExitStatus;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.apache.commons.lang3.ArrayUtils;
 
 /**
@@ -669,4 +671,26 @@ public class OptRecursive {
      *
      * **********************************************************************
      */
+    
+    private final double eps = 2.2204e-16;
+    private final double v_seed = Math.sqrt(eps); 
+    
+    private int sign(Double input) { 
+        return (input < 0 ? -1 : 1); 
+    } 
+    
+    private Matrix sign(Matrix input) { 
+        Matrix r = DIAS.createnewMatrix(input.getRowDimension(), input.getColumnDimension(), input); 
+        for (int i = 0; i < r.getRowDimension(); i++) {
+            for (int j = 0; j < r.getColumnDimension(); j++) { 
+                r.set(i, j, sign(r.get(i, j)));  
+            }
+	}
+        return r; 
+    }
+    
+    private Matrix FiniteDifferenceStepSize(Matrix x, Matrix typicalX) { 
+        return sign(x).times(DIAS.maxMatrix(DIAS.absMatrix(x), typicalX)).times(v_seed); 
+    }
+    
 }

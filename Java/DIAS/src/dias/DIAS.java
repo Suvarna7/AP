@@ -159,6 +159,9 @@ public class DIAS {
     /**
      * createNewMatrix - creates a new 2D matrix from an old matrix. 
      * Increases the size
+     * 
+     * Typically used to duplicate a matrix as : 
+     * Matrix newMatrix = DIAS.createnewMatrix(oldMatrix.getRowDimension(), oldMatrix.getColumnDimension(), oldMatrix); 
      * @param newdimensionx
      * @param newdimensiony
      * @param oldmatrice
@@ -175,6 +178,35 @@ public class DIAS {
 
         return newMatrice;
     }
+    
+    public static Matrix absMatrix(Matrix m1) { 
+        Matrix r = new Matrix(m1.getRowDimension(), m1.getColumnDimension());
+        for (int i = 0; i < m1.getRowDimension(); i++) {
+            for (int j = 0; j < m1.getColumnDimension(); j++) {
+                Double curValue = m1.get(i, j); 
+                r.set(i, j, (curValue < 0 ? -curValue : curValue)); 
+            }
+        }
+        return r; 
+    } 
+    
+    //XXX OPTIMIZE : Make sure that the matrices are the same dimensions. 
+    /**
+     * maxMatrix : takes two matrices of the same size and returns a matrix filled with the value from m1 or m2, whichever is greater. 
+     * 
+     * @param m1
+     * @param m2
+     * @return 
+     */
+    public static Matrix maxMatrix(Matrix m1, Matrix m2) { 
+        Matrix r = new Matrix(m1.getRowDimension(), m1.getColumnDimension()); 
+        for (int i = 0; i < m1.getRowDimension(); i++) {
+            for (int j = 0; j < m1.getColumnDimension(); j++) {
+                r.set(i, j, Math.max(m1.get(i, j), m2.get(i, j))); 
+            }
+        }
+        return r; 
+    } 
 
     /**
      * printMatrix - print on terminal a 2D matrix an its name
