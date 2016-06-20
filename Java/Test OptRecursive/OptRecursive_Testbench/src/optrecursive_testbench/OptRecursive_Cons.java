@@ -60,7 +60,9 @@ public class OptRecursive_Cons {
     //We were using default RHO_END = 1.0e-4
     //MATLAB - RHO_END
     //private final double _RHO_END = 1.49011611938477e-08;
-    private  double _RHO_END = 1.49011611938477e-8;
+    
+    //Step tolerance - {MATLAB TolX = 1.e-10}
+    private  double _RHO_END = 1.0-10;
     
     //TODO Max_function - max recursive loop
     private int MAX_FUNC = 5000;
@@ -168,7 +170,7 @@ public class OptRecursive_Cons {
      * 
      */
 
-    public void runOptimization() {
+    public CobylaExitStatus runOptimization() {
 
         /******************************************
          * PRINT THE INPUT VALUES 
@@ -312,6 +314,8 @@ public class OptRecursive_Cons {
         System.out.println("\n////////////////////OUTPUT OPT_RECURSIVE///////////");
         //saveOptRecursiveVariables();
         //saveOptRecursiveResults();
+        
+        return result;
 
 
     }
