@@ -105,7 +105,7 @@ public class OptRecursive_Testbench {
             testOptRecursiveCons.saveOptRecursiveResults();*/
             
             //Recursive
-            int i = 0;
+           /* int i = 0;
             while (i < 5) {
                 Y += i * 20;
                 /*testOptRecursiveCons = new OptRecursive_Cons(Y, phi, testOptRecursiveCons.Q_res, testOptRecursiveCons.P, lamda_old, upperlimit, lowerlimit);
@@ -123,11 +123,11 @@ public class OptRecursive_Testbench {
                 //Fifth optimization:
                 testOptRecursiveCons.updateParameters(testOptRecursiveCons.Q_res, testOptRecursiveCons.P, 1.0e-4, 1.49011611938477e-8, 5000);
                 testOptRecursiveCons.runOptimization();
-                testOptRecursiveCons.saveOptRecursiveResults();*/
+                testOptRecursiveCons.saveOptRecursiveResults();
                 optimizeFunctionStages(testOptRecursiveCons.Q_res, testOptRecursiveCons.P);
 
                 i++;
-            }
+            }*/
             //Try higher numbers of Q
             /*createOptRecursiveDefaultParameters();
             updateOptRecursiveSetParametersQRANDOM();
@@ -448,16 +448,20 @@ public class OptRecursive_Testbench {
         Matrix typicalX = new Matrix(testOptRecursiveCons.Q_res.getRowDimension(), testOptRecursiveCons.Q_res.getColumnDimension(), 1); 
         Matrix next_rho_m = forwardFiniteDiffStepSize(next_Q, typicalX); 
         
+        System.out.println("Output: "+exit+ " vs " + CobylaExitStatus.NORMAL);
+        System.out.println(exit.compareTo(CobylaExitStatus.NORMAL));
+
         //We stay in the loop until Cobyla optimization has a NORMAL exit
-        while (exit.compareTo(CobylaExitStatus.NORMAL)==0){
+        while (exit.compareTo(CobylaExitStatus.NORMAL)!=0){
                 Double next_rho_beg = next_rho_m.get(0, 0); 
                 System.out.println("Next rho_beg value is : " + Double.toString(next_rho_beg));
                 exit = optimizeFunctionSingleStage(testOptRecursiveCons, next_rho_beg);
                 next_Q = testOptRecursiveCons.Q_res;
                 next_rho_m = forwardFiniteDiffStepSize(next_Q, typicalX); 
         }
+        //Save outputs:
+        testOptRecursiveCons.saveOptRecursiveResults();
         
-        //We save outputs
         //Second optimization:
         /*testOptRecursiveCons.updateParameters(testOptRecursiveCons.Q_res, testOptRecursiveCons.P, 1.0e-2, 1.49011611938477e-6, 5000);
         testOptRecursiveCons.runOptimization();
