@@ -689,7 +689,25 @@ public class OptRecursive {
         return r; 
     }
     
-    private Matrix FiniteDifferenceStepSize(Matrix x, Matrix typicalX) { 
+    /** 
+     * 
+     * Scalar or vector step size factor for finite differences.
+     * 
+     * Per http://www.mathworks.com/help/optim/ug/optimization-options-reference.html :  
+     * Scalar or vector step size factor for finite differences. 
+     * When you set FiniteDifferenceStepSize to a vector v, forward finite differences steps delta are
+delta = v.*sign′(x).*max(abs(x),TypicalX);
+    * where sign′(x) = sign(x) except sign′(0) = 1. 
+    * Central finite differences are delta = v.*max(abs(x),TypicalX);
+    * Scalar FiniteDifferenceStepSize expands to a vector. The default is sqrt(eps) for forward finite differences, and eps^(1/3) for central finite differences.
+     * 
+     * In other words, we're setting v to the default for FiniteDifferenceStepSize (sqrt(eps)) and then calculating delta based on it and the x (in the case of OptRecursive, x = Q). 
+     * 
+     * @param x
+     * @param typicalX See http://www.mathworks.com/matlabcentral/answers/101930-what-is-the-typicalx-parameter-in-the-optimization-toolbox -- this is a 1eX value, where the value is roughly on the scale of the solution we expect to get for X. 
+     * @return 
+     */
+    private Matrix forwardFiniteDiffStepSize(Matrix x, Matrix typicalX) { 
         return sign(x).times(DIAS.maxMatrix(DIAS.absMatrix(x), typicalX)).times(v_seed); 
     }
     
