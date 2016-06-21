@@ -87,47 +87,16 @@ public class OptRecursive_Testbench {
              */
             createOptRecursiveDefaultParameters();
             optimizeFunctionStages(Q_old, P_old);
-            /*testOptRecursiveCons = new OptRecursive_Cons(Y, phi, Q_old, P_old, lamda_old, upperlimit, lowerlimit);
-            testOptRecursiveCons.runOptimization();
-            testOptRecursiveCons.saveOptRecursiveVariables();
-            //Second optimization:
-            testOptRecursiveCons.updateParameters(testOptRecursiveCons.Q_res, testOptRecursiveCons.P, 1.0e-2, 1.49011611938477e-6, 5000);
-            testOptRecursiveCons.runOptimization();
-            //Third optimization:
-            testOptRecursiveCons.updateParameters(testOptRecursiveCons.Q_res, testOptRecursiveCons.P, 1.0e-2, 1.49011611938477e-8, 5000);
-            testOptRecursiveCons.runOptimization();
-            //Fourth optimization:
-            testOptRecursiveCons.updateParameters(testOptRecursiveCons.Q_res, testOptRecursiveCons.P, 0.5, 1.49011611938477e-4, 5000);
-            testOptRecursiveCons.runOptimization();
-            //Fifth optimization:
-            testOptRecursiveCons.updateParameters(testOptRecursiveCons.Q_res, testOptRecursiveCons.P, 1.0e-4, 1.49011611938477e-8, 5000);
-            testOptRecursiveCons.runOptimization();
-            testOptRecursiveCons.saveOptRecursiveResults();*/
+            
             
             //Recursive
-           /* int i = 0;
+           int i = 0;
             while (i < 5) {
                 Y += i * 20;
-                /*testOptRecursiveCons = new OptRecursive_Cons(Y, phi, testOptRecursiveCons.Q_res, testOptRecursiveCons.P, lamda_old, upperlimit, lowerlimit);
-                testOptRecursiveCons.runOptimization();
-                testOptRecursiveCons.saveOptRecursiveVariables();
-                //Second optimization:
-                testOptRecursiveCons.updateParameters(testOptRecursiveCons.Q_res, testOptRecursiveCons.P, 1.0e-2, 1.49011611938477e-6, 5000);
-                testOptRecursiveCons.runOptimization();
-                //Third optimization:
-                testOptRecursiveCons.updateParameters(testOptRecursiveCons.Q_res, testOptRecursiveCons.P, 1.0e-1, 1.49011611938477e-8, 5000);
-                testOptRecursiveCons.runOptimization();
-                //Fourth optimization:
-                testOptRecursiveCons.updateParameters(testOptRecursiveCons.Q_res, testOptRecursiveCons.P, 0.5, 1.49011611938477e-4, 5000);
-                testOptRecursiveCons.runOptimization();
-                //Fifth optimization:
-                testOptRecursiveCons.updateParameters(testOptRecursiveCons.Q_res, testOptRecursiveCons.P, 1.0e-4, 1.49011611938477e-8, 5000);
-                testOptRecursiveCons.runOptimization();
-                testOptRecursiveCons.saveOptRecursiveResults();
                 optimizeFunctionStages(testOptRecursiveCons.Q_res, testOptRecursiveCons.P);
 
                 i++;
-            }*/
+            }
             //Try higher numbers of Q
             /*createOptRecursiveDefaultParameters();
             updateOptRecursiveSetParametersQRANDOM();
@@ -478,15 +447,11 @@ public class OptRecursive_Testbench {
 
     }
     private static CobylaExitStatus optimizeFunctionSingleStage(OptRecursive_Cons optim, double rho_beg){
-        double next_rho_beg = 0;
         testOptRecursiveCons.updateParameters(optim.Q_res, optim.P, 1.0e-10, rho_beg, 5000);        
         return testOptRecursiveCons.runOptimization() ;
     
     }
-    private static double calculateNextRhoBeg(Matrix Qold){
-        double rho = 0 ;
-        return rho;
-    }
+
     
     private static final double eps = 2.2204e-16;
     private static final double v_seed = Math.sqrt(eps); 
