@@ -443,20 +443,18 @@ public class OptRecursive_Testbench {
         testOptRecursiveCons.saveOptRecursiveVariables();
         
         //Next ones, we use the stage function
-        double next_rho =  calculateNextRhoBeg(testOptRecursiveCons.Q_res);
         Matrix next_Q = testOptRecursiveCons.Q_res;
         //Typical X value is 1, so we build a matrix the same size as Q_res filled with ones. 
         Matrix typicalX = new Matrix(testOptRecursiveCons.Q_res.getRowDimension(), testOptRecursiveCons.Q_res.getColumnDimension(), 1); 
-        Matrix next_rho_m = forwardFiniteDiffStepSize(testOptRecursiveCons.Q_res, typicalX); 
+        Matrix next_rho_m = forwardFiniteDiffStepSize(next_Q, typicalX); 
         
         //We stay in the loop until Cobyla optimization has a NORMAL exit
         while (exit.compareTo(CobylaExitStatus.NORMAL)==0){
-                exit = optimizeFunctionSingleStage(testOptRecursiveCons, next_rho);
-                //next_rho = calculateNextRhoBeg(testOptRecursiveCons.Q_res);
-                next_rho_m = forwardFiniteDiffStepSize(testOptRecursiveCons.Q_res, typicalX); 
-                DIAS.printMatrix(next_rho_m, "next_rho_m");
+                Double next_rho_beg = next_rho_m.get(0, 0); 
+                System.out.println("Next rho_beg value is : " + Double.toString(next_rho_beg));
+                exit = optimizeFunctionSingleStage(testOptRecursiveCons, next_rho_beg);
                 next_Q = testOptRecursiveCons.Q_res;
-
+                next_rho_m = forwardFiniteDiffStepSize(next_Q, typicalX); 
         }
         
         //We save outputs
@@ -522,7 +520,14 @@ delta = v.*sign′(x).*max(abs(x),TypicalX);
      * @return 
      */
     private static Matrix forwardFiniteDiffStepSize(Matrix x, Matrix typicalX) { 
-        return sign(x).times(DIAS.maxMatrix(DIAS.absMatrix(x), typicalX)).times(v_seed); 
+//        Matrix foo = DIAS.maxMatrix(DIAS.absMatrix(x), typicalX); 
+//        DIAS.printMatrix(DIAS.absMatrix(x), "absMatrix(x)");
+//        DIAS.printMatrix(typicalX, "typicalX");
+//        DIAS.printMatrix(foo, "DIAS.maxMatrix(DIAS.absMatrix(x), typicalX)");
+//        DIAS.printMatrix(x, "x");
+//        DIAS.printMatrix(sign(x), "sign(x)");
+        Matrix sign_transpose = sign(x).transpose(); 
+        return sign_transpose.times(DIAS.maxMatrix(DIAS.absMatrix(x), typicalX)).times(v_seed); 
     }
 
 }

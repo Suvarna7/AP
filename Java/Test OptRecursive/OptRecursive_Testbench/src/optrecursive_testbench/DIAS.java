@@ -113,7 +113,8 @@ public class DIAS {
      * @param name
      */
     public static void printMatrix(Matrix m, String name) {
-        System.out.print("\n " + name + ": \n{");
+        String dimensions = " (" + Integer.toString(m.getRowDimension()) + " rows x " + Integer.toString(m.getColumnDimension()) + ") "; 
+        System.out.print("\n " + name + dimensions + ": \n{");
         for (double[] row : m.getArray()) {
             for (double val : row) {
                 System.out.print(" " + val);
