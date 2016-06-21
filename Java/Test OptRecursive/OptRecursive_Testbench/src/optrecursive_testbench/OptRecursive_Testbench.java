@@ -445,11 +445,16 @@ public class OptRecursive_Testbench {
         //Next ones, we use the stage function
         double next_rho =  calculateNextRhoBeg(testOptRecursiveCons.Q_res);
         Matrix next_Q = testOptRecursiveCons.Q_res;
+        //Typical X value is 1, so we build a matrix the same size as Q_res filled with ones. 
+        Matrix typicalX = new Matrix(testOptRecursiveCons.Q_res.getRowDimension(), testOptRecursiveCons.Q_res.getColumnDimension(), 1); 
+        Matrix next_rho_m = forwardFiniteDiffStepSize(testOptRecursiveCons.Q_res, typicalX); 
         
         //We stay in the loop until Cobyla optimization has a NORMAL exit
         while (exit.compareTo(CobylaExitStatus.NORMAL)==0){
                 exit = optimizeFunctionSingleStage(testOptRecursiveCons, next_rho);
-                next_rho = calculateNextRhoBeg(testOptRecursiveCons.Q_res);
+                //next_rho = calculateNextRhoBeg(testOptRecursiveCons.Q_res);
+                next_rho_m = forwardFiniteDiffStepSize(testOptRecursiveCons.Q_res, typicalX); 
+                DIAS.printMatrix(next_rho_m, "next_rho_m");
                 next_Q = testOptRecursiveCons.Q_res;
 
         }
@@ -481,8 +486,43 @@ public class OptRecursive_Testbench {
         return rho;
     }
     
-    private static int sign(Double input) {
-       return (input < 0 ? -1 : 1);
-   }
+    private static final double eps = 2.2204e-16;
+    private static final double v_seed = Math.sqrt(eps); 
+    
+    private static int sign(Double input) { 
+        return (input < 0 ? -1 : 1); 
+    } 
+    
+    private static Matrix sign(Matrix input) { 
+        Matrix r = DIAS.createnewMatrix(input.getRowDimension(), input.getColumnDimension(), input); 
+        for (int i = 0; i < r.getRowDimension(); i++) {
+            for (int j = 0; j < r.getColumnDimension(); j++) { 
+                r.set(i, j, sign(r.get(i, j)));  
+            }
+	}
+        return r; 
+    }
+    
+    /** 
+     * 
+     * Scalar or vector step size factor for finite differences.
+     * 
+     * Per http://www.mathworks.com/help/optim/ug/optimization-options-reference.html :  
+     * Scalar or vector step size factor for finite differences. 
+     * When you set FiniteDifferenceStepSize to a vector v, forward finite differences steps delta are
+delta = v.*sign′(x).*max(abs(x),TypicalX);
+    * where sign′(x) = sign(x) except sign′(0) = 1. 
+    * Central finite differences are delta = v.*max(abs(x),TypicalX);
+    * Scalar FiniteDifferenceStepSize expands to a vector. The default is sqrt(eps) for forward finite differences, and eps^(1/3) for central finite differences.
+     * 
+     * In other words, we're setting v to the default for FiniteDifferenceStepSize (sqrt(eps)) and then calculating delta based on it and the x (in the case of OptRecursive, x = Q). 
+     * 
+     * @param x
+     * @param typicalX See http://www.mathworks.com/matlabcentral/answers/101930-what-is-the-typicalx-parameter-in-the-optimization-toolbox -- this is a 1eZ value, where the value is roughly on the scale of the solution we expect to get for X. 
+     * @return 
+     */
+    private static Matrix forwardFiniteDiffStepSize(Matrix x, Matrix typicalX) { 
+        return sign(x).times(DIAS.maxMatrix(DIAS.absMatrix(x), typicalX)).times(v_seed); 
+    }
 
 }

@@ -704,7 +704,7 @@ delta = v.*sign′(x).*max(abs(x),TypicalX);
      * In other words, we're setting v to the default for FiniteDifferenceStepSize (sqrt(eps)) and then calculating delta based on it and the x (in the case of OptRecursive, x = Q). 
      * 
      * @param x
-     * @param typicalX See http://www.mathworks.com/matlabcentral/answers/101930-what-is-the-typicalx-parameter-in-the-optimization-toolbox -- this is a 1eX value, where the value is roughly on the scale of the solution we expect to get for X. 
+     * @param typicalX See http://www.mathworks.com/matlabcentral/answers/101930-what-is-the-typicalx-parameter-in-the-optimization-toolbox -- this is a 1eZ value, where the value is roughly on the scale of the solution we expect to get for X. 
      * @return 
      */
     private Matrix forwardFiniteDiffStepSize(Matrix x, Matrix typicalX) { 
