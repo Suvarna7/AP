@@ -94,7 +94,6 @@ public class OptRecursive_Testbench {
             while (i < 5) {
                 Y += i * 20;
                 optimizeFunctionStages(testOptRecursiveCons.Q_res, testOptRecursiveCons.P);
-
                 i++;
             }
             //Try higher numbers of Q
@@ -421,12 +420,16 @@ public class OptRecursive_Testbench {
         System.out.println(exit.compareTo(CobylaExitStatus.NORMAL));
 
         //We stay in the loop until Cobyla optimization has a NORMAL exit
-        while (exit.compareTo(CobylaExitStatus.NORMAL)!=0){
-                Double next_rho_beg = next_rho_m.get(0, 0); 
-                System.out.println("Next rho_beg value is : " + Double.toString(next_rho_beg));
+        int i = 14;
+       
+       while (exit.compareTo(CobylaExitStatus.NORMAL)!=0 && i > -3){
+                Double next_rho_beg = next_rho_m.get(0, 0);
+                //next_rho_beg = ((1.0+(i%2))/2.0)*Math.pow(10, -(Math.floor(i/2)));
+                System.out.println("Next rho_beg value is : " + Double.toString(next_rho_beg) + " ; ");
                 exit = optimizeFunctionSingleStage(testOptRecursiveCons, next_rho_beg);
                 next_Q = testOptRecursiveCons.Q_res;
                 next_rho_m = forwardFiniteDiffStepSize(next_Q, typicalX); 
+                i --;
         }
         //Save outputs:
         testOptRecursiveCons.saveOptRecursiveResults();
