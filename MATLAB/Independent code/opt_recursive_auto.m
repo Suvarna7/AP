@@ -54,21 +54,25 @@ Q_all =  zeros( 1000, 26);
 % 	 -180.0
 % 	 0.0
 % 	 0.0
+
 % 	 0.0
 % 	 0.0
 % 	 0.0
 % 	 0.0
 % 	 0.0
+
 % 	 0.0
 % 	 0.0
 % 	 0.0
 % 	 0.0
 % 	 0.0
+
 % 	 0.3
 % 	 0.3
 % 	 0.3
 % 	 0.3
 % 	 0.2
+
 % 	 0.2
 % 	 0.2
 % 	 0.2
@@ -203,21 +207,21 @@ end
 %                 eps = 2.2204e-16
 %                 TypicalX (default) =  ones = (numberofvariables,1)
 %'PlotFcn', @optimplotstepsize
-options1=optimset('Algorithm','interior-point','Display','iter');
-options2=optimset('Algorithm','interior-point','Display','iter','FinDiffRelStep', sqrt(eps) );
+% options2=optimset('Algorithm','interior-point','Display','iter','FinDiffRelStep', sqrt(eps) );
+
+options1=optimset('Algorithm','interior-point','Display','iter-detailed');
 
 
 % Q = fmincon(fun,x0,A,b,Aeq,beq,lb,ub,nonlcon,options)
 %[Q, fval, exitflag]=fmincon(@objective,Q_old,[],[],[],[],lowerlim,upperlim,@constraint,options);%Find minimum of constrained nonlinear multivariable function:
-[Q, fval, exitflag]=fmincon(@objective,Q_old,[],[],[],[],[],[],@constraint,options1);%Find minimum of constrained nonlinear multivariable function:
-[Q2, fval2, exitflag2]=fmincon(@objective,Q_old,[],[],[],[],[],[],@constraint,options2);%Find minimum of constrained nonlinear multivariable function:
+[Q, fval, exitflag, output]=fmincon(@objective,Q_old,[],[],[],[],[],[],@constraint,options1);%Find minimum of constrained nonlinear multivariable function:
 %NOTE Constraint tolerance = 1.e-6
-assignin('base', 'options', options2);
+assignin('base', 'options', options1);
 assignin('base', 'Q_values', Q_all);
 %assignin('base', 'Eigen_values', Eigen_all);
 %assignin('base', 'A_states', A_states);
 
-
+output
 fval;
 Q;
 Q_java;

@@ -1,0 +1,9 @@
+ant:
+<ant>
+  <mkdir dir="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\MATLAB coder\Compiler\Optimization_fmincon\for_redistribution" />
+  <mkdir dir="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\MATLAB coder\Compiler\Optimization_fmincon\for_testing" />
+</ant>
+mcc -W 'java:opt_recursive,OptRecursive' -T link:lib -d 'C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\MATLAB coder\Compiler\Optimization_fmincon\for_testing' -v 'C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\MATLAB coder\MATLAB Source\constraint.m' 'C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\MATLAB coder\MATLAB Source\objective.m' 'C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\MATLAB coder\MATLAB Source\opt_recursive.m' 'class{OptRecursive:C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\MATLAB coder\MATLAB Source\constraint.m,C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\MATLAB coder\MATLAB Source\objective.m,C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\MATLAB coder\MATLAB Source\opt_recursive.m}' 
+Test checkout of feature 'Compiler' failed.
+
+mcc failed.
