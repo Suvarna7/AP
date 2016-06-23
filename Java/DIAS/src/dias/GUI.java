@@ -243,22 +243,23 @@ public class GUI extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(RunInput, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 318, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 285, Short.MAX_VALUE)
                         .addComponent(ClearHistoryButton, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(SaveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(LoadButton, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jBasalLabel))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jBasalValue, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jBolusLabel)
-                                .addGap(18, 18, 18)
-                                .addComponent(jBolusValue))
-                            .addComponent(LoadButton, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jBasalLabel)
-                                .addGap(18, 18, 18)
-                                .addComponent(jBasalValue)))
-                        .addGap(11, 11, 11))))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jBolusValue, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap())))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
@@ -303,7 +304,7 @@ public class GUI extends javax.swing.JFrame {
                                 .addGap(323, 323, 323)
                                 .addComponent(GetInputsButton)
                                 .addGap(0, 0, Short.MAX_VALUE)))))
-                .addGap(0, 427, Short.MAX_VALUE))
+                .addGap(0, 443, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -339,9 +340,9 @@ public class GUI extends javax.swing.JFrame {
                             .addComponent(jTextField_EE_In, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel3)))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jBolusLabel)
-                            .addComponent(jBolusValue))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jBolusLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jBolusValue, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jBasalLabel)
@@ -430,6 +431,7 @@ public class GUI extends javax.swing.JFrame {
         int flag_noise = 1;
 
         if (m20150711_load_global_variables.kj > 20) {
+            //initialize insulin bolus as empty matrix
             m20150711_load_global_variables.bolus_insulin = DIAS.createnewMatrix(m20150711_load_global_variables.kj,
                     1, m20150711_load_global_variables.bolus_insulin);
         }
@@ -568,14 +570,17 @@ public class GUI extends javax.swing.JFrame {
 
         //////////////////////////OUTPUTS///////////////////////////////////////////////////////////////////////////////////////////////////////////
         System.out.println("Kj: " + m20150711_load_global_variables.kj);
-        DIAS.printMatrix(m20150711_load_global_variables.gs, "lgvariables.gs");
-        DIAS.printMatrix(m20150711_load_global_variables.bolus_insulin, "lgvariables.bolus_insulin");
-        DIAS.printMatrix(m20150711_load_global_variables.basal_insulin, "lgvariables.basal_insulin");
+        if (DIAS.verboseMode) { DIAS.printMatrix(m20150711_load_global_variables.gs, "lgvariables.gs"); } 
+        if (DIAS.verboseMode) { DIAS.printMatrix(m20150711_load_global_variables.bolus_insulin, "lgvariables.bolus_insulin"); }
+        if (DIAS.verboseMode) { DIAS.printMatrix(m20150711_load_global_variables.basal_insulin, "lgvariables.basal_insulin"); }
+        if (DIAS.verboseMode) { DIAS.printMatrix(m20150711_load_global_variables.bolus_insulin_calculated, "lgvariables.bolus_insulin_calculated"); }
+        if (DIAS.verboseMode) { DIAS.printMatrix(m20150711_load_global_variables.basal_insulin_calculated, "lgvariables.basal_insulin_calculated"); }
         //XXX OPTIMIZE Update output values in GUI. The KJ values in the UI also control which KJ values to use next time we run this function, if we're in a loop. 
         Integer kj_to_temp = Math.max(this.GetUIValue_KJ_To(), lgvariables.kj); 
         RefreshKJValues(lgvariables, lgvariables.kj , kj_to_temp, false);
-        jBolusValue.setText("1"); 
-        jBasalValue.setText("1"); 
+        //NB : MATLAB code sends bolus_insulin_calculated and basal_insulin (not the calculated version) to the GUI. 
+        jBolusValue.setText(new java.text.DecimalFormat("0.0####").format(m20150711_load_global_variables.bolus_insulin_calculated.get(m20150711_load_global_variables.kj, 0))); 
+        jBasalValue.setText(new java.text.DecimalFormat("0.0####").format(m20150711_load_global_variables.basal_insulin.get(0, m20150711_load_global_variables.kj))); 
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

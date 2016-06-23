@@ -1273,15 +1273,20 @@ We then use the matricecompareconstantmax() function on dividematrix to set the 
         }
 
         //TODO Breaks !! Input correct L
+// <editor-fold defaultstate="collapsed" desc=" Set up new instance of controller_instance, supplying it with (among other things) bolus and basal insulin. ">
+
         controller_instance cont = new controller_instance(g_predictionkj, L_matrix, bolus_insulin, basal_insulin, 0.0, reference_glucose_temp, Nu, st, body_weight, insulin_sensitivity_constant_temp, (int) flag_constrains);
 
         cont.control_ins();
-
+// </editor-fold>
         /*    printMatrix(cont.ins,"cont.ins");
         printMatrix(cont.IOB_pred,"cont.IOB_pred");
         printMatrix(cont.umaxx,"cont.umaxx");
         printMatrix(cont.total_daily_unit,"cont.total_daily_unit");
         printMatrix(cont.insulin_sensitivity_factor,"cont.insulin_sensitivity_factor");*/
+// <editor-fold defaultstate="collapsed" desc=" Set lgvariables properties to controller_instance's properties (updated by calling its control_ins() function) ">
+
+//First, we reinitialize the lgvariables matrices with the new kj + 1 dimension. 
         lgvariables.basal_insulin = createnewMatrix(cont.ins.getRowDimension(), kj + 1, lgvariables.basal_insulin);
         lgvariables.IOB_prediction = createnewMatrix(cont.IOB_pred.getRowDimension(), kj + 1, lgvariables.IOB_prediction);
         lgvariables.maximum_insulin = createnewMatrix(cont.umaxx.getRowDimension(), kj + 1, lgvariables.maximum_insulin);
@@ -1289,37 +1294,52 @@ We then use the matricecompareconstantmax() function on dividematrix to set the 
         lgvariables.insulin_sensitivity_factor = createnewMatrix(cont.insulin_sensitivity_factor.getRowDimension(), kj + 1, lgvariables.insulin_sensitivity_factor);
         lgvariables.g_prediction = createnewMatrix(cont.g_prediction.getRowDimension(), kj + 1, lgvariables.g_prediction);
 
+//Now the actual assignment of controller_instance properties to the lgvariables properties. 
+        //Update g_prediction values. 
         for (int i = 0; i < lgvariables.g_prediction.getRowDimension(); i++) {
             for (int j = 0; j < lgvariables.g_prediction.getColumnDimension(); j++) {
                 lgvariables.g_prediction.set(i, j, g_prediction.get(i, j));
             }
         }
-
+        //XXX OPTIMIZE
+        // Is this analogous to the following line in MATLAB's controller_ins code ? : 
+        // ins=round(ins/0.1)*0.1; % 0.1 is due to pump
+        // If this is meant to do the same thing, we're using different values. But it shouldn't matter, right? 
+        // Does the (int) apply to the numerator, or to the final value? That might make the difference. 
         for (int i = 0; i < cont.ins.getRowDimension(); i++) {
             cont.ins.set(i, 0, ((int) (cont.ins.get(i, 0) / 0.025)) * 0.025);
         }
 
-        // printMatrix(cont.ins,"cont.ins");
+//        DIAS.printMatrix(m20150711_load_global_variables.bolus_insulin, "gpc module bolus");
+//        DIAS.printMatrix(cont.ins, "cont.ins");
+        //Update basal insulin values. NB that this comes from the controller_instance.ins value. 
+        // In previous version of Matlab code, this went to basal insulin; now it goes to bolus insulin. 
         for (int i = 0; i < cont.ins.getRowDimension(); i++) {
             m20150711_load_global_variables.basal_insulin.set(i, kj, cont.ins.get(i, 0));
+            //m20150711_load_global_variables.bolus_insulin.set(i, kj, cont.ins.get(i, 0));
         }
-        DIAS.printMatrix(m20150711_load_global_variables.basal_insulin, "gpc module basal");
+        DIAS.printMatrix(m20150711_load_global_variables.bolus_insulin, "gpc module bolus");
 
+        //Update IOB_prediction values. 
         for (int i = 0; i < cont.IOB_pred.getRowDimension(); i++) {
             lgvariables.IOB_prediction.set(i, kj, cont.IOB_pred.get(i, 0));
         }
 
+        //Update maximum_insulin values.
         for (int i = 0; i < cont.umaxx.getRowDimension(); i++) {
             lgvariables.maximum_insulin.set(i, kj, cont.umaxx.get(i, 0));
         }
 
+        //Update total_daily_unit values. 
         for (int i = 0; i < cont.total_daily_unit.getRowDimension(); i++) {
             lgvariables.total_daily_unit.set(i, kj, cont.total_daily_unit.get(i, 0));
         }
 
+        //Update insulin_sensitivity_factor values. 
         for (int i = 0; i < cont.insulin_sensitivity_factor.getRowDimension(); i++) {
             lgvariables.insulin_sensitivity_factor.set(i, kj, cont.insulin_sensitivity_factor.get(i, 0));
         }
+// </editor-fold>
 
         lgvariables.phi = new Matrix(na + nb1 + nb2 + nb2 + nc, kj + 1);
 

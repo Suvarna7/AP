@@ -414,7 +414,7 @@ public class OptRecursive_Testbench {
         //Next ones, we use the stage function
         Matrix next_Q = testOptRecursiveCons.Q_res;
         //Typical X value is 1, so we build a matrix the same size as Q_res filled with ones. 
-        Matrix typicalX = new Matrix(testOptRecursiveCons.Q_res.getRowDimension(), testOptRecursiveCons.Q_res.getColumnDimension(), 1); 
+        Matrix typicalX = new Matrix(testOptRecursiveCons.Q_res.getRowDimension(), testOptRecursiveCons.Q_res.getColumnDimension(), 1).times(1e0); 
         Matrix next_rho_m = forwardFiniteDiffStepSize(next_Q, typicalX); 
         
         System.out.println("Output: "+exit+ " vs " + CobylaExitStatus.NORMAL);
@@ -424,6 +424,7 @@ public class OptRecursive_Testbench {
         while (exit.compareTo(CobylaExitStatus.NORMAL)!=0){
                 Double next_rho_beg = next_rho_m.get(0, 0); 
                 System.out.println("Next rho_beg value is : " + Double.toString(next_rho_beg));
+                DIAS.printMatrix(next_rho_m, "next_rho_m");
                 exit = optimizeFunctionSingleStage(testOptRecursiveCons, next_rho_beg);
                 next_Q = testOptRecursiveCons.Q_res;
                 next_rho_m = forwardFiniteDiffStepSize(next_Q, typicalX); 
@@ -495,8 +496,8 @@ delta = v.*sign′(x).*max(abs(x),TypicalX);
 //        DIAS.printMatrix(foo, "DIAS.maxMatrix(DIAS.absMatrix(x), typicalX)");
 //        DIAS.printMatrix(x, "x");
 //        DIAS.printMatrix(sign(x), "sign(x)");
-        Matrix sign_transpose = sign(x).transpose(); 
-        return sign_transpose.times(DIAS.maxMatrix(DIAS.absMatrix(x), typicalX)).times(v_seed); 
+        Matrix tmp = sign(x).arrayTimes(DIAS.maxMatrix(DIAS.absMatrix(x), typicalX)); 
+        return tmp.times(v_seed); 
     }
 
 }

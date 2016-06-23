@@ -106,6 +106,25 @@ public class DIAS {
         return r; 
     } 
 
+    public static Double meanMatrix(Matrix m1) { 
+        Double sum = new Double(0); 
+        Double items = new Double(0); 
+        if (!(m1.getRowDimension() == 0 && m1.getColumnDimension() == 0)) { 
+            for (int i = 0; i < m1.getRowDimension(); i++) { 
+                for (int j = 0; j < m1.getColumnDimension(); j++) { 
+                    sum = sum + m1.get(i, j); 
+                    items++; 
+                } 
+            } 
+        return sum / items; 
+        }
+        else { 
+            return new Double(0); 
+        } 
+        
+    }
+                
+    
     /**
      * printMatrix - print on terminal a 2D matrix an its name
      *
