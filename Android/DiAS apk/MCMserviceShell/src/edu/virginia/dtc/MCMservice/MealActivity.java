@@ -62,8 +62,8 @@ public class MealActivity extends Activity{
 	public static double totalInsulin = 0.0;
 	
 	private TextView infoText;
-	private EditText carbsInput, carbsOutput;
-	private EditText bgInput, bgOutput;
+	//private EditText carbsInput, carbsOutput;
+	//private EditText bgInput, bgOutput;
 	private EditText corrInput;
 	private EditText iobOutput;
 	private EditText totalOutput;
@@ -234,7 +234,8 @@ public class MealActivity extends Activity{
     		((LinearLayout)MealActivity.this.findViewById(R.id.progressLayout)).setVisibility(View.GONE);
 			((LinearLayout)MealActivity.this.findViewById(R.id.mealLayout)).setVisibility(View.VISIBLE);
     	}
-		
+		//TODO Add calculations if needed
+		/*
 		if(carbsValid) {
 			carbsInput.setTextColor(Color.GRAY);
 			carbsOutput.setText(String.format("%.2f", carbsInsulin));
@@ -251,7 +252,7 @@ public class MealActivity extends Activity{
 		else {
 			bgInput.setTextColor(Color.RED);
 			bgOutput.setText(invalid);
-		}
+		}*/
 		
 		if(corrValid) {
 			corrInput.setTextColor(Color.GRAY);
@@ -277,7 +278,7 @@ public class MealActivity extends Activity{
  	\___/_/ |_/_/|_/____/ /___/_/|_/_/   \____/ /_/    
  	                                                   
 	***********************************************************************/
-	
+	/*
     private void carbInput(String input)
     {
     	final String FUNC_TAG = "carbInput";
@@ -315,7 +316,7 @@ public class MealActivity extends Activity{
 	 		
 	 	});
  	}
-
+*/
  	/*************************************************************
  	   ______  ______  _____  _____  _____  __  ________
 	  / __/  |/  / _ )/ ___/ /  _/ |/ / _ \/ / / /_  __/
@@ -323,7 +324,7 @@ public class MealActivity extends Activity{
 	/___/_/  /_/____/\___/ /___/_/|_/_/   \____/ /_/    
                                                 
  	*************************************************************/
- 	
+ 	/*
  	private void smbgInput(String input)
  	{
  		final String FUNC_TAG = "smbgInput";
@@ -361,6 +362,7 @@ public class MealActivity extends Activity{
  			
  		});
   	}
+  	*/
  	
  	/***********************************************************************
  	  _________  ___  ___    _____  _____  __  ________
@@ -500,7 +502,8 @@ public class MealActivity extends Activity{
 		carbsInsulin = bgInsulin = corrInsulin = iobInsulin = totalInsulin = 0.0;
 		bg = carbs = 0.0;
 		
-    	int blood_glucose_display_units = Params.getInt(getContentResolver(), "blood_glucose_display_units", CGM.BG_UNITS_MG_PER_DL);
+		//tood add blood glucose
+		/*int blood_glucose_display_units = Params.getInt(getContentResolver(), "blood_glucose_display_units", CGM.BG_UNITS_MG_PER_DL);
 		TextView unit_string_mmol = (TextView)this.findViewById(R.id.bgTextUnitLabelMMolPerL);
 		TextView unit_string_mgdl = (TextView)this.findViewById(R.id.bgTextUnitLabelMgPerDl);
 		
@@ -512,23 +515,25 @@ public class MealActivity extends Activity{
 		else {
 			unit_string_mmol.setVisibility(View.GONE);
 			unit_string_mgdl.setVisibility(View.VISIBLE);
-		}
+		}*/
 		
 		infoText = (TextView)this.findViewById(R.id.infoText);
 		injectMeal = (Button)this.findViewById(R.id.injectMealBolusButton);
-		carbsInput = (EditText)this.findViewById(R.id.editMealCarbs);
+		//TODO Add calculations if needed
+		/*carbsInput = (EditText)this.findViewById(R.id.editMealCarbs);
 		bgInput = (EditText)this.findViewById(R.id.editBg);
 		carbsOutput = (EditText)this.findViewById(R.id.editMealCarbsTotal);
-		bgOutput = (EditText)this.findViewById(R.id.editBgTotal);
+		bgOutput = (EditText)this.findViewById(R.id.editBgTotal);*/
 		iobOutput = (EditText)this.findViewById(R.id.editIobTotal);
 		corrInput = (EditText)this.findViewById(R.id.editCorrTotal);
 		totalOutput = (EditText)this.findViewById(R.id.editAllTotal);
 		iob = (CheckBox)this.findViewById(R.id.iobCheckbox);
 		infoText.setTextColor(Color.RED);
 		infoText.setText("");
-		
+		//TODO Add calculations if needed
+		/*
 	 	carbListeners();
-	 	smbgListeners();
+	 	smbgListeners();*/
 	 	corrListeners();
 	 	
 	 	int meal_activity_bolus_calculation_mode = Params.getInt(getContentResolver(), "meal_activity_bolus_calculation_mode", Meal.MEAL_ACTIVITY_ALWAYS_CALCULATES_BOLUS);

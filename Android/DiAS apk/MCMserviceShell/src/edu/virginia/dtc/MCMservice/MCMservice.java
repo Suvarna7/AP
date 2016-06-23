@@ -230,8 +230,8 @@ public class MCMservice extends Service
 		final double TARGET_BG = 110;
 		
 		MealActivity.info = "";
-		
-		if(bg > 39.0 && bg < 401.0) {
+		//TODO Add calculations if needed
+		/*if(bg > 39.0 && bg < 401.0) {
 			double limit = (Constraints.MAX_CORR * latestCF) + TARGET_BG;
 			Debug.i(TAG, FUNC_TAG, "CF: "+latestCF+" Limit: "+limit);
 			
@@ -258,21 +258,23 @@ public class MCMservice extends Service
 		else {
 			MealActivity.carbsValid = false;
 		}
-		
+		*/
 		if(corr >= -20.0 && corr <= Constraints.MAX_CORR) {
 			MealActivity.corrValid = true;
 		}
 		else {
 			MealActivity.corrValid = false;
 		}
-		
+		double correct = 0.0;
+
+		//TODO ADD caulculations if needed
+		/*
 		if(MealActivity.carbsValid && MealActivity.carbsInsulin > Constraints.MAX_MEAL)
 			MealActivity.carbsInsulin = Constraints.MAX_MEAL;
 		
-		double correct = 0.0;
 		if(MealActivity.bgValid) {
 			correct += MealActivity.bgInsulin;
-		}
+		}*/
 		
 		if(MealActivity.corrValid) {
 			correct += MealActivity.corrInsulin;
@@ -293,10 +295,12 @@ public class MCMservice extends Service
 		}
 		
 		double total = 0.0;
+		//TODO Add calculations if needed
+		/*
 		if(MealActivity.carbsValid)
 			total += MealActivity.carbsInsulin;
 		if(MealActivity.bgValid)
-			total += MealActivity.bgInsulin;
+			total += MealActivity.bgInsulin;*/
 		if(MealActivity.corrValid)
 			total += MealActivity.corrInsulin;
 		if(MealActivity.iobChecked)
@@ -525,16 +529,17 @@ public class MCMservice extends Service
 	            	
 	            	//Obtain valid values of meal bolus and correction
 	            	double meal = 0.0, correction = 0.0;
-	            	if(MealActivity.carbsValid)
+	            	//TODO Add calculatons if needed
+	            	/*if(MealActivity.carbsValid)
 	        			meal += MealActivity.carbsInsulin;
 	        		if(MealActivity.bgValid)
-	        			correction += MealActivity.bgInsulin;
+	        			correction += MealActivity.bgInsulin;*/
 	        		if(MealActivity.corrValid)
 	        			correction += MealActivity.corrInsulin;
 	        		if(MealActivity.iobChecked)
 	        			correction -= MealActivity.iobInsulin;
 	            	
-	        		Debug.i(TAG, FUNC_TAG, "Carbs: "+MealActivity.carbs+" SMBG: "+MealActivity.bg);
+	        		//Debug.i(TAG, FUNC_TAG, "Carbs: "+MealActivity.carbs+" SMBG: "+MealActivity.bg);
 	        		
 	        		Debug.i(TAG, FUNC_TAG, "Before negative compenstation - Meal: "+meal+" Correction: "+correction);
 	        		
@@ -550,12 +555,12 @@ public class MCMservice extends Service
 	        		Debug.i(TAG, FUNC_TAG, "Total: "+(meal+correction));
 	        		
 	        		//TODO Send info to IIT server:
-	        		//Prepare data for insulin
+	        		/*//Prepare data for insulin
 	        		 ArrayList<Map<String, String>> dArgs = new ArrayList<Map<String, String>>();
 					//Send last message
 	        		 Map<String, String> iTable = new HashMap<String, String>();
 	        		 IITServerConnector iitConnector = new IITServerConnector(JSON_ID, IIT_SERVER_URL, IIT_SERVER_READ_TABLE, me);
-;
+	
 	     			//Insulin values
 	     			//iTable.clear();
 					double insulin_inj = (double)meal + (double)correction;
@@ -576,7 +581,7 @@ public class MCMservice extends Service
 						Debug.i(TAG, FUNC_TAG, "Values from bolus meal");
 						iitConnector.sendToIIT(	IITServerConnector.convertToJSON(dArgs), IIT_SERVER_URL);
 					}else
-						Debug.i(TAG, FUNC_TAG, "No values to send to IIT");
+						Debug.i(TAG, FUNC_TAG, "No values to send to IIT"); */
 					
 					
 					
@@ -638,7 +643,7 @@ public class MCMservice extends Service
 	            	// This message comes from the MealActivity to tell the MCM that the user has changed
 	            	// some data in the form, and thus it should recalculate its output
 	            	
-	            	Debug.i(TAG, FUNC_TAG, "BG: "+MealActivity.bg+" Carbs: "+MealActivity.carbs+" Corr: "+MealActivity.corrInsulin);
+	            	//Debug.i(TAG, FUNC_TAG, "BG: "+MealActivity.bg+" Carbs: "+MealActivity.carbs+" Corr: "+MealActivity.corrInsulin);
 	            	analyzeInput(MealActivity.bg, MealActivity.carbs, MealActivity.corrInsulin);
 	            	break;
 	            case Meal.UI_REGISTER:
