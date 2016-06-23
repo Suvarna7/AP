@@ -34,7 +34,7 @@ assignin('base', 'P_old', P_old);
 assignin('base', 'lamda_old', lamda_old);
 
 %Counter to save all values of Q in an array
-i = 0;
+i = 1;
 %Q_all saves:
 %   - 1: i/counter 
 %   - 2: V (function value)
@@ -155,15 +155,22 @@ Vinitial = 0;
     %V = (Q- Qold)'*(pseudo-inv(P)*(Q-Q_old) + (Y-phi'*Q)*(Y-phi'*Q);
  function V=objective(Q)
         V=(Q-Q_old)'*pinvP*(Q-Q_old)+(Y-phi'*Q)'*(Y-phi'*Q);
+        %DEBUG: Save Q state:
+        %Q_all saves:
+            %   - 1: i/counter 
+            %   - 2: V (function value)
+            %   - 3:26 Q 
+         Q_all(i, 1) = i;
+         Q_all(i, 2) = V;
+         Q_all (i, 4:27)=  Q;
+         i = i +1;
+
     end
    
 % Debug function - simple Q_old
     function V = debugObj(Q)
         V =  (Y-phi'*Q)'*(Y-phi'*Q);
-        %if (printedFirst < 10)
-          %  V
-        %end
-
+        
     end
 %% 3. CONSTRAINT FUNCTION DEFINITION - C, CEQ = CONSTRAINT(Q)
 %   Function defining the constraints for our opimization:

@@ -5,7 +5,6 @@ import Jama.EigenvalueDecomposition;
 import de.xypron.jcobyla.Calcfc;
 import de.xypron.jcobyla.Cobyla;
 import de.xypron.jcobyla.CobylaExitStatus;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.ArrayUtils;
@@ -69,7 +68,8 @@ public class OptRecursive_Cons {
     
     private final int iprint = 1;
     private final static int N_VARIABLES = 24;
-    private final static int M_CONSTRAINTS = 1;
+    private final static int M_CONSTRAINTS = 1 + Q_SIZE;
+
 
     //******************************************
     //Results of the optimization
@@ -111,7 +111,7 @@ public class OptRecursive_Cons {
         Q_old_ARRAY = new double[Q_SIZE];
         for (int i = 0; i < previousQold.length; i++) {
             Q_old_ARRAY[i] = previousQold[i][0];
-            System.out.print(i + ", ");
+            //System.out.print(i + ", ");
         }
         this.phi = phi;
         //TODO
@@ -233,10 +233,10 @@ public class OptRecursive_Cons {
                 //con[0] = -1;
 
                 //2. Upper and lower limits
-                /*double[] limits = limitsConstraint(Q);
+                double[] limits = limitsConstraint(Q);
                 for (int i = 0; i < m-1; i ++)
                     con[i+1] = limits[i];
-                //2. Set the function to optimize - V*/
+                //2. Set the function to optimize - V
                 double opt = optimizationFunctionV(Q);
                 double[] Q_V = new double[N_VARIABLES + 2];
                 Q_V[0] = iterations;

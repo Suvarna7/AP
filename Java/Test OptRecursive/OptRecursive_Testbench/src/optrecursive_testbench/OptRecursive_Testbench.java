@@ -90,12 +90,12 @@ public class OptRecursive_Testbench {
             
             
             //Recursive
-           int i = 0;
+           /*int i = 0;
             while (i < 5) {
-                Y += i * 20;
+                Y = Y*i;
                 optimizeFunctionStages(testOptRecursiveCons.Q_res, testOptRecursiveCons.P);
                 i++;
-            }
+            }*/
             //Try higher numbers of Q
             /*createOptRecursiveDefaultParameters();
             updateOptRecursiveSetParametersQRANDOM();
@@ -450,7 +450,7 @@ public class OptRecursive_Testbench {
 
     }
     private static CobylaExitStatus optimizeFunctionSingleStage(OptRecursive_Cons optim, double rho_beg){
-        testOptRecursiveCons.updateParameters(optim.Q_res, optim.P, 1.0e-10, rho_beg, 5000);        
+        testOptRecursiveCons.updateParameters(optim.Q_res, optim.P, 1.0e-8, rho_beg, 5000);        
         return testOptRecursiveCons.runOptimization() ;
     
     }
