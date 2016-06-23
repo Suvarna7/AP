@@ -1,0 +1,77 @@
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/src/com/joptimizer/optimizers
+END
+OptimizationRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/src/com/joptimizer/optimizers/OptimizationRequest.java
+END
+NewtonLEConstrainedISP.java
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/src/com/joptimizer/optimizers/NewtonLEConstrainedISP.java
+END
+OptimizationResponse.java
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/src/com/joptimizer/optimizers/OptimizationResponse.java
+END
+BarrierMethod.java
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/src/com/joptimizer/optimizers/BarrierMethod.java
+END
+NewtonUnconstrained.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/src/com/joptimizer/optimizers/NewtonUnconstrained.java
+END
+BasicPhaseIBM.java
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/src/com/joptimizer/optimizers/BasicPhaseIBM.java
+END
+PrimalDualMethod.java
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/src/com/joptimizer/optimizers/PrimalDualMethod.java
+END
+BasicPhaseIPDM.java
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/src/com/joptimizer/optimizers/BasicPhaseIPDM.java
+END
+JOptimizer.java
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/src/com/joptimizer/optimizers/JOptimizer.java
+END
+JOptimizerTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/src/com/joptimizer/optimizers/JOptimizerTest.java
+END
+OptimizationRequestHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/src/com/joptimizer/optimizers/OptimizationRequestHandler.java
+END
+NewtonLEConstrainedFSP.java
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/src/com/joptimizer/optimizers/NewtonLEConstrainedFSP.java
+END

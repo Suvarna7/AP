@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/src/com/joptimizer/util
+END
+Utils.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/src/com/joptimizer/util/Utils.java
+END
+MyTask.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/src/com/joptimizer/util/MyTask.java
+END
+CholeskyFactorization.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/src/com/joptimizer/util/CholeskyFactorization.java
+END

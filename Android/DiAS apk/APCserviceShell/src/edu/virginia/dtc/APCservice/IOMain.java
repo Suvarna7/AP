@@ -136,8 +136,8 @@ public class IOMain extends Service {
 		ctx = this.getApplicationContext();
 
 		//Init others
-		dArgs = new ArrayList<>();
-		notSynchValues = new ArrayList<>();
+		dArgs = new ArrayList<Map<String, String>>();
+		notSynchValues = new ArrayList<String>();
 
 		simpleFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -228,7 +228,7 @@ public class IOMain extends Service {
 
 
 							//Reset arguments table:
-							dArgs = new ArrayList<>();
+							dArgs = new ArrayList<Map<String, String>>();
 
 
 							/* **********************************************
@@ -244,7 +244,7 @@ public class IOMain extends Service {
 							toast.show();*/
 
 							//First include the sensor's reading
-							Map<String, String> dTable = new HashMap<>();
+							Map<String, String> dTable = new HashMap<String, String>();
 							long[] dexcomTime = new long [1];
 							sManager.readCGMTable(ctx, dTable, dexcomTime, cgmArray);
 
@@ -273,7 +273,7 @@ public class IOMain extends Service {
 								Debug.i(TAG, FUNC_TAG, "No values to send to IIT");*/
 
 							//Prepare data for exercise
-							dArgs = new ArrayList<>();
+							dArgs = new ArrayList<Map<String, String>>();
 
 							//READ ACTIVITY FROM EXERCISE SENSOR: ZEPHYR
 							//Get Zephyr values
@@ -293,7 +293,7 @@ public class IOMain extends Service {
 							else
 								Debug.i(TAG, FUNC_TAG, "No values to send to IIT");*/
 							//Prepare data for next sensor
-							dArgs = new ArrayList<>();
+							dArgs = new ArrayList<Map<String, String>>();
 
 							/* ***********************************************
 							 *Read BodyMedia values
@@ -332,7 +332,7 @@ public class IOMain extends Service {
 							}else
 								Debug.i(TAG, FUNC_TAG, "No values to send to IIT");*/
 							//Prepare data for next sensor
-							dArgs = new ArrayList<>();
+							dArgs = new ArrayList<Map<String, String>>();
 
 							/* ***********************************************
 							 *Read Empatica values
@@ -678,9 +678,9 @@ public class IOMain extends Service {
 	 */
 	private void setupAlgorithmArrays(){
 		//CGM ARRAY
-		cgmArray = new ArrayList<>();
+		cgmArray = new ArrayList<Double>();
 		//Bodymedia Array
-		bodymediaArray = new ArrayList<>();
+		bodymediaArray = new ArrayList<ArrayList<Double>>();
 		ArrayList<Double> updateArray = new ArrayList<Double>();
 		bodymediaArray.add(BodyMediaMatrix._EE, updateArray);
 		bodymediaArray.add(BodyMediaMatrix._GSR, updateArray);
@@ -688,7 +688,7 @@ public class IOMain extends Service {
 		bodymediaArray.add(BodyMediaMatrix._SLEEP, updateArray);
 
 		//Zephyr
-		zephyrArray= new ArrayList<>();
+		zephyrArray= new ArrayList<Double>();
 
 	}
 

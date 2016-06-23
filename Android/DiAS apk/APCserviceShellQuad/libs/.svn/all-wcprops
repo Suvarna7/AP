@@ -1,0 +1,77 @@
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/libs
+END
+Jama-1.0.3.jar
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/libs/Jama-1.0.3.jar
+END
+commons-collections-2.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/libs/commons-collections-2.1.jar
+END
+commons-math3-3.2.jar
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/libs/commons-math3-3.2.jar
+END
+commons-lang3-3.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/libs/commons-lang3-3.1.jar
+END
+colt-1.2.0.jar
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/libs/colt-1.2.0.jar
+END
+jdepend-2.9.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/libs/jdepend-2.9.1.jar
+END
+junit-3.8.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/libs/junit-3.8.1.jar
+END
+commons-io-1.4.jar
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/libs/commons-io-1.4.jar
+END
+android-support-v4.jar
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/libs/android-support-v4.jar
+END
+architecture-rules-3.0.0-M1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/libs/architecture-rules-3.0.0-M1.jar
+END
+commons-beanutils-1.6.jar
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/libs/commons-beanutils-1.6.jar
+END
+commons-digester-1.6.jar
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/libs/commons-digester-1.6.jar
+END
