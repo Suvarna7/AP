@@ -62,7 +62,7 @@ public class OptRecursive_Cons {
     //private final double _RHO_END = 1.49011611938477e-08;
     
     //Step tolerance - {MATLAB TolX = 1.e-10}
-    private  double _RHO_END = 1.0-10;
+    private  double _RHO_END = 1.0e-10;
     
     //TODO Max_function - max recursive loop
     private int MAX_FUNC = 5000;
