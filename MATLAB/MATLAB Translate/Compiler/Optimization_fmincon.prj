@@ -1,0 +1,159 @@
+<deployment-project plugin="plugin.ezdeploy" plugin-version="1.0">
+  <configuration build-checksum="2007073227" file="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\MATLAB Translate\Compiler\Optimization_fmincon.prj" location="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\MATLAB Translate\Compiler" name="Optimization_fmincon" preferred-package-location="C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\MATLAB coder\Compiler\Optimization_fmincon\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.library" target-name="MATLAB Compiler for Libraries and Classes">
+    <param.appname>Optimization_fmincon</param.appname>
+    <param.icon />
+    <param.icons />
+    <param.version>1.0</param.version>
+    <param.authnamewatermark>Caterina Lazaro &amp; Zacharie Maloney</param.authnamewatermark>
+    <param.email />
+    <param.company>IIT</param.company>
+    <param.summary>Run optimization function with fmincon</param.summary>
+    <param.description>Emulates the equivalent MATLAB files opt_recurisve.m and opt_recursive_Arm.m</param.description>
+    <param.screenshot />
+    <param.guid />
+    <param.installpath.string>\IIT\Optimization_fmincon\</param.installpath.string>
+    <param.installpath.combo>option.installpath.programfiles</param.installpath.combo>
+    <param.logo />
+    <param.install.notes />
+    <param.intermediate>${PROJECT_ROOT}\Optimization_fmincon\for_testing</param.intermediate>
+    <param.output>${PROJECT_ROOT}\Optimization_fmincon\for_redistribution</param.output>
+    <param.user.defined.mcr.options />
+    <param.embed.ctf>true</param.embed.ctf>
+    <param.server.ctf>${PROJECT_ROOT}\Optimization_fmincon\for_testing\opt_recursive.ctf</param.server.ctf>
+    <param.server.readme>${PROJECT_ROOT}\Optimization_fmincon\for_testing\readme.txt</param.server.readme>
+    <param.target.type>subtarget.java.package</param.target.type>
+    <param.support.packages />
+    <param.namespace>opt_recursive</param.namespace>
+    <param.classorg />
+    <param.function.data />
+    <param.web.mcr>true</param.web.mcr>
+    <param.package.mcr>false</param.package.mcr>
+    <param.no.mcr>false</param.no.mcr>
+    <param.web.mcr.name>MyAppInstaller_web</param.web.mcr.name>
+    <param.package.mcr.name>MyAppInstaller_mcr</param.package.mcr.name>
+    <param.no.mcr.name>MyAppInstaller_app</param.no.mcr.name>
+    <param.windows.command.prompt>true</param.windows.command.prompt>
+    <param.create.log>false</param.create.log>
+    <param.log.file />
+    <param.user.only.registration>false</param.user.only.registration>
+    <param.net.framework>option.net.framework.default</param.net.framework>
+    <param.assembly.type>false</param.assembly.type>
+    <param.encryption.key.file />
+    <param.net.enable.remoting>false</param.net.enable.remoting>
+    <param.net.tsa.enable>false</param.net.tsa.enable>
+    <param.net.tsa.assembly />
+    <param.net.tsa.interface />
+    <param.net.tsa.namespace>opt_recursive</param.net.tsa.namespace>
+    <param.net.tsa.superclass>OptRecursive</param.net.tsa.superclass>
+    <param.net.tsa.metadata />
+    <param.net.tsa.metadata.assembly>C:\Users\Cat\Documents\MATLAB</param.net.tsa.metadata.assembly>
+    <unset>
+      <param.icon />
+      <param.icons />
+      <param.version />
+      <param.email />
+      <param.screenshot />
+      <param.guid />
+      <param.installpath.string />
+      <param.installpath.combo />
+      <param.logo />
+      <param.install.notes />
+      <param.intermediate />
+      <param.output />
+      <param.user.defined.mcr.options />
+      <param.embed.ctf />
+      <param.server.ctf />
+      <param.server.readme />
+      <param.support.packages />
+      <param.classorg />
+      <param.function.data />
+      <param.web.mcr />
+      <param.package.mcr />
+      <param.no.mcr />
+      <param.web.mcr.name />
+      <param.package.mcr.name />
+      <param.no.mcr.name />
+      <param.windows.command.prompt />
+      <param.create.log />
+      <param.log.file />
+      <param.user.only.registration />
+      <param.net.framework />
+      <param.assembly.type />
+      <param.encryption.key.file />
+      <param.net.enable.remoting />
+      <param.net.tsa.enable />
+      <param.net.tsa.assembly />
+      <param.net.tsa.interface />
+      <param.net.tsa.namespace />
+      <param.net.tsa.superclass />
+      <param.net.tsa.metadata />
+      <param.net.tsa.metadata.assembly />
+    </unset>
+    <fileset.exports>
+      <file>C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\MATLAB coder\MATLAB Source\constraint.m</file>
+      <file>C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\MATLAB coder\MATLAB Source\objective.m</file>
+      <file>C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\MATLAB coder\MATLAB Source\opt_recursive.m</file>
+    </fileset.exports>
+    <fileset.classes>
+      <entity.package name="">
+        <entity.class name="OptRecursive">
+          <file>C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\MATLAB coder\MATLAB Source\constraint.m</file>
+          <file>C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\MATLAB coder\MATLAB Source\objective.m</file>
+          <file>C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\MATLAB coder\MATLAB Source\opt_recursive.m</file>
+        </entity.class>
+      </entity.package>
+    </fileset.classes>
+    <fileset.resources />
+    <fileset.package />
+    <build-deliverables>
+      <file location="${PROJECT_ROOT}\Optimization_fmincon\for_testing" name="opt_recursive.jar" optional="false">C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\MATLAB Translate\Compiler\Optimization_fmincon\for_testing\opt_recursive.jar</file>
+      <file location="${PROJECT_ROOT}\Optimization_fmincon\for_testing" name="readme.txt" optional="true">C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\MATLAB Translate\Compiler\Optimization_fmincon\for_testing\readme.txt</file>
+      <file location="${PROJECT_ROOT}\Optimization_fmincon\for_testing" name="doc" optional="false">C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\MATLAB Translate\Compiler\Optimization_fmincon\for_testing\doc</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>C:\Program Files\MATLAB\R2014a</root>
+      <toolboxes>
+        <toolbox name="matlabhdlcoder" />
+        <toolbox name="fixedpoint" />
+        <toolbox name="embeddedcoder" />
+        <toolbox name="matlabcoder" />
+      </toolboxes>
+      <toolbox>
+        <matlabhdlcoder>
+          <enabled>true</enabled>
+        </matlabhdlcoder>
+      </toolbox>
+      <toolbox>
+        <fixedpoint>
+          <enabled>true</enabled>
+        </fixedpoint>
+      </toolbox>
+      <toolbox>
+        <embeddedcoder>
+          <enabled>true</enabled>
+        </embeddedcoder>
+      </toolbox>
+      <toolbox>
+        <matlabcoder>
+          <enabled>true</enabled>
+        </matlabcoder>
+      </toolbox>
+    </matlab>
+    <platform>
+      <unix>false</unix>
+      <mac>false</mac>
+      <windows>true</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>false</linux>
+      <solaris>false</solaris>
+      <osver>6.2</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>win64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>

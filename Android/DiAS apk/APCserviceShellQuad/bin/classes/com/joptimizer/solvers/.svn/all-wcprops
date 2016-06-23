@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/src/com/joptimizer/solvers
+END
+DiagonalKKTSolver.java
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/src/com/joptimizer/solvers/DiagonalKKTSolver.java
+END
+KKTSolver.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/src/com/joptimizer/solvers/KKTSolver.java
+END
+BasicKKTSolver.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/src/com/joptimizer/solvers/BasicKKTSolver.java
+END

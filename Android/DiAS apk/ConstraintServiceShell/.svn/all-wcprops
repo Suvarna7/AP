@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/ConstraintServiceShell
+END
+project.properties
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/ConstraintServiceShell/project.properties
+END
+.project
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/ConstraintServiceShell/.project
+END
+proguard-project.txt
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/ConstraintServiceShell/proguard-project.txt
+END
+AndroidManifest.xml
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/ConstraintServiceShell/AndroidManifest.xml
+END
+ic_launcher-web.png
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/ConstraintServiceShell/ic_launcher-web.png
+END

@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad
+END
+proguard.cfg
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/proguard.cfg
+END
+project.properties
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/project.properties
+END
+.project
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/.project
+END
+AndroidManifest.xml
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/AndroidManifest.xml
+END
+build.gradle
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShellQuad/build.gradle
+END

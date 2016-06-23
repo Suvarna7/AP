@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShell
+END
+.classpath
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShell/.classpath
+END
+proguard.cfg
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShell/proguard.cfg
+END
+project.properties
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShell/project.properties
+END
+.project
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShell/.project
+END
+lint.xml
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShell/lint.xml
+END
+AndroidManifest.xml
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShell/AndroidManifest.xml
+END
+build.gradle
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/APCserviceShell/build.gradle
+END

@@ -1,0 +1,43 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="edu.virginia.dtc.MCMservice"
+    android:versionCode="1"
+    android:versionName="1.0">
+
+   	<permission android:name="edu.read"></permission>
+    <uses-permission android:name="edu.read"></uses-permission>
+    <permission android:name="edu.write"></permission>
+    <uses-permission android:name="edu.write"></uses-permission>
+    
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!-- Permission: Allow application to connect to Internet -->
+	<uses-permission android:name="android.permission.INTERNET" />
+	
+    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="15" />
+
+    <application android:label="@string/app_name"
+        android:icon="@drawable/meal_button_normal"
+        android:theme="@style/AppTheme" 
+        android:sharedUserId="android.uid.shared">
+
+        <service
+		 	android:name="edu.virginia.dtc.MCMservice.MCMservice"
+		 	android:exported="true"
+		 	android:enabled="true" >
+            <intent-filter>
+                <action android:name="DiAs.MCMservice" />
+                <action android:name="DiAs.MealActivity" />
+            </intent-filter>
+		</service>
+		
+        <activity android:label="Meal Screen"
+                  android:configChanges="orientation|keyboardHidden|screenSize" 
+                  android:name="edu.virginia.dtc.MCMservice.MealActivity"
+                  android:screenOrientation="sensorLandscape"
+                  android:theme="@style/MealScreenTheme"
+                  android:windowSoftInputMode="adjustPan" >
+        </activity>
+        
+        <meta-data android:name="Version" android:value="$Rev: 2410 $*"/>
+    </application>
+
+</manifest>

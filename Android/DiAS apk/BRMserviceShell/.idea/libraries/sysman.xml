@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="sysman">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/sysman.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
