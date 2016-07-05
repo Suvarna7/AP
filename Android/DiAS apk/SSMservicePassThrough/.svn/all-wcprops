@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/SSMservicePassThrough
+END
+default.properties
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/SSMservicePassThrough/default.properties
+END
+proguard.cfg
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/SSMservicePassThrough/proguard.cfg
+END
+project.properties
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/SSMservicePassThrough/project.properties
+END
+.project
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/SSMservicePassThrough/.project
+END
+AndroidManifest.xml
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/SSMservicePassThrough/AndroidManifest.xml
+END

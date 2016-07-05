@@ -106,6 +106,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
 
         if (BGService.deviceManager !=null)
             BGService.deviceManager.stopScanning();
+
     }
 
     @Override
@@ -114,6 +115,38 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
 
         //Update context
         BGService.initContext(this);
+
+        //Make connected screen visible
+        if (statusLabel.getText().toString().contains(EmpaStatus.CONNECTED.toString()) &&
+                !statusLabel.getText().toString().contains(EmpaStatus.DISCONNECTED.toString()))
+            runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                connectButton.setVisibility(View.INVISIBLE);
+                dataCnt.setVisibility(View.VISIBLE);
+                }
+             });
+
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        //Update context
+        BGService.initContext(this);
+
+        //Make connected screen visible
+        if (statusLabel.getText().toString().contains(EmpaStatus.CONNECTED.toString()) &&
+            !statusLabel.getText().toString().contains(EmpaStatus.DISCONNECTED.toString()))
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    connectButton.setVisibility(View.INVISIBLE);
+                    dataCnt.setVisibility(View.VISIBLE);
+                }
+            });
 
 
     }

@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/SSMservicePassThrough/res/layout
+END
+bolus_dialog_layout.xml
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/SSMservicePassThrough/res/layout/bolus_dialog_layout.xml
+END
+temporary_basal_screen.xml
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/SSMservicePassThrough/res/layout/temporary_basal_screen.xml
+END
+main.xml
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/releases/!svn/ver/71/MAF/APSDK_2.41_a/replaceable_modules/SSMservicePassThrough/res/layout/main.xml
+END

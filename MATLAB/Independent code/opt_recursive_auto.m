@@ -23,7 +23,6 @@ P_old = Pold;
 lamda_old = lamda_o';
 upperlim = u_lim';
 lowerlim = l_lim';
-printedFirst = 1;
 %DEBUG - Add variables to workspace for inspection
 assignin('base', 'upperlim', upperlim);
 assignin('base', 'lowerlim', lowerlim);
@@ -148,8 +147,9 @@ Q_all =  zeros( 1000, 26);
 %% 1. DEFINE PARAMETERS MATRIX
 %Calculate P matrix and its pseudo-inverse, fromt he input parameters
 P=(1/(lamda_old))*(P_old-(P_old*phi*pinv(lamda_old+phi'*P_old*phi)*phi'*P_old));
+assignin('base', 'P', P);
+
 pinvP=pinv(P);
-Vinitial = 0;
 %% 2. FUNCTION TO BE OPTIMIZED - V = OBJECTIVE(Q)
 %Function we will be optimizing: 
     %V = (Q- Qold)'*(pseudo-inv(P)*(Q-Q_old) + (Y-phi'*Q)*(Y-phi'*Q);
@@ -202,11 +202,12 @@ Vinitial = 0;
         c=max(eigA)-0.99;
         ceq = [];
     end
-function [c, ceq]=no_constraint(Q)
+function [c, ceq]=no_constraint(~)
         c=[];
         ceq = [];
 end
 %% 4. RUN FMINCON - ALGORITHM MINIMIZATION
+%Optimization Options Reference
 %Available algorithms: 'interior-point', 'active-set', 'sqp', 'trust-region-reflective')
 %FinDiffRelStep=FiniteDifferenceStepSize - default 'Forward finite differences steps 
 %                 delta = v.*sign'c(x).*max(abs(x),TypicalX)'
@@ -220,8 +221,11 @@ options1=optimset('Algorithm','interior-point','Display','iter-detailed');
 
 
 % Q = fmincon(fun,x0,A,b,Aeq,beq,lb,ub,nonlcon,options)
-[Q, fval, exitflag, output]=fmincon(@objective,Q_old,[],[],[],[],lowerlim,upperlim,@constraint,options1);%Find minimum of constrained nonlinear multivariable function:
-%[Q, fval, exitflag, output]=fmincon(@objective,Q_old,[],[],[],[],[],[],@constraint,options1);%Find minimum of constrained nonlinear multivariable function:
+Q_old
+%[Q, fval, exitflag, output]=fmincon(@objective,Q_old,[],[],[],[],lowerlim,upperlim,@constraint,options1);%Find minimum of constrained nonlinear multivariable function:
+[Q, fval, exitflag, output]=fmincon(@objective,Q_old,[],[],[],[],[],[],@constraint,options1);%Find minimum of constrained nonlinear multivariable function:
+[Q_noc, fval, exitflag, output]=fmincon(@objective,Q_old,[],[],[],[],[],[],@no_constraint,options1);%Find minimum of constrained nonlinear multivariable function:
+
 %NOTE Constraint tolerance = 1.e-6
 assignin('base', 'options', options1);
 assignin('base', 'Q_values', Q_all);
@@ -229,10 +233,10 @@ assignin('base', 'Q_values', Q_all);
 %assignin('base', 'A_states', A_states);
 
 output
-fval;
-Q;
+fval
+Q
 Q_java;
-exitflag;
+exitflag
 %Once we obtain the result of function minimization, obtain secondary
 %values:
 %Err
@@ -244,37 +248,6 @@ lamda2=exp(-(err^2)/(1000));
 lamda=lamda1*lamda2;
 if lamda<0.005;lamda=0.005;end%Y_model
 
-OUT = 'CONSTRAINT FUNCTION'
-
-Q_test = [-0.6597
-   -0.9177
-   -0.8916
-    0.0030
-    0.0025
-   -0.0012
-    0.0041
-    0.0006
-    0.0028
-    0.0012
-    0.0005
-   -0.0031
-   -0.0011
-   -0.0065
-   -0.0086
-    0.0111
-    0.0104
-    0.0098
-    0.0098
-    0.0082
-    0.0036
-    0.0116
-    0.0111
-   -0.0064];
-JavaTestEval  =constraint(Q_test)
-Q_java
-JavaConstraintEval  =constraint(Q_java)
-Q
-MATLABConstraintEval  =constraint(Q)
 
 
 
@@ -283,11 +256,10 @@ figure;
 time1 = 1:length(Q_java);
 time2 = 1:length(Q);
 
-plot (time2, Q_java,'g', time2, Q, 'b', time2, upperlim', 'r', time2, lowerlim',  'r')
-legend('Java', 'MATLAB', 'Upperlim', 'lowerlim');
+plot (time2, Q_java, 'g', time2, Q, 'b', time2, Q_noc, 'p', time2, upperlim', 'r', time2, lowerlim',  'r')
+legend('Java', 'MATLAB', 'MATLAB no const','Upperlim', 'lowerlim');
 
 figure
 plot(time1, Q_java,'g')
 legend('Java');
-E = eps
 end

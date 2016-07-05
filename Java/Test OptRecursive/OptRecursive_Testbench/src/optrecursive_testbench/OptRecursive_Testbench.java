@@ -62,54 +62,30 @@ public class OptRecursive_Testbench {
         //Start Graphical interface
         //XXX restore this next line before merging with master. 
         if (configureOK) {
-            //Use testbench to test OptRecursive
-            /*createOptRecursiveDefaultParameters();
-            OptRecursive testOptRecursive = new OptRecursive(Y, phi, Q_old, P_old, lamda_old, upperlimit, lowerlimit);
-            testOptRecursive.runOptimization();
-            //Recursive
-            int i = 0;
-            while (i < 10) {
-                Y += i*10;
-                updateOptRecursiveSetParametersQP(testOptRecursive.Q_res, testOptRecursive.P);
-                testOptRecursive = new OptRecursive(Y, phi, Q_old, P_old, lamda_old, upperlimit, lowerlimit);
-                testOptRecursive.runOptimization();
-                i++;
-            }*/
-
-            //Try higher numbers of Q
-            /*createOptRecursiveDefaultParameters();
-            updateOptRecursiveSetParametersQRANDOM();
-            testOptRecursive = new OptRecursive(Y, phi, Q_old, P_old, lamda_old, upperlimit, lowerlimit);
-            testOptRecursive.runOptimization(); */
+            
             /**
              * *****************************************************
              * CONSTRAINTS
              */
-            createOptRecursiveDefaultParameters();
-            optimizeFunctionStages(Q_old, P_old);
             
+            //Default values
+           createOptRecursiveDefaultParameters();
+           optimizeFunctionStages(Q_old, P_old);
             
+            //Higher values:
+           /* updateOptRecursiveSetParametersQRANDOM();
+            optimizeFunctionStages(Q_old, P_old);*/
+
+
             //Recursive
-           /*int i = 0;
-            while (i < 5) {
-                Y = Y*i;
+           int i = 0;
+            while (i < 10) {
+                Y = Y + 10*i;
                 optimizeFunctionStages(testOptRecursiveCons.Q_res, testOptRecursiveCons.P);
                 i++;
-            }*/
-            //Try higher numbers of Q
-            /*createOptRecursiveDefaultParameters();
-            updateOptRecursiveSetParametersQRANDOM();
-            OptRecursive_Cons testOptRecursiveCons = new OptRecursive_Cons(Y, phi, Q_old, P_old, lamda_old, upperlimit, lowerlimit);
-            testOptRecursiveCons.runOptimization();
-            testOptRecursiveCons.saveOptRecursiveVariables();
-            //Second optimization:
-            testOptRecursiveCons.updateParameters(testOptRecursiveCons.Q_res, testOptRecursiveCons.P,1.0e-2, 1.49011611938477e-6, 5000);
-            testOptRecursiveCons.runOptimization();
-            testOptRecursiveCons.updateParameters(testOptRecursiveCons.Q_res, testOptRecursiveCons.P,1.0e-2, 1.49011611938477e-8, 5000);
-            testOptRecursiveCons.runOptimization();
-            testOptRecursiveCons.updateParameters(testOptRecursiveCons.Q_res, testOptRecursiveCons.P,1.0e-4, 1.49011611938477e-8, 5000);
-            testOptRecursiveCons.runOptimization();
-            testOptRecursiveCons.saveOptRecursiveResults();*/
+            }
+           
+            
             /**
              * *******************************************************
              * TEST CONSTRAINT FUNCTION ITSELF
@@ -177,7 +153,7 @@ public class OptRecursive_Testbench {
         phi = new Matrix(phiDoubleArray);
 
         //Q_old matrix 24x1
-        double[][] Q_oldArray = new double[][]{{1},
+        double[][] Q_oldArray = new double[][]{{10},
         {0},
         {0},
         {0},
@@ -300,7 +276,7 @@ public class OptRecursive_Testbench {
      *
      * @param tORC - test OptRecursive_Cons instance
      */
-    private static void testOptRecursiveConstraintFunction(OptRecursive_Cons tORC) {
+   /* private static void testOptRecursiveConstraintFunction(OptRecursive_Cons tORC) {
 
         //Sample 2 of MATLAB / Result -0.990000000000000
         //CONSTRAINT SATISFIED IN JAVA (0.9899999850988388) / CONSTRAINT SATISFIED IN MATLAB (-0.99)
@@ -360,7 +336,7 @@ public class OptRecursive_Testbench {
 
         System.out.println("Constraint eval for x4 (MATLAB) : " + tORC.getConstraintValue(x));
 
-    }
+    }*/
 
     /**
      * Test our definition of the Optimization function vs MATLAB Use values
@@ -368,7 +344,7 @@ public class OptRecursive_Testbench {
      *
      * @param tORC - instance of the OptRecursive_Cons
      */
-    private static void testOptRecursiveFunctionEval(OptRecursive_Cons tORC) {
+    /*private static void testOptRecursiveFunctionEval(OptRecursive_Cons tORC) {
         //Sample 2 of MATLAB / V = 35721.0016897917
         //CONSTRAINT SATISFIED IN JAVA (0.9899999850988388) / CONSTRAINT SATISFIED IN MATLAB (-0.99)
         double[] x = new double[]{1.49011611938477e-08, 0, 0, 0, 0, 0, 0, 0,
@@ -397,7 +373,7 @@ public class OptRecursive_Testbench {
             14.1749877929688, 14.1749877929688, 14.1749877929688, 14.1749877929688, 9.45001220703125, 9.45001220703125, 9.45001220703125, 9.45001220703125};
         System.out.println("Function V  eval for x3  : " + tORC.optimizationFunctionV(x) + " vs 58937682332278.6 (MAT)");
 
-    }
+    }*/
 
     /**
      * 
@@ -407,7 +383,8 @@ public class OptRecursive_Testbench {
     private static void optimizeFunctionStages(Matrix Qin, Matrix Pin) {
         //First step, we do it manually
         testOptRecursiveCons = new OptRecursive_Cons(Y, phi, Qin, Pin, lamda_old, upperlimit, lowerlimit);
-        CobylaExitStatus exit = testOptRecursiveCons.runOptimization();
+        CobylaExitStatus exit = testOptRecursiveCons.runOptimization(Qin, Pin, OptRecursive_Cons._RHO_BEG_DEF,OptRecursive_Cons._RHO_END_DEF, OptRecursive_Cons.MAX_FUNC_DEF);
+        //Save original inputs:
         testOptRecursiveCons.saveOptRecursiveVariables();
         
         //Next ones, we use the stage function
@@ -416,42 +393,35 @@ public class OptRecursive_Testbench {
         Matrix typicalX = new Matrix(testOptRecursiveCons.Q_res.getRowDimension(), testOptRecursiveCons.Q_res.getColumnDimension(), 1).times(1e0); 
         Matrix next_rho_m = forwardFiniteDiffStepSize(next_Q, typicalX); 
         
-        System.out.println("Output: "+exit+ " vs " + CobylaExitStatus.NORMAL);
-        System.out.println(exit.compareTo(CobylaExitStatus.NORMAL));
-
         //We stay in the loop until Cobyla optimization has a NORMAL exit
-        int i = 14;
-       
+       int i = 14;
+       int j =0;
        while (exit.compareTo(CobylaExitStatus.NORMAL)!=0 && i > -3){
-                Double next_rho_beg = next_rho_m.get(0, 0); 
+                Double next_rho_beg = OptRecursive_Cons.max(next_rho_m); 
+                //Delta is too small... try with default RHO_BEG and increase in 
+                //next iterations
+                if (testOptRecursiveCons._RHO_BEG_DEF > next_rho_beg){
+                    next_rho_beg =  testOptRecursiveCons._RHO_BEG_DEF*Math.pow(10, j);
+                    //if (j < 2)
+                        j++;
+
+                }
                 //next_rho_beg = ((1.0+(i%2))/2.0)*Math.pow(10, -(Math.floor(i/2)));
                 System.out.println("Next rho_beg value is : " + Double.toString(next_rho_beg) + " ; ");
-                exit = optimizeFunctionSingleStage(testOptRecursiveCons, next_rho_beg);
+                //Build next_Q = Q_Res + rho_m
+                exit = optimizeFunctionSingleStage(testOptRecursiveCons,testOptRecursiveCons.Q_res.plus(next_rho_m), next_rho_beg);
                 next_Q = testOptRecursiveCons.Q_res;
                 next_rho_m = forwardFiniteDiffStepSize(next_Q, typicalX); 
                 i --;
         }
-        //Save outputs:
+        //Save outputs -  Q_res only:
         testOptRecursiveCons.saveOptRecursiveResults();
         
-        //Second optimization:
-        /*testOptRecursiveCons.updateParameters(testOptRecursiveCons.Q_res, testOptRecursiveCons.P, 1.0e-2, 1.49011611938477e-6, 5000);
-        testOptRecursiveCons.runOptimization();
-        //Third optimization:
-        testOptRecursiveCons.updateParameters(testOptRecursiveCons.Q_res, testOptRecursiveCons.P, 1.0e-1, 1.49011611938477e-8, 5000);
-        testOptRecursiveCons.runOptimization();
-        //Fourth optimization:
-        testOptRecursiveCons.updateParameters(testOptRecursiveCons.Q_res, testOptRecursiveCons.P, 0.5, 1.49011611938477e-4, 5000);
-        testOptRecursiveCons.runOptimization();
-        //Fifth optimization:
-        testOptRecursiveCons.updateParameters(testOptRecursiveCons.Q_res, testOptRecursiveCons.P, 1.0e-4, 1.49011611938477e-8, 5000);
-        testOptRecursiveCons.runOptimization();
-        testOptRecursiveCons.saveOptRecursiveResults();*/
-
+        
     }
-    private static CobylaExitStatus optimizeFunctionSingleStage(OptRecursive_Cons optim, double rho_beg){
-        testOptRecursiveCons.updateParameters(optim.Q_res, optim.P, 1.0e-8, rho_beg, 5000);        
-        return testOptRecursiveCons.runOptimization() ;
+    private static CobylaExitStatus optimizeFunctionSingleStage(OptRecursive_Cons optim, Matrix next_Q,double rho_beg){
+        //testOptRecursiveCons.updateParameters(optim.Q_res, optim.P, 1.0e-8, rho_beg, 5000);        
+        return testOptRecursiveCons.runOptimization(next_Q, optim.P, rho_beg, 1.0e-16, 5000) ;
     
     }
 

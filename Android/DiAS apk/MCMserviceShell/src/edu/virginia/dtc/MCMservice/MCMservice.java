@@ -493,7 +493,9 @@ public class MCMservice extends Service
             {
 	            case Meal.REGISTER:
 	            	Debug.i(TAG, FUNC_TAG, "REGISTER");
-	            	
+					//TODO Added to avoid ssm calculations
+	            	MealActivity.inProgress = false;
+
 					if (Params.getBoolean(getContentResolver(), "enableIO", false)) 
 					{
                 		Bundle b = new Bundle();
@@ -506,6 +508,7 @@ public class MCMservice extends Service
 					}
 					
 					mMessengerToService = msg.replyTo;
+
 	            	break;
 	            case Meal.SSM_CALC_DONE:
 	            	Debug.i(TAG, FUNC_TAG, "SSM_CALC_DONE");
