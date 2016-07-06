@@ -94,7 +94,7 @@ public class BGService extends Service implements EmpaDataDelegate{
 
     @Override
     public IBinder onBind(Intent intent) {
-        Toast.makeText(this, "The new Service was Binded", Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, "The new Service was Binded", Toast.LENGTH_LONG).show();
         return null;
     }
 
@@ -102,7 +102,7 @@ public class BGService extends Service implements EmpaDataDelegate{
     public void onCreate() {
     	tableInit = false;
     	index = 0;
-        Toast.makeText(this, "The new Service was Created", Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, "The new Service was Created", Toast.LENGTH_LONG).show();
         //*** Empatica managers
         // Create a new EmpaDeviceManager. Service is both its data  delegate and MainActivity its status delegate.
         deviceManager = new EmpaDeviceManager(mActivity.getApplicationContext(), this, mActivity);
@@ -409,7 +409,7 @@ public class BGService extends Service implements EmpaDataDelegate{
             /// DateTimeInstance dateTime = new DateTimeInstance();
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.sss", Locale.getDefault());
             String formatTimeStamp = dateFormat.format(time);
-            tempList.add("'"+ formatTimeStamp.substring(0, formatTimeStamp.length() - 4) +"'");
+            tempList.add("'"+ formatTimeStamp.substring(0, formatTimeStamp.length() - 2) +"'");
             //Add the other values
             tempList.add(xAccelValues[sample]);
             tempList.add(yAccelValues[sample]);
