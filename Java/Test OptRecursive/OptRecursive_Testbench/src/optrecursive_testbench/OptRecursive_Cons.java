@@ -22,6 +22,7 @@ public class OptRecursive_Cons {
     private final String outputOpt = "outputOpt";
     //Size of Q matrix
     private static final int Q_SIZE = 24;
+    private static final int Q_INIT_DISPLACEMENT = 3;
 
     //Variables for the optimization
     //INPUTS:
@@ -31,7 +32,7 @@ public class OptRecursive_Cons {
     public double[] Q_old_ARRAY;
     public Matrix P_old;
     public double lamda_old;
-    public double[] upperlimit = new double[Q_SIZE + 1];
+    public double[] upperlimit = new double[Q_SIZE  + 1];
     public double[] lowerlimit = new double[Q_SIZE + 1];
     //Paremeters matrix P
     public Matrix P;
@@ -68,7 +69,6 @@ public class OptRecursive_Cons {
 
     //iprint = {0, 1, 2, 3}
     private final int iprint = 1;
-    private final static int N_VARIABLES = 24;
     private final static int M_CONSTRAINTS = 1;
 
 
@@ -81,7 +81,7 @@ public class OptRecursive_Cons {
     public double err = 0;
     public Matrix Y_model;
     //Result of the optimization
-    private final Matrix Q_optimizing_keepValue = new Matrix(Q_SIZE, 1);
+    private final Matrix Q_optimizing_keepValue = new Matrix(Q_SIZE + Q_INIT_DISPLACEMENT, 1);
     public Matrix Q_res;
     private Matrix fresult;
 
@@ -108,7 +108,7 @@ public class OptRecursive_Cons {
         this.Q_old = Q_old;
         //Update its double array version:
         double[][] previousQold = Q_old.getArray();
-        Q_old_ARRAY = new double[Q_SIZE];
+        Q_old_ARRAY = new double[Q_SIZE + Q_INIT_DISPLACEMENT];
         for (int i = 0; i < previousQold.length; i++) {
             Q_old_ARRAY[i] = previousQold[i][0];
             //System.out.print(i + ", ");
@@ -147,7 +147,7 @@ public class OptRecursive_Cons {
         this.Q_old = Q_old;
         //Update its double array version:
         double[][] previousQold = Q_old.getArray();
-        Q_old_ARRAY = new double[Q_SIZE];
+        Q_old_ARRAY = new double[Q_SIZE + Q_INIT_DISPLACEMENT];
         for (int i = 0; i < previousQold.length; i++) {
             Q_old_ARRAY[i] = previousQold[i][0];
         }
@@ -216,7 +216,11 @@ public class OptRecursive_Cons {
              * @param  con - Calculated function values of the constraints.
              */
             @Override
-            public double compute(int n, int m, double[] Q, double[] con) {
+            public double compute(int n, int m, double[] Q_large, double[] con) {
+               //0. Build Q from its larger version Q_large
+               double[] Q = new double[Q_SIZE];
+               for (int i =0; i < Q_SIZE; i ++)
+                   Q[i] =  Q_large[i + Q_INIT_DISPLACEMENT];
                 //1. Get constraints for Q
                 //Returns: (max(Astatetemp) - 0.99)
                 //Cobyla constraint: con[0] >= 0
@@ -240,10 +244,10 @@ public class OptRecursive_Cons {
                     con[i+1] = limits[i];
                 //2. Set the function to optimize - V
                 double opt = optimizationFunctionV(Q);
-                double[] Q_V = new double[N_VARIABLES + 2];
+                double[] Q_V = new double[Q_SIZE + 2];
                 Q_V[0] = iterations;
                 Q_V[1] = opt;
-                for (int i = 2; i < N_VARIABLES + 2; i++) {
+                for (int i = 2; i < Q_SIZE + 2; i++) {
                     Q_V[i] = Q[i - 2];
                 }
                 Double[] doubleArray = ArrayUtils.toObject(Q_V);
@@ -261,17 +265,18 @@ public class OptRecursive_Cons {
         //printMatrix( "Q_old to findmin: "+ Q_oldtemp);
         //Prepare the Qold matrix to be pass to the min function, as double[]
         double[][] previousQold = Q_old.getArray();
-        double[] Q_oldMIN = new double[Q_SIZE];
-        for (int i = 0; i < previousQold.length; i++) {
-            Q_oldMIN[i] = previousQold[i][0];
+        double[] Q_oldMIN = new double[Q_SIZE + Q_INIT_DISPLACEMENT];
+        for (int i = Q_INIT_DISPLACEMENT; i < previousQold.length + Q_INIT_DISPLACEMENT; i++) {
+            Q_oldMIN[i  ] = previousQold[i - Q_INIT_DISPLACEMENT][0];
             System.out.print(i + ", ");
         }
+        
         //Update Qold to be equal to previous one
 
         System.out.println("Size Qold " + Q_oldMIN.length + " - ");
         System.out.println("RHO_BEG: "+_RHO_BEG);
         //Run the optimization
-        CobylaExitStatus result = Cobyla.findMinimum(calcfc, N_VARIABLES, M_CONSTRAINTS, Q_old_ARRAY, _RHO_BEG, _RHO_END, iprint, MAX_FUNC);
+        CobylaExitStatus result = Cobyla.findMinimum(calcfc, Q_SIZE+ Q_INIT_DISPLACEMENT, M_CONSTRAINTS, Q_old_ARRAY, _RHO_BEG, _RHO_END, iprint, MAX_FUNC);
         //  result1 = cobyla.findMinimum(calcfc, 24,2*Q_old.getRowDimension()+1, Q_oldtemp, rhobeg, rhoend, iprint, maxfun);  
 
         //Exit status: DIVERGING ROUNDING ERRORS / MAX ITERATION REACH / NORMAL
@@ -286,8 +291,8 @@ public class OptRecursive_Cons {
 
         //RECOVER Q value:
         //Q_res = Q_optimizing = Q
-        for (int i = 0; i < Q_SIZE; i++) {
-            Q_res.set(i, 0, Q_optimizing_keepValue.get(i, 0));
+        for (int i = Q_INIT_DISPLACEMENT; i < Q_SIZE + Q_INIT_DISPLACEMENT; i++) {
+            Q_res.set(i - Q_INIT_DISPLACEMENT, 0, Q_optimizing_keepValue.get(i, 0));
         }
 
         err = Y - (phi.transpose().times(Q_res)).get(0, 0);
@@ -331,9 +336,9 @@ public class OptRecursive_Cons {
             Save saveManager = new Save(outputOpt);
 
             //Save intermediate results of the optimization
-            Matrix Q_valuesMatrix = new Matrix(Q_values.size(), N_VARIABLES + 2);
+            Matrix Q_valuesMatrix = new Matrix(Q_values.size(), Q_SIZE + 2);
             for (int i = 0; i < iterations; i++) {
-                for (int j = 0; j < N_VARIABLES + 2; j++) {
+                for (int j = 0; j < Q_SIZE + 2; j++) {
                     Q_valuesMatrix.set(i, j, Q_values.get(i)[j]);
                 }
             }
@@ -386,16 +391,16 @@ public class OptRecursive_Cons {
             Save saveManager = new Save(outputOpt);
 
             //Save intermediate results of the optimization
-            Matrix Q_valuesMatrix = new Matrix(Q_values.size(), N_VARIABLES + 2);
+            Matrix Q_valuesMatrix = new Matrix(Q_values.size(), Q_SIZE + 2);
             for (int i = 0; i < iterations; i++) {
-                for (int j = 0; j < N_VARIABLES + 2; j++) {
+                for (int j = 0; j < Q_SIZE + 2; j++) {
                     Q_valuesMatrix.set(i, j, Q_values.get(i)[j]);
                 }
             }
 
            // saveManager.save(Q_valuesMatrix, "Optimization_Steps_Cons2");
             //Save the result of the constraint
-            Matrix Cons_valuesMatrix = new Matrix(constraintValues.size(), N_VARIABLES + 1);
+            Matrix Cons_valuesMatrix = new Matrix(constraintValues.size(), Q_SIZE + 1);
             /*for (int i = 0; i < iterations; i++) {
                 for (int j = 0; j < N_VARIABLES + 1; j++) {
                     Cons_valuesMatrix.set(i, j, constraintValues.get(i)[j]);
@@ -423,7 +428,7 @@ public class OptRecursive_Cons {
         //Create the double list with:
         // - [0,23]: input x
         // - [24]: constraint result (1 or -1)
-        double[] consInter = new double[N_VARIABLES + 1];
+        double[] consInter = new double[Q_SIZE + Q_INIT_DISPLACEMENT + 1];
         //Store X value:
         System.arraycopy(x, 0, consInter, 0, x.length);
         //double [][] A_state = new double[21][21];
@@ -515,13 +520,13 @@ public class OptRecursive_Cons {
      */
 
     private double[] limitsConstraint(double[] X) {
-        double[] limitsResult = new double[N_VARIABLES];
-        for (int i = 0; i < X.length; i++) {
-            if (X[i] <= upperlimit[i] && X[i] >= lowerlimit[i]) {
+        double[] limitsResult = new double[Q_SIZE];
+        for (int i = Q_INIT_DISPLACEMENT; i < X.length; i++) {
+            if (X[i] <= upperlimit[i - Q_INIT_DISPLACEMENT] && X[i ] >= lowerlimit[i - Q_INIT_DISPLACEMENT]) {
                 //Normal behaviour - 
-                limitsResult[i] = 1;
+                limitsResult[i-Q_INIT_DISPLACEMENT] = 1;
             } else {
-                limitsResult[i] = -1;
+                limitsResult[i-Q_INIT_DISPLACEMENT] = -1;
             }
         }
         return limitsResult;
@@ -549,8 +554,8 @@ public class OptRecursive_Cons {
         //Middle term - temp = phi'*Q
         double phiQ = 0;
         //Do the multiplication manually:
-        for (int a = 0; a < Q.length; a++) {
-            phiQ = phi.get(a, 0) * Q[a] + phiQ;
+        for (int a = Q_INIT_DISPLACEMENT; a < Q.length; a++) {
+            phiQ = phi.get(a-Q_INIT_DISPLACEMENT, 0) * Q[a] + phiQ;
         }
         //Partial function to optimize =(Y-phi'*Q)'*(Y-phi'*Q)
         double f1 = (Y - phiQ) * (Y - phiQ);
