@@ -1,0 +1,16 @@
+This version of MUMPS is provided to you free of charge.
+It is public domain, based on public domain software developed
+during the Esprit IV European project PARASOL (1996-1999) by
+CERFACS, ENSEEIHT-IRIT and RAL. Since this first public domain
+version in 1999, the developments are supported by CERFACS,
+ENSEEIHT-IRIT, and INRIA.
+
+Main contributors are Patrick Amestoy, Iain Duff,
+Abdou Guermouche, Jacko Koster, Jean-Yves L'Excellent,
+and Stephane Pralet.
+
+Up-to-date copies of the MUMPS package can be obtained from
+the Web pages http://mumps.enseeiht.fr/ or http://graal.ens-lyon.fr/MUMPS
+
+THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY
+EXPRESSED OR IMPLIED. ANY USE IS AT YOUR OWN RISK. 
