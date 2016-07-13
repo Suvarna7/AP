@@ -83,6 +83,11 @@ public class HS071 extends Ipopt {
         assert n == this.n;
 
         obj_value[0] = x[0] * x[3] * (x[0] + x[1] + x[2]) + x[2];
+        
+        System.out.println("\n NEW ITERATION:");
+        System.out.println("X directly:");
+        for (double val: x)
+            System.out.println(val);
 
         return true;
     }
@@ -130,7 +135,7 @@ public class HS071 extends Ipopt {
         if (values == null) {
             /* return the structure of the jacobian */
 
- /* this particular jacobian is dense */
+            /* this particular jacobian is dense */
             iRow[0] = 0;
             jCol[0] = 0;
             iRow[1] = 0;
