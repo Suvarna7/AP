@@ -3,6 +3,7 @@ package jpopt;
 import org.coinor.Ipopt;
 import Jama.Matrix;
 import Jama.EigenvalueDecomposition;
+import static jpopt.JPOPT.printDoubleArrayMatrix;
 
 
 /**
@@ -45,7 +46,7 @@ public class OptRecursive extends Ipopt {
     public double err = 0;
     public Matrix Y_model;
     //Result of the optimization
-    private final Matrix Q_optimizing_keepValue = new Matrix(N_DEFAULT, 1);
+    public Matrix Q_optimizing_keepValue = new Matrix(N_DEFAULT, 1);
     public Matrix x_res;
     private Matrix fresult;
 
@@ -114,6 +115,7 @@ public class OptRecursive extends Ipopt {
             x_old_ARRAY[i] = previousQold[i][0];
             //System.out.print(i + ", ");
         }
+        this.Q_optimizing_keepValue = x_old;
         this.phi = phi;
 
         //Build the P matrix and its pseudo-inverse (pP) from phi and P_old
@@ -215,6 +217,10 @@ public class OptRecursive extends Ipopt {
             x_old_ARRAY[i] = previousQold[i][0];
             //System.out.print(i + ", ");
         }
+        //Update result value too 
+         Q_optimizing_keepValue = new Matrix (new double[][]{{0}, {0} , {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}});
+
+
         //Phi matrix 24x1
         double[] phiArray = new double[]{-300, -166, -162, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0.3,
@@ -246,6 +252,7 @@ public class OptRecursive extends Ipopt {
      */
     @Override
     protected boolean eval_f(int n, double[] x, boolean new_x, double[] obj_value) {
+        assert n == this.n;
 
         //Set the function to be optimized - V
         obj_value[0] = optimizationFunctionV(x);
@@ -261,6 +268,18 @@ public class OptRecursive extends Ipopt {
                 Q_values.add(doubleArray);
                 iterations++;
          */
+        //Store X value
+        double[][] array = new double[n][1];
+        for (int i = 0; i < n ; i ++){
+            array[i][0] = x[i];
+        }
+        System.out.println("\n NEW ITERATION:");
+        System.out.println("X directly:");
+        for (double val: x)
+            System.out.println(val);
+        JPOPT.printDoubleArrayMatrix(array, "X_current");
+        JPOPT.printDoubleArrayMatrix(Q_optimizing_keepValue.getArray(), "X_result_keep");
+
         return true;
     }
 
@@ -277,7 +296,8 @@ public class OptRecursive extends Ipopt {
      */
     @Override
     protected boolean eval_grad_f(int n, double[] x, boolean new_x, double[] grad_f) {
-       
+        assert n == this.n;
+
 
         return true;
     }
@@ -294,6 +314,9 @@ public class OptRecursive extends Ipopt {
      */
     @Override
     protected boolean eval_g(int n, double[] x, boolean new_x, int m, double[] g) {
+        assert n == this.n;
+        assert m == this.m;
+        
         double max_eigen = getConstraintValue(x); 
         g[0] = max_eigen;
         return true;
@@ -302,12 +325,16 @@ public class OptRecursive extends Ipopt {
     @Override
     protected boolean eval_jac_g(int n, double[] x, boolean new_x, int m, int nele_jac, int[] iRow, int[] jCol, double[] values) {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+       assert n == this.n;
+        assert m == this.m;
         return true;
     }
 
     @Override
     protected boolean eval_h(int n, double[] x, boolean new_x, double obj_factor, int m, double[] lambda, boolean new_lambda, int nele_hess, int[] iRow, int[] jCol, double[] values) {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+       // assert idx == nele_hess;
+            assert nele_hess == this.nele_hess;
         return true;
     }
     
