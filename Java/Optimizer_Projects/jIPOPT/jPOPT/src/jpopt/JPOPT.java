@@ -16,7 +16,7 @@ public class JPOPT {
      */
     public static void main(String[] args) {
         // Create the problem
-        HS071 hs071 = new HS071();
+        /*HS071 hs071 = new HS071();
 
         // Get the default initial guess
         double x[] = hs071.getInitialGuess();
@@ -25,7 +25,7 @@ public class JPOPT {
         hs071.solve(x);
 
         //Dispose of the optimization object
-        hs071.dispose();
+        hs071.dispose();*/
 
         /*System.out.println("RUN AGAIN!!!");
                 hs071 = new HS071();
@@ -34,9 +34,8 @@ public class JPOPT {
         //OptRecursive
         //OptRecursive(double Y, Matrix phi, Matrix Q_old, Matrix P_old, double lamda_old, double[] upperlimit, double[] lowerlimit) {
 
-        //OptRecursive opt = new OptRecursive();
-       
-        //opt.solve(opt.getInitialGuess());
+        OptRecursive opt = new OptRecursive();
+        opt.solve(opt.getInitialGuess());
     }
 
 }

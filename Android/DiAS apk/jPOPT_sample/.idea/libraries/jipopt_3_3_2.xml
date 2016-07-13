@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="jipopt-3.3.2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/app/libs/jipopt-3.3.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
