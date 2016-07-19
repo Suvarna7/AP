@@ -18,6 +18,7 @@ import com.empatica.empalink.config.EmpaSensorStatus;
 import com.empatica.empalink.config.EmpaSensorType;
 import com.empatica.empalink.config.EmpaStatus;
 import com.empatica.empalink.delegate.EmpaStatusDelegate;
+import com.empatica.sample.Server.IITServerConnector;
 
 
 /**
@@ -57,6 +58,9 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     private Context appContext;
 
 
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +97,8 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
             //Start background service
             startService(new Intent(this, BGService.class));
         }
+
+
 
 
     }
@@ -209,6 +215,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                 // Connect to the device
                 BGService.deviceManager.connectDevice(bluetoothDevice);
                 updateLabel(deviceNameLabel, "To: " + deviceName);
+
                 //In case it does not connect...
                 //Connect button visible, except when connected
                 runOnUiThread(new Runnable() {
