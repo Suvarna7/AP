@@ -40,8 +40,8 @@ public class IITServerConnector {
 	//JSON Identifier
 	public static final String JSON_ID_dias = "diasJSON";
 	//Server urls
-	public static final String IIT_SERVER_UPDATE_VALUES_URL = "http://216.47.158.133/mysqlSync/insert_into_table.php";
-	public static final String IIT_SERVER_READ_TABLE_URL = "http://216.47.158.133/mysqlSync/read_table_values.php";
+	public static final String IIT_SERVER_UPDATE_VALUES_URL = "http://216.47.158.133/phpSync/insert_into_table.php";
+	public static final String IIT_SERVER_READ_TABLE_URL = "http://216.47.158.133/phpSync/read_table_values.php";
 	//debug page private final String IIT_SERVER_URL =   "http://216.47.158.133/mysqlSync/insertzephyrvalues.php";
 	
 	private String JSON_ID;
