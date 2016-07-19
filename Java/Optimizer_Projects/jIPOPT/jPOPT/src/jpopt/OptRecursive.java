@@ -63,10 +63,10 @@ public class OptRecursive extends Ipopt {
 
         //2. Prepare the jIPOPT problem:
         /* Number of nonzeros in the Jacobian of the constraints */
-        nele_jac = 8;
+        nele_jac = 1;
         /* Number of nonzeros in the Hessian of the Lagrangian (lower or
                  * upper triangual part only) */
-        nele_hess = 10;
+        nele_hess = 1;
 
         /* set the number of variables and allocate space for the bounds */
         n = N_DEFAULT;
@@ -255,7 +255,13 @@ public class OptRecursive extends Ipopt {
         assert n == this.n;
 
         //Set the function to be optimized - V
-        obj_value[0] = optimizationFunctionV(x);
+        //obj_value[0] = optimizationFunctionV(x);
+        double sumation = 0 ;
+        for (double val: x)
+            sumation += val;
+        
+        obj_value[0] = sumation;
+
 
         //Save results:
         /*double[] Q_V = new double[N_DEFAULT + 2];
@@ -324,9 +330,11 @@ public class OptRecursive extends Ipopt {
 
     @Override
     protected boolean eval_jac_g(int n, double[] x, boolean new_x, int m, int nele_jac, int[] iRow, int[] jCol, double[] values) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-       assert n == this.n;
+         
+        assert n == this.n;
         assert m == this.m;
+
+       
         return true;
     }
 

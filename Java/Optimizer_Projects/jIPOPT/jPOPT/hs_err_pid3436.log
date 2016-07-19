@@ -1,0 +1,207 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x1605f420, pid=3436, tid=3616
+#
+# JRE version: Java(TM) SE Runtime Environment (8.0_91-b15) (build 1.8.0_91-b15)
+# Java VM: Java HotSpot(TM) Client VM (25.91-b15 mixed mode, sharing windows-x86 )
+# Problematic frame:
+# C  [jipopt.dll+0x5f420]
+#
+# Failed to write core dump. Minidumps are not enabled by default on client versions of Windows
+#
+# If you would like to submit a bug report, please visit:
+#   http://bugreport.java.com/bugreport/crash.jsp
+# The crash happened outside the Java Virtual Machine in native code.
+# See problematic frame for where to report the bug.
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x00dbc000):  JavaThread "main" [_thread_in_native, id=3616, stack(0x00800000,0x00850000)]
+
+siginfo: ExceptionCode=0xc0000005, reading address 0xce721d50
+
+Registers:
+EAX=0x00000001, EBX=0x0000000c, ECX=0xce721d50, EDX=0x14cbede8
+ESP=0x0084d630, EBP=0x00000003, ESI=0x00000003, EDI=0x14cc538c
+EIP=0x1605f420, EFLAGS=0x00010206
+
+Top of Stack: (sp=0x0084d630)
+0x0084d630:   00000020 00000018 00000000 00000000
+0x0084d640:   00000001 00000008 14cbede8 14cb69d0
+0x0084d650:   00000000 550cb313 00000000 00000000
+0x0084d660:   00000000 00000000 00000000 00000001
+0x0084d670:   00000000 14cb6910 00000000 00000000
+0x0084d680:   eb33ed66 00000000 000001a0 00000000
+0x0084d690:   00000000 00000000 00000000 00000000
+0x0084d6a0:   00000078 14cd3278 14cd26c0 14cc5350 
+
+Instructions: (pc=0x1605f420)
+0x1605f400:   24 98 04 00 00 8b 94 24 7c 01 00 00 8b 04 13 8d
+0x1605f410:   0c 87 8b 84 24 80 01 00 00 8b 04 03 89 44 24 3c
+0x1605f420:   83 39 ff 74 38 8d 04 ad 00 00 00 00 8b 94 24 b0
+0x1605f430:   06 00 00 8b ba 20 01 00 00 01 c7 89 7c 24 44 89 
+
+
+Register to memory mapping:
+
+EAX=0x00000001 is an unknown value
+EBX=0x0000000c is an unknown value
+ECX=0xce721d50 is an unknown value
+EDX=0x14cbede8 is an unknown value
+ESP=0x0084d630 is pointing into the stack for thread: 0x00dbc000
+EBP=0x00000003 is an unknown value
+ESI=0x00000003 is an unknown value
+EDI=0x14cc538c is an unknown value
+
+
+Stack: [0x00800000,0x00850000],  sp=0x0084d630,  free space=309k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+C  [jipopt.dll+0x5f420]
+
+Java frames: (J=compiled Java code, j=interpreted, Vv=VM code)
+j  org.coinor.Ipopt.IpoptSolve(J[D[D[D[D[D[D[D[D[D)I+0
+j  org.coinor.Ipopt.solve([D)I+48
+j  jpopt.JPOPT.main([Ljava/lang/String;)V+36
+v  ~StubRoutines::call_stub
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+  0x00cf7400 JavaThread "Service Thread" daemon [_thread_blocked, id=9016, stack(0x14bc0000,0x14c10000)]
+  0x00cd0400 JavaThread "C1 CompilerThread0" daemon [_thread_blocked, id=8356, stack(0x14b30000,0x14b80000)]
+  0x00ccf400 JavaThread "Attach Listener" daemon [_thread_blocked, id=4824, stack(0x14aa0000,0x14af0000)]
+  0x00ccd400 JavaThread "Signal Dispatcher" daemon [_thread_blocked, id=1744, stack(0x01040000,0x01090000)]
+  0x00cc3800 JavaThread "Finalizer" daemon [_thread_blocked, id=5644, stack(0x00fb0000,0x01000000)]
+  0x00c66400 JavaThread "Reference Handler" daemon [_thread_blocked, id=192, stack(0x00f20000,0x00f70000)]
+=>0x00dbc000 JavaThread "main" [_thread_in_native, id=3616, stack(0x00800000,0x00850000)]
+
+Other Threads:
+  0x00c62800 VMThread [stack: 0x00e90000,0x00ee0000] [id=7236]
+  0x00d05000 WatcherThread [stack: 0x14c50000,0x14ca0000] [id=8672]
+
+VM state:not at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread: None
+
+Heap:
+ def new generation   total 4928K, used 803K [0x04600000, 0x04b50000, 0x09b50000)
+  eden space 4416K,  18% used [0x04600000, 0x046c8d78, 0x04a50000)
+  from space 512K,   0% used [0x04a50000, 0x04a50000, 0x04ad0000)
+  to   space 512K,   0% used [0x04ad0000, 0x04ad0000, 0x04b50000)
+ tenured generation   total 10944K, used 0K [0x09b50000, 0x0a600000, 0x14600000)
+   the space 10944K,   0% used [0x09b50000, 0x09b50000, 0x09b50200, 0x0a600000)
+ Metaspace       used 96K, capacity 2312K, committed 2368K, reserved 4480K
+
+Card table byte_map: [0x00dc0000,0x00e50000] byte_map_base: 0x00d9d000
+
+Polling page: 0x00570000
+
+CodeCache: size=32768Kb used=701Kb max_used=701Kb free=32066Kb
+ bounds [0x02500000, 0x025b0000, 0x04500000]
+ total_blobs=172 nmethods=26 adapters=78
+ compilation: enabled
+
+Compilation events (10 events):
+Event: 0.095 Thread 0x00cd0400   22             java.lang.String::replace (127 bytes)
+Event: 0.096 Thread 0x00cd0400 nmethod 22 0x025abcc8 code [0x025abde0, 0x025ac060]
+Event: 0.112 Thread 0x00cd0400   23             Jama.Matrix::times (176 bytes)
+Event: 0.112 Thread 0x00cd0400 nmethod 23 0x025ac508 code [0x025ac650, 0x025aca2c]
+Event: 0.112 Thread 0x00cd0400   24 %           Jama.Matrix::times @ 122 (176 bytes)
+Event: 0.113 Thread 0x00cd0400 nmethod 24% 0x025acf88 code [0x025ad0e0, 0x025ad5ac]
+Event: 0.114 Thread 0x00cd0400   25             java.lang.Math::min (11 bytes)
+Event: 0.114 Thread 0x00cd0400 nmethod 25 0x025addc8 code [0x025adec0, 0x025adf30]
+Event: 0.115 Thread 0x00cd0400   26 %           Jama.LUDecomposition::solve @ 208 (264 bytes)
+Event: 0.116 Thread 0x00cd0400 nmethod 26% 0x025adf88 code [0x025ae140, 0x025ae794]
+
+GC Heap History (0 events):
+No events
+
+Deoptimization events (0 events):
+No events
+
+Internal exceptions (2 events):
+Event: 0.024 Thread 0x00dbc000 Exception <a 'java/lang/NoSuchMethodError': Method sun.misc.Unsafe.defineClass(Ljava/lang/String;[BII)Ljava/lang/Class; name or signature does not match> (0x046079d8) thrown at [C:\re\workspace\8-2-build-windows-i586-cygwin\jdk8u91\7017\hotspot\src\share\vPÿ$MÔMò?
+Event: 0.024 Thread 0x00dbc000 Exception <a 'java/lang/NoSuchMethodError': Method sun.misc.Unsafe.prefetchRead(Ljava/lang/Object;J)V name or signature does not match> (0x04607ca8) thrown at [C:\re\workspace\8-2-build-windows-i586-cygwin\jdk8u91\7017\hotspot\src\share\vm\prims\jni.cpp, l
+
+Events (10 events):
+Event: 0.073 loading class org/coinor/Ipopt
+Event: 0.073 loading class org/coinor/Ipopt done
+Event: 0.075 loading class java/lang/AssertionError
+Event: 0.075 loading class java/lang/AssertionError done
+Event: 0.095 loading class jpopt/OptRecursive
+Event: 0.095 loading class jpopt/OptRecursive done
+Event: 0.097 loading class Jama/Matrix
+Event: 0.097 loading class Jama/Matrix done
+Event: 0.113 loading class Jama/LUDecomposition
+Event: 0.113 loading class Jama/LUDecomposition done
+
+
+Dynamic libraries:
+0x010c0000 - 0x010f3000 	C:\Program Files (x86)\Java\jdk1.8.0_91\bin\java.exe
+0x77cb0000 - 0x77e2b000 	C:\WINDOWS\SYSTEM32\ntdll.dll
+0x76000000 - 0x760e0000 	C:\WINDOWS\SYSTEM32\KERNEL32.DLL
+0x779d0000 - 0x77b4e000 	C:\WINDOWS\SYSTEM32\KERNELBASE.dll
+0x741c0000 - 0x74252000 	C:\WINDOWS\system32\apphelp.dll
+0x763d0000 - 0x7644b000 	C:\WINDOWS\SYSTEM32\ADVAPI32.dll
+0x775c0000 - 0x7767e000 	C:\WINDOWS\SYSTEM32\msvcrt.dll
+0x75fb0000 - 0x75ff4000 	C:\WINDOWS\SYSTEM32\sechost.dll
+0x765e0000 - 0x7668d000 	C:\WINDOWS\SYSTEM32\RPCRT4.dll
+0x749e0000 - 0x749fe000 	C:\WINDOWS\SYSTEM32\SspiCli.dll
+0x749d0000 - 0x749da000 	C:\WINDOWS\SYSTEM32\CRYPTBASE.dll
+0x77910000 - 0x77968000 	C:\WINDOWS\SYSTEM32\bcryptPrimitives.dll
+0x760e0000 - 0x76227000 	C:\WINDOWS\SYSTEM32\USER32.dll
+0x77b50000 - 0x77c9f000 	C:\WINDOWS\SYSTEM32\GDI32.dll
+0x72c70000 - 0x72e7f000 	C:\WINDOWS\WinSxS\x86_microsoft.windows.common-controls_6595b64144ccf1df_6.0.10586.494_none_ea85e725b9ba5a4b\COMCTL32.dll
+0x76f90000 - 0x7714d000 	C:\WINDOWS\SYSTEM32\combase.dll
+0x74b10000 - 0x74b3b000 	C:\WINDOWS\SYSTEM32\IMM32.DLL
+0x55050000 - 0x5510d000 	C:\Program Files (x86)\Java\jdk1.8.0_91\jre\bin\msvcr100.dll
+0x54c80000 - 0x5504a000 	C:\Program Files (x86)\Java\jdk1.8.0_91\jre\bin\client\jvm.dll
+0x74aa0000 - 0x74aa6000 	C:\WINDOWS\SYSTEM32\PSAPI.DLL
+0x74310000 - 0x74318000 	C:\WINDOWS\SYSTEM32\WSOCK32.dll
+0x739e0000 - 0x73a04000 	C:\WINDOWS\SYSTEM32\WINMM.dll
+0x778a0000 - 0x778ff000 	C:\WINDOWS\SYSTEM32\WS2_32.dll
+0x743f0000 - 0x743f8000 	C:\WINDOWS\SYSTEM32\VERSION.dll
+0x739b0000 - 0x739d3000 	C:\WINDOWS\SYSTEM32\WINMMBASE.dll
+0x76a50000 - 0x76a87000 	C:\WINDOWS\SYSTEM32\cfgmgr32.dll
+0x5db10000 - 0x5db1c000 	C:\Program Files (x86)\Java\jdk1.8.0_91\jre\bin\verify.dll
+0x54c50000 - 0x54c71000 	C:\Program Files (x86)\Java\jdk1.8.0_91\jre\bin\java.dll
+0x5daf0000 - 0x5db03000 	C:\Program Files (x86)\Java\jdk1.8.0_91\jre\bin\zip.dll
+0x74b90000 - 0x75f8e000 	C:\WINDOWS\SYSTEM32\SHELL32.dll
+0x76a90000 - 0x76f8a000 	C:\WINDOWS\SYSTEM32\windows.storage.dll
+0x74b40000 - 0x74b85000 	C:\WINDOWS\SYSTEM32\shlwapi.dll
+0x77ca0000 - 0x77cac000 	C:\WINDOWS\SYSTEM32\kernel.appcore.dll
+0x769a0000 - 0x76a2d000 	C:\WINDOWS\SYSTEM32\shcore.dll
+0x77680000 - 0x776c4000 	C:\WINDOWS\SYSTEM32\powrprof.dll
+0x76810000 - 0x7681f000 	C:\WINDOWS\SYSTEM32\profapi.dll
+0x16000000 - 0x16463000 	C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Java\Optimizer_Projects\jIPOPT\jPOPT\lib\jipopt.dll
+0x73550000 - 0x7368f000 	C:\WINDOWS\SYSTEM32\dbghelp.dll
+
+VM Arguments:
+jvm_args: -Dfile.encoding=UTF-8 
+java_command: jpopt.JPOPT
+java_class_path (initial): C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Java\Optimizer_Projects\jIPOPT\jPOPT\lib\jipopt-3.3.2.jar;C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Java\DIAS\libs\Jama-1.0.3.jar;C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Java\Optimizer_Projects\jIPOPT\jPOPT\build\classes
+Launcher Type: SUN_STANDARD
+
+Environment Variables:
+PATH=C:\ProgramData\Oracle\Java\javapath;C:\Program Files (x86)\Intel\iCLS Client\;C:\Program Files\Intel\iCLS Client\;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\Intel\OpenCL SDK\2.0\bin\x86;C:\Program Files (x86)\Intel\OpenCL SDK\2.0\bin\x64;C:\Program Files (x86)\Windows Live\Shared;C:\Program Files\Intel\WiFi\bin\;C:\Program Files\Common Files\Intel\WirelessCommon\;C:\Program Files (x86)\Skype\Phone\;C:\Program Files (x86)\PharosSystems\Core;C:\Program Files\Calibre2\;C:\Program Files\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files\MATLAB\R2014a\runtime\win64;C:\Program Files\MATLAB\R2014a\bin;C:\Program Files\MATLAB\R2014a\polyspace\bin;C:\Program Files\Perforce;C:\Program Files\Perforce\DVCS\;C:\Program Files (x86)\Nmap
+USERNAME=Cat
+OS=Windows_NT
+PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 58 Stepping 9, GenuineIntel
+
+
+
+---------------  S Y S T E M  ---------------
+
+OS: Windows 10.0 , 64 bit Build 10586 (10.0.10586.0)
+
+CPU:total 4 (2 cores per cpu, 2 threads per core) family 6 model 58 stepping 9, cmov, cx8, fxsr, mmx, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, avx, aes, clmul, erms, ht, tsc, tscinvbit, tscinv
+
+Memory: 4k page, physical 8271552k(2617920k free), swap 9582272k(3463424k free)
+
+vm_info: Java HotSpot(TM) Client VM (25.91-b15) for windows-x86 JRE (1.8.0_91-b15), built on May 20 2016 17:33:18 by "java_re" with MS VC++ 10.0 (VS2010)
+
+time: Wed Jul 13 17:03:34 2016
+elapsed time: 0 seconds (0d 0h 0m 0s)
+

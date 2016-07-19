@@ -16,7 +16,7 @@ public class JPOPT {
      */
     public static void main(String[] args) {
         // Create the problem
-        HS071 hs071 = new HS071();
+        /*HS071 hs071 = new HS071();
 
         // Get the default initial guess
         double x[] = hs071.getInitialGuess();

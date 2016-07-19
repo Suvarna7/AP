@@ -67,10 +67,10 @@ public class HS071 extends Ipopt {
     public double[] getInitialGuess() {
         /* allocate space for the initial point and set the values */
         double x[] = new double[4];
-        x[0] = 1.0;
-        x[1] = 5.0;
-        x[2] = 5.0;
-        x[3] = 1.0;
+        x[0] = 0;
+        x[1] = 0;
+        x[2] = 0;
+        x[3] = 0;
 
         return x;
     }
