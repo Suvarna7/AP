@@ -19,6 +19,7 @@ import com.empatica.empalink.config.EmpaSensorType;
 import com.empatica.empalink.config.EmpaStatus;
 import com.empatica.empalink.delegate.EmpaStatusDelegate;
 import com.empatica.sample.Server.IITServerConnector;
+import com.empatica.sample.USB.USBHost;
 
 
 /**
@@ -33,7 +34,7 @@ import com.empatica.sample.Server.IITServerConnector;
 public class MainActivity extends AppCompatActivity implements EmpaStatusDelegate   {
 
     private static final int REQUEST_ENABLE_BT = 1;
-    private static final long STREAMING_TIME = 600000; // Stops streaming 10 min after connection
+    public static final long STREAMING_TIME = 600000; // Stops streaming 10 min after connection
     public static final String EMPATICA_API_KEY = "f92ddb7260a54f5790038ba90ef4d1ad"; // TODO insert your API Key here
 
     //GUI labels
@@ -52,11 +53,13 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     public static Button connectButton;
     private Button stopServiceButton;
     private Button startServiceButton;
-
+    private Button connectUSBButton;
 
     //App context
     private Context appContext;
 
+    //USB Connection
+    USBHost mHost;
 
 
 
@@ -88,8 +91,15 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
         startServiceButton = (Button) findViewById(R.id.start_service_button);
         startServiceButton.setOnClickListener(startListener);
 
+        connectUSBButton = (Button) findViewById(R.id.connect_usb_button);
+        connectUSBButton.setOnClickListener(connectToPcListener);
+
+
         //Set context
         appContext = this;
+
+        //USB Connect start
+        mHost = new USBHost(this);
 
         //Start service
         BGService.initContext(this);
@@ -97,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
             //Start background service
             startService(new Intent(this, BGService.class));
         }
+
 
 
 
@@ -376,6 +387,21 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
 
 
             }
+
+        }
+    };
+
+    View.OnClickListener connectToPcListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            //
+            mHost.intent = new Intent(mHost.ctx, MainActivity.class);
+            mHost.mHandler=new Handler();
+
+            //initialize server socket in a new separate thread
+            new Thread(mHost.initializeConnection).start();
+            String msg="Attempting to connect…";
+            Toast.makeText(mHost.ctx, msg, Toast.LENGTH_LONG).show();
 
         }
     };

@@ -3,6 +3,7 @@ package com.empatica.sample;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.IBinder;
 import android.widget.Toast;
 import com.empatica.empalink.EmpaDeviceManager;
@@ -32,7 +33,7 @@ import java.util.TimerTask;
  */
 
 public class BGService extends Service implements EmpaDataDelegate{
-	
+
 	private boolean tableInit;
 	private int index;
     private static MainActivity mActivity;
@@ -67,6 +68,10 @@ public class BGService extends Service implements EmpaDataDelegate{
     private static float last_IBI;
     private static float last_GSR;
     private static final float _ZERO_FLOAT = new Float(0.00000000);
+
+
+    //Fields to verify key
+    public static Timer verifyKeyTimer;
 
     //Sample order
     private static final int CURRENT_SAMPLE = 0;
@@ -121,6 +126,9 @@ public class BGService extends Service implements EmpaDataDelegate{
         startTimer = true;
         connectionEstablishedFlag = false;
 
+        //Set up verify KEY
+        verifyKeyTimer = new Timer();
+
         //Current context
         //serviceContxt = this;
 
@@ -163,6 +171,8 @@ public class BGService extends Service implements EmpaDataDelegate{
         //Timer to check the connection
         startPeriodicTimer();
 
+        //TODO Start key verification timer
+        startPeriodicVerificationOfKey(MainActivity.STREAMING_TIME);
 
         //Update values in table
         return 0;
@@ -175,6 +185,8 @@ public class BGService extends Service implements EmpaDataDelegate{
 
             //Stop timer
             notConnectedTimer.cancel();
+
+            verifyKeyTimer. cancel();
 
 
 
@@ -334,6 +346,34 @@ public class BGService extends Service implements EmpaDataDelegate{
 
             }
         }, 60000, 60000);
+    }
+
+   /**
+    * Verify KEY every 25 min
+    * @param period_time
+    */
+    private void startPeriodicVerificationOfKey(long period_time){
+        //Create and start periodic timer
+        //Start a a timer
+        verifyKeyTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                //Verify key if there is internet available
+                ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                System.out.println ("Timer went off!!!");
+
+                if (cm.getActiveNetworkInfo() != null && deviceManager !=null) {
+                    //Verify key
+                    deviceManager.authenticateWithAPIKey(mActivity.EMPATICA_API_KEY);
+                    System.out.println ("Verifying key !!!");
+                }
+
+
+            }
+        }, 60000, period_time);
+
+        // Check whether there is internet connection
+
     }
 
     /* **********************************************
