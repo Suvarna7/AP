@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     private Context appContext;
 
     //USB Connection
-    USBHost mHost;
+    public static USBHost mHost;
 
 
 
@@ -378,6 +378,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
      */
     private View.OnClickListener startListener = new View.OnClickListener() {
         public void onClick(View view) {
+            mHost.sendUSBmessage("Start");
             if (!BGService.serviceStarted ){
                 //Stop service
                 startService(new Intent(appContext, BGService.class));

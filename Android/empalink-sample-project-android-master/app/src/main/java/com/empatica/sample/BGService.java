@@ -10,6 +10,7 @@ import com.empatica.empalink.EmpaDeviceManager;
 import com.empatica.empalink.delegate.EmpaDataDelegate;
 import com.empatica.sample.Database.IITDatabaseManager;
 import com.empatica.sample.Server.IITServerConnector;
+import com.empatica.sample.USB.USBHost;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -235,6 +236,9 @@ public class BGService extends Service implements EmpaDataDelegate{
             receivedSamples ++;
             gsrNotReceived = false;
         }
+
+        //Try sending msg:
+        MainActivity.mHost.sendUSBmessage("GSR - "+gsr);
 
 
     }

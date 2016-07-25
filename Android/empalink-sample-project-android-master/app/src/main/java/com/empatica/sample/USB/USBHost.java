@@ -20,7 +20,7 @@ public class USBHost {
 
     //Socket server variables
     ServerSocket server=null;
-    private String connectionStatus=null;
+    public  String connectionStatus=null;
     public static final int TIMEOUT=300; //Seconds
     public Intent intent;
     private static final int ANDROID_LOCAL_HOST = 38300;
@@ -40,6 +40,17 @@ public class USBHost {
 
     public USBHost (Context context){
         ctx = context;
+    }
+
+    public void sendUSBmessage(String msg){
+        if (socketOut != null) {
+            System.out.println("send msg");
+            //socketOut.print(msg);
+            socketOut.println(msg);
+            socketOut.flush();
+        }else
+            System.out.println("msg not sent");
+
     }
 
     //**************************************************
