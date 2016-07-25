@@ -154,6 +154,17 @@
             android:layout_height="wrap_content"
             android:id="@+id/battery"
             android:text="@string/emptyText"/>
+        <Button
+            android:id="@+id/connect_usb_button"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginTop="10dp"
+            android:padding="10dp"
+            android:layout_below="@id/battery"
+            android:text="@string/string_connect_usb"
+            android:textColor = "@color/white_paleta"
+            android:background="@color/ligher_green_paleta"
+            />
 
 
     </RelativeLayout>
@@ -168,6 +179,8 @@
         android:textColor = "@color/white_paleta"
         android:background ="@color/ligher_green_paleta"
         />
+
+
 
     <Button
         android:id="@+id/stop_service_button"

@@ -3,6 +3,7 @@ package com.empatica.sample;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.IBinder;
 import android.widget.Toast;
 import com.empatica.empalink.EmpaDeviceManager;
@@ -43,6 +44,9 @@ public class BGService extends Service implements EmpaDataDelegate{
     public static boolean startTimer;
     public static Timer notConnectedTimer;
     private static boolean connectionEstablishedFlag;
+
+    //Fields to verify key
+    public static Timer verifyKeyTimer;
 
     //Fields to store received information
     //Arrays:
@@ -116,10 +120,13 @@ public class BGService extends Service implements EmpaDataDelegate{
         // Initialize the Device Manager using your API key. You need to have Internet access at this point.
         deviceManager.authenticateWithAPIKey(mActivity.EMPATICA_API_KEY);
 
+
         //Set up connection check
         notConnectedTimer = new Timer();
         startTimer = true;
         connectionEstablishedFlag = false;
+        //Set up verify KEY
+        verifyKeyTimer = new Timer();
 
         //Current context
         //serviceContxt = this;
@@ -163,6 +170,9 @@ public class BGService extends Service implements EmpaDataDelegate{
         //Timer to check the connection
         startPeriodicTimer();
 
+        //TODO Start key verification timer
+        startPeriodicVerificationOfKey(MainActivity.STREAMING_TIME);
+
 
         //Update values in table
         return 0;
@@ -175,11 +185,14 @@ public class BGService extends Service implements EmpaDataDelegate{
 
             //Stop timer
             notConnectedTimer.cancel();
+            verifyKeyTimer. cancel();
 
 
 
 
         }
+
+
 
     /**********************************
      * Empatica callbacks
@@ -285,7 +298,7 @@ public class BGService extends Service implements EmpaDataDelegate{
     public void didReceiveBatteryLevel(float battery, double time_stamp) {
 
         mActivity.updateLabel(mActivity.batteryLabel, String.format("%.0f %%", battery * 100));
-        storeNewSample(""+battery +"", batteryValues, time_stamp);
+        storeNewSample("" + battery + "", batteryValues, time_stamp);
 
         //Update number of received samples:
         if (batteryNotReceived){
@@ -334,6 +347,34 @@ public class BGService extends Service implements EmpaDataDelegate{
 
             }
         }, 60000, 60000);
+    }
+
+    /**
+     * Verify KEY every 25 min
+     * @param period_time
+     */
+    private void startPeriodicVerificationOfKey(long period_time){
+        //Create and start periodic timer
+        //Start a a timer
+        verifyKeyTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                //Verify key if there is internet available
+                ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                System.out.println ("Timer went off!!!");
+
+                if (cm.getActiveNetworkInfo() != null && deviceManager !=null) {
+                    //Verify key
+                    deviceManager.authenticateWithAPIKey(mActivity.EMPATICA_API_KEY);
+                    System.out.println ("Verifying key !!!");
+                }
+
+
+            }
+        }, 60000, period_time);
+
+        // Check whether there is internet connection
+
     }
 
     /* **********************************************

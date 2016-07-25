@@ -13,6 +13,8 @@
     <string name = "string_connect"> Connect </string>
     <string name = "string_stop_service"> STOP service </string>
     <string name = "string_start_service"> START service </string>
+    <string name = "string_connect_usb"> CONNECT USB </string>
+
 
 
 </resources>
