@@ -113,7 +113,7 @@ public class IITDatabaseManager {
      * @param values
      * @param store whether to store new values or delete table
      */
-    public void updateDatabaseTable (String table, List<String> values, boolean store){
+    public void updateDatabaseTable (String table, ThreadSafeArrayList<String> values, boolean store){
         //Open db
         db=dbContext.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READWRITE, null);
         if (store){
@@ -142,7 +142,7 @@ public class IITDatabaseManager {
      * @param table name of the table
      * @param values List of the values: should be Strings of type 'value1', 'value2'...
      */
-    private void storeValuesInTable(String table, List<String> values){
+    private void storeValuesInTable(String table, ThreadSafeArrayList<String> values){
 
         try{
             String inQueryValues = "(";

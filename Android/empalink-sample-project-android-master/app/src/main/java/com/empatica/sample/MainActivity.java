@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
 
     //App context
     private Context appContext;
+    private MainActivity appMain;
 
     //USB Connection
     public static USBHost mHost;
@@ -97,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
 
         //Set context
         appContext = this;
+        appMain = this;
 
         //USB Connect start
         mHost = new USBHost(this);
@@ -380,7 +382,8 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
         public void onClick(View view) {
             mHost.sendUSBmessage("Start");
             if (!BGService.serviceStarted ){
-                //Stop service
+                //Start service
+                BGService.initContext(appMain);
                 startService(new Intent(appContext, BGService.class));
                 BGService.serviceStarted = true;
                 view.setBackgroundColor(getResources().getColor(R.color.dark_green_paleta));

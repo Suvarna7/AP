@@ -9,6 +9,7 @@ import android.widget.Toast;
 import com.empatica.empalink.EmpaDeviceManager;
 import com.empatica.empalink.delegate.EmpaDataDelegate;
 import com.empatica.sample.Database.IITDatabaseManager;
+import com.empatica.sample.Database.ThreadSafeArrayList;
 import com.empatica.sample.Server.IITServerConnector;
 import com.empatica.sample.USB.USBHost;
 
@@ -48,7 +49,7 @@ public class BGService extends Service implements EmpaDataDelegate{
 
     //Fields to store received information
     //Arrays:
-    private static List<List<String>> receivedData;
+    private static List<ThreadSafeArrayList<String>> receivedData;
     private static List<Map<String, String>> toBeSentData;
     private static String[] xAccelValues;
     private static String[] yAccelValues;
@@ -134,7 +135,7 @@ public class BGService extends Service implements EmpaDataDelegate{
         //serviceContxt = this;
 
         //Initialize data collection
-        receivedData = new ArrayList<List<String>>();
+        receivedData = new ArrayList<ThreadSafeArrayList<String>>();
         toBeSentData = new ArrayList<Map<String,String>>();
         currentTimeStamp = 0;
         receivedSamples = 0;
@@ -237,8 +238,7 @@ public class BGService extends Service implements EmpaDataDelegate{
             gsrNotReceived = false;
         }
 
-        //Try sending msg:
-        MainActivity.mHost.sendUSBmessage("GSR - "+gsr);
+
 
 
     }
@@ -328,9 +328,12 @@ public class BGService extends Service implements EmpaDataDelegate{
                     String jSon =  myServerManager.convertToJSON(toBeSentData);
                     //myServerManager.debugServer("samples");
                     myServerManager.sendToIIT(jSon, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
+                    //Send thru USB
+                    //Try sending msg:
+                    MainActivity.mHost.sendUSBmessage(jSon);
                     //Reset values:
                     toBeSentData = new ArrayList<Map<String, String>>();
-                    receivedData = new ArrayList<List<String>>();
+                    receivedData = new ArrayList<ThreadSafeArrayList<String>>();
                 }
 
                 //DEBUG Table
@@ -466,7 +469,7 @@ public class BGService extends Service implements EmpaDataDelegate{
 
     private static void saveInGlobalList(int sample, double time_stamp){
         if (sample == CURRENT_SAMPLE ){
-            List<String> tempList= new ArrayList<>();
+            ThreadSafeArrayList<String> tempList= new ThreadSafeArrayList<>();
             Map<String, String> tempMap = new HashMap<String, String>();
 
             // Add to the list string:
@@ -476,31 +479,31 @@ public class BGService extends Service implements EmpaDataDelegate{
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.sss", Locale.getDefault());
             String formatTimeStamp = dateFormat.format(time);
             //formatTimeStamp = ""+ formatTimeStamp.substring(0, formatTimeStamp.length() ) +"";
-            tempList.add("'"+ formatTimeStamp.substring(0, formatTimeStamp.length() ) +"'");
+            tempList.set("'"+ formatTimeStamp.substring(0, formatTimeStamp.length() ) +"'");
             tempMap.put(columnsTable[0], formatTimeStamp);
             //Add the other values
-            tempList.add(xAccelValues[sample]);
+            tempList.set(xAccelValues[sample]);
             tempMap.put(columnsTable[1], xAccelValues[sample]);
 
-            tempList.add(yAccelValues[sample]);
+            tempList.set(yAccelValues[sample]);
             tempMap.put(columnsTable[2], yAccelValues[sample]);
 
-            tempList.add(zAccelValues[sample]);
+            tempList.set(zAccelValues[sample]);
             tempMap.put(columnsTable[3], zAccelValues[sample]);
 
-            tempList.add(gsrValues[sample]);
+            tempList.set(gsrValues[sample]);
             tempMap.put(columnsTable[4], gsrValues[sample]);
 
-            tempList.add(bvpValues[sample]);
+            tempList.set(bvpValues[sample]);
             tempMap.put(columnsTable[5], bvpValues[sample]);
 
-            tempList.add(ibiValues[sample]);
+            tempList.set(ibiValues[sample]);
             tempMap.put(columnsTable[6], ibiValues[sample]);
 
-            tempList.add(temperatureValues[sample]);
+            tempList.set(temperatureValues[sample]);
             tempMap.put(columnsTable[7], temperatureValues[sample]);
 
-            tempList.add(batteryValues[sample]);
+            tempList.set(batteryValues[sample]);
             tempMap.put(columnsTable[8], batteryValues[sample]);
 
             //tempList.add(updated);
