@@ -169,6 +169,7 @@ public class BGService extends Service implements EmpaDataDelegate{
         Toast.makeText(this, " Service Started", Toast.LENGTH_LONG).show();
 
 
+
         //Start connection timer
         //Timer to check the connection
         startPeriodicTimer();
@@ -187,8 +188,11 @@ public class BGService extends Service implements EmpaDataDelegate{
 
             //Stop timer
             notConnectedTimer.cancel();
-
             verifyKeyTimer. cancel();
+
+            //Stop reader thread
+            MainActivity.mHost.readingThread.shutdown();
+
 
 
 
@@ -216,6 +220,9 @@ public class BGService extends Service implements EmpaDataDelegate{
             accelerationNotReceived = false;
         }
 
+        //TODO USB COMMAND UPDATE
+        mActivity.updateLabel(mActivity.usbCommand, "---");
+        mActivity.updateLabel(mActivity.usbCommand, MainActivity.usbCommandValue);
 
 
     }
@@ -237,6 +244,8 @@ public class BGService extends Service implements EmpaDataDelegate{
             receivedSamples ++;
             gsrNotReceived = false;
         }
+
+
 
 
 
@@ -331,6 +340,7 @@ public class BGService extends Service implements EmpaDataDelegate{
                     //Send thru USB
                     //Try sending msg:
                     MainActivity.mHost.sendUSBmessage(jSon);
+
                     //Reset values:
                     toBeSentData = new ArrayList<Map<String, String>>();
                     receivedData = new ArrayList<ThreadSafeArrayList<String>>();

@@ -30,6 +30,9 @@ public class USBHost {
     PrintWriter socketOut;
     Socket client=null;
 
+    //Reading thread
+    public USBReadThread readingThread;
+
 
     private int sequence;
     //Tags
@@ -39,7 +42,10 @@ public class USBHost {
     public Handler mHandler;
 
     public USBHost (Context context){
+
         ctx = context;
+        readingThread = new USBReadThread(this);
+
     }
 
     public void sendUSBmessage(String msg){
@@ -80,6 +86,9 @@ public class USBHost {
                 connectionStatus="Socket in";
                 mHandler.post(showConnectionStatus);
                 socketOut = new PrintWriter(client.getOutputStream(), true);
+
+                //Start reading thread:
+                readingThread.run();
 
             } catch (SocketTimeoutException e) {
                 // print out TIMEOUT

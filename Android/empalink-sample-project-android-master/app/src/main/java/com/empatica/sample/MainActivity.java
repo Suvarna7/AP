@@ -61,6 +61,9 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
 
     //USB Connection
     public static USBHost mHost;
+    public TextView usbCommand;
+    public static String usbCommandValue;
+
 
 
 
@@ -95,6 +98,8 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
         connectUSBButton = (Button) findViewById(R.id.connect_usb_button);
         connectUSBButton.setOnClickListener(connectToPcListener);
 
+        usbCommand =(TextView) findViewById(R.id.command_usb);
+
 
         //Set context
         appContext = this;
@@ -110,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
             startService(new Intent(this, BGService.class));
         }
 
-
+        usbCommandValue ="waiting for a command..";
 
 
 
@@ -409,4 +414,9 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
 
         }
     };
+
+    public static void setCommandValue(String val){
+        usbCommandValue = val;
+
+    }
 }
