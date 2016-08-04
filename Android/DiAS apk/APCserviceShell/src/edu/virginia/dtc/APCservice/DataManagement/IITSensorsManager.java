@@ -248,9 +248,9 @@ public class IITSensorsManager {
 
 	/**
 	 * Read IIT tables stored in the device
-	 * @param sendArgs
-	 * @param tableName
-	 * @param bmAlgorithm
+	 * @param sendArgs - values to be sent to the server
+	 * @param tableName - table we want to read from local database
+	 * @param algorithmArray - values to be used in the algorithm
 	 */
 
 
