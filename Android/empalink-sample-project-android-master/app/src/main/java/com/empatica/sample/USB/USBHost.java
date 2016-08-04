@@ -6,6 +6,9 @@
         import android.util.Log;
         import android.widget.Toast;
 
+        import com.empatica.sample.MainActivity;
+        import com.empatica.sample.R;
+
         import java.io.IOException;
         import java.io.PrintWriter;
         import java.net.ServerSocket;
@@ -23,7 +26,7 @@ public class USBHost {
     public  String connectionStatus=null;
     public static final int TIMEOUT=300; //Seconds
     public Intent intent;
-    private static final int ANDROID_LOCAL_HOST = 38300;
+    private static final int ANDROID_LOCAL_HOST = 38600;
 
     //Socekts
     Scanner socketIn;
@@ -39,10 +42,11 @@ public class USBHost {
     public static final String TAG= "Connection";
 
     public static Context ctx;
+    private MainActivity mActivity;
     public Handler mHandler;
 
-    public USBHost (Context context){
-
+    public USBHost (Context context, MainActivity activity){
+        mActivity = activity;
         ctx = context;
         readingThread = new USBReadThread(this);
 
@@ -86,6 +90,12 @@ public class USBHost {
                 connectionStatus="Socket in";
                 mHandler.post(showConnectionStatus);
                 socketOut = new PrintWriter(client.getOutputStream(), true);
+
+                //Change Conenct USB Button
+                mActivity.updateButton(mActivity.connectUSBButton, "CONNECTED", ctx.getResources().getColor(R.color.dark_green_paleta));
+
+
+
 
                 //Start reading thread:
                 readingThread.run();

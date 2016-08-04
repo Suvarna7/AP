@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -18,7 +19,6 @@ import com.empatica.empalink.config.EmpaSensorStatus;
 import com.empatica.empalink.config.EmpaSensorType;
 import com.empatica.empalink.config.EmpaStatus;
 import com.empatica.empalink.delegate.EmpaStatusDelegate;
-import com.empatica.sample.Server.IITServerConnector;
 import com.empatica.sample.USB.USBHost;
 
 
@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     public static final String EMPATICA_API_KEY = "f92ddb7260a54f5790038ba90ef4d1ad"; // TODO insert your API Key here
 
     //GUI labels
+    public TextView internet_conn;
     public TextView accel_xLabel;
     public TextView accel_yLabel;
     public TextView accel_zLabel;
@@ -53,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     public static Button connectButton;
     private Button stopServiceButton;
     private Button startServiceButton;
-    private Button connectUSBButton;
+    public Button connectUSBButton;
 
     //App context
     private Context appContext;
@@ -74,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
         setContentView(R.layout.activity_main);
 
         // Initialize vars that reference UI components
+        internet_conn = (TextView) findViewById(R.id.internetConnection);
         statusLabel = (TextView) findViewById(R.id.status);
         dataCnt = (RelativeLayout) findViewById(R.id.dataArea);
         accel_xLabel = (TextView) findViewById(R.id.accel_x);
@@ -106,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
         appMain = this;
 
         //USB Connect start
-        mHost = new USBHost(this);
+        mHost = new USBHost(this, this);
 
         //Start service
         BGService.initContext(this);
@@ -328,12 +330,22 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     }
 
 
-                     // Update a label with some text, making sure this is run in the UI thread
+    // Update a label with some text, making sure this is run in the UI thread
         public void updateLabel(final TextView label, final String text) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 label.setText(text);
+            }
+        });
+    }
+
+    public void updateButton(final TextView button, final String text, final int color) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                button.setText(text);
+                button.setBackgroundColor(color);
             }
         });
     }
@@ -351,8 +363,15 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
             if (BGService.deviceManager != null){
                 //If deviceManager is scanning, we stop it
                 BGService.deviceManager.stopScanning();
-                //Change empastatus to ready
-                BGService.deviceManager.authenticateWithAPIKey(EMPATICA_API_KEY);
+                //Change empastatus to ready if there is Internet connection
+                ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                if (cm.getActiveNetworkInfo() != null) {
+                    BGService.deviceManager.authenticateWithAPIKey(EMPATICA_API_KEY);
+                    updateLabel(internet_conn, "INTERNET");
+
+                }else
+                    //No itnernet connection - WE CAN NOT USE THE APP
+                    updateLabel(internet_conn, "NO INTERNET");
                 //BGService.deviceManager.startScanning();
                 view.setVisibility(View.INVISIBLE);
                 view.setBackgroundColor(getResources().getColor(R.color.ligher_green_paleta));
@@ -385,12 +404,13 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
      */
     private View.OnClickListener startListener = new View.OnClickListener() {
         public void onClick(View view) {
-            mHost.sendUSBmessage("Start");
+            //mHost.sendUSBmessage("Start");
             if (!BGService.serviceStarted ){
                 //Start service
                 BGService.initContext(appMain);
                 startService(new Intent(appContext, BGService.class));
                 BGService.serviceStarted = true;
+                int c = getResources().getColor(R.color.dark_green_paleta);
                 view.setBackgroundColor(getResources().getColor(R.color.dark_green_paleta));
                 stopServiceButton.setBackgroundColor(getResources().getColor(R.color.ligher_green_paleta));
 

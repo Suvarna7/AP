@@ -51,6 +51,7 @@ public class BGService extends Service implements EmpaDataDelegate{
     //Arrays:
     private static List<ThreadSafeArrayList<String>> receivedData;
     private static List<Map<String, String>> toBeSentData;
+    public static List<String> usbReadyData;
     private static String[] xAccelValues;
     private static String[] yAccelValues;
     private static String[] zAccelValues;
@@ -121,7 +122,14 @@ public class BGService extends Service implements EmpaDataDelegate{
         // Create a new EmpaDeviceManager. Service is both its data  delegate and MainActivity its status delegate.
         deviceManager = new EmpaDeviceManager(mActivity.getApplicationContext(), this, mActivity);
         // Initialize the Device Manager using your API key. You need to have Internet access at this point.
-        deviceManager.authenticateWithAPIKey(mActivity.EMPATICA_API_KEY);
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (cm.getActiveNetworkInfo() != null) {
+            deviceManager.authenticateWithAPIKey(mActivity.EMPATICA_API_KEY);
+            mActivity.updateLabel(mActivity.internet_conn, "INTERNET");
+        }else
+            //No itnernet connection - WE CAN NOT USE THE APP
+            mActivity.updateLabel(mActivity.internet_conn , "NO INTERNET");
+
 
         //Set up connection check
         notConnectedTimer = new Timer();
@@ -137,6 +145,7 @@ public class BGService extends Service implements EmpaDataDelegate{
         //Initialize data collection
         receivedData = new ArrayList<ThreadSafeArrayList<String>>();
         toBeSentData = new ArrayList<Map<String,String>>();
+        usbReadyData = new ArrayList<String>();
         currentTimeStamp = 0;
         receivedSamples = 0;
         nextTimeStamp = 0;
@@ -337,9 +346,11 @@ public class BGService extends Service implements EmpaDataDelegate{
                     String jSon =  myServerManager.convertToJSON(toBeSentData);
                     //myServerManager.debugServer("samples");
                     myServerManager.sendToIIT(jSon, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
-                    //Send thru USB
-                    //Try sending msg:
-                    MainActivity.mHost.sendUSBmessage(jSon);
+                    //Prepare Data for USB REQUES
+                    usbReadyData.add(jSon);
+
+                    //Automatically send USB data every minute
+                    // MainActivity.mHost.sendUSBmessage(jSon);
 
                     //Reset values:
                     toBeSentData = new ArrayList<Map<String, String>>();
@@ -377,13 +388,17 @@ public class BGService extends Service implements EmpaDataDelegate{
             public void run() {
                 //Verify key if there is internet available
                 ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-                System.out.println ("Timer went off!!!");
+                System.out.println("Timer went off!!!");
 
                 if (cm.getActiveNetworkInfo() != null && deviceManager !=null) {
                     //Verify key
                     deviceManager.authenticateWithAPIKey(mActivity.EMPATICA_API_KEY);
+                    mActivity.updateLabel(mActivity.internet_conn, "INTERNET");
+
                     System.out.println ("Verifying key !!!");
-                }
+                }else
+                    //No itnernet connection - WE CAN NOT USE THE APP
+                     mActivity.updateLabel(mActivity.internet_conn, "NO INTERNET");
 
 
             }
@@ -486,7 +501,7 @@ public class BGService extends Service implements EmpaDataDelegate{
             //Prepare time_stamp:
             double time = time_stamp * 1000;
             /// DateTimeInstance dateTime = new DateTimeInstance();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.sss", Locale.getDefault());
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
             String formatTimeStamp = dateFormat.format(time);
             //formatTimeStamp = ""+ formatTimeStamp.substring(0, formatTimeStamp.length() ) +"";
             tempList.set("'"+ formatTimeStamp.substring(0, formatTimeStamp.length() ) +"'");

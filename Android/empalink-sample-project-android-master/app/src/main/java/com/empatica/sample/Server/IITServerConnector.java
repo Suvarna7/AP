@@ -169,7 +169,12 @@ public  String convertToJSON( List<Map<String, String>> args){
 	String json = "";
 	Gson gson = new GsonBuilder().create();
 	//Use GSON to serialize Array List to JSON
-	json= gson.toJson(args);
+	try {
+		json = gson.toJson(args);
+	}catch (Exception e){
+		System.out.println("Could not convert to JSON!");
+		}
+
 	return json;
 }
 

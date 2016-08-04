@@ -155,7 +155,7 @@ public class IITDatabaseManager {
             }
             //Last column: updated in phone = no
             inQueryValues += syncStatusNo + ", " +updatedStatusNo+")";
-            System.out.println(inQueryValues);
+            //System.out.println(inQueryValues);
 
             //Execute query
             if (!inQueryValues.contains("null") && inQueryValues.substring(inQueryValues.length() - 1).equals(")"))
