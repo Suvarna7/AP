@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	android:versionCode="1"
 	android:versionName="1.0" 
+	android:sharedUserId="android.uid.ap"
+	    android:sharedUserLabel="@string/sharedUserLabel"
 	package="edu.virginia.dtc.APCservice">
 	<uses-sdk android:minSdkVersion="9" android:targetSdkVersion="15" />
       
@@ -24,7 +26,7 @@
 	 
 	 <application android:icon="@drawable/icon"
 		 android:label="@string/app_name"
-		 android:sharedUserId="android.uid.shared">
+		 >
 		<service
 			android:name="edu.virginia.dtc.APCservice.IOMain"
 		 	android:exported="true"

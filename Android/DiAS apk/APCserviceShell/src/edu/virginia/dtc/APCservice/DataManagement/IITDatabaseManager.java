@@ -11,6 +11,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -45,7 +46,9 @@ public class IITDatabaseManager {
 
 
 	//Database info
-	private static String DB_LOCAL_URL =  "/storage/emulated/legacy/IIT_database/";
+	private static String EXTERNAL_DIRECTORY_PATH = Environment.getExternalStorageDirectory().getAbsolutePath();
+    //private static String DB_LOCAL_URL =  "/storage/emulated/legacy/IIT_database/";
+    private static String DB_LOCAL_URL =  EXTERNAL_DIRECTORY_PATH+"/IIT_database/";
 	public static String DB_NAME = "dbSensors.db";
 
 	static String databaseFile;

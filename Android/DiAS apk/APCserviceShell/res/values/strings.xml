@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">APCserviceShell</string>
+    <string name="sharedUserLabel">DiAS-APCL</string>
     <string-array name="temporary_basal_rate_percentages">
         <item>0 %</item>
         <item>10 %</item>

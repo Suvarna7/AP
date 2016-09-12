@@ -41,12 +41,18 @@ public class USBHost {
 	
 	//Connection state
 	public boolean connected;
+	
+	//COMMANDS:
+	public static final String _PHONE_GET = "get_values";
+	private static String _END_COMMAND = "next_end" ;
+    private static String _NO_DATA = "no_data";
+	public static String _ACK_SYNCRHONIZED = "usb_sync";
+	public static String _CONNECTION_ESTABLISHED = "connection_process_end";
 
 	public USBHost(Context context) {
 
 		ctx = context;
 		readingThread = new USBReadThread(this);
-		
 		connected = false;
 
 	}
@@ -105,7 +111,7 @@ public class USBHost {
 		}
 	};
 	
-	private void initializeSteps() throws IOException, SocketTimeoutException{
+	private boolean initializeSteps() throws IOException, SocketTimeoutException{
 		mHandler.post(showConnectionStatus);
 
 		server = new ServerSocket(ANDROID_LOCAL_HOST);
@@ -125,6 +131,12 @@ public class USBHost {
 
 		// Start reading thread:
 		readingThread.run();
+		
+		//Send connection message:
+		sendUSBmessage(_CONNECTION_ESTABLISHED);
+
+		
+		return true;
 		
 	}
 

@@ -24,6 +24,10 @@ public class USBReadThread extends Thread {
 					//TODO Use the input command
 					//Post result in Command field:
 					System.out.println("Received command: " + line);
+					if (line.equals(USBHost._PHONE_GET)){
+						mHost.sendUSBmessage("We got the command!");
+						
+					}
 				}
 			}
 
