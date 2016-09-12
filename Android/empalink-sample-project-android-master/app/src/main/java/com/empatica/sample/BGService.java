@@ -10,14 +10,11 @@ import com.empatica.empalink.EmpaDeviceManager;
 import com.empatica.empalink.delegate.EmpaDataDelegate;
 import com.empatica.sample.Database.IITDatabaseManager;
 import com.empatica.sample.Database.ThreadSafeArrayList;
-import com.empatica.sample.Server.IITServerConnector;
-import com.empatica.sample.USB.USBHost;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
@@ -49,15 +46,15 @@ public class BGService extends Service implements EmpaDataDelegate{
 
     //Fields to store received information
     //Arrays:
-    private static List<ThreadSafeArrayList<String>> receivedData;
-    private static List<Map<String, String>> toBeSentData;
-    public static List<String> usbReadyData;
+   // private static List<ThreadSafeArrayList<String>> receivedData;
+    //public static List<String> usbReadyData;
     private static String[] xAccelValues;
     private static String[] yAccelValues;
     private static String[] zAccelValues;
     private static String[] gsrValues;
     private static String[] bvpValues;
     private static String[] ibiValues;
+    private static String[] hrValues;
     private static String[] temperatureValues;
     private static String[] batteryValues;
     //Flags:
@@ -69,6 +66,7 @@ public class BGService extends Service implements EmpaDataDelegate{
     private static boolean batteryNotReceived;
     private final static int TOTAL_VARIABLES = 8;
     private static float last_IBI;
+    private static float last_HR;
     private static float last_GSR;
     private static final float _ZERO_FLOAT = new Float(0.00000000);
 
@@ -89,14 +87,18 @@ public class BGService extends Service implements EmpaDataDelegate{
 
     //Database
     public static IITDatabaseManager myDB;
-    public static final String empaticaTableName= "empatica";
-    private static final String[] columnsTable = new String[]{"time_stamp", "Acc_x", "Acc_y", "Acc_z", "GSR", "BVP",
-            "IBI", "temperature","battery_level"};
+    public static final String empaticaMilTableName= "empatica";
+    public static final String empaticaSecTableName= "empatica_seconds";
+
+    public static final String[] columnsTable = new String[]{"time_stamp", "Acc_x", "Acc_y", "Acc_z", "GSR", "BVP",
+            "IBI", "HR", "temperature","battery_level"};
+    private static int STORING_AMOUNT = 1000;
+    private static int storing_counter;
 
 
-    //IIT Server manager
-    IITServerConnector myServerManager;
-    private static final String jsonID =  "empaticaJSON";
+
+
+
 
     public BGService (){  /*Do nothing */ }
     public BGService(MainActivity main) {
@@ -120,15 +122,17 @@ public class BGService extends Service implements EmpaDataDelegate{
         //Toast.makeText(this, "The new Service was Created", Toast.LENGTH_LONG).show();
         //*** Empatica managers
         // Create a new EmpaDeviceManager. Service is both its data  delegate and MainActivity its status delegate.
-        deviceManager = new EmpaDeviceManager(mActivity.getApplicationContext(), this, mActivity);
-        // Initialize the Device Manager using your API key. You need to have Internet access at this point.
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (cm.getActiveNetworkInfo() != null) {
-            deviceManager.authenticateWithAPIKey(mActivity.EMPATICA_API_KEY);
-            mActivity.updateLabel(mActivity.internet_conn, "INTERNET");
-        }else
-            //No itnernet connection - WE CAN NOT USE THE APP
-            mActivity.updateLabel(mActivity.internet_conn , "NO INTERNET");
+        if (mActivity != null) {
+            deviceManager = new EmpaDeviceManager(mActivity.getApplicationContext(), this, mActivity);
+            // Initialize the Device Manager using your API key. You need to have Internet access at this point.
+            ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (cm.getActiveNetworkInfo() != null) {
+                deviceManager.authenticateWithAPIKey(mActivity.EMPATICA_API_KEY);
+                mActivity.updateLabel(mActivity.internet_conn, "INTERNET");
+            } else
+                //No itnernet connection - WE CAN NOT USE THE APP
+                mActivity.updateLabel(mActivity.internet_conn, "NO INTERNET");
+        }
 
 
         //Set up connection check
@@ -143,9 +147,8 @@ public class BGService extends Service implements EmpaDataDelegate{
         //serviceContxt = this;
 
         //Initialize data collection
-        receivedData = new ArrayList<ThreadSafeArrayList<String>>();
-        toBeSentData = new ArrayList<Map<String,String>>();
-        usbReadyData = new ArrayList<String>();
+        //receivedData = new ArrayList<ThreadSafeArrayList<String>>();
+        //usbReadyData = new ArrayList<String>();
         currentTimeStamp = 0;
         receivedSamples = 0;
         nextTimeStamp = 0;
@@ -153,19 +156,20 @@ public class BGService extends Service implements EmpaDataDelegate{
 
         //Init database fields
         initDatabaseManager(this);
+        storing_counter = 0;
 
         //ibi
         last_IBI = _ZERO_FLOAT;
         last_GSR = _ZERO_FLOAT;
+        last_HR = _ZERO_FLOAT;
 
         //Received flags:
         resetReceivedFlags();
 
-        //Server
-        //Initialize server connector
-        // IITServerConnector(String jsonID, String writeURL, String readURL, Context ctx)
-        myServerManager = new IITServerConnector(jsonID, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL,
-                IITServerConnector.IIT_SERVER_READ_TABLE_URL, myDB, this);
+
+
+
+
 
     }
 
@@ -178,13 +182,16 @@ public class BGService extends Service implements EmpaDataDelegate{
         Toast.makeText(this, " Service Started", Toast.LENGTH_LONG).show();
 
 
-
         //Start connection timer
         //Timer to check the connection
-        startPeriodicTimer();
+        startConnectionTimer();
 
         //TODO Start key verification timer
         startPeriodicVerificationOfKey(MainActivity.STREAMING_TIME);
+
+        //Reading thread
+        MainActivity.mHost.readingThread.shutup();
+
 
         //Update values in table
         return 0;
@@ -219,9 +226,9 @@ public class BGService extends Service implements EmpaDataDelegate{
         mActivity.updateLabel(mActivity.accel_zLabel, "" + z);
 
         //Store sample:
-        storeNewSample(""+ x + "", xAccelValues, time_stamp);
-        storeNewSample("" + y + "", yAccelValues, time_stamp);
-        storeNewSample("" + z + "", zAccelValues, time_stamp);
+        storeNewSample(""+ x + "", xAccelValues, time_stamp, false);
+        storeNewSample("" + y + "", yAccelValues, time_stamp, false);
+        storeNewSample("" + z + "", zAccelValues, time_stamp, false);
 
         //Update number of received samples:
         if (accelerationNotReceived){
@@ -243,10 +250,10 @@ public class BGService extends Service implements EmpaDataDelegate{
         connectionEstablishedFlag = true;
 
         if (gsr >  0.000000000) {
-            storeNewSample("" + gsr + "", gsrValues, time_stamp);
+            storeNewSample("" + gsr + "", gsrValues, time_stamp, false);
             last_GSR = gsr;
         }else
-           storeNewSample("" + last_GSR + "", gsrValues, time_stamp);
+           storeNewSample("" + last_GSR + "", gsrValues, time_stamp, false);
 
         //Update number of received samples:
         if (gsrNotReceived){
@@ -265,7 +272,7 @@ public class BGService extends Service implements EmpaDataDelegate{
     public void didReceiveBVP(float bvp, double time_stamp) {
         mActivity.updateLabel(mActivity.bvpLabel, "" + bvp);
 
-        storeNewSample("" + bvp + "", bvpValues, time_stamp);
+        storeNewSample("" + bvp + "", bvpValues, time_stamp, true);
 
         //Update number of received samples:
         if (bvpNotReceived){
@@ -281,11 +288,11 @@ public class BGService extends Service implements EmpaDataDelegate{
         //NOTE: IBI is updated at a slower pace
         if (ibi > _ZERO_FLOAT) {
             last_IBI = ibi;
-            storeNewSample("" + ibi + "", ibiValues, time_stamp);
+            storeNewSample("" + ibi + "", ibiValues, time_stamp, false);
 
         }
        else {
-            storeNewSample("" + last_IBI + "", ibiValues, time_stamp);
+            storeNewSample("" + last_IBI + "", ibiValues, time_stamp, false);
 
         }
 
@@ -294,16 +301,36 @@ public class BGService extends Service implements EmpaDataDelegate{
             receivedSamples += TOTAL_VARIABLES;
             ibiNotReceived = false;
         }
+        //Process HEART RATE
+        computeHeartRate(ibi, time_stamp);
 
+
+    }
+
+    private void computeHeartRate(float ibi, double time_stamp){
+        float hr = 60/ibi;
+        mActivity.updateLabel(mActivity.hrLabel, "" + hr);
+
+
+
+        if (hr > _ZERO_FLOAT) {
+            last_HR = hr;
+            storeNewSample("" + hr + "", hrValues, time_stamp, false);
+
+        }
+        else {
+            storeNewSample("" + last_HR + "", hrValues, time_stamp, false);
+
+        }
     }
 
     @Override
     public void didReceiveTemperature(float temp, double time_stamp) {
         mActivity.updateLabel(mActivity.temperatureLabel, "" + temp);
         if (temp < 0)
-            storeNewSample("" + temp + "", temperatureValues, time_stamp);
+            storeNewSample("" + temp + "", temperatureValues, time_stamp, false);
         else
-            storeNewSample("" + temp + "", temperatureValues, time_stamp);
+            storeNewSample("" + temp + "", temperatureValues, time_stamp, false);
 
         //Update number of received samples:
         if (temperatureNotReceived){
@@ -319,7 +346,7 @@ public class BGService extends Service implements EmpaDataDelegate{
     public void didReceiveBatteryLevel(float battery, double time_stamp) {
 
         mActivity.updateLabel(mActivity.batteryLabel, String.format("%.0f %%", battery * 100));
-        storeNewSample(""+battery +"", batteryValues, time_stamp);
+        storeNewSample("" + battery + "", batteryValues, time_stamp, false);
 
         //Update number of received samples:
         if (batteryNotReceived){
@@ -333,53 +360,39 @@ public class BGService extends Service implements EmpaDataDelegate{
     /* **************************************
      * TIMER
      */
-    private  void startPeriodicTimer() {
+
+    /**
+     * Timer to check whether the connection is lost
+     */
+    private  void startConnectionTimer() {
         //Restart the counter flag
         startTimer = false;
         //Start a a timer
         notConnectedTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                //Store values in database every minute and reset:
-                if (storeGlobalListInDatabase()) {
-                    //Send saved information to IIT server
-                    String jSon =  myServerManager.convertToJSON(toBeSentData);
-                    //myServerManager.debugServer("samples");
-                    myServerManager.sendToIIT(jSon, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
-                    //Prepare Data for USB REQUES
-                    usbReadyData.add(jSon);
+                if (mActivity.connected) {
 
-                    //Automatically send USB data every minute
-                    // MainActivity.mHost.sendUSBmessage(jSon);
+                    if (!connectionEstablishedFlag) {
+                        //Display the dialog
+                        Intent dialogIntent = new Intent(mActivity, ConnectionDialog.class);
+                        dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(dialogIntent);
+                        //Toast.makeText(mActivity, "No connection stablished!", Toast.LENGTH_LONG).show();
 
-                    //Reset values:
-                    toBeSentData = new ArrayList<Map<String, String>>();
-                    receivedData = new ArrayList<ThreadSafeArrayList<String>>();
-                }
-
-                //DEBUG Table
-                //MainActivity.myDB.updateDatabaseTable("debug_table", new ArrayList<>(Arrays.asList(new String[]{"'A'"})), true);
-
-
-                if (!connectionEstablishedFlag) {
-                    //Display the dialog
-                    Intent dialogIntent = new Intent(mActivity, ConnectionDialog.class);
-                    dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(dialogIntent);
-                    //Toast.makeText(mActivity, "No connection stablished!", Toast.LENGTH_LONG).show();
-
-                } else {
-                    connectionEstablishedFlag = false;
+                    } else {
+                        connectionEstablishedFlag = false;
+                    }
                 }
 
             }
-        }, 60000, 60000);
+        }, 60*1000, 60*1000); // delay(seconds*1000), period(seconds*1000)
     }
 
-   /**
-    * Verify KEY every 25 min
-    * @param period_time
-    */
+    /**
+     * Verify KEY every 15 min
+     * @param period_time
+     */
     private void startPeriodicVerificationOfKey(long period_time){
         //Create and start periodic timer
         //Start a a timer
@@ -390,23 +403,25 @@ public class BGService extends Service implements EmpaDataDelegate{
                 ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
                 System.out.println("Timer went off!!!");
 
-                if (cm.getActiveNetworkInfo() != null && deviceManager !=null) {
+                if (cm.getActiveNetworkInfo() != null && deviceManager != null) {
                     //Verify key
                     deviceManager.authenticateWithAPIKey(mActivity.EMPATICA_API_KEY);
                     mActivity.updateLabel(mActivity.internet_conn, "INTERNET");
-
-                    System.out.println ("Verifying key !!!");
-                }else
+                    System.out.println("Verified key");
+                } else
                     //No itnernet connection - WE CAN NOT USE THE APP
-                     mActivity.updateLabel(mActivity.internet_conn, "NO INTERNET");
+                    mActivity.updateLabel(mActivity.internet_conn, "NO INTERNET");
 
 
             }
-        }, 60000, period_time);
+        }, 1 * 5000, period_time); // delay, period (period_time)
 
         // Check whether there is internet connection
 
     }
+
+
+
 
     /* **********************************************
      * Store received data in local arrays
@@ -419,6 +434,7 @@ public class BGService extends Service implements EmpaDataDelegate{
         gsrValues = new String[]{"0", "0"};
         bvpValues = new String[]{"0", "0"};
         ibiValues = new String[]{"0", "0"};
+        hrValues = new String[]{"0", "0"};
         temperatureValues = new String[]{"0", "0"};
         batteryValues = new String[]{"0", "0"};
 
@@ -438,7 +454,7 @@ public class BGService extends Service implements EmpaDataDelegate{
 
     }
 
-    private void storeNewSample(String value, String[] array, double time_stamp){
+    private void storeNewSample(String value, String[] array, double time_stamp, boolean isBVP){
 
         //Check here is no null value:
         if (value.contains("null"))
@@ -464,7 +480,7 @@ public class BGService extends Service implements EmpaDataDelegate{
         }
 
         //Analyze # of received samples
-        if (receivedSamples == TOTAL_VARIABLES + 4 || receivedSamples == TOTAL_VARIABLES + 5){
+        if (isBVP || receivedSamples == TOTAL_VARIABLES + 4 || receivedSamples == TOTAL_VARIABLES + 5){
             //Store samples as part of variables string
             saveInGlobalList(CURRENT_SAMPLE, currentTimeStamp);
             //Re-start counter
@@ -476,6 +492,7 @@ public class BGService extends Service implements EmpaDataDelegate{
         }else if (receivedSamples == TOTAL_VARIABLES  - 4 || receivedSamples == TOTAL_VARIABLES -3){
             //Did not received an IBI update yet: update Array with last sample
             ibiValues[0] = ""+last_IBI+"";
+            hrValues[0] = ""+last_HR+"";
 
             //Store samples as part of variables string
             saveInGlobalList(CURRENT_SAMPLE, currentTimeStamp);
@@ -485,11 +502,7 @@ public class BGService extends Service implements EmpaDataDelegate{
             //Move next samples to current sample position
             //resetArraysNextSample();
             resetReceivedFlags();
-
-
         }
-
-
     }
 
     private static void saveInGlobalList(int sample, double time_stamp){
@@ -497,49 +510,103 @@ public class BGService extends Service implements EmpaDataDelegate{
             ThreadSafeArrayList<String> tempList= new ThreadSafeArrayList<>();
             Map<String, String> tempMap = new HashMap<String, String>();
 
+            ThreadSafeArrayList<String> tempListSec= new ThreadSafeArrayList<>();
+
             // Add to the list string:
             //Prepare time_stamp:
             double time = time_stamp * 1000;
-            /// DateTimeInstance dateTime = new DateTimeInstance();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+            ///TODO DateTimeInstance dateTime = new DateTimeInstance();
+            //SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.[nnn]", Locale.getDefault());
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS", Locale.getDefault());
+            SimpleDateFormat dateFormatSec = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+
+            //SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+
             String formatTimeStamp = dateFormat.format(time);
+            String formatTimeStampSec = dateFormatSec.format(time);
+
             //formatTimeStamp = ""+ formatTimeStamp.substring(0, formatTimeStamp.length() ) +"";
             tempList.set("'"+ formatTimeStamp.substring(0, formatTimeStamp.length() ) +"'");
             tempMap.put(columnsTable[0], formatTimeStamp);
+
+            tempListSec.set("'" + formatTimeStampSec.substring(0, formatTimeStampSec.length()) + "'");
+
             //Add the other values
             tempList.set(xAccelValues[sample]);
             tempMap.put(columnsTable[1], xAccelValues[sample]);
 
+            tempListSec.set(xAccelValues[sample]);
+
+
             tempList.set(yAccelValues[sample]);
             tempMap.put(columnsTable[2], yAccelValues[sample]);
+
+            tempListSec.set(yAccelValues[sample]);
+
 
             tempList.set(zAccelValues[sample]);
             tempMap.put(columnsTable[3], zAccelValues[sample]);
 
+            tempListSec.set(zAccelValues[sample]);
+
+
             tempList.set(gsrValues[sample]);
             tempMap.put(columnsTable[4], gsrValues[sample]);
+
+            tempListSec.set(gsrValues[sample]);
+
 
             tempList.set(bvpValues[sample]);
             tempMap.put(columnsTable[5], bvpValues[sample]);
 
+            tempListSec.set(bvpValues[sample]);
+
+
             tempList.set(ibiValues[sample]);
             tempMap.put(columnsTable[6], ibiValues[sample]);
 
+            tempListSec.set(ibiValues[sample]);
+
+
+            tempList.set(hrValues[sample]);
+            tempMap.put(columnsTable[7], hrValues[sample]);
+
+            tempListSec.set(hrValues[sample]);
+
+
             tempList.set(temperatureValues[sample]);
-            tempMap.put(columnsTable[7], temperatureValues[sample]);
+            tempMap.put(columnsTable[8], temperatureValues[sample]);
+
+            tempListSec.set(temperatureValues[sample]);
 
             tempList.set(batteryValues[sample]);
-            tempMap.put(columnsTable[8], batteryValues[sample]);
+            tempMap.put(columnsTable[9], batteryValues[sample]);
+
+            tempListSec.set(batteryValues[sample]);
+
 
             //tempList.add(updated);
 
+
+            //TODO Add to database: instantly
+           // storeSampleInDatabase(tempList, empaticaMilTableName);
+            storeSampleInDatabase(tempListSec, empaticaSecTableName);
+
+            //TODO Add to database: every given num of samples
             //Add the the global list
-            receivedData.add(tempList);
+            //receivedData.add(tempList);
+           // if (storing_counter == STORING_AMOUNT) {
+
+                //storeGlobalListInDatabase();
+                //Reset
+                storing_counter =0;
+                //receivedData = new ArrayList<ThreadSafeArrayList<String>>();
+
+            //}else{
+                storing_counter ++;
+           // }
 
 
-            tempMap.put("synchronized", "n");
-            tempMap.put("table_name", empaticaTableName);
-            toBeSentData.add(tempMap);
 
 
         }else
@@ -573,7 +640,8 @@ public class BGService extends Service implements EmpaDataDelegate{
         //myDB.updateDatabaseTable (empaticaTableName, null, false);
 
         //Create a table for Empatica
-        myDB.createTable(empaticaTableName, columnsTable[0], new ArrayList<>(Arrays.asList(columnsTable)));
+        myDB.createTable(empaticaMilTableName, columnsTable[0], new ArrayList<>(Arrays.asList(columnsTable)));
+        myDB.createTable(empaticaSecTableName, columnsTable[0], new ArrayList<>(Arrays.asList(columnsTable)));
 
         //DEBUG TABLE:
         //myDB.createTable("debug_table", new ArrayList<>(Arrays.asList(new String[]{"column"})));
@@ -581,17 +649,40 @@ public class BGService extends Service implements EmpaDataDelegate{
 
     }
 
+    /**
+     * Store a single sample in the database
+     * @param sample
+     * @return
+     */
+    private static void storeSampleInDatabase(ThreadSafeArrayList<String> sample, String table){
+        try {
+            //System.out.println("Sample in: " + i);
+            myDB.updateDatabaseTable(table, sample, true);
+        } catch (Exception e) {
+            System.out.println("Store sample exception " + e);
+        }
+    }
 
+    /**
+     * Store all values accumulated in the global list
+     * @return true if done with storing
+     */
 
-    private static boolean storeGlobalListInDatabase(){
+   /* private static boolean storeGlobalListInDatabase(){
 
-        for (int i = 0; i < receivedData.size(); i ++)
-            myDB.updateDatabaseTable(empaticaTableName, receivedData.get(i), true);
+        for (int i = 0; i < receivedData.size(); i++) {
+            try {
+                //System.out.println("Sample in: " + i);
+                myDB.updateDatabaseTable(empaticaTableName, receivedData.get(i), true);
+            } catch (Exception e) {
+                System.out.println("Store global exception " + e);
+            }
+        }
 
         return true;
 
 
-    }
+    }*/
 
 
 

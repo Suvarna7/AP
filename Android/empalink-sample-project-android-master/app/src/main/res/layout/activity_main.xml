@@ -26,12 +26,14 @@
         android:layout_height="wrap_content"
         android:textColor="@color/dark_blue"/>
 
+
+
     <RelativeLayout
         android:layout_marginTop="20dp"
         android:visibility="gone"
         android:id="@+id/dataArea"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_below="@id/deviceName">
 
         <TextView
@@ -39,6 +41,7 @@
             android:layout_alignParentStart="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:text="@string/accel" />
 
         <LinearLayout
@@ -86,101 +89,152 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/bvp_area"
+            android:layout_below="@id/accel_area"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
         <TextView
             android:id="@+id/bvp_label"
-            android:layout_marginTop="10dp"
-            android:layout_below="@id/accel_area"
+            android:width="100dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/bvp_label" />
 
         <TextView
-            android:layout_below="@id/bvp_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/bvp"
+            android:layout_marginLeft="50dp"
             android:text="@string/emptyText"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/eda_area"
+            android:layout_below="@id/bvp_area"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+
+            android:orientation="horizontal">
 
         <TextView
             android:id="@+id/eda_label"
-            android:layout_marginTop="10dp"
-            android:layout_below="@id/bvp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:width="100dp"
+
             android:text="@string/eda_label" />
 
         <TextView
-            android:layout_below="@id/eda_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/eda"
+            android:layout_marginLeft="50dp"
             android:text="@string/emptyText"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ibi_area"
+            android:layout_below="@id/eda_area"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
 
         <TextView
             android:id="@+id/ibi_label"
-            android:layout_marginTop="10dp"
-            android:layout_below="@id/eda"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:width="100dp"
             android:text="@string/ibi_label" />
 
         <TextView
-            android:layout_below="@id/ibi_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/ibi"
+            android:layout_marginLeft="50dp"
             android:text="@string/emptyText"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/hr_area"
+            android:layout_below="@id/ibi_area"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+        <TextView
+            android:id="@+id/hr_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:width="100dp"
+            android:text="@string/hr_label" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/hr"
+            android:layout_marginLeft="50dp"
+            android:text="@string/emptyText"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/temp_area"
+            android:layout_below="@id/hr_area"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
 
         <TextView
             android:id="@+id/temp_label"
-            android:layout_marginTop="10dp"
-            android:layout_below="@id/ibi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:width="100dp"
             android:text="@string/temp_label" />
 
         <TextView
-            android:layout_below="@id/temp_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/temperature"
+            android:layout_marginLeft="50dp"
             android:text="@string/emptyText"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/battery_area"
+            android:layout_below="@id/temp_area"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
 
         <TextView
             android:id="@+id/battery_label"
-            android:layout_marginTop="10dp"
-            android:layout_below="@id/temperature"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:width="100dp"
             android:text="@string/battery_label" />
 
         <TextView
-            android:layout_below="@id/battery_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/battery"
-            android:text="@string/emptyText"/>
-        <Button
-            android:id="@+id/connect_usb_button"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:layout_marginTop="10dp"
-            android:padding="10dp"
-            android:layout_below="@id/battery"
-            android:text="@string/string_connect_usb"
-            android:textColor = "@color/white_paleta"
-            android:background="@color/ligher_green_paleta"
+            android:layout_marginLeft="50dp"
+            android:text="@string/emptyText"
             />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:id =  "@+id/command_usb"
-            android:layout_below="@id/connect_usb_button"
-            />
+        </LinearLayout>
+
 
 
     </RelativeLayout>
+
 
     <Button
         android:id="@+id/connect_button"
@@ -194,11 +248,40 @@
         />
 
     <Button
+        android:id="@+id/connect_usb_button"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_marginTop="30dp"
+        android:padding="5dp"
+        android:text="@string/string_connect_usb"
+        android:layout_below="@id/dataArea"
+        android:textColor = "@color/white_paleta"
+        android:background="@color/ligher_green_paleta"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:id =  "@+id/connect_usb_status"
+        android:layout_below="@id/connect_usb_button"
+        android:text ="@string/connect_usb_init"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:id =  "@+id/command_usb"
+        android:layout_below="@id/connect_usb_status"
+        />
+
+
+
+    <Button
         android:id="@+id/stop_service_button"
         android:layout_alignParentBottom="true"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:padding="10dp"
+        android:padding="5dp"
         android:text="@string/string_stop_service"
         android:textColor = "@color/white_paleta"
         android:background="@color/ligher_green_paleta"
@@ -209,7 +292,7 @@
         android:layout_alignParentEnd="true"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:padding="10dp"
+        android:padding="5dp"
         android:text="@string/string_start_service"
         android:textColor = "@color/white_paleta"
         android:background ="@color/dark_green_paleta"

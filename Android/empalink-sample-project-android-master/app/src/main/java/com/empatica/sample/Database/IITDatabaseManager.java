@@ -4,7 +4,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.os.Environment;
 import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,20 +43,22 @@ public class IITDatabaseManager {
 
 
     //Database info
-    private static String DB_LOCAL_URL =  "/storage/emulated/legacy/IIT_database/";
+    private static String EXTERNAL_DIRECTORY_PATH = Environment.getExternalStorageDirectory().getAbsolutePath();
+    //private static String DB_LOCAL_URL =  "/storage/emulated/legacy/IIT_database/";
+    private static String DB_LOCAL_URL =  EXTERNAL_DIRECTORY_PATH+"/IIT_database/";
     public static String DB_NAME = "dbSensors.db";
 
     static String databaseFile;
     //Time_Stamp column name:
     private static String timeStampColumn;
     //Updated : for the server
-    private static final String updatedStatusNo = "'n'";
-    private static final String updatedStatusYes = "'y'";
-    private static final String upDateColumn = "upDateStatus";
-    //Syncrhonized : for the internal database
-    private static final String syncStatusNo = "'n'";
-    private static final String syncStatusYes = "'y'";
-    private static final String syncColumn = "synchronized";
+    public static final String updatedStatusNo = "'n'";
+    public static final String updatedStatusYes = "'y'";
+    public static final String upDateColumn = "updated";
+    //Syncrhonized : for the internal database and USB
+    public static final String syncStatusNo = "'n'";
+    public static final String syncStatusYes = "'y'";
+    public static final String syncColumn = "synchronized";
     //static String  DBPath ;
     // static String DBName ;
     //static File db_file;
@@ -66,8 +70,17 @@ public class IITDatabaseManager {
     //Context
     private static Context dbContext;
 
-
     private static boolean initialized = false;
+    //1 second = 64 samples
+    //Sending every 30 seconds
+    // 2 * 64 * 30 = 3840
+    private static int MAX_READ_SAMPLES_UPDATE = 4000;
+
+    //1 second = 64 samples
+    //Sending every 30 seconds
+    // 2 * 5 * 64 * 30 = 3840
+    private static int MAX_READ_SAMPLES_SYNCHRONIZE = 5000;
+
 
     /**
      * Default constractor, only needs context
@@ -114,6 +127,8 @@ public class IITDatabaseManager {
      * @param store whether to store new values or delete table
      */
     public void updateDatabaseTable (String table, ThreadSafeArrayList<String> values, boolean store){
+        //TODO
+        //System.out.println(EXTERNAL_DIRECTORY_PATH.getAbsolutePath());
         //Open db
         db=dbContext.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READWRITE, null);
         if (store){
@@ -143,6 +158,7 @@ public class IITDatabaseManager {
      * @param values List of the values: should be Strings of type 'value1', 'value2'...
      */
     private void storeValuesInTable(String table, ThreadSafeArrayList<String> values){
+        //System.out.println("Storing....."+values.size());
 
         try{
             String inQueryValues = "(";
@@ -161,7 +177,8 @@ public class IITDatabaseManager {
             if (!inQueryValues.contains("null") && inQueryValues.substring(inQueryValues.length() - 1).equals(")"))
                 db.execSQL("INSERT INTO " + table + " VALUES" + inQueryValues + ";");
         }catch(SQLiteException e){
-            System.out.println("SQLite Exception while storing in table: "+e);
+           // if (!e.toString().contains("UNIQUE"))
+               // System.out.println("SQLite Exception while storing in table: "+e);
 
         }
 
@@ -304,12 +321,9 @@ public class IITDatabaseManager {
                         Map <String, String> partial = new HashMap<String, String>();
                         //Values to update local database
                         List<String> update = new ArrayList<String>();
-                        //Init the upgrade query
-                        //String updateQuery = "(";
+
                         for (String column: cols){
                             String val = "0";
-                            //String val1 = "0";
-
                             //Get the corresponding value
                             if (column.equals("synchronized")){
                                 //The syncrhonized value will be add in when it is stored
@@ -372,157 +386,122 @@ public class IITDatabaseManager {
      * @return
      */
 
-    public static String composeJSONfromSQLite(Context ctx, String table, int next) {
+    public static List<Map<String, String>> getNotUpdatedValues( String table, String[] columns, String col, String status) {
+        //NOTE: Include updated value: only in the server case
+        int MAX_READ_SAMPLES;
+        String updated_name;
+        if (col.equals(syncColumn)){
+            MAX_READ_SAMPLES = MAX_READ_SAMPLES_SYNCHRONIZE;
+            updated_name = "another_update";
 
-        ArrayList<HashMap<String, String>> wordList = null;
-        wordList = new ArrayList<HashMap<String, String>>();
-        List<String> lastUpd = new ArrayList();
-        String selectQuery = "SELECT  * FROM " + table + " WHERE "+upDateColumn+" = '" + updatedStatusNo + "'";
+        }else{
+            MAX_READ_SAMPLES = MAX_READ_SAMPLES_UPDATE;
+            updated_name = col;
 
-        //First case: for zephyr table
-        /*if (table.equals(zephyrTableName)) {
-            //SQLiteDatabase database = ctx.openOrCreateDatabase(databaseFile, Context.MODE_WORLD_WRITEABLE, null);
-            if (next == 0) {
-                db = ctx.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READWRITE, null);
-                //Array of columns
-                //Choose the right array from table
-                cursorSync = db.rawQuery(selectQuery, null);
-                if (cursorSync.moveToFirst()) {
-                    HashMap<String, String> map = new HashMap<String, String>();
-                    //Add the name of the table first
-                    //map.put("table_name", MainActivityZephyr.dispTableId);
-                    //map.put("create", String.valueOf(first));
-                    first = 0;
-                    for (int i = 0; i < zephyrColumns.size() - 1; i++) {
-                        map.put(zephyrColumns.get(i), cursorSync.getString(i));
-                        lastUpd.add(cursorSync.getString(i));
-                    }
-                    wordList.add(map);
-
-                }
-            } else if (cursorSync.moveToNext()) {
-                HashMap<String, String> map = new HashMap<String, String>();
-                //Add the name of the table first
-                //map.put("table_name", MainActivityZephyr.dispTableId);
-                for (int i = 0; i < zephyrColumns.size() - 1; i++) {
-                    map.put(zephyrColumns.get(i), cursorSync.getString(i));
-                    lastUpd.add(cursorSync.getString(i));
-
-
-                }
-                wordList.add(map);
-                if (next == dbSyncCount(ctx, table)) {
-                    db.close();
-                }
-            }
         }
-        //Second case: BodyMedia table
-        else if (table.equals(bodymediaTableName)) {
-            if (next == 0) {
-                db = ctx.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READWRITE, null);
-                //Array of columns
-                //Choose the right array from table
-                cursorSync = db.rawQuery(selectQuery, null);
+
+        List<Map<String, String>> wordList = new ArrayList<Map<String, String>>();
+        String selectQuery = "SELECT  * FROM " + table + " WHERE "+col+" = " + status ;
+
+        SQLiteDatabase db_cursor = dbContext.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READONLY, null);
+
+        if (db_cursor !=null) {
+            //Create Cursor
+            //Choose the right array from table
+            cursorSync = db_cursor.rawQuery(selectQuery, null);
+
+            //If Cursor is valid
+            if (cursorSync != null ) {
                 if (cursorSync.moveToFirst()) {
-                    HashMap<String, String> map = new HashMap<String, String>();
-                    //map.put("table_name", MainActivityBM.dispTableName);
-                    for (int i = 0; i < bodymediaColumns.size() - 1; i++) {
-                        map.put(bodymediaColumns.get(i), cursorSync.getString(i));
-                        lastUpd.add(cursorSync.getString(i));
-                    }
-                    wordList.add(map);
-
-                }
-            } else if (cursorSync.moveToNext()) {
-                HashMap<String, String> map = new HashMap<String, String>();
-                map.put("table_name", bodymediaTableName);
-                for (int i = 0; i < bodymediaColumns.size() - 1; i++) {
-                    map.put(bodymediaColumns.get(i), cursorSync.getString(i));
-                    lastUpd.add(cursorSync.getString(i));
-                }
-                wordList.add(map);
-                if (next == dbSyncCount(ctx, table)) {
-                    db.close();
-                }
-            }
-        }
-        //Third case Dexcom
-        else if (table.equals(dexcomTableName)) {
-            //SQLiteDatabase database = ctx.openOrCreateDatabase(databaseFile, Context.MODE_WORLD_WRITEABLE, null);
-            if (next == 0) {
-                db = ctx.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READWRITE, null);
-                //Array of columns
-                //Choose the right array from table
-                cursorSync = db.rawQuery(selectQuery, null);
-                if (cursorSync.moveToFirst()) {
-
-                    HashMap<String, String> map = new HashMap<String, String>();
-                    //TODO Dexcom table name
-                    //map.put("table_name", MainActivityBM.dispTableName);
-
-                    for (int i = 0; i < dexcomColumns.size() - 1; i++) {
-                        map.put(dexcomColumns.get(i), cursorSync.getString(i));
-                        lastUpd.add(cursorSync.getString(i));
-                    }
-                    wordList.add(map);
-
-                }
-            } else if (cursorSync.moveToNext()) {
-                HashMap<String, String> map = new HashMap<String, String>();
-                //TODO Dexcom table name
-                //map.put("table_name", MainActivityBM.dispTableName);
-                for (int i = 0; i < dexcomColumns.size() - 1; i++) {
-                    map.put(dexcomColumns.get(i), cursorSync.getString(i));
-                    lastUpd.add(cursorSync.getString(i));
-                }
-                wordList.add(map);
-                if (next == dbSyncCount(ctx, table)) {
-                    db.close();
-                }
-            }
-
-            //Fourth case: Empatica
-            else if (table.equals(dexcomTableName)) {
-                //SQLiteDatabase database = ctx.openOrCreateDatabase(databaseFile, Context.MODE_WORLD_WRITEABLE, null);
-                if (next == 0) {
-                    db = ctx.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READWRITE, null);
-                    //Array of columns
-                    //Choose the right array from table
-                    cursorSync = db.rawQuery(selectQuery, null);
-                    if (cursorSync.moveToFirst()) {
-
-                        HashMap<String, String> map = new HashMap<String, String>();
-                        //TODO Dexcom table name
+                    int index = 0;
+                   do {
+                       HashMap<String, String> map = new HashMap<String, String>();
                         //map.put("table_name", MainActivityBM.dispTableName);
-
-                        for (int i = 0; i < dexcomColumns.size() - 1; i++) {
-                            map.put(dexcomColumns.get(i), cursorSync.getString(i));
-                            lastUpd.add(cursorSync.getString(i));
+                        for (int i = 0; i < columns.length ; i++) {
+                            map.put(columns[i], cursorSync.getString(i));
+                            //lastUpd.add(cursorSync.getString(i));
                         }
-                        wordList.add(map);
+                       //Include updated value: only in the server case
+                       //Otherwise... we include sync value again
+                       map.put(col, cursorSync.getString(columns.length + 1 ));
+                       //Include sync value:
+                       map.put(syncColumn, cursorSync.getString(columns.length ));
 
-                    }
-                } else if (cursorSync.moveToNext()) {
-                    HashMap<String, String> map = new HashMap<String, String>();
-                    //TODO Dexcom table name
-                    //map.put("table_name", MainActivityBM.dispTableName);
-                    for (int i = 0; i < dexcomColumns.size() - 1; i++) {
-                        map.put(dexcomColumns.get(i), cursorSync.getString(i));
-                        lastUpd.add(cursorSync.getString(i));
-                    }
-                    wordList.add(map);
-                    if (next == dbSyncCount(ctx, table)) {
-                        db.close();
-                    }
+                       wordList.add(map);
+                       index ++;
+
+                    } while (cursorSync.moveToNext() && index < MAX_READ_SAMPLES);
+                    System.out.println("Done reading: "+index);
+
+
                 }
+
+                db_cursor.close();
+
             }
         }
 
+        //Use GSON to serialize Array List to JSON
+        return wordList;
+    }
 
-            Gson gson = new GsonBuilder().create();
-            //Use GSON to serialize Array List to JSON
-            return gson.toJson(wordList);*/
-        return "";
+    public static List<Map<String, String>> getAllNotUpdatedValues( String table, String[] columns, String col, String status) {
+        //NOTE: Include updated value: only in the server case
+        int MAX_READ_SAMPLES;
+        String updated_name;
+        if (col.equals(syncColumn)){
+            MAX_READ_SAMPLES = MAX_READ_SAMPLES_SYNCHRONIZE;
+            updated_name = "another_update";
+
+        }else{
+            MAX_READ_SAMPLES = MAX_READ_SAMPLES_UPDATE;
+            updated_name = col;
+
+        }
+
+        List<Map<String, String>> wordList = new ArrayList<Map<String, String>>();
+        String selectQuery = "SELECT  * FROM " + table + " WHERE "+col+" = " + status ;
+
+        SQLiteDatabase db_cursor = dbContext.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READONLY, null);
+
+        if (db_cursor !=null) {
+            //Create Cursor
+            //Choose the right array from table
+            cursorSync = db_cursor.rawQuery(selectQuery, null);
+
+            //If Cursor is valid
+            if (cursorSync != null ) {
+                if (cursorSync.moveToFirst()) {
+                    int index = 0;
+                    do {
+                        HashMap<String, String> map = new HashMap<String, String>();
+                        //map.put("table_name", MainActivityBM.dispTableName);
+                        for (int i = 0; i < columns.length ; i++) {
+                            map.put(columns[i], cursorSync.getString(i));
+                            //lastUpd.add(cursorSync.getString(i));
+                        }
+                        //Include updated value: only in the server case
+                        //Otherwise... we include sync value again
+                        map.put(col, cursorSync.getString(columns.length + 1 ));
+                        //Include sync value:
+                        map.put(syncColumn, cursorSync.getString(columns.length ));
+
+                        wordList.add(map);
+                        index ++;
+
+                    } while (cursorSync.moveToNext());
+                    System.out.println("Done reading: "+index);
+
+
+                }
+
+                db_cursor.close();
+
+            }
+        }
+
+        //Use GSON to serialize Array List to JSON
+        return wordList;
     }
 
 
@@ -608,6 +587,7 @@ public class IITDatabaseManager {
             else
                 System.out.println("IITDatabaseManager: DID NOT UPDATE DATABASE ");
         }catch(SQLiteException e){
+            //if (!e.toString().contains("UNIQUE"))
             System.out.println("SQLite Exception while storing in table: "+e);
 
 
@@ -621,19 +601,18 @@ public class IITDatabaseManager {
      * @param status synchronize status
      * @param last_up last_updated value (acts as id)
      */
-    public static void updateSyncStatus(Context ctx, String table, String status, String last_up){
+    public static void updateSyncStatus(Context ctx, String table, String status_col, String status, String last_up){
 
         //SQLiteDatabase database = ctx.openOrCreateDatabase(databaseFile, Context.MODE_WORLD_WRITEABLE, null);
-        db=ctx.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READWRITE, null);
+        SQLiteDatabase db1=ctx.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READWRITE, null);
 
         //Update query: update status, searching the right last_updated value
-        String updateQuery = "UPDATE "+table +" SET "+upDateColumn+" = '"+status+"' WHERE "+timeStampColumn+" = '"+ last_up+"'";
-        //System.out.println("Synchronizing Database!!"+ updateQuery);
+        String updateQuery = "UPDATE "+table +" SET "+status_col+" = '"+status+"' WHERE "+timeStampColumn+" = '"+ last_up+"'";
         Log.d("query", updateQuery);
-        // System.out.println("^^^^^^^^^^^UPDATED???: " + updateQuery);
+        //System.out.println("^^^^^^^^^^^UPDATED???: " + updateQuery);
 
-        db.execSQL(updateQuery);
-        db.close();
+        db1.execSQL(updateQuery);
+        db1.close();
     }
 
     /*

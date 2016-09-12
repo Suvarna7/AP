@@ -38,7 +38,7 @@ import com.loopj.android.http.RequestParams;
 public class IITServerConnector {
 	//IIT Server values:
 	//JSON Identifier
-	public static final String JSON_ID_dias = "diasJSON";
+	public static final String JSON_ID_dias = "empaticaJSON";
 	//Server urls
 	public static final String IIT_SERVER_UPDATE_VALUES_URL = "http://216.47.158.133/phpSync/insert_into_table.php";
 	public static final String IIT_SERVER_READ_TABLE_URL = "http://216.47.158.133/phpSync/read_table_values.php";
@@ -51,6 +51,7 @@ public class IITServerConnector {
 	private IITDatabaseManager dbManager;
 	private ArrayList<String> tableNames;
 	private Context databaseContext ;
+	public  boolean sending;
 
 	//Server Database:
 	public static final String _SERVER_DB_NAME =  "IITdb.db";
@@ -64,6 +65,7 @@ public class IITServerConnector {
 		JSON_ID= "json";
 		tableNames = new ArrayList<String>();
 		dbManager = mang;
+		sending = false;
 	}
 
 	/**
@@ -120,7 +122,7 @@ public class IITServerConnector {
 		map.put("user", "mentira");
 		map.put("heart_rate", "80");
 		map.put("cgm", "105");
-		map.put("synchronized", "n");
+		map.put("updated", "n");
 
 		arg.add(map1);
 		arg.add(map);
@@ -138,13 +140,16 @@ public class IITServerConnector {
 
 	public void sendToIIT(String json, String url){
 
+		System.out.println("Sending: " + json);
+		sending = true;
+
 		//Set parameters
 		RequestParams params = new RequestParams();
-		System.out.println(url + " Send to json (" + params.toString() + "): " + json);
 		params.put(JSON_ID, json);
 
 		//Send http request
 		httpClient.post(url , params, asyncHTTPClient);
+
 
 }
 /**
@@ -165,14 +170,14 @@ public void readTableValuesIIT(String tableName, String url){
  * Function to convert the array of key maps to a JSON String format
  * 
  */
-public  String convertToJSON( List<Map<String, String>> args){
+public  static String convertToJSON( List<Map<String, String>> args){
 	String json = "";
 	Gson gson = new GsonBuilder().create();
 	//Use GSON to serialize Array List to JSON
 	try {
 		json = gson.toJson(args);
 	}catch (Exception e){
-		System.out.println("Could not convert to JSON!");
+		System.out.println("Could not convert to JSON!: "+e);
 		}
 
 	return json;
@@ -213,18 +218,18 @@ protected static String getCurrentTime(){
 
 		//Handle succesful response
 		public void onSuccess(String response) {
+			System.out.println("Success response from server: "+response);
 
-			System.out.println(response);
 				try {
 
 					//Convert to a JSON Array and get the arguments
 					JSONArray arr = new JSONArray(response);
-					List<String> args = new ArrayList();
+					//List<String> args = new ArrayList();
 					//Analyze each JSON object
 					for(int i=0; i<arr.length();i++){
 						JSONObject jsonObj = (JSONObject)arr.get(i);
 
-						if (jsonObj.get("synchronized").equals('n')){
+						/*if (jsonObj.get("syncrhonized").equals('n')){
 							//The value comes from a read request
 							String tableN = jsonObj.get("table_name").toString();
 
@@ -257,38 +262,49 @@ protected static String getCurrentTime(){
 							//Update values in table TODO
 							dbManager.updateNewValuesDatabase(tableN, values, true);
 
-						}else{
+						}else{*/
 							//Result comes from inserting
 							//Check updated value:
 							//It was correctly included in the server -> reset table
 							//IOMain.notSynchValues.clear();
 
+						//System.out.println("Received server time:"+(String) jsonObj.get("time_stamp"));
 							dbManager.updateSyncStatus(databaseContext, (String) jsonObj.get("table_name"),
-									(String) jsonObj.get("update_status"), (String) jsonObj.get("time_stamp"));
+									IITDatabaseManager.upDateColumn, (String) jsonObj.get("updated"), (String) jsonObj.get("time_stamp"));
+
+						//dbManager.updateSyncStatus(databaseContext, (String) jsonObj.get("table_name"),
+						//		IITDatabaseManager.syncColumn, (String) jsonObj.get("updated"), (String) jsonObj.get("time_stamp"));
 
 
-						}
+						//}
 
-					//System.out.println("Element: "+arr.get(i));
 
 				}
 
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
+			System.out.println("Sending ends!");
+			sending = false;
 		}
 
 		//Handle failing response
 		public void onFailure(int statusCode, Throwable error, String content) {
 
-			if(statusCode == 404){
-				System.out.println("Page not found");
+			System.out.println("Failed! server:" + statusCode);
 
-			}else if(statusCode == 500){
-				System.out.println("Server failure");
+				if (statusCode == 404) {
+					System.out.println("Page not found");
 
-			}else{
-			}
+				} else if (statusCode == 500) {
+					System.out.println("Server failure");
+
+				} else {
+				}
+				sending = false;
+
+
+
 		}
 
 		@Override
