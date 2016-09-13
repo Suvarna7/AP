@@ -445,7 +445,7 @@ public class IITDatabaseManager {
         return wordList;
     }
 
-    public static List<Map<String, String>> getAllNotUpdatedValues( String table, String[] columns, String col, String status) {
+    public static List<Map<String, String>> getAllNotCheckedValues( String table, String[] columns, String col, String status) {
         //NOTE: Include updated value: only in the server case
         int MAX_READ_SAMPLES;
         String updated_name;

@@ -122,10 +122,14 @@ public class USBReadThread extends Thread {
 						//Post result in Command field:
 						showCommand(line);
 
-						String jSon = MainActivity.messageAllAsyncToUSB();
-						if (jSon != null) {
-							mHost.sendUSBmessage(jSon);
+						String[] jSons = MainActivity.messageAllAsync(BGService.empaticaSecTableName,
+								IITDatabaseManager.syncColumn, IITDatabaseManager.syncStatusNo);
+						if (jSons != null) {
+							for (String json: jSons)
+								mHost.sendUSBmessage(json);
+
 							mHost.sendUSBmessage(USBHost._END_COMMAND);
+
 
 						} else
 							//Send no data message

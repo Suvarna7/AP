@@ -84,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     //IIT Server manager and automatic sending
     public static Timer sendDataTimer;
     private static final int SENDING_AMOUNT = 100;
+    private static final int LOCAL_SENDING_AMOUNT = 25;
     //IIT Server manager
     IITServerConnector myServerManager;
     private static final String jsonID = "empaticaJSON";
@@ -526,7 +527,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                                 //1. Obtain not synchronized values from database
 
                                 // List<Map<String, String>> listReadToServer = null;
-                                List<Map<String, String>> listReadToServer = BGService.myDB.getAllNotUpdatedValues(BGService.empaticaSecTableName, BGService.columnsTable,
+                                List<Map<String, String>> listReadToServer = BGService.myDB.getAllNotCheckedValues(BGService.empaticaSecTableName, BGService.columnsTable,
                                         IITDatabaseManager.upDateColumn, IITDatabaseManager.updatedStatusNo);
                                 //List<Map<String, String>> listReadToServer = new ArrayList<Map<String, String>>();
                                 //2. Send to Server
@@ -619,14 +620,39 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
             return null;
     }
 
-    public static String messageAllAsyncToUSB() {
-        List<Map<String, String>> listReadToUSB = BGService.myDB.getAllNotUpdatedValues(BGService.empaticaSecTableName, BGService.columnsTable,
-                IITDatabaseManager.syncColumn, IITDatabaseManager.syncStatusNo);
-        //Send to Server
-        if (listReadToUSB != null) {
-            String jSon = IITServerConnector.convertToJSON(listReadToUSB);
-            return jSon;
+    /**
+     * Get all no sync values, and return a list of the JSON Strings to be sent
+     * @return
+     */
+    public static String[] messageAllAsync(String table, String check_column, String check_value) {
+        String[] result = new String[100];
+        List<Map<String, String>> listReadToUSB = BGService.myDB.getAllNotCheckedValues(table, BGService.columnsTable,
+                check_column, check_value);
+        if (listReadToUSB !=null){
+            //Send to Server - CUT INTO SMALLER PIECES TOO
+            List<Map<String, String>> temp = new ArrayList<Map<String, String>>();
+            //List too long: break in smaller chunks
+            int sent = 0;
+            for (int i = 0; i < listReadToUSB.size(); i++) {
+                Map<String, String> val = listReadToUSB.get(i);
+                val.put("table_name", BGService.empaticaSecTableName);
+                temp.add(val);
+                if ((i + 1) % LOCAL_SENDING_AMOUNT == 0) {
+                    System.out.println("Save temp");
+                    if (sent < 100) {
+                        result[sent] = IITServerConnector.convertToJSON(temp);
+                        sent++;
+                        temp = new ArrayList<Map<String, String>>();
+                        System.out.println("Saved");
+                    }else
+                        return result;
 
+
+
+                }
+            }
+            result[sent++]= IITServerConnector.convertToJSON(temp);
+            return result;
         } else
             return null;
     }
