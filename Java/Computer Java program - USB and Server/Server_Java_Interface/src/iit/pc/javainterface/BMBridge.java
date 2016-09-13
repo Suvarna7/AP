@@ -1,16 +1,12 @@
 package iit.pc.javainterface;
 
-import java.io.File;
-import java.io.FileOutputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -23,14 +19,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import jxl.Cell;
-import jxl.Sheet;
-import jxl.Workbook;
-import jxl.read.biff.BiffException;
-import jxl.write.Label;
-import jxl.write.WritableSheet;
-import jxl.write.WritableWorkbook;
+import iit.pc.javainterface.excel.AutomaticExcelWriterAndDownloader;
+import iit.pc.javainterface.excel.AutomaticExcellReaderAndSender;
+import iit.pc.javainterface.excel.ExcelManager;
+import iit.pc.javainterface.excel.StoringFileManagement;
+import iit.pc.javainterface.matlab.MatlabSocket;
+import iit.pc.javainterface.usb.USBReadThread;
+import iit.pc.javainterface.usb.USB_PCHost;
 import jxl.write.WriteException;
+
 
 /**
  * The BMBridge class offers a interface between BodyMedia excel file and the server
@@ -39,18 +36,18 @@ import jxl.write.WriteException;
  * Uses the library jxl.jar (to read excel files)
  * 
  * @author Caterina Lazaro
- * @version 1.0, November 2015
+ * @version 2.0, August 2016
  *
  */
 
 public class BMBridge {
-	//***** FIELDS FOR THE IIT SERVER ******
+	//***** FIELDS FOR IIT SERVER ******
 	private  String IIT_SERVER_ADDRESS_IP = "http://216.47.158.133";
 	private String IIT_SERVER_ADDRESS_WRITE = IIT_SERVER_ADDRESS_IP+"/phpSync/insert_into_Table.php";
 	private  String IIT_SERVER_ADDRESS_READ = IIT_SERVER_ADDRESS_IP +"/phpSync/read_table_values.php";
-
 	public static String JSON_ID ="empaticaJSON";
-	private String TABLE_NAME = "empatica";
+	private static String TABLE_NAME = "empatica";
+	
 	private MyHttpClient httpClient = new MyHttpClient();
 	private String sendResult;
 	private String getResult;
@@ -63,29 +60,87 @@ public class BMBridge {
 	AutomaticExcellReaderAndSender automaticReader;
 	AutomaticExcelWriterAndDownloader automaticWriter;
 
-
 	//Exceptions flags
-	private boolean fileException;
-	private boolean internetException;
+	static boolean fileException;
+	public boolean internetException;
 	private boolean serverException;
-	
-	//Get last 5 minutes of data
-	private int initialRow;
-	private int lastRowPast;
-	private int lastRowCurrent;
-	
-	//USB Host
-	public USB_PCHost mHost;
-	
-	//***** FIELDS FOR BODYMEDIA EXCEL FILE ******
-		private  String EXCEL_FILE = "";
-		private File dataExcel;
-		private final Charset charset = Charset.forName("US-ASCII");
+	public boolean allDataCollected;
 
-		//************ HANDLE DATA **********
-		private ArrayList<String> COLUMNS_SET;
-		private JSONToSend jsonManager;
-		HashMap<String, String> rowRead;
+	//******* USB Host *******
+	public USB_PCHost mHost;
+
+	//***** EXCEL MANAGER ******
+	ExcelManager mExcel;
+
+	//************ HANDLE DATA **********
+	private ArrayList<String> COLUMNS_SET;
+	private JSONToSend jsonManager;
+	HashMap<String, String> rowRead;
+	//Number of extra columns sent thru USB:
+	//	- table_name
+	//	- update from server / sync (bis) from USB
+	public static int COLUMNS_DIFF = 1;
+	
+	//************ MATLAB COMMUNCIATIO *******
+	public MatlabSocket matSocket ;
+
+
+
+	/**
+	 * Create the BodyMedia Bridge
+	 * @param args
+	 */
+	public BMBridge(String excel, String server){
+		setIIT_SERVER_ADDRESS(server);
+		COLUMNS_SET = new ArrayList<String>();
+		System.out.println("columns" + COLUMNS_SET);
+		jsonManager = new JSONToSend();	
+		rowRead =  new HashMap<String, String>();
+		//Excel file: Set row values
+				mExcel = new ExcelManager(this);
+				
+		//Creates the Graphical interface
+		gui = new BMGuiProgram("Send",this, "IIT Server Interface");
+
+		//Set exception flags
+		fileException = false;
+		internetException = false;
+		serverException = false;
+		
+		//Start matlab socket
+		matSocket = new MatlabSocket(this);
+
+		
+
+	}
+
+	/**
+	 * Create the BodyMedia Bridge
+	 * @param args
+	 */
+	public BMBridge(){
+		COLUMNS_SET = new ArrayList<String>();
+		jsonManager = new JSONToSend();	
+		rowRead =  new HashMap<String, String>();
+		//File reset
+				mExcel = new ExcelManager(this);
+		//Creates the Graphical interface
+		gui = new BMGuiProgram("Send",this, "IIT Server Interface");
+
+		//Set exception flags
+		fileException = false;
+		internetException = false;
+		serverException = false;
+
+		//Start matlab socket
+		matSocket = new MatlabSocket(this);
+
+
+	}
+
+	/* *****************************************
+	 * SERVER BRIDGE
+	 */
 
 	/**
 	 * Handles server response
@@ -115,6 +170,7 @@ public class BMBridge {
 			//TODO System.out.println("Content: "+response);
 			handleJSONResponse(response);
 
+			readyToRun();
 
 			return null;
 		}
@@ -122,14 +178,19 @@ public class BMBridge {
 
 
 	};
-	
+
+
 	/**
 	 * Handles a JSON kind of response
 	 * @param response
 	 * @throws IOException
 	 */
 
-	public  void handleJSONResponse(String response) throws IOException{
+	public  List<String> handleJSONResponse(String response) throws IOException{
+		List<String> jsonsBack = new ArrayList<String>();
+		String jsonACK = "";
+		List<Map<String, String>> sammplesACK = new ArrayList<Map<String, String>>();
+		Map<String, String> currentSample = new HashMap<String, String>();
 		try {
 
 			System.out.println(response);
@@ -138,10 +199,14 @@ public class BMBridge {
 			if(arr !=null){
 				for (int i=0;i<arr.length();i++){ 
 					//String jsonStr= arr.get(i).toString();
-					//TODO System.out.println("Array object: " + arr.get(i));
-					JSONObject obj = (JSONObject)arr.get(i);
+					//System.out.println("JSON object index: "+i);
 
+					JSONObject obj = (JSONObject)arr.get(i);
+					//System.out.println("Array object: " + i);
 					//TODO System.out.println("JSON Convert: " + obj.toString());
+					currentSample = new HashMap<String, String>();
+					currentSample.put(USB_PCHost._ACK_SYNCHRONIZED, "ACK");
+					currentSample.put("time_stamp", obj.getString("time_stamp"));
 
 
 					if( searchForUpdateStatus(obj)){
@@ -150,51 +215,79 @@ public class BMBridge {
 					}
 					else{
 						try{
-							//TODO Reading request
-							//TODO System.out.println("JSON READING: "+obj);
-							writeExcelFileWithJSON(obj, 0);
+
+							mExcel.writeExcelFileWithJSON(obj, 0);
+							//If written successful - prepare a JSON ACK with sync = 'y'
+							currentSample.put("synchronized", "y");
+
+
 						}catch (IOException e){
+							//If written not successful - prepare a JSON ACK with sync = 'n'
+							currentSample.put("synchronized", "n");
+
 							System.out.println("Write excel with JSON Exception: "+e);
-							gui.displayError(e.toString());
-							if(!internetException){
-								internetException = true;
-								String messageOut = "There is a JSON Exception: run again";
-								if (e.toString().contains("FileNotFoundException"))
-									messageOut = "There is an excel exception: Check excel file";
-								gui.checkWindow(messageOut);
-							}
-						}catch (WriteException wE){
-							gui.displayError(wE.toString());
-							if(!internetException){
-								internetException = true;
-								gui.checkWindow("There is a Write exception: Check excel");
-							}
+							if (e.toString().contains("FileNotFoundException"))
+								displayFileException(e, "Excel", "Check excel file");
+							else
+								displayInternetException(e, "JSON Exception", "run again");
+
+
+						}catch (ArrayIndexOutOfBoundsException ioE){
+							//If written not successful - prepare a JSON ACK with sync = 'n'
+							currentSample.put("synchronized", "n");
 							
+							System.out.println("Write excel with ArrayIndexOutOfBounds Exception: "+ioE);
+								displayFileException(ioE, "Excel", "Corrupted! Open excel file");
+							
+							
+						}/*catch (WriteException wE){
+							//If written not successful - prepare a JSON ACK with sync = 'n'
+							currentSample.put("synchronized", "n");
+
+							displayFileException(wE, "Write", "Check excel file");
+
+						}*/
+						//Send the resulting
+						catch (WriteException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
 						}
 					}
 					//System.out.println(i);
 					//gui.setSentLabel(sendResult);
+					
+					//Update the JSON ACK ARRAY
+					sammplesACK.add(currentSample);
 				} 
-				
+
 				//If there are more past samples, we need to erase them
-				int saveLastRow = lastRowCurrent;
-				while (lastRowCurrent <= lastRowPast){
-					lastRowCurrent ++;
-					eraseExcelRow(lastRowCurrent);
+				mExcel.updateRowsParameters();
+				List<Map<String, String>> singlePacket = new ArrayList<Map<String, String>>();
+
+				for (int i = 0; i < sammplesACK.size(); i++){
+					//Convert the JSONACK ARRRAY to String
+					singlePacket.add(sammplesACK.get(i));
+					if ((i%USB_PCHost._MAX_NUM_JSON)== 0){
+						jsonsBack.add(JSONToSend.convertToJSONString(singlePacket));
+						singlePacket = new ArrayList<Map<String, String>>();
+
+					}
 				}
-				lastRowPast = saveLastRow;
+				//Send last samples
+				jsonsBack.add(JSONToSend.convertToJSONString(singlePacket));
+
 			}
-			
-			//Inform that writing process is done!
-			if(!internetException){
+			//TODO Inform that writing process is done!
+			/*if(!internetException){
 				gui.checkWindow("Ready to run MATLAB algorithm");
-			}
-			
+			}*/
+
 
 
 		}catch (JSONException je){
 
 			//Error
+			System.out.println(response);
 			System.out.println("JSON response error: "+ je);
 			//Values not updated
 			sendResult = "values_posted... Not updated";
@@ -205,306 +298,35 @@ public class BMBridge {
 				gui.checkWindow("There is a exception: Check Internet Connection");
 			}
 
-		} catch (WriteException e) {
+		} /*catch (WriteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			
+
 			gui.setSentLabel(sendResult);
-			gui.displayError(e.toString());
-			if(!internetException){
-				internetException = true;
-				gui.checkWindow("There is a exception erasing: Check excel file");
-			}
-		}
-	}
+			displayFileException(e, "Erasing", "Check excel file");
 
-	
-
-	/**
-	 * Create the BodyMedia Bridge
-	 * @param args
-	 */
-	public BMBridge(String excel, String server){
-		setIIT_SERVER_ADDRESS(server);
-		EXCEL_FILE=  excel;
-		COLUMNS_SET = new ArrayList<String>();
-		System.out.println("columns" + COLUMNS_SET);
-		jsonManager = new JSONToSend();	
-		rowRead =  new HashMap<String, String>();
-		//Creates the Graphical interface
-		gui = new BMGuiProgram("Send",this, "IIT Server Interface");
-
-		//Set exception flags
-		fileException = false;
-		internetException = false;
-		serverException = false;
-		
-		//Excel file: Set row values
-		initialRow = 1;
-		lastRowPast = 1;
-		lastRowCurrent = 0;
-	}
-
-	/**
-	 * Create the BodyMedia Bridge
-	 * @param args
-	 */
-	public BMBridge(){
-		COLUMNS_SET = new ArrayList<String>();
-		jsonManager = new JSONToSend();	
-		rowRead =  new HashMap<String, String>();
-		//Creates the Graphical interface
-		gui = new BMGuiProgram("Send",this, "IIT Server Interface");
-
-		//Set exception flags
-		fileException = false;
-		internetException = false;
-		serverException = false;
-		
-		//File reset
-		initialRow = 1;
-
-
-
-	}
-	/**
-	 * Set the Server address
-	 */
-	public void setTableName(String table){
-		setTABLE_NAME(table);
-	}
-
-	/**
-	 * Set the Server address
-	 */
-	public void setServerAddress(String server){
-		setIIT_SERVER_ADDRESS(server);
-	}
-
-	/**
-	 * Set the excel file
-	 */
-	public void setExcelFile(File excel){
-		dataExcel = excel;
-	}
-
-	/**
-	 * Read info from an excel file
-	 * @param args
-	 * @throws IOException 
-	 */
-	public List<HashMap<String, String>> readExcelValues(){
-		List<HashMap<String, String>> result = new ArrayList<HashMap<String, String>>();
-		//Open excel file
-		Path readFile = Paths.get(dataExcel.getAbsolutePath());
-		System.out.println("Read file: "+dataExcel.getAbsolutePath());
-		Workbook w;
-		try {
-			w = Workbook.getWorkbook(dataExcel);
-			// Get the first sheet
-			Sheet sheet = w.getSheet(0);
-			// Loop over all elements
-			for (int i = 0; i < sheet.getRows(); i++) {
-				for (int j = 0; j < sheet.getColumns(); j++) {
-					if (i == 0){
-						//TODO First row: name of columns in the table
-						COLUMNS_SET.add(sheet.getCell(j, i).getContents());
-
-					}else{
-						Cell cell = sheet.getCell(j, i);
-						//CellType type = cell.getType();
-						rowRead.put(COLUMNS_SET.get(j), sheet.getCell(j, i).getContents() );
-						//System.out.println(cell.getContents());
-
-					}
-
-				}
-				//Each row will be added to form a JSON object
-				if(i>0){
-					//Form the row to be added in the JSONManager
-					rowRead.put("synchronized", "n");
-					rowRead.put("table_name", getTABLE_NAME());
-					result.add(rowRead);
-					//jsonManager.insertRow(rowRead);
-					//Reset the rowRead
-					rowRead =  new HashMap<String, String>();
-				}
-
-			}
-			w.close();
-		} catch (BiffException e) {
-			gui.displayError(e.toString());
-			if (!fileException){
-				fileException = true;
-				gui.checkWindow("There is a biffException: Check Excel file");
-			}
+		}*/ catch (WriteException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException io){
-			gui.displayError(io.toString());
-			if (!fileException){
-				fileException = true;
-				gui.checkWindow("There is a IOException: Check Excel file");
-			}
-
-
 		}
-		return result;
+		System.out.println("ACK: "+jsonACK);
+		return jsonsBack;
 	}
+
+
+
 	/**
 	 * Read values from Excel file and update the JSONToSend object
 	 * @throws IOException
 	 */
 	public void readExcelValuesAndUpdateJSON(){
 
-		jsonManager.setValues(readExcelValues());
+		jsonManager.setValues(mExcel.readExcelValues());
 		sendResult = "values_posted...Values read";
 		gui.setSentLabel(sendResult);
 
 	}
-	/**
-	 * Write new values on the excel file
-	 * @param jsonArray
-	 * @param sheetNum
-	 * @throws IOException
-	 * @throws WriteException 
-	 */
 
-	public void writeExcelFileWithJSON(JSONObject jsonRow, int sheetNum) throws IOException, WriteException{
-		//Open excel file
-		//Path readFile = Paths.get(dataExcel.getAbsolutePath());
-		//System.out.println("Read file: "+dataExcel.getAbsolutePath());
-		try {
-			//FileInputStream fileIn = new FileInputStream(bodymediaExcel);
-			Workbook workbook = Workbook.getWorkbook(dataExcel);
-			FileOutputStream fileOut = new FileOutputStream(dataExcel);
-			//System.out.println("Read file: "+dataExcel);
-
-			WritableWorkbook wb = Workbook.createWorkbook(fileOut, workbook);
-
-			WritableSheet sheet = wb.getSheet(0);
-
-			//Get the first empty row of the sheet:
-			/*int lastRow = sheet.getRows();
-			for (int i =1; i < lastRow +1; i ++){
-				String cont = sheet.getCell(0, i).getContents();
-				System.out.println("Excel content -"+i+"- cont");
-				if (cont == null || cont == ""){
-					//This row is empty
-					lastRow = i;
-					//Exit loop
-					break;
-				}
-				
-			}*/
-			int numColumn = sheet.getColumns();
-			int jCol = 0;
-			//System.out.println("Columns vs json: "+numColumn +" - "+(jsonRow.length()-2));
-			//Iterate thru the JSON Array 
-			//NOTE: Json contains two extra columns (table_name and synchronized)
-
-			//First, get the order of fields in excel file:
-			HashMap<String, Integer> colAssociation = new HashMap<String, Integer>();
-			for (int i = 0; i < numColumn; i ++){
-				colAssociation.put(sheet.getCell(i, 0).getContents(), i);
-
-
-			}
-			//System.out.println("Sizes: "+jsonRow.length() + " vs " + numColumn);
-			if (jsonRow.length() -1 == numColumn ){
-				//Add each value of json at the after the last row
-				Iterator <String> keys = jsonRow.keys();
-				//keys.next();
-				while (keys.hasNext()){
-					String k = (String)keys.next();
-					//System.out.println("Pre Key: " + k);
-
-					if(colAssociation.containsKey(k)){
-						//System.out.println("Key: " + k);
-						String val = jsonRow.getString(k);
-						sheet.addCell(new Label (colAssociation.get(k), initialRow , String.valueOf(val)));
-						//TODO
-					}
-				}
-						
-
-
-			}
-			//Once the modifications are done
-			wb.write(); 
-			wb.close();
-			fileOut.close();
-			workbook.close();
-
-			//System.out.println("End excel write: "+initialRow);
-			
-			//Update last written row
-			lastRowCurrent = initialRow;
-			//For the next sample data:
-			initialRow ++;
-
-
-		} catch (BiffException e) {
-			e.printStackTrace();
-			gui.displayError(e.toString());
-			if(!internetException){
-				internetException = true;
-				gui.checkWindow("There is a exception: Check excel file");
-			}
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			gui.displayError(e.toString());
-			if(!internetException){
-				internetException = true;
-				gui.checkWindow("There is a exception: Check Internet Connection");
-			}
-		}
-
-	}
-	
-	/**
-	 * Write new values on the excel file
-	 * @param jsonArray
-	 * @param sheetNum
-	 * @throws IOException
-	 * @throws WriteException 
-	 */
-
-	public void eraseExcelRow(int row) throws IOException, WriteException{
-		//Open excel file
-		try {
-			Workbook workbook = Workbook.getWorkbook(dataExcel);
-			FileOutputStream fileOut = new FileOutputStream(dataExcel);
-			WritableWorkbook wb = Workbook.createWorkbook(fileOut, workbook);
-			WritableSheet sheet = wb.getSheet(0);
-
-			
-			int numColumn = sheet.getColumns();
-
-			//Erase all values on that row
-			for (int i = 0; i < numColumn; i ++)
-				sheet.addCell(new Label (i, row , ""));
-			
-		
-				
-			//Once the modifications are done
-			wb.write(); 
-			wb.close();
-			fileOut.close();
-			workbook.close();
-
-
-		} catch (BiffException e) {
-			e.printStackTrace();
-			gui.displayError(e.toString());
-			if(!internetException){
-				internetException = true;
-				gui.checkWindow("There is a exception: Check excel file");
-			}
-		
-		}
-
-	}
 
 	/**
 	 * Send values to the Server
@@ -541,6 +363,9 @@ public class BMBridge {
 
 		}
 	}
+	/**
+	 * Request read values from IIT server
+	 */
 
 	public void readFromIITServer(){
 
@@ -559,8 +384,7 @@ public class BMBridge {
 		gui.setGetLabel(getResult);
 
 		//Reset excel file
-		initialRow = 1;
-		
+		mExcel.resetInitRow();
 		//TODO Send values to IIT
 		try{
 			httpClient.executePOST(host, params, handler);
@@ -581,9 +405,44 @@ public class BMBridge {
 		}
 	}
 
+	/**
+	 * Get results
+	 * @return send result
+	 */
 	public String getSendResult() {
 		return sendResult;
 	}
+
+	/**
+	 * Obtain update status
+	 * @param obj JSON object
+	 * @return status
+	 */
+	private boolean searchForUpdateStatus(JSONObject obj){
+		try{
+			//First check whether the object is being syncrhonized:
+			if(obj.get("updated").equals("'y'")){
+				//Values updated
+				sendResult = "values_posted... Updated";
+				gui.setSentLabel(sendResult);
+				return true;
+			}else{
+				sendResult = "values_posted... Not updated";
+				gui.setSentLabel(sendResult);
+
+				return false;
+			}
+		}catch (JSONException je){
+			//If there is no update_status ==> read request
+			getResult = "";
+			gui.setGetLabel(getResult);
+			//writeExcelFileWithJSON(obj, 0);
+			//Do nothing, but!
+			return false;
+		}
+
+	}
+
 
 	//**************************************************************
 	//	GETTERS AND SETTERS
@@ -595,7 +454,7 @@ public class BMBridge {
 	public String getIIT_SERVER_ADDRESS_Write() {
 		return IIT_SERVER_ADDRESS_WRITE;
 	}
-	
+
 	public String getIIT_SERVER_IP(){
 		return IIT_SERVER_ADDRESS_IP;
 	}
@@ -628,34 +487,29 @@ public class BMBridge {
 	public void setAutomaticReader(AutomaticExcellReaderAndSender automatic){
 		automaticReader = automatic;
 	}
-	
+
 	public void setAutomaticWriter(AutomaticExcelWriterAndDownloader automatic){
 		automaticWriter = automatic;
 	}
 
-	private boolean searchForUpdateStatus(JSONObject obj){
-		try{
-			if(obj.get("update_status").equals("yes")){
-				//Values updated
-				sendResult = "values_posted... Updated";
-				gui.setSentLabel(sendResult);
-				return true;
-			}else{
-				sendResult = "values_posted... Not updated";
-				gui.setSentLabel(sendResult);
-
-				return false;
-			}
-		}catch (JSONException je){
-			//If there is no update_status ==> read request
-			getResult = "values_posted... Values_read";
-			gui.setGetLabel(getResult);
-			//writeExcelFileWithJSON(obj, 0);
-			//Do nothing, but!
-			return false;
-		}
-
+	/**
+	 * Set the Server address
+	 */
+	public void setTableName(String table){
+		setTABLE_NAME(table);
 	}
+
+	/**
+	 * Set the Server address
+	 */
+	public void setServerAddress(String server){
+		setIIT_SERVER_ADDRESS(server);
+	}
+
+
+	/* *********************************************************8
+	 * EXCEPTIONS POP UPS
+	 */
 
 	/**
 	 * Restart the exceptions popups
@@ -664,7 +518,49 @@ public class BMBridge {
 		internetException = false;
 		serverException = false;
 		fileException = false;
+		allDataCollected = false;
 	}
+	/**
+	 * Displays the results of a File Exception
+	 * @param e exception
+	 * @param type type of exception
+	 * @param todo recommended action
+	 */
+
+	public void displayFileException(Exception e, String type, String todo){
+		gui.displayError(e.toString());
+		if (!fileException){
+			fileException = true;
+			gui.checkWindow("There is a "+type+" exception: "+todo);
+		}
+	}
+	/**
+	 * Displays the results of an Internet exception
+	 * @param e exception
+	 * @param type type of exception
+	 * @param todo recommended acction
+	 */
+
+	public void displayInternetException(Exception e, String type, String todo){
+		gui.displayError(e.toString());
+		if(!internetException){
+			internetException = true;
+			gui.checkWindow("There is a "+type+" exception:"+todo);
+		}
+	}
+	
+	public void readyToRun(){
+		//Announce the end of MATLAB writing
+		if(allDataCollected){
+			gui.checkWindow("Ready to run MATLAB algorithm");
+		}
+	}
+
+	/* **********************************************************
+	 * MAIN
+	 */
+
+
 	/**
 	 * main function - creates the bodymedia interface 
 	 * It will read data from an excel file and send it to a remote server
@@ -681,10 +577,10 @@ public class BMBridge {
 		//System.out.println("Automatic reading...");
 		//Link to the bridge
 		bmBridge.setAutomaticReader(aReader);
-		
+
 		AutomaticExcelWriterAndDownloader aWriter = new AutomaticExcelWriterAndDownloader(60, bmBridge);
 		bmBridge.setAutomaticWriter(aWriter);
-		
+
 		//Prepare USB connection
 		bmBridge.mHost = new USB_PCHost(bmBridge);
 		bmBridge.mHost.execAdb();

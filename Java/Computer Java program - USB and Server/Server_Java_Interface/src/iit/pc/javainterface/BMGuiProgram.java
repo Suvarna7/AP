@@ -16,8 +16,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.net.SocketException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout.Alignment;
@@ -30,6 +33,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.DimensionUIResource;
+
+import iit.pc.javainterface.matlab.MatlabSocket;
+import iit.pc.javainterface.usb.USB_PCHost;
 
 /**
  * The BMGuiProgram class provides a graphical interface for the BMBridge class
@@ -63,14 +69,19 @@ public class BMGuiProgram extends JFrame{
 	private JPanel errorDisplay;
 	private TextField errorResult ;
 	//To show and warn
-	private JButton checkFile;
-	private JButton checkInternet;
-	private JButton checkServer;
+	//private JButton checkFile;
+	//private JButton checkInternet;
+	//private JButton checkServer;
 	private JButton warningButton;
+	//USB Text field - android adb
+	private JTextField androidAdb;
 	//USB buttons
-	private JButton usbConnectButton;
+	public JButton usbConnectButton;
 	private JButton usbDisconnectButton;
-	private JButton usbGetButton;
+	public JButton usbGetButton;
+
+	//MATLAB Buttons
+	public JButton matlabConnectButton;
 	//*************** ACTIONS COMMAND
 	private static final String SEND_BUTTON_COMMAND = "SendButton";
 	private static final String GET_BUTTON_COMMAND = "GetButton";
@@ -82,8 +93,14 @@ public class BMGuiProgram extends JFrame{
 	private static final String CONNECT_USB = "ConnectUSB";
 	private static final String DISCONNECT_USB = "DisconnectUSB";
 	private static final String SEND_COMMAND = "SendUSB";
+	private static final String USB_GET_VALUES = "GetUSBValues";
+	private static final String CHOOSE_ADB = "ChooseAdbLocation";
+	private static final String CONNECT_MATLAB = "ConnectMAT";
+	private static final String DISCONNECT_MATLAB = "DisconnectMAT";
 
-	
+
+
+
 	//******************** COLORS
 	private static final Color DULL_BUTTON_COLOR = new Color(224, 224, 224);
 	private static final Color BACKGROUND_COLOR = new Color(255, 255, 240);
@@ -99,13 +116,12 @@ public class BMGuiProgram extends JFrame{
 	public BMGuiProgram(String l, BMBridge bm, String Title) {
 		bridge = bm;
 		//Build the GUI:
-		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		//6 Panels vertically organized: 6 rows x 1 column
-		GridLayout bmLayout = new GridLayout(7,1);
+		GridLayout bmLayout = new GridLayout(9,1);
 		setLayout(bmLayout);
 		setTitle(Title);  // "super" Frame sets title
 		getContentPane().setForeground(Color.WHITE);
-		
+
 		setSize(620, 400);        // "super" Frame sets initial window size
 		getContentPane().setBackground(BACKGROUND_COLOR);
 		//*************************************************
@@ -122,15 +138,15 @@ public class BMGuiProgram extends JFrame{
 		serverTitle.setFont(f);
 		serverTitle.setSize(100, 20);
 		iitServerPanel.add(serverTitle);
-		
+
 		add(iitServerPanel);
 		//*************************************************
 		//Second panel - Set file and table name
-		
+
 		iitServerPanel = new JPanel();
 		iitServerPanel.setLayout(new GridLayout (3,2));
 		iitServerPanel.setBackground(BACKGROUND_COLOR);
-		
+
 		Label table = new Label ("Write table name: ");
 		tableNameField = new JTextField();
 		tableNameField.setText(bm.getTABLE_NAME());
@@ -150,7 +166,7 @@ public class BMGuiProgram extends JFrame{
 		//Select excel file
 		Label excelFileLabel = new Label ("Excel File location:");
 		iitServerPanel.add(excelFileLabel, BorderLayout.AFTER_LAST_LINE);
-		
+
 		//Add the excel file to read
 		Panel exToRead = new Panel();
 		exToRead.setLayout(new GridLayout(1,2));
@@ -158,19 +174,17 @@ public class BMGuiProgram extends JFrame{
 		excelTextFile.setText(selectFileDialog());
 		//Open a dialog
 
-	
-		
 		//The resulting file will appear on the program gui
 		exToRead.add(excelTextFile);
-		
+
 		//Set up the button to select another excel file
 		JButton selectExcel = new JButton("Open");
 		selectExcel.setActionCommand(CHOOSE_FILE);
 		selectExcel.addActionListener(actionsListener);
 		exToRead.add(selectExcel);
-		
+
 		iitServerPanel.add(exToRead);
-		
+
 		//Add panel to frame
 		add(iitServerPanel, BorderLayout.NORTH);
 
@@ -186,6 +200,7 @@ public class BMGuiProgram extends JFrame{
 		JButton Send = new JButton(label);
 		Send.setEnabled(true);
 		Send.setActionCommand(SEND_BUTTON_COMMAND);
+		Send.setEnabled(false);
 		//TODO Set the right color
 		//Check some rgb values in: cloford.com/resources/colours/500col.htm
 		// new Color(float r, float g, float b)
@@ -200,7 +215,7 @@ public class BMGuiProgram extends JFrame{
 		buttonPress.add(sentResult);
 
 		//Add Get Button
-		JButton Get = new JButton("Get");
+		JButton Get = new JButton("Get Server Values");
 		Get.setEnabled(true);
 		Get.setBackground(DULL_BUTTON_COLOR);
 		Get.setActionCommand(GET_BUTTON_COMMAND);
@@ -214,7 +229,7 @@ public class BMGuiProgram extends JFrame{
 		//Add button panel
 		add(buttonPress);
 		//add(buttonPress,  BorderLayout.AFTER_LAST_LINE);
-		
+
 		//*************************************************
 		//Fourth panel - automatic functions
 		JPanel automaticControl = new JPanel();
@@ -249,7 +264,7 @@ public class BMGuiProgram extends JFrame{
 
 		//Add automatic panel
 		add(automaticControl, BorderLayout.AFTER_LAST_LINE);
-		
+
 		//************************************************
 		//Fifth panel - USB Title
 
@@ -265,44 +280,101 @@ public class BMGuiProgram extends JFrame{
 		usbTitle.setFont(f);
 		usbTitle.setSize(100, 20);
 		usbDisplay.add(usbTitle);
-		
+
 		add(usbDisplay);
 		//************************************************
 		//Sixth panel - USB Connection
-		
-		
-	    usbDisplay = new JPanel();
-		usbDisplay.setLayout(new GridLayout(1,1));
-		usbDisplay.setBackground(Color.WHITE);
-		
+		usbDisplay = new JPanel();
+		usbDisplay.setLayout(new GridLayout(2,1));
+		usbDisplay.setBackground(BACKGROUND_COLOR);
+		//Adb path
+		JPanel usbAdbPath = new JPanel();
+		usbAdbPath.setLayout(new GridLayout(1,2));
+		usbAdbPath.setBackground(Color.WHITE);
+
+
+		Label adbLabel = new Label("Set adb path: (PRESS ENTER)");
+		androidAdb = new JTextField(USB_PCHost.PATH_ADB);
+		androidAdb.setSize(10, 200);
+		androidAdb.setActionCommand(CHOOSE_ADB);
+		androidAdb.addActionListener(actionsListener);
+		usbAdbPath.add(adbLabel);
+		usbAdbPath.add(androidAdb);
+		usbDisplay.add(usbAdbPath);
+
 		//Add a connect usb button
+		JPanel usbButtons = new JPanel();
+		usbButtons.setLayout(new GridLayout(1,3));
+		usbButtons.setBackground(Color.WHITE);
 		usbConnectButton = new JButton("USB Connect");
 		usbConnectButton.setEnabled(true);
 		usbConnectButton.setActionCommand(CONNECT_USB);
 		usbConnectButton.addActionListener(actionsListener);
 		usbConnectButton.setBackground(DULL_BUTTON_COLOR);
-		usbDisplay.add(usbConnectButton);
-		
+		usbButtons.add(usbConnectButton);
+
 		//Add a disconnect usb button
 		usbDisconnectButton = new JButton("USB Disonnect");
 		usbDisconnectButton.setEnabled(true);
 		usbDisconnectButton.setActionCommand(DISCONNECT_USB);
 		usbDisconnectButton.addActionListener(actionsListener);
 		usbDisconnectButton.setBackground(DULL_BUTTON_COLOR);
-		usbDisplay.add(usbDisconnectButton);
-		
+		usbButtons.add(usbDisconnectButton);
+
 		//Add a retreive data button
-		usbGetButton = new JButton ("USB Command");
+		usbGetButton = new JButton ("USB Get values");
 		usbGetButton.setEnabled(true);
-		usbGetButton.setActionCommand(SEND_COMMAND);
+		usbGetButton.setActionCommand(USB_GET_VALUES);
 		usbGetButton.addActionListener(actionsListener);
 		usbGetButton.setBackground(DULL_BUTTON_COLOR);
-		usbDisplay.add(usbGetButton);
-		
+		usbButtons.add(usbGetButton);
+
+		usbDisplay.add(usbButtons);
 		add(usbDisplay, BorderLayout.CENTER );
 
+		//************************************************
+		//Seventh panel - Matlab Title
+
+		JPanel matlabDisplay = new JPanel();
+		matlabDisplay.setLayout(new GridLayout (1,1));
+		matlabDisplay.setBackground(BACKGROUND_COLOR);
+
+		//Title
+		Label matlabTitle = new Label ("MATLAB MENU");
+		matlabTitle.setAlignment(JLabel.HORIZONTAL);
+		matlabTitle.setAlignment(JTextField.CENTER);
+		f  = new Font("SansSerif", Font.BOLD, 20);
+		matlabTitle.setFont(f);
+		matlabTitle.setSize(100, 20);
+		matlabDisplay.add(matlabTitle);
+
+		add(matlabDisplay);
+		//************************************************
+		//Eight panel - Matlab Connection
+		matlabDisplay = new JPanel();
+		matlabDisplay.setLayout(new GridLayout (1,1));
+		matlabDisplay.setBackground(BACKGROUND_COLOR);
+
+		//Add a connect usb button
+		matlabConnectButton = new JButton("MATLAB Connect");
+		matlabConnectButton.setEnabled(true);
+		matlabConnectButton.setActionCommand(CONNECT_MATLAB);
+		matlabConnectButton.addActionListener(actionsListener);
+		matlabConnectButton.setBackground(DULL_BUTTON_COLOR);
+		matlabDisplay.add(matlabConnectButton);
+		
+		//AND A DISCONNECT
+		JButton matlabDisonnectButton = new JButton("MATLAB Disconnect");
+		matlabDisonnectButton.setEnabled(true);
+		matlabDisonnectButton.setActionCommand(	DISCONNECT_MATLAB);
+		matlabDisonnectButton.addActionListener(actionsListener);
+		matlabDisonnectButton.setBackground(DULL_BUTTON_COLOR);
+		matlabDisplay.add(matlabDisonnectButton);
+
+		add(matlabDisplay);
+
 		//*************************************************
-		//Seventh panel - errors
+		//Ninth panel - errors
 		errorDisplay = new JPanel();
 		errorDisplay.setLayout(new GridLayout (2,1));
 		errorDisplay.setBackground(Color.WHITE);
@@ -338,7 +410,7 @@ public class BMGuiProgram extends JFrame{
 		//What happens when closing
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-		
+
 		//*******************************
 		//Make frame visible
 		setVisible(true);
@@ -356,7 +428,7 @@ public class BMGuiProgram extends JFrame{
 		public void actionPerformed(ActionEvent e) {
 			String actionCommand = e.getActionCommand();
 			if(actionCommand.equals(SEND_BUTTON_COMMAND)){
-				
+
 				//Clean previous error valeus
 				cleanErrorsScreen();
 				bridge.resetExceptionFlags();
@@ -398,7 +470,7 @@ public class BMGuiProgram extends JFrame{
 				System.out.println("Set table name");
 				bridge.setTABLE_NAME(tableNameField.getText());
 			}else if(actionCommand.equals(AUTOMATIC_START_COMMAND)&& bridge.automaticWriter !=null){
-				
+
 				//Clean previous error values
 				cleanErrorsScreen();
 				bridge.resetExceptionFlags();
@@ -410,9 +482,9 @@ public class BMGuiProgram extends JFrame{
 
 
 			}else if(actionCommand.equals(AUTOMATIC_STOP_COMMAND) && bridge.automaticWriter !=null){
-				
-				
-				//Clean previous error valeus
+
+
+				//Clean previous error values
 				cleanErrorsScreen();
 				bridge.resetExceptionFlags();
 
@@ -431,7 +503,7 @@ public class BMGuiProgram extends JFrame{
 				errorDisplay.setVisible(false);
 
 
-				
+
 
 			}else if(actionCommand.equals(CHOOSE_FILE)){
 				//Select a new file and update the name
@@ -439,19 +511,19 @@ public class BMGuiProgram extends JFrame{
 			}else if (actionCommand.equals(CONNECT_USB)){
 				//Start USB connection
 				if (bridge.mHost.initializeConnection()){
-					usbConnectButton.setText("USB Connected");
-					usbConnectButton.setEnabled(false);
-					usbConnectButton.setBackground(Color.GREEN);
 					//Start reading thread
-					bridge.mHost.readThread.start();
+					//bridge.mHost.readThread.start();
+					//Only if connection successful
+					usbConnectButton.setText("Waiting for phone response...");
+
+					//Start reading thread
+					//bridge.mHost.readThread.start();
 				}
-				
-				
+
+
 			}else if (actionCommand.equals(DISCONNECT_USB)){
-				//Stop reading thread
-				//bridge.mHost.readThread.shutdown();
-					
-				//bridge.mHost.readThread.destroy();
+
+				//Disconnect
 				bridge.mHost.usbDisconnect();
 
 				//Close all connections
@@ -459,17 +531,78 @@ public class BMGuiProgram extends JFrame{
 				usbConnectButton.setText("USB Connect");
 				usbConnectButton.setEnabled(true);
 				usbConnectButton.setBackground(DULL_BUTTON_COLOR);
-				
-				
+
+				//Update button
+				usbGetButton.setText("USB get values");
+				usbGetButton.setEnabled(true);
+
+
 			}else if (actionCommand.equals(SEND_COMMAND)){
+				//Debug send command
 				//Get info from USB and generate excel
 				bridge.mHost.sendUSBmessage("Send command!");
+			}else if (actionCommand.equals(USB_GET_VALUES)){
+				//TODO Test matlab socket
+				//Clean any previous error
+				cleanErrorsScreen();
+				bridge.resetExceptionFlags();
+
+				//Reset excel file
+				bridge.mExcel.initialRow = 1;
+
+				//Avoid the READY windows to appear before the writing is done
+				//bridge.internetException = true;
+
+
+				//TODO Select kind of messages to receive:
+				//	- All not syncronized
+				//  - Last 5 min
+				//Send get values command
+				bridge.mHost.sendUSBmessage(USB_PCHost._GET_ALL_NO_SYNC);
+
+
+				//Update info in button
+				usbGetButton.setText("Getting values..");
+				usbGetButton.setEnabled(false);
+
+				//Schedule timer: in case no data is received after 3 minutes
+				Timer timer = new Timer();
+				timer.schedule(new TimerTask() {
+					@Override
+					public void run() {
+						//Announce the end of MATLAB writing
+						bridge.allDataCollected = false;
+						//Update button
+						usbGetButton.setText("USB get values");
+						usbGetButton.setEnabled(true);
+					}
+				}, 3*60*1000);
+
+			}else if(actionCommand.equals(CHOOSE_ADB)){
+				//Update table name 
+				System.out.println("Set adb URL");
+				bridge.mHost.setADB(androidAdb.getText());
+
+			}else if (actionCommand.equals(CONNECT_MATLAB)){
+				//Connect to matlab function:
+				if (bridge.matSocket.initSocket()){
+					matlabConnectButton.setText("CONNECTED");
+					matlabConnectButton.setEnabled(false);
+					matlabConnectButton.setBackground(Color.GREEN);
+				}
+			}else if (actionCommand.equals(DISCONNECT_MATLAB)){
+				//Connect to matlab function:
+					matlabConnectButton.setText("MATLAB Connect");
+					matlabConnectButton.setEnabled(true);
+					matlabConnectButton.setBackground(DULL_BUTTON_COLOR);
+				
+
 			}
 		}
-		
+
 
 	};
-	
+
 	private String selectFileDialog(){
 		try{
 			File f = new File(new File("file.xls").getCanonicalPath());
@@ -479,7 +612,7 @@ public class BMGuiProgram extends JFrame{
 			int returnVal = excelChoose.showDialog(new JFrame(""), "Excel file");
 			File bmFile = excelChoose.getSelectedFile();
 			System.out.println("Chosen file: " + bmFile.getName());
-			bridge.setExcelFile(bmFile);
+			bridge.mExcel.setExcelFile(bmFile);
 			return bmFile.getName();
 			//add(excelChoose);
 		}catch (IOException e){
@@ -513,6 +646,8 @@ public class BMGuiProgram extends JFrame{
 		errors = errorResult.getText();
 		errors += "*  "+ error;
 		errorResult.setText(errors);
+		warningButton.setVisible(true);
+
 
 
 	}
@@ -529,7 +664,7 @@ public class BMGuiProgram extends JFrame{
 	 * @param message
 	 */
 	public void checkWindow(String message){
-		warningButton.setVisible(true);
+		//warningButton.setVisible(true);
 		JOptionPane.showMessageDialog(this, message, "Check warning", JOptionPane.WARNING_MESSAGE);
 	}
 

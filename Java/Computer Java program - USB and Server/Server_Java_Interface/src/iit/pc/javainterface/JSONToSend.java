@@ -3,6 +3,7 @@ package iit.pc.javainterface;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -75,5 +76,23 @@ public class JSONToSend {
     	}
     	return str;
     }
+	
+	/**
+	 * convertToJSON()
+	 * Function to convert the array of key maps to a JSON String format
+	 * 
+	 */
+	public  static String convertToJSONString( List<Map<String, String>> args){
+		String json = "";
+		Gson gson = new GsonBuilder().create();
+		//Use GSON to serialize Array List to JSON
+		try {
+			json = gson.toJson(args);
+		}catch (Exception e){
+			System.out.println("Could not convert to JSON!: "+e);
+			}
+
+		return json;
+	}
 
 }
