@@ -1,20 +1,42 @@
-%Create a tcp object
-% Local host
-% Port with Java - 1045
-t = tcpip('127.0.0.1', 38700, 'NetworkRole', 'server');
-%tclient = tcpclient ('127.0.0.1', 38700, 'NetworkRole', 'client');
-%fopen(t);
-while (0==0)
-    data = fread(t, 10)
+%% Connect to Java program and:
+%   - Send request data command when run button is pressed
+%   - Wait and read result from Java
+
+%Create connection and connection handler
+t = connect_java_usb();
+
+%Read all samples
+table_read = read_last_samples(t)
+
+%Keep reading values:
+% data_to_save = [];
+% table_name = 'ups';
+while(true)
+%         if (t.BytesAvailable > 0)
+%                 %Read new data from Java and phone
+%                 DataReceived = fscanf(t);
+%                 var = DataReceived(1:length(DataReceived)-2)
+%                 if (strcmp(var, 'no_more_values'))
+%                     %End of sample sending
+%                     out = 'Received JSON !'
+%                     assignin('base', table_name, data_to_save);
+%                     data_to_save = [];
+% 
+%                 elseif (length(var)>1)
+%                     if (var(1:1)=='[')
+%                         %Handle received Data - JSON ARRAY
+%                         [table_name, data, json, ack] = parse_json(var);
+%                         data_to_save =[data_to_save; data(2:end,:)];
+%                         fprintf(t, ack); 
+% 
+%                     end
+% 
+%                 end
+%         end
+
+    %REQUEST SAMPLES EVERY... 5 MIN?
+    n = 5*60;
+    pause(n);
+    table_read = read_last_samples(t)
+
 end
-%t = tcpclient('localhost', 7)
-%t = tcpclient('127.0.0.1', 38700 )
-%t = tcpclient('127.0.0.1', 38700)
-
-%Listen to it, for java inputs
-%Reads 10 bytes, with type double
-%read(t, 10)
-
-%Send result of MATLAB algorithm
-% data = 1:10;
-% write(t, data)
