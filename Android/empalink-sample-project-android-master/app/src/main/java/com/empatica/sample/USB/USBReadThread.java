@@ -47,10 +47,9 @@ public class USBReadThread extends Thread {
 
 			if (mHost!= null && mHost.socketIn != null && mHost.socketIn.hasNext()) {
 				String line = mHost.socketIn.nextLine();
-				System.out.println( "Got the line " + line);
 
 				if (line != null) {
-					System.out.println("Received line: " + line);
+					//System.out.println("Received line: " + line);
 
 
 
@@ -82,7 +81,7 @@ public class USBReadThread extends Thread {
 								JSONObject jsonObj = (JSONObject) arr.get(i);
 								//TODO dbManager.updateSyncStatus(databaseContext, (String) jsonObj.get("table_name"),
 								try {
-									mDatabase.updateSyncStatus(dbContext, BGService.empaticaSecTableName, IITDatabaseManager.syncColumn,
+									mDatabase.ackSyncStatusAllPrevious(dbContext, BGService.empaticaSecTableName,
 											(String) jsonObj.get("synchronized"), (String) jsonObj.get("time_stamp"));
 								}catch (Exception e){
 									System.out.println("Exception when sync from USB: "+e);
