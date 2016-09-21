@@ -1,8 +1,6 @@
 package edu.virginia.dtc.APCservice.DataManagement;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import edu.virginia.dtc.SysMan.Debug;
@@ -51,7 +49,7 @@ public class MatrixDatabaseManager {
 		dbContext = ctx;
 
 		//Set the file location of database 
-		DB_FILE = DB_LOCAL_URL  +"/IIT_database/"+database;
+		DB_FILE = DB_LOCAL_URL  +"/direct/"+database;
 		//Create database file
 		db=dbContext.openOrCreateDatabase(DB_FILE,SQLiteDatabase.OPEN_READWRITE, null);
 		db.close();
@@ -306,7 +304,7 @@ public class MatrixDatabaseManager {
 
 		try{
 			//Prepare the Query values
-			String inQueryValues = "(" +val+ ")";
+			//String inQueryValues = "(" +val+ ")";
 			db.execSQL("INSERT INTO "+table+ " VALUES (" + val+");");
 			//+ "ON DUPLICATE KEY UPDATE synchronized= y;");
 

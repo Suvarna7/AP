@@ -8,19 +8,16 @@
 //*********************************************************************************************************************
 package edu.virginia.dtc.APCservice;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
-
-import edu.virginia.dtc.APCservice.DataManagement.IITServerConnector;
-import edu.virginia.dtc.APCservice.DataManagement.IITSensorsManager;
+import edu.virginia.dtc.APCservice.DataManagement.SensorsManager;
 import edu.virginia.dtc.APCservice.DataManagement.SubBolusCreator;
+import edu.virginia.dtc.APCservice.Server.IITServerConnector;
 import edu.virginia.dtc.APCservice.USB.USBHost;
+import edu.virginia.dtc.APCservice.USB.USBReadThread;
 import edu.virginia.dtc.SysMan.Biometrics;
 import edu.virginia.dtc.SysMan.Controllers;
 import edu.virginia.dtc.SysMan.Debug;
@@ -29,7 +26,6 @@ import edu.virginia.dtc.SysMan.Log;
 import edu.virginia.dtc.SysMan.Params;
 import edu.virginia.dtc.SysMan.Safety;
 import edu.virginia.dtc.SysMan.State;
-import Jama.Matrix;
 
 import android.content.Context;
 import android.annotation.SuppressLint;
@@ -64,7 +60,6 @@ public class IOMain extends Service {
 	//********* IIT I/O Fields Management ******
 	//******************************************
 
-
 	//Additional database for other devices
 	private IITServerConnector iitConnector;
 	public static final String _TABLE_NAME_BM = "'bodymedia'";
@@ -72,7 +67,7 @@ public class IOMain extends Service {
 	public static final String _ALGORITHM_RESULTS_NAME = "'USB_Commands'";
 
 	//Sensors reader
-	private IITSensorsManager sManager;
+	public SensorsManager sManager;
 
 	//TODO Algorithm Manager
 	//private AlgorithmManager aManager;
@@ -80,7 +75,7 @@ public class IOMain extends Service {
 	//Arrays containing sensors info:
 	private ArrayList<Double> cgmArray;
 	private ArrayList<ArrayList<Double>> bodymediaArray;
-	private ArrayList<ArrayList<Double>> empaticaArray;
+	//private ArrayList<ArrayList<Double>> empaticaArray;
 
 	private ArrayList<Double> zephyrArray;
 
@@ -88,11 +83,9 @@ public class IOMain extends Service {
 	//Other
 	//Dias values
 	private List<Map<String, String>> dArgs;
-	public static List<String> notSynchValues;
-	private SimpleDateFormat simpleFormat;
 
 	//APP Context
-	public static Context ctx;
+	public Context ctx;
 	//final int PUMP_VAL_ID = 50;
 	
     //USB Connection
@@ -141,28 +134,16 @@ public class IOMain extends Service {
 
 		//Init others
 		dArgs = new ArrayList<Map<String, String>>();
-		notSynchValues = new ArrayList<String>();
-
-		simpleFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 		//Create the sensor manager
-		sManager = new IITSensorsManager(ctx);
+		sManager = new SensorsManager(ctx);
+		
+		//Create the server connector
+		iitConnector = new IITServerConnector( ctx, sManager.dbManager);
 
-		//Create algorithm manager
-		//aManager = new AlgorithmManager(ctx);
-
-		 //USB Connect start
-        mHost = new USBHost(this);
-        
-        //Start USB Connection
-        mHost.intent = new Intent(mHost.ctx, IOMain.class);
-        mHost.mHandler=new Handler();
-
-        //Initialize server socket in a new separate thread
-        new Thread(mHost.initializeConnection).start();
-        String msg="Attempting to connect…";
-        Toast.makeText(mHost.ctx, msg, Toast.LENGTH_LONG).show();
-
+		
+		//Start usb host
+        startUSBConnection();
 
 
 	}
@@ -237,7 +218,6 @@ public class IOMain extends Service {
 
 						Subject subject = new Subject();
 						//dbManager = new DevitesDatabaseManager(ctx, "IITdb.db");
-						iitConnector = new IITServerConnector(ctx);
 
 						if(subject.read(getApplicationContext())) {
 
@@ -258,38 +238,27 @@ public class IOMain extends Service {
 							toast = Toast.makeText(ctx, "All uri",Toast.LENGTH_LONG);
 							toast.show();*/
 
+							//READ CGM FROM DEXCOM
 							//First include the sensor's reading
 							Map<String, String> dTable = new HashMap<String, String>();
-							long[] dexcomTime = new long [1];
-							sManager.readCGMTable(ctx, dTable, dexcomTime, cgmArray);
+							dTable = sManager.readDiASCGMTable(ctx, cgmArray);
+							double cgm = cgmArray.get(cgmArray.size()-1);
 
-							//Convert to date format
-							long time = dexcomTime[0];
-							Debug.i(TAG, FUNC_TAG, "DiAs Read sensors, time: "+time);
-							Date parseDate=new Date(time*1000);
-							Debug.i(TAG, FUNC_TAG, "DiAs Read sensors, parse date: "+parseDate);
-							String finalTime = simpleFormat.format(parseDate);
-							Debug.i(TAG, FUNC_TAG, "DiAs Read sensors, date time: "+finalTime);
-
-							//Add table name and time to JSON
-							dTable.put("table_name", IITSensorsManager._SERVER_TABLE_NAME_DE);
-							dTable.put("last_update", finalTime);
 							dArgs.add(dTable);
 
-
 							//TODO Send dexcom values to IIT
-							String jToSend ="";
+							//String jToSend ="";
 							if (dArgs !=null && dArgs.size()> 0){
 								//Add to the not synchronized values
-								jToSend =iitConnector.convertToJSON(dArgs);
-								notSynchValues.add(jToSend);
+								String jToSend =IITServerConnector.convertToJSON(dArgs);
+								//notSynchValues.add(jToSend);
 								//Send to IIT
 								iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
 							}else
 								Debug.i(TAG, FUNC_TAG, "No values to send to IIT");
 
-							//TODO Send data via USB
-							mHost.sendUSBmessage(jToSend);
+							//TODO Prepare data to be send via USB
+							
 							//Prepare data for exercise
 							dArgs = new ArrayList<Map<String, String>>();
 
@@ -297,19 +266,18 @@ public class IOMain extends Service {
 							//Get Zephyr values
 							//Zephyr values
 							//First include the exercise values 
-							/*long[] zephyrTime = new long [1];
-							sManager.readExerciseTable(ctx, dArgs, zephyrTime, simpleFormat, zephyrArray);
+							dArgs = sManager.readDiASExerciseTable(ctx, zephyrArray);
 
 							//TODO Send Bioharness values to IIT server if there is something to send
-							/*if (dArgs !=null && dArgs.size()> 0){
+							if (dArgs !=null && dArgs.size()> 0){
 								//Add to the not syncrhonized values
-								String jToSend =iitConnector.convertToJSON(dArgs);
-								notSynchValues.add(jToSend);
+								String jToSend =IITServerConnector.convertToJSON(dArgs);
+								//notSynchValues.add(jToSend);
 								//Send to IIT
 								iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
 							}
 							else
-								Debug.i(TAG, FUNC_TAG, "No values to send to IIT");*/
+								Debug.i(TAG, FUNC_TAG, "No values to send to IIT");
 							//Prepare data for next sensor
 							dArgs = new ArrayList<Map<String, String>>();
 
@@ -349,31 +317,32 @@ public class IOMain extends Service {
 							}else
 								Debug.i(TAG, FUNC_TAG, "No values to send to IIT");*/
 							//Prepare data for next sensor
-							dArgs = new ArrayList<Map<String, String>>();
+							//dArgs = new ArrayList<Map<String, String>>();
 
+							
 							/* ***********************************************
 							 * TODO Read Empatica values
 							 * ***********************************************/
-							//Get all samples not synchronized - in dArgs
-							 sManager.readIITDatabaseTable(dArgs, _TABLE_NAME_EM, empaticaArray);
-							
+							//1. Get data to be send via USB to laptop algorithm
+							//TODO Prepare data to be sent via USB
+							//dArgs = sManager.read_lastSamples_IITDatabaseTable(SensorsManager._EMPATICA_TABLE_NAME, false);
+							//dArgs = new ArrayList<Map<String, String>>();
 
-							 //Extract the necessary values for the algorithm and to send
-							 
+							
+							//2. Update IIT SERVER
+							//Get all samples not updated 
+							dArgs = sManager.read_lastSamples_IITDatabaseTable(SensorsManager._EMPATICA_TABLE_NAME, true);
+														 
 
 							// Send all values to IIT server if there is something to send
-							 jToSend = "";
 							if (dArgs !=null && dArgs.size()> 0){
 								//Add to the not synchronized values
-								jToSend =iitConnector.convertToJSON(dArgs);
-								notSynchValues.add(jToSend);
+								String jToSend =IITServerConnector.convertToJSON(dArgs);
+								//notSynchValues.add(jToSend);
 								//Send to IIT
 								iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
 							}else
 								Debug.i(TAG, FUNC_TAG, "No values to send to IIT");
-							
-							//TODO Send data via USB
-							mHost.sendUSBmessage(jToSend);
 							
 							//Prepare data for next sensor
 							dArgs = new ArrayList<Map<String, String>>();
@@ -393,9 +362,12 @@ public class IOMain extends Service {
 							/* ********************************************
 							 * SIMPLE ALGORITHM AND INSULIN CORRECTION
 							 */
-							/*if (readVal.size()>0){
-								correction = 1.11;
-							}else{*/
+							/*if (cgm>200)
+								correction = 2.11;
+							else if (cgm>100)
+								correction = 0.5;
+							else 
+								correction =0;*/
 							/*if(HR < 80 && cgm > 150)
 								correction = 10.2;
 							else if(HR <80 && cgm >100)
@@ -407,52 +379,30 @@ public class IOMain extends Service {
 							else 
 								correction =0.1;
 
-							//}*/
+							//}
 							
 							/* ********************************************
 							 *  ALGORITHM - USB to LAPTOP
 							 */
 
 							//TODO Call algorithm - FROM USB Connection
-							correction = 0;
+							//correction = 0;
 							//correction = AlgorithmManager.runAlgorithm(cgmArray.get(cgmArray.size()-1) ,getArrayFixed(bodymediaArray.get(BodyMediaMatrix._EE)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._GSR)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._ACT)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._SLEEP)));
 							if (mHost.connected){
-								//Read bolus value
+								//SEND READ READY:
+								mHost.sendUSBmessage(USBHost._PHONE_READY);
 								
-								//Read basal value
-								
-								//Read warning - hypo alarm
+								//Wait for bolus response or something else
+								correction = waitForAlgorithmResponse();
 
 							}else{
-								//USB Alert to be displayed
+								//TODO USB Alert to be displayed
 								
-								//Use a simple algorithm function:
+								//Run reconnect Thread:
+								startUSBConnection();
 							}
 							//Reset arrays
-							
 
-							
-
-							//TODO Send result of algorithm to IIT server
-							/*Map<String, String> testValue = new HashMap <String, String>();
-							testValue. put("result",""+ correction);
-							testValue. put("table_name",""+ _ALGORITHM_RESULTS_NAME);							
-							testValue.put("synchronized", "y");
-							testValue.put("last_update", ""+0);
-							//Update args
-							dArgs.add(testValue);
-
-							//Send all values to IIT server if there is something to send
-							if (dArgs !=null && dArgs.size()> 0){
-								//Add to the not syncrhonized values
-								String jToSend =IITServerConnector.convertToJSON(dArgs);
-								notSynchValues.add(jToSend);
-								//Send to IIT
-								iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_URL);
-							}else
-								Debug.i(TAG, FUNC_TAG, "No values to send to IIT");
-							//Prepare data for next sensor
-							dArgs = new ArrayList<Map<String, String>>();*/
 
 
 
@@ -573,8 +523,7 @@ public class IOMain extends Service {
 				//TODO Send all bolus values to IIT server if there is something to send
 				if (dArgs !=null && dArgs.size()> 0){
 					//Add to the not syncrhonized values
-					String jToSend =iitConnector.convertToJSON(dArgs);
-					notSynchValues.add(jToSend);
+					String jToSend =IITServerConnector.convertToJSON(dArgs);
 					//Send to IIT
 					iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
 				}else
@@ -642,7 +591,7 @@ public class IOMain extends Service {
 	 * @param convert
 	 * @return
 	 */
-	private double[] getArrayFixed(ArrayList<Double> convert){
+	/*private double[] getArrayFixed(ArrayList<Double> convert){
 		double[] result = new double[convert.size()];
 		int i = 0;
 		for (double val: convert){
@@ -651,7 +600,7 @@ public class IOMain extends Service {
 		}
 		return result;
 
-	}
+	}*/
 
 	/**
 	 * Set up the arrays to be inputted int he algorithm
@@ -670,6 +619,32 @@ public class IOMain extends Service {
 		//Zephyr
 		zephyrArray= new ArrayList<Double>();
 
+	}
+	
+	/**
+	 * Start USB host to connect to laptop
+	 */
+	public void startUSBConnection(){
+		//Disconenct host
+		//mHost.disconnectUSBHost();
+		
+        //Initialize server socket in a new separate thread
+        mHost = new USBHost(this, this);
+        
+        //Start USB Connection
+        mHost.intent = new Intent(mHost.ctx, IOMain.class);
+        mHost.mHandler=new Handler();
+        new Thread(mHost.initializeConnection).start();
+        String msg="Attempting to connect…";
+        Toast.makeText(mHost.ctx, msg, Toast.LENGTH_LONG).show();
+	}
+	
+	private double waitForAlgorithmResponse(){
+		USBReadThread.processing_algorithm = true;
+		while(USBReadThread.processing_algorithm ){
+			//DO NOTHING
+		}
+		return USBReadThread.last_read_bolus;
 	}
 
 

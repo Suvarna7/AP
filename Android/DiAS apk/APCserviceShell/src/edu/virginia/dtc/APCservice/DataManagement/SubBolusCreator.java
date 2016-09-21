@@ -11,6 +11,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Message;
 import edu.virginia.dtc.APCservice.IOMain;
+import edu.virginia.dtc.APCservice.Server.IITServerConnector;
 import edu.virginia.dtc.SysMan.Controllers;
 import edu.virginia.dtc.SysMan.Event;
 import edu.virginia.dtc.SysMan.Params;

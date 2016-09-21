@@ -3,7 +3,7 @@
 	android:versionCode="1"
 	android:versionName="1.0" 
 	android:sharedUserId="android.uid.ap"
-	    android:sharedUserLabel="@string/sharedUserLabel"
+    android:sharedUserLabel="@string/sharedUserLabel"
 	package="edu.virginia.dtc.APCservice">
 	<uses-sdk android:minSdkVersion="9" android:targetSdkVersion="15" />
       
