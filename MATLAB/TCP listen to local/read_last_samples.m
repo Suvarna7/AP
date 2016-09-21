@@ -1,12 +1,15 @@
-function [ table_name ] = read_last_samples( t )
+function [ table_name, data_to_save ] = read_last_samples( t , table_name)
 %read_last_samples Request new samples and waits for java
 %   program to send them all
+% We request data for a certain sensor. Available sensors:
+%   - 'empatica'
+%   - 'dexcom'
 
 %Send request
-fprintf(t, 'read_values'); 
+fprintf(t, table_name); 
 ready_to_read = true;
 data_to_save = [];
-table_name = 'ups';
+table_name = 'no_data';
 %Wait till we read all samples
  while (ready_to_read)
             %data = fread(t, 10)
@@ -17,15 +20,15 @@ table_name = 'ups';
                 if (strcmp(var, 'no_more_values'))
                     %End of sample sending
                     out = 'Received JSON !'
-                    assignin('base', table_name, data_to_save);
-                    data_to_save = [];
+                    %assignin('base', table_name, data_to_save);
+                    %data_to_save = [];
                     ready_to_read = false;
 
 
                 else
                     if (var(1:1)=='[')
                         %Handle received Data - JSON ARRAY
-                        [table_name data json ack] = parse_json(var);
+                        [table_name, data, json ack] = parse_json(var);
                         if (length(data_to_save)<1)
                             data_to_save = [data_to_save;data];
                         else

@@ -3,19 +3,22 @@
 %   - Wait and read result from Java
 
 %Create connection and connection handler
+'Press connect in Java program....'
 t = connect_java_usb();
+'Local connection established!'
+%Create empatica and dexcom tables:
+empatica = [];
+dexcom = [];
 
-%Read all samples
-table_read = read_last_samples(t)
+sensors_tables = {dexcom; empatica};
+sensors_names = {'dexcom'; 'empatica'};
+
 
 %Keep reading values:
-listen_for_samples(t);
-
-while(true)
-
-    %REQUEST SAMPLES EVERY... 5 MIN?
-    n = 5*60;
-    pause(n);
-    table_read = read_last_samples(t)
-
+listening = true;
+while (listening)
+    'New algorithm iteration'
+    [listening, sensors_tables] = listen_to_phone(t, sensors_names, sensors_tables);
 end
+
+

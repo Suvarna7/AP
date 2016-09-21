@@ -19,7 +19,7 @@ function [table_name, data, json, ack] = parse_json(json)
 end
 
 function [table_name, value, json, ack_string] = parse_value(json)
-    value = [];, 
+    value = [];
     table_name = 'none';
     
     if ~isempty(json)
@@ -30,10 +30,10 @@ function [table_name, value, json, ack_string] = parse_value(json)
         
         switch lower(id)
             case '"'
-                [value json] = parse_string(json);
+                [value, json] = parse_string(json);
                 
             case '{'
-                [value json] = parse_object(json);
+                [value, json] = parse_object(json);
                 
             case '['
                 [table_name, value, json, ack_string] = parse_array(json);
@@ -88,15 +88,11 @@ function [table_name, data, list_jsons, ack_string] = parse_array(json)
             ME = MException('json:parse_array',['Parsed an empty value: ' json]);
             ME.throw;
         end
-        
         if (length(rows)>0)
             if( length(rows(1,:)) == length(row) )
                 %VALID ROW !
-                rows =[rows; row]; 
-                %Init data object:
-                if (length(data)<1)
-                    data= [data; cols];
-                end
+                rows =[rows; row];
+               
                 %ACK VALUES
                  ack_string =strcat(ack_string,ack_json,',');
 
@@ -105,6 +101,12 @@ function [table_name, data, list_jsons, ack_string] = parse_array(json)
                 row
             end
         else
+            %First sample:
+            %Init data object:
+                if (length(data)<1)
+                    data= [data; cols];
+                end
+            %Init rows
             rows =[rows; row]; 
         end
         
@@ -165,7 +167,7 @@ function [table_name, cols, values, data, json, ack] = parse_object(json)
                 json = remaining_json;
                 
             case '}' % End of object, so exit the function
-                ack=strcat(ack,'usb_sync: yes }');
+                ack=strcat(ack,'usb_sync: y }');
                 return
                 
             otherwise % Ignore other characters
