@@ -54,19 +54,19 @@ public class IITServerConnector {
 	public  boolean sending;
 
 	//Server Database:
-	public static final String _SERVER_DB_NAME =  "IITdb.db";
+	//public static final String _SERVER_DB_NAME =  "IITdb.db";
 
 	/**
 	 * Constructors: create the server connector object
 	 * Initializes the httpClient, the table names and the JSON_ID
 	 */
-	public IITServerConnector(IITDatabaseManager mang){
+	/*public IITServerConnector(IITDatabaseManager mang){
 		httpClient =  new AsyncHttpClient();
 		JSON_ID= "json";
 		tableNames = new ArrayList<String>();
 		dbManager = mang;
 		sending = false;
-	}
+	}*/
 
 	/**
 	 * Constructors: create the server connector object
@@ -93,17 +93,17 @@ public class IITServerConnector {
 	 * @param ctx context
 
 	 */
-	public IITServerConnector(Context ctx){
+	/*public IITServerConnector(Context ctx){
 		httpClient =  new AsyncHttpClient();
 		JSON_ID= JSON_ID_dias;
 		WRITE_URL = IIT_SERVER_UPDATE_VALUES_URL;
 		READ_URL = IIT_SERVER_READ_TABLE_URL;
 		tableNames = new ArrayList<String>();
-		dbManager = new IITDatabaseManager(ctx, _SERVER_DB_NAME);
+		//dbManager = new IITDatabaseManager(ctx, _SERVER_DB_NAME);
 		databaseContext =  ctx;
 
 
-	}
+	}*/
 	/**
 	 * debugSendToServer()
 	 * Send a test JSON to IIT server to test

@@ -92,6 +92,7 @@ public class BGService extends Service implements EmpaDataDelegate{
 
     public static final String[] columnsTable = new String[]{"time_stamp", "Acc_x", "Acc_y", "Acc_z", "GSR", "BVP",
             "IBI", "HR", "temperature","battery_level"};
+    public static final int _TIME_INDEX = 0;
     private static int STORING_AMOUNT = 1000;
     private static int storing_counter;
 

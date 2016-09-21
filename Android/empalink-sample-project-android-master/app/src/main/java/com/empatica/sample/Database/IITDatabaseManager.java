@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteException;
 import android.os.Environment;
 import android.util.Log;
 
+import com.empatica.sample.BGService;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +48,8 @@ public class IITDatabaseManager {
     private static String EXTERNAL_DIRECTORY_PATH = Environment.getExternalStorageDirectory().getAbsolutePath();
     //private static String DB_LOCAL_URL =  "/storage/emulated/legacy/IIT_database/";
     private static String DB_LOCAL_URL =  EXTERNAL_DIRECTORY_PATH+"/IIT_database/";
-    public static String DB_NAME = "dbSensors.db";
+    public static String DEFAULT_DB_NAME = "dbSensors.db";
+    private String db_name;
 
     static String databaseFile;
     //Time_Stamp column name:
@@ -97,7 +100,7 @@ public class IITDatabaseManager {
      * @param databaseName name of the database
      */
     public IITDatabaseManager(Context ctx, String databaseName){
-        DB_NAME = databaseName;
+        db_name = databaseName;
         initDatabase(ctx);
 
     }
@@ -108,8 +111,9 @@ public class IITDatabaseManager {
      */
     private void initDatabase(Context ctx){
         dbContext = ctx;
+        db_name = DEFAULT_DB_NAME;
         //Update database file:
-        databaseFile = DB_LOCAL_URL+DB_NAME;
+        databaseFile = DB_LOCAL_URL+db_name;
 
         //Create database:
         db=ctx.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READWRITE, null);
@@ -603,11 +607,14 @@ public class IITDatabaseManager {
      */
     public static void updateSyncStatus(Context ctx, String table, String status_col, String status, String last_up){
 
+
         //SQLiteDatabase database = ctx.openOrCreateDatabase(databaseFile, Context.MODE_WORLD_WRITEABLE, null);
         SQLiteDatabase db1=ctx.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READWRITE, null);
 
         //Update query: update status, searching the right last_updated value
         String updateQuery = "UPDATE "+table +" SET "+status_col+" = '"+status+"' WHERE "+timeStampColumn+" = '"+ last_up+"'";
+        //System.out.println("Update values: "+updateQuery);
+
         Log.d("query", updateQuery);
         //System.out.println("^^^^^^^^^^^UPDATED???: " + updateQuery);
 
@@ -615,6 +622,42 @@ public class IITDatabaseManager {
         db1.close();
     }
 
+    public static void ackSyncStatusAllPrevious (Context ctx, String table,  String status, String last_up){
+        //SQLiteDatabase database = ctx.openOrCreateDatabase(databaseFile, Context.MODE_WORLD_WRITEABLE, null);
+        //SQLiteDatabase db1=ctx.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READWRITE, null);
+        //If sync is sucessful:
+        if(syncStatusYes.equals("'"+status+"'")){
+            System.out.println("ACK Process: "+last_up);
+            //Get all not sync previous columns:
+            String selectQuery = "SELECT  * FROM " + table + " WHERE "+syncColumn+" = " + syncStatusNo ;
+            SQLiteDatabase db_cursor = dbContext.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READONLY, null);
+
+        if (db_cursor !=null) {
+            //Create Cursor
+            //Choose the right array from table
+            cursorSync = db_cursor.rawQuery(selectQuery, null);
+
+            //If Cursor is valid
+            if (cursorSync != null ) {
+                if (cursorSync.moveToFirst()) {
+                    int index = 0;
+                    do {
+                        //Update values
+                        updateSyncStatus(ctx, table,syncColumn, status,cursorSync.getString(BGService._TIME_INDEX));
+
+                    } while ( !last_up.equals(cursorSync.getString(BGService._TIME_INDEX)) && cursorSync.moveToNext() );
+                    System.out.println("Done ACK reading: "+index);
+
+
+                }
+
+                db_cursor.close();
+
+            }
+        }
+        }
+
+    }
     /*
     * countRows
      */
