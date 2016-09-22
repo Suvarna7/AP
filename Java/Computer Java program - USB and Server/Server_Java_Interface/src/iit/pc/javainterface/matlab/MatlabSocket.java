@@ -4,11 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
-
 import iit.pc.javainterface.BMBridge;
-import iit.pc.javainterface.usb.USBReadThread;
 
 public class MatlabSocket {
 	//Socket
@@ -25,9 +22,14 @@ public class MatlabSocket {
 	private static int MATLAB_LOCAL_HOST = 38700;
 
 	//Commands:
-	public static final String _READ_LAST_SAMPLES = "read_values";
+	public static final String _READ_LAST_SAMPLES = "read_all";
 	public static final String _SENT_ALL = "no_more_values";
 	public static final String _ACK = "usb_sync";
+	public static final String _DISCONNECT_MATLAB = "disconnect_socket";
+
+	public static final String _INSULIN = "insulin_command";
+	public static final String _HYPO = "hypo_command";
+
 	
 	//Instance of the bridge
 	BMBridge mBridge;
@@ -41,7 +43,6 @@ public class MatlabSocket {
 	}
 
 	public boolean initSocket(){
-		boolean res = false;
 		try{
 			/*serverSocket =  new ServerSocket(MATLAB_LOCAL_HOST);
 			clientSocket = serverSocket.accept();*/

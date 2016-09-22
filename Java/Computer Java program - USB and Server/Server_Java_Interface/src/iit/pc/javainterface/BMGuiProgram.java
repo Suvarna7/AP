@@ -558,7 +558,12 @@ public class BMGuiProgram extends JFrame{
 				//	- All not syncronized
 				//  - Last 5 min
 				//Send get values command
-				bridge.mHost.sendUSBmessage(USB_PCHost._GET_ALL_NO_SYNC);
+				bridge.mHost.readThread.matlab_request = 0;
+				
+				//GET ALL VALUES and select sensor:
+				String message = "{command: "+USB_PCHost._GET_ALL_NO_SYNC+", "+USB_PCHost._SENSOR_ID+": "+USB_PCHost._EMPATICA+"}";
+				//bridge.mHost.sendUSBmessage(USB_PCHost._GET_ALL_NO_SYNC);
+				bridge.mHost.sendUSBmessage(message);
 
 
 				//Update info in button
@@ -591,7 +596,9 @@ public class BMGuiProgram extends JFrame{
 					matlabConnectButton.setBackground(Color.GREEN);
 				}
 			}else if (actionCommand.equals(DISCONNECT_MATLAB)){
-				//Connect to matlab function:
+				//Send disconnect command:
+				bridge.matSocket.sendMessageToMatlab(MatlabSocket._DISCONNECT_MATLAB);
+				//Update GUI
 					matlabConnectButton.setText("MATLAB Connect");
 					matlabConnectButton.setEnabled(true);
 					matlabConnectButton.setBackground(DULL_BUTTON_COLOR);

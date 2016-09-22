@@ -12,8 +12,9 @@ import iit.pc.javainterface.BMBridge;
 
 public class USB_PCHost {
 	//Field - path to android adb
-		public static  String PATH_ADB = "C:\\Users\\Otro\\Anroid-sdk\\platform-tools\\adb.exe";
-		
+		//public static  String PATH_ADB = "C:\\Users\\Otro\\Anroid-sdk\\platform-tools\\adb.exe";
+		public final static String _CURRENT_DIR = System.getProperty("user.dir");
+		public static  String PATH_ADB = _CURRENT_DIR + "\\adb.exe";
 		//Socket
 		private Socket socket;
 		private PrintWriter out;
@@ -42,16 +43,26 @@ public class USB_PCHost {
 		public static String _END_COMMAND = "next_end" ;
 	    public static String _NO_DATA = "no_data";
 		public static String _ACK_SYNCHRONIZED = "usb_sync";
+		public static String _PHONE_READY = "dias_ready";
+
 		//2. Connection management
 		public static String _CONNECTION_ESTABLISHED = "connection_process_end";
 		public static String _CONNECTION_END = "end_connection";
 		public static String _WRONG_COMMAND = "wrong_command";
 
+		//KEEP SENSORS INFORMATION:
+		 public static final String _SENSOR_ID = "sensor_table";
+		public static final String _EMPATICA = "empatica";
+		public static final String _DEXCOM = "dexcom";
+		public static final String _ZEPHYR = "zephyr";
+		
 
 
 		
 		public USB_PCHost(BMBridge bridge){
 			mBridge = bridge;
+			//Set up PATH_ADB as current
+			PATH_ADB = _CURRENT_DIR + "\\adb.exe";
 			
 		}
 
@@ -60,7 +71,7 @@ public class USB_PCHost {
 		 *
 		 */
 		public void execAdb() {
-
+			
 			// run the adb bridge
 			try {
 				Process p=Runtime.getRuntime().exec(PATH_ADB + " forward tcp:"+PC_LOCAL_HOST+" tcp:"+ANDROID_LOCAL_HOST);
@@ -73,6 +84,8 @@ public class USB_PCHost {
 					mBridge.gui.displayError("Cannot start Android bridge! "+ errorMsg);
 
 				}
+				sc1.close();
+
 			} catch (Exception e) {
 				System.out.println(e.toString());
 				mBridge.gui.displayError("Adb.exe not found - check path ");
