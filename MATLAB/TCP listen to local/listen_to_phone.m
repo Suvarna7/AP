@@ -52,7 +52,7 @@ while(in_process)
                     
                     %3. Run algorithm
                     %Extract CGM value
-                    cgm = sensors_tables{CGM_table,1}{2, CGM_value};
+                    cgm = sensors_tables{CGM_table,1}{end, CGM_value}
 
                     b_units = mock_algorithm(cgm);
                     
