@@ -23,7 +23,7 @@ import edu.virginia.dtc.SysMan.Debug;
  * 	- Dexcom G4: data on DiAS database
  *  - Zephyr: data on DiAS database
  *  - BodyMedia: data on IIT "Sensorsdb" database
- *  - Empatca : data on IIT "Sensorsdb" database
+ *  - Empatica : data on IIT "Sensorsdb" database
  * 
  * @author Caterina Lazaro
  * @version 2.0, September 2016 
@@ -124,7 +124,7 @@ public class SensorsManager {
 				String finalTime = simpleFormat.format(parseDate);
 
 				//Add table name and time to JSON
-				dMap.put("last_update", finalTime);
+				dMap.put("time_stamp", finalTime);
 
 
 			}
@@ -133,6 +133,9 @@ public class SensorsManager {
 		}
 		if (cgmArray !=null)
 			cgmArray.add(cgm);
+		
+		//Store Map in database:
+		
 		return dMap;
 	}
 	/**
@@ -197,7 +200,7 @@ public class SensorsManager {
 
 					//Then include table name and time
 					eValues.put("table_name", _ZEPHYR_TABLE_NAME);
-					eValues.put("last_update", ""+finalTime);
+					eValues.put("time_stamp", finalTime);
 					//Synchronized in the Dias = y
 					eValues.put("synchronized", "y");
 

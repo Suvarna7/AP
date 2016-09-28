@@ -68,6 +68,7 @@ public class IOMain extends Service {
 
 	//Sensors reader
 	public SensorsManager sManager;
+	private SubBolusCreator insulinManager;
 
 	//TODO Algorithm Manager
 	//private AlgorithmManager aManager;
@@ -137,6 +138,7 @@ public class IOMain extends Service {
 
 		//Create the sensor manager
 		sManager = new SensorsManager(ctx);
+		insulinManager = new SubBolusCreator( sManager.dbManager);
 		
 		//Create the server connector
 		iitConnector = new IITServerConnector( ctx, sManager.dbManager);
@@ -518,10 +520,13 @@ public class IOMain extends Service {
 				//Prepare data for insulin bolus
 				dArgs = new ArrayList<Map<String, String>>();
 				//Process sub boluses
-				dArgs = SubBolusCreator.handleBolusValue( correction,   asynchronous, getContentResolver(), ctx);
+				dArgs = insulinManager.handleBolusValue( correction,   asynchronous, getContentResolver(), ctx);
 
+				
 				//TODO Send all bolus values to IIT server if there is something to send
 				if (dArgs !=null && dArgs.size()> 0){
+					Debug.i("Subbolus", "calculating", "Sending boluses to IIT");
+
 					//Add to the not syncrhonized values
 					String jToSend =IITServerConnector.convertToJSON(dArgs);
 					//Send to IIT
@@ -540,20 +545,21 @@ public class IOMain extends Service {
 				//Prepare data for insulin basal
 				/*dArgs = new ArrayList<Map<String, String>>();
 				//TODO - Nothing happens now : Process basal rate
+				//TEST WITH BASAL RATE = 1
 				dArgs = SubBolusCreator.handleBasalRateValue( true, 1,   asynchronous, getContentResolver(), ctx);
 
 				//Send all basal values to IIT server if there is something to send
 				if (dArgs !=null && dArgs.size()> 0){
-					//Add to the not syncrhonized values
+					//Add to the not synchronized values
 					String jToSend =IITServerConnector.convertToJSON(dArgs);
-					notSynchValues.add(jToSend);
+					//notSynchValues.add(jToSend);
 					//Send to IIT
-					iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_URL);
+					iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
 				}else
-					Debug.i("Basal", "calculating", "No values to send to IIT");
+					Debug.i("Basal", "calculating", "No values to send to IIT");*/
 
 				//Send values that were not correctly updated on the server
-				for (String jsonToSend: notSynchValues){
+				/*for (String jsonToSend: notSynchValues){
 					iitConnector.sendToIIT(jsonToSend, IITServerConnector.IIT_SERVER_URL);
 				}*/
 

@@ -200,11 +200,15 @@ private String convertToString(byte[] args){
  */
 
 public static String getCurrentTime(){
-	SimpleDateFormat simpleFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	//Get current time
 	Time time = new Time();
 	time.setToNow();
 	Date date = new Date(time.toMillis(false));
-	return  simpleFormat.format(date);
+	//Set desired format
+	SimpleDateFormat simpleFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	String finalTime = simpleFormat.format(date);
+	
+	return  finalTime;
 
 }
 
