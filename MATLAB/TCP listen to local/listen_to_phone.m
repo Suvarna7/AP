@@ -54,7 +54,7 @@ while(in_process)
                     %Extract CGM value
                     cgm = sensors_tables{CGM_table,1}{end, CGM_value}
 
-                    b_units = mock_algorithm(cgm);
+                    [b_units, basal] = mock_algorithm(cgm);
                     
                     %4. Send values back
                     send_insulin_command( t, num2str(b_units), '0' );
