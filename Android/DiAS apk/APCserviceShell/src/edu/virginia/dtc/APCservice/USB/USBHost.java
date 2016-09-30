@@ -78,7 +78,7 @@ import java.util.Scanner;
 	 private static final int LOCAL_SENDING_AMOUNT = 25;
 	 
 	 //Main activity variable
-	 private IOMain ioActivity;
+	 IOMain ioActivity;
 
 
 	 public USBHost (Context context, IOMain mainAct){

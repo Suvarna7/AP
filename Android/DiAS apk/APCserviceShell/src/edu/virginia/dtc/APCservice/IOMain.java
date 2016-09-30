@@ -395,7 +395,9 @@ public class IOMain extends Service {
 								mHost.sendUSBmessage(USBHost._PHONE_READY);
 								
 								//Wait for bolus response or something else
-								correction = waitForAlgorithmResponse();
+								double[] alg = waitForAlgorithmResponse();
+								correction = alg[0];
+								diff_rate = alg[1];
 
 							}else{
 								//TODO USB Alert to be displayed
@@ -543,10 +545,10 @@ public class IOMain extends Service {
 				// BASAL
 				// ************************************************
 				//Prepare data for insulin basal
-				/*dArgs = new ArrayList<Map<String, String>>();
+				dArgs = new ArrayList<Map<String, String>>();
 				//TODO - Nothing happens now : Process basal rate
 				//TEST WITH BASAL RATE = 1
-				dArgs = SubBolusCreator.handleBasalRateValue( true, 1,   asynchronous, getContentResolver(), ctx);
+				dArgs = insulinManager.handleBasalRateValue(  diff_rate,   asynchronous, getContentResolver(), ctx);
 
 				//Send all basal values to IIT server if there is something to send
 				if (dArgs !=null && dArgs.size()> 0){
@@ -556,7 +558,7 @@ public class IOMain extends Service {
 					//Send to IIT
 					iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
 				}else
-					Debug.i("Basal", "calculating", "No values to send to IIT");*/
+					Debug.i("Basal", "calculating", "No values to send to IIT");
 
 				//Send values that were not correctly updated on the server
 				/*for (String jsonToSend: notSynchValues){
@@ -645,12 +647,16 @@ public class IOMain extends Service {
         Toast.makeText(mHost.ctx, msg, Toast.LENGTH_LONG).show();
 	}
 	
-	private double waitForAlgorithmResponse(){
+	private double[] waitForAlgorithmResponse(){
 		USBReadThread.processing_algorithm = true;
 		while(USBReadThread.processing_algorithm ){
 			//DO NOTHING
 		}
-		return USBReadThread.last_read_bolus;
+		double[] result = new double[2];
+		result[0] = USBReadThread.last_read_bolus;
+		result[1] = USBReadThread.last_read_basal;
+		
+		return result;
 	}
 
 

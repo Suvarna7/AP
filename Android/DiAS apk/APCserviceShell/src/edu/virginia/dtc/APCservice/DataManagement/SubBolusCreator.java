@@ -30,11 +30,11 @@ import edu.virginia.dtc.SysMan.Params;
 public class SubBolusCreator {
 	//Maximum amount of bolus to send
 	private final static double max_bolus_sent = 6;
-	
-	
+
+
 	//Time to wait before sending the next subbolus
 	private final static int _WAIT_TIME = 61000;
-	
+
 	//Database manager:
 	IITDatabaseManager mDB;
 	//Bolus values
@@ -43,13 +43,19 @@ public class SubBolusCreator {
 	//Basal values
 	private final static String _BASAL_TABLE_NAME = "bolus_table";
 	private final static String[] basalColumns = {"time_stamp", "changed", "basal_rate_value" };
-	
+
+	//Basal values
+	private double current_basal;
+	private double last_bolus;
 	public SubBolusCreator(IITDatabaseManager db){
 		mDB = db;
-		
+
 		//Init bolus and basal tables
 		mDB.createTable(_BOLUS_TABLE_NAME, bolusColumns[0], new ArrayList<String>(Arrays.asList(bolusColumns)));
 		mDB.createTable(_BASAL_TABLE_NAME, basalColumns[0], new ArrayList<String>(Arrays.asList(basalColumns)));
+
+		current_basal = 0;
+		last_bolus = 0;
 	}
 
 
@@ -75,10 +81,10 @@ public class SubBolusCreator {
 			rValues = handleBolusValue( correction,  asynchronous,  cr,  ctx);
 		}
 		else if (do_rate){
-			rValues = handleBasalRateValue( new_rate, diff_rate,  asynchronous,  cr,  ctx);
+			rValues = handleBasalRateValue( diff_rate,  asynchronous,  cr,  ctx);
 
 		}
-		
+
 		return rValues;
 
 	}
@@ -91,28 +97,35 @@ public class SubBolusCreator {
 	 * @param ctx - Context
 	 * @return
 	 */
-	public  List<Map<String, String>> handleBasalRateValue(boolean new_diff, double d_rate, boolean asynchronous, ContentResolver cr, Context ctx){
+	public  List<Map<String, String>> handleBasalRateValue( double d_rate, boolean asynchronous, ContentResolver cr, Context ctx){
 		Message response = Message.obtain(null, Controllers.APC_PROCESSING_STATE_NORMAL, 0, 0);;
 
-		//Send last message
-		processInsulinCommand(ctx, 0, 0, 0 , response, "Basal_rate", cr, false,  false, new_diff,   d_rate,  asynchronous);
-		processInsulinCommand(ctx, 0, 0, 0, response, "Basal_rate", cr, false,  true, false,   0,  asynchronous);
+		if (current_basal != d_rate){
+			current_basal =  d_rate;
+			//Send last message
+			//		( total,  bolus,  num,  Messageresponse,  FUNC_TAG, ContentResolver, bolusResp, rateResp,  new_rate,  diff_rate,  asynchronous)
 
-		//IIT values
-		preparedIITInsulinRateValues(new_diff, d_rate);
-		
-		//Prepare for IIT server
-		List<Map<String, String>> iTable = mDB.getNotUpdatedValues(_BASAL_TABLE_NAME, basalColumns,
-				 IITDatabaseManager.upDateColumn, IITDatabaseManager.updatedStatusNo);
-		
-		//Add table name:
-		List<Map<String, String>> rTable = new ArrayList<Map<String, String>>();
-		for (Map<String, String> sample: iTable){
-			sample.put("table_name", _BASAL_TABLE_NAME);
-			rTable.add(sample);
+			processInsulinCommand(ctx, last_bolus, last_bolus, 0 , response, "Basal_rate", cr, true,  true, true,   d_rate,  asynchronous);
+			//processInsulinCommand(ctx, 0, 0, 0, response, "Basal_rate", cr, false,  true, false,   0,  asynchronous);
+
+			//IIT values
+			preparedIITInsulinRateValues(true, d_rate);
+
+			//Prepare for IIT server
+			List<Map<String, String>> iTable = mDB.getNotUpdatedValues(_BASAL_TABLE_NAME, basalColumns,
+					IITDatabaseManager.upDateColumn, IITDatabaseManager.updatedStatusNo);
+
+			//Add table name:
+			List<Map<String, String>> rTable = new ArrayList<Map<String, String>>();
+			for (Map<String, String> sample: iTable){
+				sample.put("table_name", _BASAL_TABLE_NAME);
+				rTable.add(sample);
+			}
+
+			return rTable;
 		}
-				
-		return rTable;
+		else 
+			return null;
 	}
 
 	/**
@@ -145,32 +158,33 @@ public class SubBolusCreator {
 			bolusResp = false;
 		}
 		Message response = Message.obtain(null, Controllers.APC_PROCESSING_STATE_NORMAL, 0, 0);;
-		
+
 		//Send the messages:
 		for (int i = 0; i < N; i ++){
-			
+
 			/* Values for the first N messages: recommended 6 units
 			   1. Prepare the sub bolus to be sent to Dias Service
 			   2. Value will be save in IIT server too */
-			
+
 			//Send the desired subbolus
-			processInsulinCommand(ctx, correction, max_bolus_sent, i, response, "Sub_bolus", cr,  bolusResp,  false, false,  0,  asynchronous);
-			
+			//processInsulinCommand(ctx, correction, max_bolus_sent, i, response, "Sub_bolus", cr,  bolusResp,  true, false,  0,  asynchronous);
+			processInsulinCommand(ctx, correction, max_bolus_sent, i, response, "Sub_bolus", cr,  bolusResp,  true, false,  current_basal,  asynchronous);
+
 			//IIT values
 			preparedIITInsulinBolusValues(correction, max_bolus_sent, i);
-			
+
 			//Wait before sending next message
 			try {
 				//30 seconds - Roche needs that much
 				Thread.sleep(_WAIT_TIME);
-				
+
 			} catch(InterruptedException ex) {
 				Thread.currentThread().interrupt();
 			}catch(Exception e){
 				System.out.println("Something went wrong with thread.sleep");
 			}
 		}
-		
+
 		//Send last message
 		processInsulinCommand(ctx, correction, rest, N, response, "Sub_bolus", cr, bolusResp,  false, false, 0,  asynchronous);
 		preparedIITInsulinBolusValues(correction, rest, N);
@@ -179,20 +193,22 @@ public class SubBolusCreator {
 		//args.add(preparedIITInsulinBolusValues(correction, rest, N));
 		//Prepare for IIT server
 		List<Map<String, String>> iTable = mDB.getNotUpdatedValues(_BOLUS_TABLE_NAME, bolusColumns,
-				 IITDatabaseManager.upDateColumn, IITDatabaseManager.updatedStatusNo);
-		
+				IITDatabaseManager.upDateColumn, IITDatabaseManager.updatedStatusNo);
+
 		//Add table name:
 		List<Map<String, String>> rTable = new ArrayList<Map<String, String>>();
 		for (Map<String, String> sample: iTable){
 			sample.put("table_name", _BOLUS_TABLE_NAME);
 			rTable.add(sample);
 		}
-		
+
+		//Prepare last value in case basal is changed:
+		last_bolus =  rest;
 		//Return values to send to IIT
 		return rTable;
 
 	}
-	
+
 	/* *************************************************************
 	 * FUNCTIONS TO HANDLE BOLUS REQUESTS
 	 */
@@ -209,10 +225,10 @@ public class SubBolusCreator {
 	 * @param FUNC_TAG - to use in debug
 	 */
 
-							
+
 
 	private  Message processInsulinCommand(Context context, double total, double bolus, int num, Message response, String FUNC_TAG, ContentResolver cr,
-											boolean bolusResp,boolean rateResp, boolean new_rate, double diff_rate, boolean asynchronous){
+			boolean bolusResp,boolean rateResp, boolean new_rate, double diff_rate, boolean asynchronous){
 		//Initial parameters
 		Message result = response;
 		Bundle responseBundle;
@@ -245,19 +261,19 @@ public class SubBolusCreator {
 					);
 			Event.addEvent(context, Event.EVENT_SYSTEM_IO_TEST, Event.makeJsonString(b), Event.SET_LOG);
 		}      
-		
+
 		// Add responseBundle in DiAsService
 		result.setData(responseBundle);
 
 		//Send response to DiAS service
 		IOMain.sendResponse(result);
-		
-		
+
+
 		//Return the list to send to IIT
 		return result;
 
 	}
-	
+
 	private  Map<String, String>  preparedIITInsulinRateValues(boolean new_rate, double rate_value){
 		if (rate_value>=0){
 			//Add to database
@@ -290,10 +306,10 @@ public class SubBolusCreator {
 	 * @param num - bolus position in the total amount
 	 * @return
 	 */
-	
+
 	private  void  preparedIITInsulinBolusValues(double total, double bolus, double num){
 		//TODO Save values in local database
-		
+
 		//Prepare insulin values for IIT
 		if (total>= 0 || bolus >=0){
 			String time = IITServerConnector.getCurrentTime();
@@ -305,8 +321,8 @@ public class SubBolusCreator {
 			mList.set(""+num);
 			mList.set(""+total);
 			mDB.updateDatabaseTable(_BOLUS_TABLE_NAME, mList, true);
-			
-			
+
+
 
 		}else{
 		}

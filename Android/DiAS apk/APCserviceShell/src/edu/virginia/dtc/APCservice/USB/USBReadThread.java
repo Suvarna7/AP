@@ -1,6 +1,9 @@
 package edu.virginia.dtc.APCservice.USB;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import edu.virginia.dtc.APCservice.HypoDialog;
 import edu.virginia.dtc.APCservice.DataManagement.SensorsManager;
 import edu.virginia.dtc.APCservice.Database.IITDatabaseManager;
 
@@ -19,6 +22,7 @@ public class USBReadThread extends Thread {
 	
 	public static boolean processing_algorithm;
 	public static double last_read_bolus;
+	public static double last_read_basal;
 
 
 
@@ -36,6 +40,7 @@ public class USBReadThread extends Thread {
 		mDatabase = new IITDatabaseManager(ctx);
 		processing_algorithm = false;
 		last_read_bolus = 0;
+		last_read_basal = 1;
 
 	}
 
@@ -130,11 +135,15 @@ public class USBReadThread extends Thread {
 						JSONObject json = new JSONObject(line);
 						try{
 							last_read_bolus= (Double)json.get("bolus");
+							last_read_basal = (Double)json.get("basal");
 						}catch (Exception e){
 							System.out.println("Convert to double problem!"+e);
 							try{
 								int var = (Integer)json.get("bolus");
 								last_read_bolus = (double)var;
+								 var = (Integer)json.get("basal");
+								 last_read_basal = (double)var;
+								
 								
 							}catch (Exception e2){
 								System.out.println("Convert to int problem!"+e);
@@ -156,7 +165,39 @@ public class USBReadThread extends Thread {
 					}
 					//Send a HYPO ALARM command to the phone
 					else if (line.contains(USBHost._HYPO)){
+						//Extract carb amount:
+						int carbs = 0;
+						String type = "-";
+						try {
+							//Extract bolus value
+							JSONObject json = new JSONObject(line);
+							
+							try{
+								 carbs= (Integer)json.get("carbs");
+								 type = json.getString("type");
+							}catch (Exception e){
+								System.out.println("HYPO Convert to double problem!"+e);
+								try{
+									double val = (Double)json.get("carbs");
+									carbs = (int)val;
+									 type = json.getString("type");
+									
+								}catch (Exception e2){
+									System.out.println("HYPO Convert to int problem!"+e);
 
+									
+								}
+							}
+						}catch (JSONException e){
+							System.out.println("Problem decoding hypo command: "+e);
+						}
+
+						//Display the dialog
+                        Intent dialogIntent = new Intent(mHost.ioActivity, HypoDialog.class);
+                        dialogIntent.putExtra("carbs", carbs); //Carbs amount
+                        dialogIntent.putExtra("alarm_type", type); // Alarm typ
+                        dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        mHost.ioActivity.startActivity(dialogIntent);
 						
 					}
 					//All not syncrhonized data is requested

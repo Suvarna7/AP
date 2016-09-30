@@ -38,5 +38,13 @@
 		
 		
 		<meta-data android:name="Version" android:value="$Rev: 2410 $"/>
+		
+		<!-- Alert dialog when connection is lost -->
+        <activity
+            android:name="edu.virginia.dtc.APCservice.HypoDialog"
+            android:label="Alert dialog BodyMedia"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape">
+        </activity>
 	</application>
 </manifest>
