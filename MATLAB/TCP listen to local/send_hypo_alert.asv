@@ -1,0 +1,12 @@
+function [ output_args ] = send_hypo_alert( con, carbohydrates, type )
+%SEND_HYPO_ALERT Summary of this function goes here
+%   Detailed explanation goes here
+
+hypo_json = ['{command: insulin_command, carbs: ', carbohydrates, ', type: ', type, '}'];
+fprintf(t, hypo_json); 
+
+
+
+
+end
+

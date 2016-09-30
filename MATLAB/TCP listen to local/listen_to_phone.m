@@ -13,7 +13,7 @@ sensors_out = sensors_tables;
 
 %DEXCOM: Significant value - CGM in column 6
 CGM_table = 1;
-CGM_value = 6;
+CGM_value = 5;
 %EMPATICA: Significat value - GSR in column 2
 EMPATICA_table = 2;
 Empatica_value = 2;
@@ -54,10 +54,13 @@ while(in_process)
                     %Extract CGM value
                     cgm = sensors_tables{CGM_table,1}{end, CGM_value}
 
-                    [b_units, basal] = mock_algorithm(cgm);
+                    [b_units, basal, hypo] = mock_algorithm(cgm);
                     
                     %4. Send values back
-                    send_insulin_command( t, num2str(b_units), '0' );
+                    send_insulin_command( t, num2str(b_units),  num2str(basal) );
+                    if hypo>0
+                        send_hypo_alert(t, num2str(hypo), 'EARLY');
+                    end
                     
                     %5. Finish
                     in_process = false;
