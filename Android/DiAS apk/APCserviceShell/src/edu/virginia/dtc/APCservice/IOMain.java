@@ -516,17 +516,35 @@ public class IOMain extends Service {
 				//************************************************************************************************
 				//(double correction, boolean new_rate, double diff_rate, boolean asynchronous, ArrayList<Map<String, String>> args, IITServerConnector connector, String url, ContentResolver cr, Context ctx){
 
+				
 				//*************************************************
-				// BOLUS
+				// BOLUS and BASAL commands
 				// ************************************************
-				//Prepare data for insulin bolus
+				
+				//Prepare data for insulin bolus and basal
 				dArgs = new ArrayList<Map<String, String>>();
 				//Process sub boluses
-				dArgs = insulinManager.handleBolusValue( correction,   asynchronous, getContentResolver(), ctx);
+				dArgs = insulinManager.handleInsulinValue( correction,  diff_rate, asynchronous, getContentResolver(), ctx);
+				if (dArgs !=null && dArgs.size()> 0){
+					Debug.i("Subbolus", "calculating", "Sending boluses to IIT");
+
+					//Add to the not syncrhonized values
+					String jToSend =IITServerConnector.convertToJSON(dArgs);
+					//Send to IIT
+					iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
+				}else
+					Debug.i("Subbolus", "calculating", "No values to send to IIT");
+				
+				
+				//**************************************************
+				// BOLUS
+				// ******************************************
+				//dArgs = new ArrayList<Map<String, String>>();
+				//dArgs = insulinManager.handleBolusValue( correction,   asynchronous, getContentResolver(), ctx);
 
 				
-				//TODO Send all bolus values to IIT server if there is something to send
-				if (dArgs !=null && dArgs.size()> 0){
+				// Send all bolus values to IIT server if there is something to send
+				/*if (dArgs !=null && dArgs.size()> 0){
 					Debug.i("Subbolus", "calculating", "Sending boluses to IIT");
 
 					//Add to the not syncrhonized values
@@ -545,7 +563,7 @@ public class IOMain extends Service {
 				// BASAL
 				// ************************************************
 				//Prepare data for insulin basal
-				dArgs = new ArrayList<Map<String, String>>();
+				/*dArgs = new ArrayList<Map<String, String>>();
 				//TODO - Nothing happens now : Process basal rate
 				//TEST WITH BASAL RATE = 1
 				dArgs = insulinManager.handleBasalRateValue(  diff_rate,   asynchronous, getContentResolver(), ctx);
