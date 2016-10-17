@@ -1,0 +1,55 @@
+MATLAB:UndefinedFunction
+Undefined function 'ReceiverManager' for input arguments of type 'char'.
+    file: 'E:\CL_GUI\m20150711_get_CGM_value.m'
+    name: 'm20150711_get_CGM_value'
+    line: 8
+
+    file: 'E:\CL_GUI\m20160509_CL_GUI.m'
+    name: 'gui_run_algorithm_Callback'
+    line: 141
+
+    file: 'C:\Program Files\MATLAB\R2014a\toolbox\matlab\guide\gui_mainfcn.m'
+    name: 'gui_mainfcn'
+    line: 95
+
+    file: 'E:\CL_GUI\m20160509_CL_GUI.m'
+    name: 'm20160509_CL_GUI'
+    line: 42
+
+MATLAB:nonLogicalConditional
+Operands to the || and && operators must be convertible to logical scalar values.
+    file: 'E:\CL_GUI\m20160509_CL_GUI.m'
+    name: 'gui_run_algorithm_Callback'
+    line: 167
+
+    file: 'C:\Program Files\MATLAB\R2014a\toolbox\matlab\guide\gui_mainfcn.m'
+    name: 'gui_mainfcn'
+    line: 95
+
+    file: 'E:\CL_GUI\m20160509_CL_GUI.m'
+    name: 'm20160509_CL_GUI'
+    line: 42
+
+    file: ''
+    name: '@(hObject,eventdata)m20160509_CL_GUI('gui_run_algorithm_Callback',hObject,eventdata,guidata(hObje...'
+    line: 0
+
+MATLAB:xlsread:FileNotFound
+XLSREAD unable to open file 'C:\Users\Experiment\Desktop\Justus Harris_2016_09_02.xls'.
+File 'C:\Users\Experiment\Desktop\Justus Harris_2016_09_02.xls' not found.
+    file: 'C:\Program Files\MATLAB\R2014a\toolbox\matlab\iofun\xlsread.m'
+    name: 'xlsread'
+    line: 128
+
+    file: 'E:\CL_GUI\m20150711_get_armband_data.m'
+    name: 'm20150711_get_armband_data'
+    line: 3
+
+    file: 'E:\CL_GUI\m20160509_CL_GUI.m'
+    name: 'gui_run_algorithm_Callback'
+    line: 197
+
+    file: 'C:\Program Files\MATLAB\R2014a\toolbox\matlab\guide\gui_mainfcn.m'
+    name: 'gui_mainfcn'
+    line: 95
+
