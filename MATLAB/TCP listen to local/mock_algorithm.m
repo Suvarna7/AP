@@ -14,7 +14,7 @@ elseif cgm >150 && cgm <=200
     bolus = 1; 
     basal = 1.0;
 elseif cgm >100 && cgm <= 150
-    bolus = 0.3;
+    bolus = 5;
     basal = 1.0;
 else
     hypo_amount = 12;
