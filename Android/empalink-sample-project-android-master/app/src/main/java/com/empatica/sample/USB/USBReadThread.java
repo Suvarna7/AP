@@ -70,6 +70,7 @@ public class USBReadThread extends Thread {
 							mHost.sendUSBmessage(USBHost._NO_DATA);
 
 					}
+
 					//ACK COMMAND - Synchronized values
 					else if (line.contains(USBHost._ACK_SYNCHRONIZED)) {
 						//System.out.println(line);
@@ -81,7 +82,7 @@ public class USBReadThread extends Thread {
 								JSONObject jsonObj = (JSONObject) arr.get(i);
 								//TODO dbManager.updateSyncStatus(databaseContext, (String) jsonObj.get("table_name"),
 								try {
-									mDatabase.ackSyncStatusAllPrevious(dbContext, BGService.empaticaSecTableName,
+									mDatabase.ackSyncStatusAllPrevious(dbContext, BGService.empaticaMilTableName,
 											(String) jsonObj.get("synchronized"), (String) jsonObj.get("time_stamp"));
 								}catch (Exception e){
 									System.out.println("Exception when sync from USB: "+e);
@@ -121,7 +122,7 @@ public class USBReadThread extends Thread {
 						//Post result in Command field:
 						showCommand(line);
 
-						String[] jSons = MainActivity.messageAllAsync(BGService.empaticaSecTableName,
+						String[] jSons = MainActivity.messageAllAsync(BGService.empaticaMilTableName,
 								IITDatabaseManager.syncColumn, IITDatabaseManager.syncStatusNo);
 						if (jSons != null) {
 							for (String json: jSons)

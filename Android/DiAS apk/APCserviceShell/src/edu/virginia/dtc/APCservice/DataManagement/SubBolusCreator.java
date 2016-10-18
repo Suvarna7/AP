@@ -91,12 +91,12 @@ public class SubBolusCreator {
 
 		}
 		//Get not updated boluses
-		List<Map<String, String>> bolusTable = mDB.getNotUpdatedValues(_BOLUS_TABLE_NAME, bolusColumns,
-				IITDatabaseManager.upDateColumn, IITDatabaseManager.updatedStatusNo);
+		List<Map<String, String>> bolusTable = mDB.getNotUpdatedValuesUpToN(_BOLUS_TABLE_NAME, bolusColumns,
+				IITDatabaseManager.upDateColumn, IITDatabaseManager.updatedStatusNo, IITDatabaseManager.MAX_READ_SAMPLES_UPDATE);
 		
 		//Get not updated basal
-		List<Map<String, String>> basalTable = mDB.getNotUpdatedValues(_BASAL_TABLE_NAME, basalColumns,
-				IITDatabaseManager.upDateColumn, IITDatabaseManager.updatedStatusNo);
+		List<Map<String, String>> basalTable = mDB.getNotUpdatedValuesUpToN(_BASAL_TABLE_NAME, basalColumns,
+				IITDatabaseManager.upDateColumn, IITDatabaseManager.updatedStatusNo, IITDatabaseManager.MAX_READ_SAMPLES_UPDATE);
 
 		//Add table name:
 		List<Map<String, String>> rTable = new ArrayList<Map<String, String>>();
@@ -207,8 +207,8 @@ public class SubBolusCreator {
 			preparedIITInsulinRateValues(true, d_rate);
 
 			//Prepare for IIT server
-			List<Map<String, String>> iTable = mDB.getNotUpdatedValues(_BASAL_TABLE_NAME, basalColumns,
-					IITDatabaseManager.upDateColumn, IITDatabaseManager.updatedStatusNo);
+			List<Map<String, String>> iTable = mDB.getNotUpdatedValuesUpToN(_BASAL_TABLE_NAME, basalColumns,
+					IITDatabaseManager.upDateColumn, IITDatabaseManager.updatedStatusNo, IITDatabaseManager.MAX_READ_SAMPLES_UPDATE);
 
 			//Add table name:
 			List<Map<String, String>> rTable = new ArrayList<Map<String, String>>();
@@ -287,8 +287,8 @@ public class SubBolusCreator {
 		//IIT values
 		//args.add(preparedIITInsulinBolusValues(correction, rest, N));
 		//Prepare for IIT server
-		List<Map<String, String>> iTable = mDB.getNotUpdatedValues(_BOLUS_TABLE_NAME, bolusColumns,
-				IITDatabaseManager.upDateColumn, IITDatabaseManager.updatedStatusNo);
+		List<Map<String, String>> iTable = mDB.getNotUpdatedValuesUpToN(_BOLUS_TABLE_NAME, bolusColumns,
+				IITDatabaseManager.upDateColumn, IITDatabaseManager.updatedStatusNo, IITDatabaseManager.MAX_READ_SAMPLES_UPDATE);
 
 		//Add table name:
 		List<Map<String, String>> rTable = new ArrayList<Map<String, String>>();

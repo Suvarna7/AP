@@ -70,6 +70,8 @@ import java.util.Scanner;
 	 
 	//KEEP SENSORS INFORMATION:
 	 public static final String _SENSOR_ID = "sensor_table";
+	 public static final String _NUM_SAMPLES = "samples_to_read";
+	 public static final String _ALL_SAMPLES = "-1";
 	public static final String _EMPATICA = "empatica";
 	public static final String _DEXCOM = "dexcom";
 	public static final String _ZEPHYR = "zephyr";
@@ -285,7 +287,7 @@ import java.util.Scanner;
 
 	 public String messageToUSB(String table) {
 		 //Get USB values not synchronized
-		 List<Map<String, String>> listReadToUSB = ioActivity.sManager.read_lastSamples_IITDatabaseTable(SensorsManager._EMPATICA_TABLE_NAME, false);
+		 List<Map<String, String>> listReadToUSB = ioActivity.sManager.read_lastSamples_IITDatabaseTable(SensorsManager._EMPATICA_TABLE_NAME, false, Integer.MAX_VALUE);
 
 		 if (listReadToUSB != null) {
 			 String jSon = IITServerConnector.convertToJSON(listReadToUSB);
@@ -300,8 +302,18 @@ import java.util.Scanner;
 	  * @return
 	  */
 	 public String[] messageAllAsync(String table) {
+		return messageNAsync(table, Integer.MAX_VALUE);
+	 }
+	 /**
+	  * Message N samples of the async values
+	  * @param table
+	  * @param samples
+	  * @return
+	  */
+	 
+	 public String[] messageNAsync(String table, int samples) {
 		 String[] result = new String[100];
-		 List<Map<String, String>> listReadToUSB = ioActivity.sManager.read_lastSamples_IITDatabaseTable(SensorsManager._EMPATICA_TABLE_NAME, false);
+		 List<Map<String, String>> listReadToUSB = ioActivity.sManager.read_lastSamples_IITDatabaseTable(SensorsManager._EMPATICA_TABLE_NAME, false, samples);
 
 		 //Prepare values to be sent via USB:
 		 if (listReadToUSB !=null){
@@ -332,7 +344,11 @@ import java.util.Scanner;
 		 } else
 			 return null;
 	 }
-	 
+	 /**
+	  * Send all not async samples
+	  * @param table
+	  * @return
+	  */
 	 public String[] messageLastDias (String table){
 		 String[] result = new String[1];
 		 //Get list of values
@@ -351,4 +367,6 @@ import java.util.Scanner;
 		 return result;
 
 	 }
+	 
+
  }

@@ -15,6 +15,7 @@ import java.util.Map;
 
 import edu.virginia.dtc.APCservice.DataManagement.SensorsManager;
 import edu.virginia.dtc.APCservice.DataManagement.SubBolusCreator;
+import edu.virginia.dtc.APCservice.Database.IITDatabaseManager;
 import edu.virginia.dtc.APCservice.Server.IITServerConnector;
 import edu.virginia.dtc.APCservice.USB.USBHost;
 import edu.virginia.dtc.APCservice.USB.USBReadThread;
@@ -333,7 +334,7 @@ public class IOMain extends Service {
 							
 							//2. Update IIT SERVER
 							//Get all samples not updated 
-							dArgs = sManager.read_lastSamples_IITDatabaseTable(SensorsManager._EMPATICA_TABLE_NAME, true);
+							dArgs = sManager.read_lastSamples_IITDatabaseTable(SensorsManager._EMPATICA_TABLE_NAME, true, IITDatabaseManager.MAX_READ_SAMPLES_UPDATE);
 														 
 
 							// Send all values to IIT server if there is something to send

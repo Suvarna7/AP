@@ -144,7 +144,6 @@ try
     %DiAS GS entering
     'Dexcom...'
     global usb_con;
-    global empatica_data;
     [table, gs_new] = read_last_samples(usb_con, 'dexcom');
     gs_new(2,5)
     gs=[gs;str2double(gs_new(2,5))];
@@ -364,6 +363,12 @@ try
         hypo_alarm,carb_amount,carb_type,hypo_phase,hypo_phase_old,repeated_immediate_alarm,hypo_alarm_old]=m20150711_hypo_alarm(hypo_threshold,hypo_slope_degree,...
         hypo_alarm,carb_amount,carb_type,hypo_phase,hypo_phase_old,repeated_immediate_alarm,gs,kj,g_prediction,phys_act,sleep,hypo_alarm_old);
     flag_data_7=1;
+    %Send USB hypo alert:
+    %global usb_con;
+    %send_hypo_alert(usb_con, carb_amount{kj}, 'EARLY');
+    
+    set(handles.gui_hypoglycemia_detection,'Visible','off')
+
 catch theErrorInfo  %sends an error email to Kamuran and Iman (Add your email if you want to receive data). The email includes error message, backup data and a screenshot of command window.
     flag_data_7=0;
     save (['temp_prevdata',datestr(clock,'yyyy-mm-dd_HH-MM-SS'),'.mat'])
@@ -532,13 +537,21 @@ m20150711_load_global_variables
 m20150711_load_global_variables_from_history
 if isnan(str2double(get(handles.gui_enter_insulin,'String')))==0
     bolus_insulin(1,kj)=str2double(get(handles.gui_enter_insulin,'String'));
+    %Send USB insulin command
+    global usb_con;
+    bolus_insulin(1, kj)
+    basal_insulin(kj)
+    send_insulin_command( usb_con,  num2str( bolus_insulin(1,kj)),  num2str(basal_insulin(kj)));
+    %END OF USB OPERATION
+    
     mdata(1,7)={bolus_insulin(1,kj)};
     set(handles.gui_display_table,'Data',mdata);
     set(handles.gui_insulin_verification,'Visible','off');
     set(handles.gui_enter_insulin,'String',' ');
     set(handles.gui_run_algorithm,'Visible','on')
-    
     m20150711_save_global_variables_to_history
+    
+    
 end
 
 
@@ -1058,6 +1071,7 @@ function gui_close_hypo_window_Callback(hObject, eventdata, handles)
 % hObject    handle to gui_close_hypo_window (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
 set(handles.gui_hypoglycemia_detection,'Visible','off')
 
 % --- Executes on button press in gui_error_close.

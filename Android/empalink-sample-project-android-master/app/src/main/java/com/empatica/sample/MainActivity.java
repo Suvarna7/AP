@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
         accel_zLabel = (TextView) findViewById(R.id.accel_z);
         bvpLabel = (TextView) findViewById(R.id.bvp);
         edaLabel = (TextView) findViewById(R.id.eda);
-        ibiLabel = (TextView) findViewById(R.id.ibi);
+        ibiLabel = (TextView) findViewByIda(R.id.ibi);
         hrLabel = (TextView) findViewById(R.id.hr);
 
         temperatureLabel = (TextView) findViewById(R.id.temperature);
@@ -157,7 +157,8 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
             myServerManager = new IITServerConnector(jsonID, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL,
                     IITServerConnector.IIT_SERVER_READ_TABLE_URL, BGService.myDB, this);
             sendDataTimer = new Timer();
-            startSendingTimer();
+            //TODO NO SERVER BACKUP
+            //startSendingTimer();
         }else{
             //Set the view for Connected
 
@@ -527,7 +528,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                                 //1. Obtain not synchronized values from database
 
                                 // List<Map<String, String>> listReadToServer = null;
-                                List<Map<String, String>> listReadToServer = BGService.myDB.getAllNotCheckedValues(BGService.empaticaSecTableName, BGService.columnsTable,
+                                List<Map<String, String>> listReadToServer = BGService.myDB.getAllNotCheckedValues(BGService.empaticaMilTableName, BGService.columnsTable,
                                         IITDatabaseManager.upDateColumn, IITDatabaseManager.updatedStatusNo);
                                 //List<Map<String, String>> listReadToServer = new ArrayList<Map<String, String>>();
                                 //2. Send to Server
@@ -537,7 +538,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                                     //List too long: break in smaller chunks
                                     for (int i = 0; i < listReadToServer.size(); i++) {
                                         Map<String, String> val = listReadToServer.get(i);
-                                        val.put("table_name", BGService.empaticaSecTableName);
+                                        val.put("table_name", BGService.empaticaMilTableName);
                                         temp.add(val);
                                         if ((i + 1) % SENDING_AMOUNT == 0) {
                                             System.out.println("Send first 500: " + myServerManager.sending);
@@ -609,7 +610,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
      */
 
     public static String messageToUSB() {
-        List<Map<String, String>> listReadToUSB = BGService.myDB.getNotUpdatedValues(BGService.empaticaSecTableName, BGService.columnsTable,
+        List<Map<String, String>> listReadToUSB = BGService.myDB.getNotUpdatedValues(BGService.empaticaMilTableName, BGService.columnsTable,
                 IITDatabaseManager.syncColumn, IITDatabaseManager.syncStatusNo);
         //Send to Server
         if (listReadToUSB != null) {
@@ -635,7 +636,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
             int sent = 0;
             for (int i = 0; i < listReadToUSB.size(); i++) {
                 Map<String, String> val = listReadToUSB.get(i);
-                val.put("table_name", BGService.empaticaSecTableName);
+                val.put("table_name", BGService.empaticaMilTableName);
                 temp.add(val);
                 if ((i + 1) % LOCAL_SENDING_AMOUNT == 0) {
                     System.out.println("Save temp");

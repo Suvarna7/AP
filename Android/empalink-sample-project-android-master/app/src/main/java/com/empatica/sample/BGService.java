@@ -87,16 +87,14 @@ public class BGService extends Service implements EmpaDataDelegate{
 
     //Database
     public static IITDatabaseManager myDB;
-    public static final String empaticaMilTableName= "empatica";
-    public static final String empaticaSecTableName= "empatica_seconds";
+    public static final String empaticaMilTableName= "empatica_table";
+    //public static final String empaticaSecTableName= "empatica_seconds";
 
     public static final String[] columnsTable = new String[]{"time_stamp", "Acc_x", "Acc_y", "Acc_z", "GSR", "BVP",
             "IBI", "HR", "temperature","battery_level"};
     public static final int _TIME_INDEX = 0;
     private static int STORING_AMOUNT = 1000;
     private static int storing_counter;
-
-
 
 
 
@@ -511,7 +509,7 @@ public class BGService extends Service implements EmpaDataDelegate{
             ThreadSafeArrayList<String> tempList= new ThreadSafeArrayList<>();
             Map<String, String> tempMap = new HashMap<String, String>();
 
-            ThreadSafeArrayList<String> tempListSec= new ThreadSafeArrayList<>();
+            //ThreadSafeArrayList<String> tempListSec= new ThreadSafeArrayList<>();
 
             // Add to the list string:
             //Prepare time_stamp:
@@ -519,79 +517,79 @@ public class BGService extends Service implements EmpaDataDelegate{
             ///TODO DateTimeInstance dateTime = new DateTimeInstance();
             //SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.[nnn]", Locale.getDefault());
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS", Locale.getDefault());
-            SimpleDateFormat dateFormatSec = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+           // SimpleDateFormat dateFormatSec = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
             //SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
             String formatTimeStamp = dateFormat.format(time);
-            String formatTimeStampSec = dateFormatSec.format(time);
+            //String formatTimeStampSec = dateFormatSec.format(time);
 
             //formatTimeStamp = ""+ formatTimeStamp.substring(0, formatTimeStamp.length() ) +"";
             tempList.set("'"+ formatTimeStamp.substring(0, formatTimeStamp.length() ) +"'");
             tempMap.put(columnsTable[0], formatTimeStamp);
 
-            tempListSec.set("'" + formatTimeStampSec.substring(0, formatTimeStampSec.length()) + "'");
+            //tempListSec.set("'" + formatTimeStamp.substring(0, formatTimeStamp.length()) + "'");
 
             //Add the other values
             tempList.set(xAccelValues[sample]);
             tempMap.put(columnsTable[1], xAccelValues[sample]);
 
-            tempListSec.set(xAccelValues[sample]);
+           // tempListSec.set(xAccelValues[sample]);
 
 
             tempList.set(yAccelValues[sample]);
             tempMap.put(columnsTable[2], yAccelValues[sample]);
 
-            tempListSec.set(yAccelValues[sample]);
+           // tempListSec.set(yAccelValues[sample]);
 
 
             tempList.set(zAccelValues[sample]);
             tempMap.put(columnsTable[3], zAccelValues[sample]);
 
-            tempListSec.set(zAccelValues[sample]);
+           // tempListSec.set(zAccelValues[sample]);
 
 
             tempList.set(gsrValues[sample]);
             tempMap.put(columnsTable[4], gsrValues[sample]);
 
-            tempListSec.set(gsrValues[sample]);
+           // tempListSec.set(gsrValues[sample]);
 
 
             tempList.set(bvpValues[sample]);
             tempMap.put(columnsTable[5], bvpValues[sample]);
 
-            tempListSec.set(bvpValues[sample]);
+           // tempListSec.set(bvpValues[sample]);
 
 
             tempList.set(ibiValues[sample]);
             tempMap.put(columnsTable[6], ibiValues[sample]);
 
-            tempListSec.set(ibiValues[sample]);
+           // tempListSec.set(ibiValues[sample]);
 
 
             tempList.set(hrValues[sample]);
             tempMap.put(columnsTable[7], hrValues[sample]);
 
-            tempListSec.set(hrValues[sample]);
+            //  tempListSec.set(hrValues[sample]);
 
 
             tempList.set(temperatureValues[sample]);
             tempMap.put(columnsTable[8], temperatureValues[sample]);
 
-            tempListSec.set(temperatureValues[sample]);
+            //tempListSec.set(temperatureValues[sample]);
 
             tempList.set(batteryValues[sample]);
             tempMap.put(columnsTable[9], batteryValues[sample]);
 
-            tempListSec.set(batteryValues[sample]);
+            //tempListSec.set(batteryValues[sample]);
 
 
             //tempList.add(updated);
 
 
             //TODO Add to database: instantly
-           // storeSampleInDatabase(tempList, empaticaMilTableName);
-            storeSampleInDatabase(tempListSec, empaticaSecTableName);
+           storeSampleInDatabase(tempList, empaticaMilTableName);
+           // storeSampleInDatabase(tempListSec, empaticaSecTableName);
 
             //TODO Add to database: every given num of samples
             //Add the the global list
@@ -642,7 +640,7 @@ public class BGService extends Service implements EmpaDataDelegate{
 
         //Create a table for Empatica
         myDB.createTable(empaticaMilTableName, columnsTable[0], new ArrayList<>(Arrays.asList(columnsTable)));
-        myDB.createTable(empaticaSecTableName, columnsTable[0], new ArrayList<>(Arrays.asList(columnsTable)));
+       // myDB.createTable(empaticaSecTableName, columnsTable[0], new ArrayList<>(Arrays.asList(columnsTable)));
 
         //DEBUG TABLE:
         //myDB.createTable("debug_table", new ArrayList<>(Arrays.asList(new String[]{"column"})));

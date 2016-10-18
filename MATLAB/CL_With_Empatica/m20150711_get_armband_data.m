@@ -1,6 +1,6 @@
 %% Read armband data. Kamuran Turksoy
 function [armband_data_with_time,ee,phys_act,sleep,gsr]=m20150711_get_armband_data(armband_data_with_time,ee,phys_act,sleep,gsr)
-    [arm_data,~,arm_data_with_time]=xlsread('E:\CL_GUI\armband.xlsx');% reads the last downloaded armband data
+    [arm_data,~,arm_data_with_time]=xlsread('C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\CL_With_Empatica\armband.xlsx');% reads the last downloaded armband data
     armband_data_with_time=[armband_data_with_time;arm_data_with_time];% Updates the stored armband data
     arm_data(any(isnan(arm_data),2),:) = [];% removes missing rows
     arm_data=arm_data(end,[1:11 13 14 15]); % removes variables that currently are not used

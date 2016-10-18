@@ -42,7 +42,7 @@
 		<!-- Alert dialog when connection is lost -->
         <activity
             android:name="edu.virginia.dtc.APCservice.HypoDialog"
-            android:label="Alert dialog BodyMedia"
+            android:label="Alert dialog Hypo Alarm"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="landscape">
         </activity>

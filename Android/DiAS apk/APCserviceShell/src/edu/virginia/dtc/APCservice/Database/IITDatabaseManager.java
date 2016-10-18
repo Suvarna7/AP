@@ -76,7 +76,7 @@ public class IITDatabaseManager {
 	//1 second = 64 samples
 	//Sending every 30 seconds
 	// 2 * 64 * 30 = 3840
-	private static int MAX_READ_SAMPLES_UPDATE = 4000;
+	public static int MAX_READ_SAMPLES_UPDATE = 5000;
 
 	//1 second = 64 samples
 	//Sending every 30 seconds
@@ -271,6 +271,8 @@ public class IITDatabaseManager {
 	 * @return map with pairs column-value
 	 */
 	public List<Map<String, String>>  readFromTableNotSyncRows(String tableRead, String tableNameOnServer){
+		
+        
 		//Prepare values to return
 		List<Map <String, String>> resultArgs = new ArrayList <Map <String, String>>();
 		//Open database
@@ -355,7 +357,8 @@ public class IITDatabaseManager {
 	 * @return
 	 */
 
-	public List<Map<String, String>> getNotUpdatedValues( String table, String[] columns, String col, String status) {
+	public List<Map<String, String>> getNotUpdatedValuesUpToN( String table, String[] columns, String col, String status, int max_samples) {
+        
 		//NOTE: Include updated value: only in the server case
 		int MAX_READ_SAMPLES;
 		//String updated_name;
@@ -370,7 +373,8 @@ public class IITDatabaseManager {
 		}
 
 		List<Map<String, String>> wordList = new ArrayList<Map<String, String>>();
-		String selectQuery = "SELECT * FROM " + table + " WHERE "+col+" = " + status ;
+        String selectQuery = "SELECT  * FROM " + table + " WHERE "+col+" = " + status +" ORDER BY "+timeStampColumn+" ASC";
+		//String selectQuery = "SELECT * FROM " + table + " WHERE "+col+" = " + status ;
 
 		SQLiteDatabase db_cursor = dbContext.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READONLY, null);
 
@@ -399,7 +403,7 @@ public class IITDatabaseManager {
 						wordList.add(map);
 						index ++;
 
-					} while (cursorSync.moveToNext() && index < MAX_READ_SAMPLES);
+					} while (cursorSync.moveToNext() && index < MAX_READ_SAMPLES_UPDATE);
 					System.out.println("Done reading: "+index);
 
 
@@ -415,6 +419,7 @@ public class IITDatabaseManager {
 	}
 
 	public List<Map<String, String>> getAllNotCheckedValues( String table, String[] columns, String col, String status) {
+        
 		//NOTE: Include updated value: only in the server case
 		/*int MAX_READ_SAMPLES;
         String updated_name;
@@ -429,7 +434,8 @@ public class IITDatabaseManager {
         }*/
 
 		List<Map<String, String>> wordList = new ArrayList<Map<String, String>>();
-		String selectQuery = "SELECT * FROM " + table + " WHERE "+col+" = " + status ;
+        String selectQuery = "SELECT  * FROM " + table + " WHERE "+col+" = " + status +" ORDER BY "+timeStampColumn+" ASC";
+		//String selectQuery = "SELECT * FROM " + table + " WHERE "+col+" = " + status ;
 
 		SQLiteDatabase db_cursor = dbContext.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READONLY, null);
 
@@ -665,6 +671,20 @@ public class IITDatabaseManager {
 		db.close();
 		return rows;
 	}
+	
+   /* private void orderTableByColumn(String table_name, String column){
+
+        //Open db
+        db=dbContext.openOrCreateDatabase(databaseFile,SQLiteDatabase.OPEN_READWRITE, null);
+        //Delete table
+        String updateQuery = " SELECT * FROM "+table_name+" ORDER BY "+column+" ASC"  ;
+        System.out.println("Update query: "+ updateQuery);
+
+        db.execSQL(updateQuery);
+
+        //Close db
+        db.close();
+    }*/
 
 
 }

@@ -49,7 +49,7 @@ public class SensorsManager {
 	private String _ZEPHYR_TABLE_NAME = "sample_table_zephyr";
 
 	//Empataica values
-	public static final String _EMPATICA_TABLE_NAME = "empatica_seconds";
+	public static final String _EMPATICA_TABLE_NAME = "empatica_table";
 	public static final String[] empatica_columnsTable = new String[]{"time_stamp", "Acc_x", "Acc_y", "Acc_z", "GSR", "BVP",
 			"IBI", "HR", "temperature","battery_level"};
     public static final int _TIME_INDEX = 0;
@@ -289,7 +289,7 @@ public class SensorsManager {
 	 */
 
 
-	public List<Map<String, String>> read_lastSamples_IITDatabaseTable( String table_name, boolean remote){
+	public List<Map<String, String>> read_lastSamples_IITDatabaseTable( String table_name, boolean remote, int max_samples){
 		//Depending on the name, select column names:
 		String[] column_names;
 		 String check_column;
@@ -311,10 +311,8 @@ public class SensorsManager {
 			check_value = IITDatabaseManager.syncStatusNo;
 		}
 		//Get last not updated values
-
-
-		List<Map<String, String>> listReadToUSB = dbManager.getNotUpdatedValues(table_name, column_names,
-			 check_column, check_value);
+		List<Map<String, String>> listReadToUSB = dbManager.getNotUpdatedValuesUpToN(table_name, column_names,
+			 check_column, check_value, max_samples);
 		//Include table name
 		List<Map<String, String>> temp = new ArrayList<Map<String, String>>();
 		 for (int i = 0; i < listReadToUSB.size(); i++) {

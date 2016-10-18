@@ -211,16 +211,33 @@ public class USBReadThread extends Thread {
 						try{
 							JSONObject json = new JSONObject(line);
 							String sensor = (String)json.get(USBHost._SENSOR_ID);
-							if (sensor.equals(USBHost._EMPATICA))
-								jSons= mHost.messageAllAsync(SensorsManager._EMPATICA_TABLE_NAME);
-							else if (sensor.equals(USBHost._DEXCOM))
-								jSons= mHost.messageLastDias( USBHost._DEXCOM);
-							else if (sensor.equals(USBHost._ZEPHYR))
-								jSons= mHost.messageLastDias( USBHost._ZEPHYR);
+							String num_samples = (String)json.get(USBHost._NUM_SAMPLES);
+							//All samples requested
+							if (num_samples.equals(USBHost._ALL_SAMPLES)){
+								if (sensor.equals(USBHost._EMPATICA))
+									jSons= mHost.messageAllAsync(SensorsManager._EMPATICA_TABLE_NAME);
+								else if (sensor.equals(USBHost._DEXCOM))
+									jSons= mHost.messageLastDias( USBHost._DEXCOM);
+								else if (sensor.equals(USBHost._ZEPHYR))
+									jSons= mHost.messageLastDias( USBHost._ZEPHYR);
+							}
+							//Read up to N samples
+							else{
+								if (sensor.equals(USBHost._EMPATICA)){
+									int samples = Integer.parseInt( num_samples);
+									jSons= mHost.messageNAsync(SensorsManager._EMPATICA_TABLE_NAME, samples);
+								}else if (sensor.equals(USBHost._DEXCOM))
+									jSons= mHost.messageLastDias( USBHost._DEXCOM);
+								else if (sensor.equals(USBHost._ZEPHYR))
+									jSons= mHost.messageLastDias( USBHost._ZEPHYR);
+								
+							}
 
 
 						}catch(JSONException e){
 							System.out.println("Get all no sync wrong structure: "+e);
+						}catch (Exception e){
+							System.out.println("Retrieving JSON data exception: "+e);
 						}
 
 						if (jSons != null) {

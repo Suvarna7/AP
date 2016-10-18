@@ -390,7 +390,8 @@ public class IITDatabaseManager {
      * @return
      */
 
-    public static List<Map<String, String>> getNotUpdatedValues( String table, String[] columns, String col, String status) {
+    public  List<Map<String, String>> getNotUpdatedValues( String table, String[] columns, String col, String status) {
+
         //NOTE: Include updated value: only in the server case
         int MAX_READ_SAMPLES;
         String updated_name;
@@ -405,7 +406,10 @@ public class IITDatabaseManager {
         }
 
         List<Map<String, String>> wordList = new ArrayList<Map<String, String>>();
-        String selectQuery = "SELECT  * FROM " + table + " WHERE "+col+" = " + status ;
+
+        //Ordered slectiion
+        String selectQuery = "SELECT  * FROM " + table + " WHERE "+col+" = " + status +" ORDER BY "+timeStampColumn+" ASC";
+        //String selectQuery = "SELECT  * FROM " + table + " WHERE "+col+" = " + status ;
 
         SQLiteDatabase db_cursor = dbContext.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READONLY, null);
 
@@ -449,7 +453,7 @@ public class IITDatabaseManager {
         return wordList;
     }
 
-    public static List<Map<String, String>> getAllNotCheckedValues( String table, String[] columns, String col, String status) {
+    public  List<Map<String, String>> getAllNotCheckedValues( String table, String[] columns, String col, String status) {
         //NOTE: Include updated value: only in the server case
         int MAX_READ_SAMPLES;
         String updated_name;
@@ -464,7 +468,9 @@ public class IITDatabaseManager {
         }
 
         List<Map<String, String>> wordList = new ArrayList<Map<String, String>>();
-        String selectQuery = "SELECT  * FROM " + table + " WHERE "+col+" = " + status ;
+        //Ordered select:
+        String selectQuery = "SELECT  * FROM " + table + " WHERE "+col+" = " + status +" ORDER BY "+timeStampColumn+" ASC";
+        //String selectQuery = "SELECT  * FROM " + table + " WHERE "+col+" = " + status ;
 
         SQLiteDatabase db_cursor = dbContext.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READONLY, null);
 
@@ -681,6 +687,19 @@ public class IITDatabaseManager {
         db.close();
         return rows;
     }
+
+    /*private void orderTableByColumn(String table_name, String column){
+
+        //Open db
+        db=dbContext.openOrCreateDatabase(databaseFile,SQLiteDatabase.OPEN_READWRITE, null);
+        //Delete table
+        String updateQuery = " SELECT * FROM "+table_name+"  ORDER BY "+column+" ASC"  ;
+        System.out.println("Update query: "+ updateQuery);
+        db.execSQL(updateQuery);
+
+        //Close db
+        db.close();
+    }*/
 
 
 }
