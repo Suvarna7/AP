@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.Toast;
 import edu.virginia.dtc.APCservice.IOMain;
 import edu.virginia.dtc.APCservice.DataManagement.SensorsManager;
+import edu.virginia.dtc.APCservice.Database.IITDatabaseManager;
 import edu.virginia.dtc.APCservice.Server.IITServerConnector;
 
 import java.io.IOException;
@@ -302,7 +303,7 @@ import java.util.Scanner;
 	  * @return
 	  */
 	 public String[] messageAllAsync(String table) {
-		return messageNAsync(table, Integer.MAX_VALUE);
+		return messageNAsync(table, IITDatabaseManager.MAX_READ_SAMPLES_UPDATE);
 	 }
 	 /**
 	  * Message N samples of the async values

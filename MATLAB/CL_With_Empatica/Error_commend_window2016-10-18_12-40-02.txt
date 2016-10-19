@@ -1,0 +1,18 @@
+MATLAB:UndefinedFunction
+Undefined function or variable 'ack'.
+    file: 'C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\CL_With_Empatica\USB Connection\read_last_samples.m'
+    name: 'read_last_samples'
+    line: 26
+
+    file: 'C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\CL_With_Empatica\m20160509_CL_GUI.m'
+    name: 'gui_run_algorithm_Callback'
+    line: 147
+
+    file: 'C:\Program Files\MATLAB\R2014a\toolbox\matlab\guide\gui_mainfcn.m'
+    name: 'gui_mainfcn'
+    line: 95
+
+    file: 'C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\CL_With_Empatica\m20160509_CL_GUI.m'
+    name: 'm20160509_CL_GUI'
+    line: 42
+

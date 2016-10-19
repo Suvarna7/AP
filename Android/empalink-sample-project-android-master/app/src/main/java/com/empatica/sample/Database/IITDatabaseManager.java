@@ -1,5 +1,6 @@
 package com.empatica.sample.Database;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -39,7 +40,7 @@ import java.util.Map;
 
 public class IITDatabaseManager {
 
-
+    private MyDatabaseHelper dbHelper;
     private static SQLiteDatabase db;
     private static Cursor cursorSync;
 
@@ -90,6 +91,8 @@ public class IITDatabaseManager {
      * @param ctx context
      */
     public IITDatabaseManager(Context ctx){
+        dbHelper = new MyDatabaseHelper(ctx);
+        db = dbHelper.getWritableDatabase();
         initDatabase(ctx);
 
     }
@@ -123,6 +126,32 @@ public class IITDatabaseManager {
 
     }
 
+    /**
+     * Insert values using MyDatabaseHelper
+     * @param table
+     * @param values
+     * @param columns
+     * @return
+     */
+    public boolean insertIntoDatabaseTable(String table, ThreadSafeArrayList<String> values, String[] columns){
+        try{
+
+            ContentValues update = new ContentValues();
+            for (int i =0; i < columns.length; i++){
+                update.put(columns[i], values.get(i));
+            }
+            //Add sync
+            update.put(syncColumn, syncStatusNo);
+            //Add update
+            update.put(upDateColumn, updatedStatusNo);
+
+            db.insert(table, null, update);
+            return true;
+
+        }catch(Exception e){
+            return false;
+        }
+    }
 
     /**
      * Update table in database
@@ -130,27 +159,37 @@ public class IITDatabaseManager {
      * @param values
      * @param store whether to store new values or delete table
      */
-    public void updateDatabaseTable (String table, ThreadSafeArrayList<String> values, boolean store){
+    public boolean updateDatabaseTable (String table, ThreadSafeArrayList<String> values, boolean store){
         //TODO
         //System.out.println(EXTERNAL_DIRECTORY_PATH.getAbsolutePath());
         //Open db
-        db=dbContext.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READWRITE, null);
-        if (store){
-            //Store or update new values on table
-            storeValuesInTable(table, values);
-        }else{
-            //Delete table
-            // String updateQuery1 = "DELETE * FROM "+ table ;
-            String updateQuery1 = "DROP TABLE "+ table ;
-            db.execSQL(updateQuery1);
-        }
-        //Close db
-        db.close();
+        if (!db.isOpen()){
+            try {
+                db = dbContext.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READWRITE, null);
+                if (store) {
+                    //Store or update new values on table
+                    storeValuesInTable(table, values);
+                } else {
+                    //Delete table
+                    // String updateQuery1 = "DELETE * FROM "+ table ;
+                    String updateQuery1 = "DROP TABLE " + table;
+                    db.execSQL(updateQuery1);
+                }
+                //Close db
+                db.close();
 
 
-		/* String updateQuery = "CREATE TABLE IF NOT EXISTS "+ table+"(" + columnValues +");";
-		 db.execSQL(updateQuery);*/
-        //System.out.println(updateQuery);
+            /* String updateQuery = "CREATE TABLE IF NOT EXISTS "+ table+"(" + columnValues +");";
+             db.execSQL(updateQuery);*/
+                //System.out.println(updateQuery);
+                return true;
+
+            }catch(Exception e){
+                System.out.println("Exception in updateDatabaseTable: "+ e);
+                return false;
+            }
+        }else
+            return false;
 
 
     }

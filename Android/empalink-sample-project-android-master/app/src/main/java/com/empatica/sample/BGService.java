@@ -588,7 +588,8 @@ public class BGService extends Service implements EmpaDataDelegate{
 
 
             //TODO Add to database: instantly
-           storeSampleInDatabase(tempList, empaticaMilTableName);
+           storeSampleInDatabase(tempList, empaticaMilTableName, columnsTable);
+
            // storeSampleInDatabase(tempListSec, empaticaSecTableName);
 
             //TODO Add to database: every given num of samples
@@ -653,10 +654,13 @@ public class BGService extends Service implements EmpaDataDelegate{
      * @param sample
      * @return
      */
-    private static void storeSampleInDatabase(ThreadSafeArrayList<String> sample, String table){
+    private static void storeSampleInDatabase(ThreadSafeArrayList<String> sample, String table, String[] columns){
         try {
             //System.out.println("Sample in: " + i);
-            myDB.updateDatabaseTable(table, sample, true);
+            //while (!myDB.updateDatabaseTable(table, sample, true)){
+            while(myDB.insertIntoDatabaseTable(table, sample, columns)){
+                //Wait for the db to beavailable
+            }
         } catch (Exception e) {
             System.out.println("Store sample exception " + e);
         }

@@ -1,5 +1,6 @@
 package edu.virginia.dtc.APCservice.Database;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -38,7 +39,7 @@ import java.util.Map;
 
 public class IITDatabaseManager {
 
-
+    private MyDatabaseHelper dbHelper;
 	private static SQLiteDatabase db;
 	private static Cursor cursorSync;
 
@@ -76,12 +77,12 @@ public class IITDatabaseManager {
 	//1 second = 64 samples
 	//Sending every 30 seconds
 	// 2 * 64 * 30 = 3840
-	public static int MAX_READ_SAMPLES_UPDATE = 5000;
+	public static int MAX_READ_SAMPLES_UPDATE = 8000;
 
 	//1 second = 64 samples
 	//Sending every 30 seconds
 	// 2 * 5 * 64 * 30 = 3840
-	private static int MAX_READ_SAMPLES_SYNCHRONIZE = 5000;
+	private static int MAX_READ_SAMPLES_SYNCHRONIZE = 8000;
 
 
 	/**
@@ -89,6 +90,8 @@ public class IITDatabaseManager {
 	 * @param ctx context
 	 */
 	public IITDatabaseManager(Context ctx){
+		 dbHelper = new MyDatabaseHelper(ctx);
+	        db = dbHelper.getWritableDatabase();
 		initDatabase1(ctx);
 
 	}
@@ -120,6 +123,33 @@ public class IITDatabaseManager {
 
 	}
 
+	/**
+     * Insert values using MyDatabaseHelper
+     * @param table
+     * @param values
+     * @param columns
+     * @return
+     */
+    public boolean insertIntoDatabaseTable(String table, ThreadSafeArrayList<String> values, String[] columns){
+        try{
+
+            ContentValues update = new ContentValues();
+            for (int i =0; i < columns.length; i++){
+                update.put(columns[i], values.get(i));
+            }
+            //Add sync
+            update.put(syncColumn, syncStatusNo);
+            //Add update
+            update.put(upDateColumn, updatedStatusNo);
+
+            db.insert(table, null, update);
+            return true;
+
+        }catch(Exception e){
+            return false;
+        }
+    }
+
 
 	/**
 	 * Update table in database
@@ -127,7 +157,7 @@ public class IITDatabaseManager {
 	 * @param values
 	 * @param store whether to store new values or delete table
 	 */
-	public void updateDatabaseTable (String table, ThreadSafeArrayList<String> values, boolean store){
+	public void updateDatabaseTable2 (String table, ThreadSafeArrayList<String> values, boolean store){
 		//TODO
 		//System.out.println(EXTERNAL_DIRECTORY_PATH.getAbsolutePath());
 		//Open db
@@ -611,39 +641,45 @@ public class IITDatabaseManager {
 	 * @param status - yes or no
 	 * @param last_up - time stamp/ key to identifiy sample
 	 */
-	public  void ackSyncStatusAllPrevious (Context ctx, String table,  String status, String last_up){
+	public  boolean ackSyncStatusAllPrevious (Context ctx, String table,  String status, String last_up){
 
-		//If sync is successful:
-		if(syncStatusYes.equals("'"+status+"'")){
-			System.out.println("ACK Process: "+last_up);
-			//Get all not sync previous columns:
-			String selectQuery = "SELECT  * FROM " + table + " WHERE "+syncColumn+" = " + syncStatusNo ;
-			SQLiteDatabase db_cursor = dbContext.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READONLY, null);
-
-			if (db_cursor !=null) {
-				//Create Cursor
-				//Choose the right array from table
-				cursorSync = db_cursor.rawQuery(selectQuery, null);
-
-				//If Cursor is valid
-				if (cursorSync != null ) {
-					if (cursorSync.moveToFirst()) {
-						do {
-							//Update values
-							//System.out.println("To update ack: " +table+ ", "+ syncColumn +", "+  status);
-							updateSingleSample(db_cursor, table, syncColumn,status, 
-									cursorSync.getString(SensorsManager._TIME_INDEX), SensorsManager.empatica_columnsTable[SensorsManager._TIME_INDEX]);
-							
-						}//while (cursorSync.moveToNext());
-						while ( !last_up.equals(cursorSync.getString(SensorsManager._TIME_INDEX)) && cursorSync.moveToNext() );
-
-
+		try{
+			//If sync is successful:
+			if(syncStatusYes.equals("'"+status+"'")){
+				System.out.println("ACK Process: "+last_up);
+				//Get all not sync previous columns:
+				String selectQuery = "SELECT  * FROM " + table + " WHERE "+syncColumn+" = " + syncStatusNo ;
+				SQLiteDatabase db_cursor = dbContext.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READONLY, null);
+	
+				if (db_cursor !=null) {
+					//Create Cursor
+					//Choose the right array from table
+					cursorSync = db_cursor.rawQuery(selectQuery, null);
+	
+					//If Cursor is valid
+					if (cursorSync != null ) {
+						if (cursorSync.moveToFirst()) {
+							do {
+								//Update values
+								//System.out.println("To update ack: " +table+ ", "+ syncColumn +", "+  status);
+								updateSingleSample(db_cursor, table, syncColumn,status, 
+										cursorSync.getString(SensorsManager._TIME_INDEX), SensorsManager.empatica_columnsTable[SensorsManager._TIME_INDEX]);
+								
+							}//while (cursorSync.moveToNext());
+							while ( !last_up.equals(cursorSync.getString(SensorsManager._TIME_INDEX)) && cursorSync.moveToNext() );
+	
+	
+						}
+	
+						db_cursor.close();
+	
 					}
-
-					db_cursor.close();
-
 				}
 			}
+			return true;
+		}catch (Exception e){
+			System.out.println("Exception while ACK all previous: "+e);
+			return false;
 		}
 
 	}

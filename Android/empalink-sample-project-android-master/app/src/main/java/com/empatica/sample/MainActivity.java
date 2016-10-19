@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
         accel_zLabel = (TextView) findViewById(R.id.accel_z);
         bvpLabel = (TextView) findViewById(R.id.bvp);
         edaLabel = (TextView) findViewById(R.id.eda);
-        ibiLabel = (TextView) findViewByIda(R.id.ibi);
+        ibiLabel = (TextView) findViewById(R.id.ibi);
         hrLabel = (TextView) findViewById(R.id.hr);
 
         temperatureLabel = (TextView) findViewById(R.id.temperature);
@@ -639,12 +639,12 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                 val.put("table_name", BGService.empaticaMilTableName);
                 temp.add(val);
                 if ((i + 1) % LOCAL_SENDING_AMOUNT == 0) {
-                    System.out.println("Save temp");
+                    //System.out.println("Save temp");
                     if (sent < 100) {
                         result[sent] = IITServerConnector.convertToJSON(temp);
                         sent++;
                         temp = new ArrayList<Map<String, String>>();
-                        System.out.println("Saved");
+                        //System.out.println("Saved");
                     }else
                         return result;
 

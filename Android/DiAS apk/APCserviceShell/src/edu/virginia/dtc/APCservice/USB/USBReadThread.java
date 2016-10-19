@@ -86,8 +86,10 @@ public class USBReadThread extends Thread {
 								JSONObject jsonObj = (JSONObject) arr.get(i);
 								//TODO dbManager.updateSyncStatus(databaseContext, (String) jsonObj.get("table_name"),
 								try {
-									mDatabase.ackSyncStatusAllPrevious(dbContext, SensorsManager._EMPATICA_TABLE_NAME,
-											(String) jsonObj.get("synchronized"), (String) jsonObj.get("time_stamp"));
+									while(mDatabase.ackSyncStatusAllPrevious(dbContext, SensorsManager._EMPATICA_TABLE_NAME,
+											(String) jsonObj.get("synchronized"), (String) jsonObj.get("time_stamp"))){
+										//Wait for database to be available
+									}
 								}catch (Exception e){
 									System.out.println("Exception when sync from USB: "+e);
 								}
@@ -211,27 +213,28 @@ public class USBReadThread extends Thread {
 						try{
 							JSONObject json = new JSONObject(line);
 							String sensor = (String)json.get(USBHost._SENSOR_ID);
-							String num_samples = (String)json.get(USBHost._NUM_SAMPLES);
+							//String num_samples = (String)json.get(USBHost._NUM_SAMPLES);
 							//All samples requested
-							if (num_samples.equals(USBHost._ALL_SAMPLES)){
+							//if (num_samples.equals(USBHost._ALL_SAMPLES)){
 								if (sensor.equals(USBHost._EMPATICA))
 									jSons= mHost.messageAllAsync(SensorsManager._EMPATICA_TABLE_NAME);
 								else if (sensor.equals(USBHost._DEXCOM))
 									jSons= mHost.messageLastDias( USBHost._DEXCOM);
 								else if (sensor.equals(USBHost._ZEPHYR))
 									jSons= mHost.messageLastDias( USBHost._ZEPHYR);
-							}
+							//}
 							//Read up to N samples
-							else{
+							/*else{
 								if (sensor.equals(USBHost._EMPATICA)){
-									int samples = Integer.parseInt( num_samples);
+									//int samples = Integer.parseInt( num_samples);
+									int samples = IITDatabaseManager.MAX_READ_SAMPLES_UPDATE;
 									jSons= mHost.messageNAsync(SensorsManager._EMPATICA_TABLE_NAME, samples);
 								}else if (sensor.equals(USBHost._DEXCOM))
 									jSons= mHost.messageLastDias( USBHost._DEXCOM);
 								else if (sensor.equals(USBHost._ZEPHYR))
 									jSons= mHost.messageLastDias( USBHost._ZEPHYR);
 								
-							}
+							}*/
 
 
 						}catch(JSONException e){
