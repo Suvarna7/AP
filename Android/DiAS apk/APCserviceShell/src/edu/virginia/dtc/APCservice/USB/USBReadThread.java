@@ -86,7 +86,7 @@ public class USBReadThread extends Thread {
 								JSONObject jsonObj = (JSONObject) arr.get(i);
 								//TODO dbManager.updateSyncStatus(databaseContext, (String) jsonObj.get("table_name"),
 								try {
-									while(mDatabase.ackSyncStatusAllPrevious(dbContext, SensorsManager._EMPATICA_TABLE_NAME,
+									if(mDatabase.ackSyncStatusAllPrevious(dbContext, SensorsManager._EMPATICA_TABLE_NAME,
 											(String) jsonObj.get("synchronized"), (String) jsonObj.get("time_stamp"))){
 										//Wait for database to be available
 									}

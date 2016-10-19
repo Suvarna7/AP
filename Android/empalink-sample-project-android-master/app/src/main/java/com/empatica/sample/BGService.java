@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
@@ -96,6 +97,7 @@ public class BGService extends Service implements EmpaDataDelegate{
     private static int STORING_AMOUNT = 1000;
     private static int storing_counter;
 
+    //private static List<ThreadSafeArrayList<String> > failedToUpdate;
 
 
 
@@ -166,6 +168,9 @@ public class BGService extends Service implements EmpaDataDelegate{
         resetReceivedFlags();
 
 
+        //Create:
+       // failedToUpdate = new ArrayList<ThreadSafeArrayList<String> >();
+
 
 
 
@@ -223,6 +228,7 @@ public class BGService extends Service implements EmpaDataDelegate{
         mActivity.updateLabel(mActivity.accel_xLabel, "" + x);
         mActivity.updateLabel(mActivity.accel_yLabel, "" + y);
         mActivity.updateLabel(mActivity.accel_zLabel, "" + z);
+        connectionEstablishedFlag = true;
 
         //Store sample:
         storeNewSample(""+ x + "", xAccelValues, time_stamp, false);
@@ -270,6 +276,7 @@ public class BGService extends Service implements EmpaDataDelegate{
     @Override
     public void didReceiveBVP(float bvp, double time_stamp) {
         mActivity.updateLabel(mActivity.bvpLabel, "" + bvp);
+        connectionEstablishedFlag = true;
 
         storeNewSample("" + bvp + "", bvpValues, time_stamp, true);
 
@@ -294,6 +301,7 @@ public class BGService extends Service implements EmpaDataDelegate{
             storeNewSample("" + last_IBI + "", ibiValues, time_stamp, false);
 
         }
+        connectionEstablishedFlag = true;
 
         //Update number of received samples:
         if (ibiNotReceived){
@@ -330,6 +338,7 @@ public class BGService extends Service implements EmpaDataDelegate{
             storeNewSample("" + temp + "", temperatureValues, time_stamp, false);
         else
             storeNewSample("" + temp + "", temperatureValues, time_stamp, false);
+        connectionEstablishedFlag = true;
 
         //Update number of received samples:
         if (temperatureNotReceived){
@@ -346,6 +355,7 @@ public class BGService extends Service implements EmpaDataDelegate{
 
         mActivity.updateLabel(mActivity.batteryLabel, String.format("%.0f %%", battery * 100));
         storeNewSample("" + battery + "", batteryValues, time_stamp, false);
+        connectionEstablishedFlag = true;
 
         //Update number of received samples:
         if (batteryNotReceived){
@@ -525,7 +535,7 @@ public class BGService extends Service implements EmpaDataDelegate{
             //String formatTimeStampSec = dateFormatSec.format(time);
 
             //formatTimeStamp = ""+ formatTimeStamp.substring(0, formatTimeStamp.length() ) +"";
-            tempList.set("'"+ formatTimeStamp.substring(0, formatTimeStamp.length() ) +"'");
+            tempList.set(formatTimeStamp);
             tempMap.put(columnsTable[0], formatTimeStamp);
 
             //tempListSec.set("'" + formatTimeStamp.substring(0, formatTimeStamp.length()) + "'");
@@ -589,6 +599,7 @@ public class BGService extends Service implements EmpaDataDelegate{
 
             //TODO Add to database: instantly
            storeSampleInDatabase(tempList, empaticaMilTableName, columnsTable);
+            //storeGlobalListInDatabase();
 
            // storeSampleInDatabase(tempListSec, empaticaSecTableName);
 
@@ -658,8 +669,9 @@ public class BGService extends Service implements EmpaDataDelegate{
         try {
             //System.out.println("Sample in: " + i);
             //while (!myDB.updateDatabaseTable(table, sample, true)){
-            while(myDB.insertIntoDatabaseTable(table, sample, columns)){
-                //Wait for the db to beavailable
+            if(!myDB.insertIntoDatabaseTable(table, sample, columns)){
+                //Store in global list
+                //failedToUpdate.add(sample);
             }
         } catch (Exception e) {
             System.out.println("Store sample exception " + e);
@@ -671,16 +683,17 @@ public class BGService extends Service implements EmpaDataDelegate{
      * @return true if done with storing
      */
 
-   /* private static boolean storeGlobalListInDatabase(){
+    /*private static boolean storeGlobalListInDatabase(){
 
-        for (int i = 0; i < receivedData.size(); i++) {
+        for (int i = 0; i < failedToUpdate.size(); i++) {
             try {
                 //System.out.println("Sample in: " + i);
-                myDB.updateDatabaseTable(empaticaTableName, receivedData.get(i), true);
+                myDB.updateDatabaseTable(empaticaMilTableName, failedToUpdate.get(i), true);
             } catch (Exception e) {
                 System.out.println("Store global exception " + e);
             }
         }
+        failedToUpdate = new ArrayList<ThreadSafeArrayList<String> >();
 
         return true;
 

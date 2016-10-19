@@ -94,7 +94,7 @@ import java.util.Scanner;
 
 	 public void sendUSBmessage(String msg){
 		 if (socketOut != null) {
-			 System.out.println("send msg");
+			 System.out.println("send msg: "+msg);
 			 //socketOut.print(msg);
 			 socketOut.println(msg );
 			 socketOut.flush();
@@ -314,7 +314,7 @@ import java.util.Scanner;
 	 
 	 public String[] messageNAsync(String table, int samples) {
 		 String[] result = new String[100];
-		 List<Map<String, String>> listReadToUSB = ioActivity.sManager.read_lastSamples_IITDatabaseTable(SensorsManager._EMPATICA_TABLE_NAME, false, samples);
+		 List<Map<String, String>> listReadToUSB = ioActivity.sManager.read_lastSamples_IITDatabaseTable(table, false, samples);
 
 		 //Prepare values to be sent via USB:
 		 if (listReadToUSB !=null){

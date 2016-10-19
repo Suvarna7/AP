@@ -39,7 +39,7 @@ import java.util.Map;
 
 public class IITDatabaseManager {
 
-    private MyDatabaseHelper dbHelper;
+    //private MyDatabaseHelper dbHelper;
 	private static SQLiteDatabase db;
 	private static Cursor cursorSync;
 
@@ -47,8 +47,9 @@ public class IITDatabaseManager {
 	//Database info
 	private static String EXTERNAL_DIRECTORY_PATH = Environment.getExternalStorageDirectory().getAbsolutePath();
 	//private static String DB_LOCAL_URL =  "/storage/emulated/legacy/IIT_database/";
-	private static String DB_LOCAL_URL =  EXTERNAL_DIRECTORY_PATH+"/IIT_database/";
+	static String DB_LOCAL_URL =  EXTERNAL_DIRECTORY_PATH+"/IIT_database/";
 	public static String DEFAULT_DB_NAME = "dbSensors.db";
+	public static String DEFAULT_DB_NAME_NE = "dbSensors";
 	private String db_name;
 
 	static String databaseFile;
@@ -77,22 +78,24 @@ public class IITDatabaseManager {
 	//1 second = 64 samples
 	//Sending every 30 seconds
 	// 2 * 64 * 30 = 3840
-	public static int MAX_READ_SAMPLES_UPDATE = 8000;
+	public static int MAX_READ_SAMPLES_UPDATE = 5*64*60;
 
 	//1 second = 64 samples
 	//Sending every 30 seconds
 	// 2 * 5 * 64 * 30 = 3840
-	private static int MAX_READ_SAMPLES_SYNCHRONIZE = 8000;
+	private static int MAX_READ_SAMPLES_SYNCHRONIZE = 5*64*60;
 
 
 	/**
-	 * Default constractor, only needs context
+	 * Default constructor, only needs context
 	 * @param ctx context
 	 */
 	public IITDatabaseManager(Context ctx){
-		 dbHelper = new MyDatabaseHelper(ctx);
-	        db = dbHelper.getWritableDatabase();
-		initDatabase1(ctx);
+		/*dbHelper = new MyDatabaseHelper(ctx);
+        db = dbHelper.getWritableDatabase();
+        db.close();*/
+
+		 initDatabase1(ctx);
 
 	}
 
@@ -123,32 +126,7 @@ public class IITDatabaseManager {
 
 	}
 
-	/**
-     * Insert values using MyDatabaseHelper
-     * @param table
-     * @param values
-     * @param columns
-     * @return
-     */
-    public boolean insertIntoDatabaseTable(String table, ThreadSafeArrayList<String> values, String[] columns){
-        try{
-
-            ContentValues update = new ContentValues();
-            for (int i =0; i < columns.length; i++){
-                update.put(columns[i], values.get(i));
-            }
-            //Add sync
-            update.put(syncColumn, syncStatusNo);
-            //Add update
-            update.put(upDateColumn, updatedStatusNo);
-
-            db.insert(table, null, update);
-            return true;
-
-        }catch(Exception e){
-            return false;
-        }
-    }
+	
 
 
 	/**
@@ -157,7 +135,7 @@ public class IITDatabaseManager {
 	 * @param values
 	 * @param store whether to store new values or delete table
 	 */
-	public void updateDatabaseTable2 (String table, ThreadSafeArrayList<String> values, boolean store){
+	public void updateDatabaseTable (String table, ThreadSafeArrayList<String> values, boolean store){
 		//TODO
 		//System.out.println(EXTERNAL_DIRECTORY_PATH.getAbsolutePath());
 		//Open db
@@ -264,7 +242,7 @@ public class IITDatabaseManager {
 	 * @return
 	 */
 
-	static public List<String> readFromDatabase(Context ctx, String database, String column){
+	/*static public List<String> readFromDatabase(Context ctx, String database, String column){
 		List<String> results = new ArrayList<String>();
 		// SQLiteDatabase dbase = ctx.openOrCreateDatabase(databaseFile, Context.MODE_WORLD_WRITEABLE, null);
 		SQLiteDatabase dbase=ctx.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READWRITE, null);
@@ -291,7 +269,7 @@ public class IITDatabaseManager {
 		//Log.d("Database",results.get(i));
 		dbase.close();
 		return results;
-	}
+	}*/
 
 
 	/**
@@ -301,7 +279,6 @@ public class IITDatabaseManager {
 	 * @return map with pairs column-value
 	 */
 	public List<Map<String, String>>  readFromTableNotSyncRows(String tableRead, String tableNameOnServer){
-		
         
 		//Prepare values to return
 		List<Map <String, String>> resultArgs = new ArrayList <Map <String, String>>();
@@ -405,17 +382,21 @@ public class IITDatabaseManager {
 		List<Map<String, String>> wordList = new ArrayList<Map<String, String>>();
         String selectQuery = "SELECT  * FROM " + table + " WHERE "+col+" = " + status +" ORDER BY "+timeStampColumn+" ASC";
 		//String selectQuery = "SELECT * FROM " + table + " WHERE "+col+" = " + status ;
+       // String selectQuery = "SELECT  * FROM " + table ;
 
 		SQLiteDatabase db_cursor = dbContext.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READONLY, null);
-
+		System.out.println("Select query: "+selectQuery);
+		System.out.println("Db FOR CURSOR: "+db_cursor.toString());
 		if (db_cursor !=null) {
 			//Create Cursor
 			//Choose the right array from table
 			cursorSync = db_cursor.rawQuery(selectQuery, null);
+			System.out.println("Valid cursor: "+cursorSync.getCount());
 
 			//If Cursor is valid
 			if (cursorSync != null ) {
 				if (cursorSync.moveToFirst()) {
+
 					int index = 0;
 					do {
 						HashMap<String, String> map = new HashMap<String, String>();
@@ -435,8 +416,6 @@ public class IITDatabaseManager {
 
 					} while (cursorSync.moveToNext() && index < MAX_READ_SAMPLES_UPDATE);
 					System.out.println("Done reading: "+index);
-
-
 				}
 
 				db_cursor.close();
@@ -528,6 +507,42 @@ public class IITDatabaseManager {
 		db.close();
 		return count;
 	}
+	
+	/**
+     * Insert values using MyDatabaseHelper
+     * @param table
+     * @param values
+     * @param columns
+     * @return
+     */
+    /*public boolean insertIntoDatabaseTable(String table, ThreadSafeArrayList<String> values, String[] columns){
+        try{
+            db = dbHelper.getWritableDatabase();
+
+            ContentValues update = new ContentValues();
+            for (int i =0; i < columns.length; i++){
+                update.put(columns[i], values.get(i));
+            }
+            //Add sync
+            update.put(syncColumn, syncStatusNo);
+            //Add update
+            update.put(upDateColumn, updatedStatusNo);
+
+
+            long result = db.insert(table, null, update);
+            db.close();
+
+
+            if (result !=-1)
+                return true;
+            else
+                return false;
+
+
+        }catch(Exception e){
+            return false;
+        }
+    }*/
 
 	/**
 	 * Update table in database
@@ -649,7 +664,7 @@ public class IITDatabaseManager {
 				System.out.println("ACK Process: "+last_up);
 				//Get all not sync previous columns:
 				String selectQuery = "SELECT  * FROM " + table + " WHERE "+syncColumn+" = " + syncStatusNo ;
-				SQLiteDatabase db_cursor = dbContext.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READONLY, null);
+				SQLiteDatabase db_cursor = dbContext.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READWRITE , null);
 	
 				if (db_cursor !=null) {
 					//Create Cursor
@@ -664,7 +679,6 @@ public class IITDatabaseManager {
 								//System.out.println("To update ack: " +table+ ", "+ syncColumn +", "+  status);
 								updateSingleSample(db_cursor, table, syncColumn,status, 
 										cursorSync.getString(SensorsManager._TIME_INDEX), SensorsManager.empatica_columnsTable[SensorsManager._TIME_INDEX]);
-								
 							}//while (cursorSync.moveToNext());
 							while ( !last_up.equals(cursorSync.getString(SensorsManager._TIME_INDEX)) && cursorSync.moveToNext() );
 	

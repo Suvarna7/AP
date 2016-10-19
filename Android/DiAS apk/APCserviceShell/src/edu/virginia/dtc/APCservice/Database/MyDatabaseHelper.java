@@ -9,7 +9,7 @@ import android.util.Log;
  * Created by Cat on 10/18/2016.
  */
 public class MyDatabaseHelper extends SQLiteOpenHelper{
-    private static final String DATABASE_NAME = IITDatabaseManager.DEFAULT_DB_NAME;
+    private static final String DATABASE_NAME = IITDatabaseManager.DB_LOCAL_URL+IITDatabaseManager.DEFAULT_DB_NAME;
     private static final int DATABASE_VERSION = 2;
     // Database creation sql statement
     private static final String DATABASE_CREATE = "create table MyEmployees ( _id integer primary key,name text not null);";
@@ -21,7 +21,8 @@ public class MyDatabaseHelper extends SQLiteOpenHelper{
 
     @Override
     public void onCreate(SQLiteDatabase database) {
-        database.execSQL(DATABASE_CREATE);
+
+        //database.execSQL(DATABASE_CREATE);
     }
 
     @Override

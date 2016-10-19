@@ -381,8 +381,7 @@ public class SubBolusCreator {
 				mList.set(""+0);
 			mList.set(""+rate_value);
 			
-			mDB.insertIntoDatabaseTable(_BASAL_TABLE_NAME, mList, basalColumns);
-			//DB.updateDatabaseTable(_BASAL_TABLE_NAME, mList, true);
+			//mDB.updateDatabaseTable(_BASAL_TABLE_NAME, mList, true);
 			Map<String, String> iTable = new HashMap<String, String>();
 			//Insulin values
 			//iTable.clear();
@@ -418,7 +417,6 @@ public class SubBolusCreator {
 			mList.set(""+bolus);
 			mList.set(""+num);
 			mList.set(""+total);
-			mDB.insertIntoDatabaseTable(_BOLUS_TABLE_NAME, mList, bolusColumns);
 
 			//mDB.updateDatabaseTable(_BOLUS_TABLE_NAME, mList, true);
 
