@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     public TextView statusLabel;
     public TextView deviceNameLabel;
     private static String device;
+    private static String connectionS;
 
     //Empatica data
     public RelativeLayout dataCnt;
@@ -165,21 +166,22 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
         }else{
             //Set the view for Connected
             System.out.println("Coming back!!");
-            //Make connected screen visible
+            if (connectionS.contains("CONNECTED") && !connectionS.contains("DISCONNECTED")) {
+                //Make connected screen visible
 
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         connectButton.setVisibility(View.INVISIBLE);
                         dataCnt.setVisibility(View.VISIBLE);
-                        statusLabel.setText(EmpaStatus.CONNECTED.toString());
 
 
                     }
                 });
-            updateLabel(internet_conn, "INTERNET");
-            updateLabel(statusLabel, EmpaStatus.CONNECTED.toString());
-            updateLabel(deviceNameLabel, "To: " + device);
+                updateLabel(internet_conn, "INTERNET");
+                updateLabel(statusLabel, connectionS);
+                updateLabel(deviceNameLabel, "To: " + device);
+            }
 
         }
 
@@ -338,7 +340,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
         if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_CANCELED) {
             // You should deal with this
             updateLabel(statusLabel, "BLUETOOTH NOT ENABLED: \n Empatica can not connect");
-
+            connectionS = "BLUETOOTH NOT ENABLED: \n Empatica can not connect";
             return;
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -354,7 +356,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
         System.out.println("Did update status: "+status);
         // Update the UI
         updateLabel(statusLabel, status.name());
-
+        connectionS = status.name();
         // The device manager is ready for use
         if (status == EmpaStatus.READY) {
             //Make sure connection button is not used
@@ -366,6 +368,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                 }
             });
             updateLabel(statusLabel, status.name() + " - Turn on your device");
+            connectionS  = status.name() + " - Turn on your device";
             // Start scanning
             BGService.deviceManager.startScanning();
             // The device manager has established a connection
@@ -656,15 +659,21 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
      */
     public void messageAllAsync(String table, String check_column, String check_value, int max) {
         //TODO NO ACK NOW
+        BGService.ackInProgress = true;
         //List<Map<String, String>> listReadToUSB = BGService.myDB.getLastNSamples(table, BGService.columnsTable, check_column, check_value, max);
         //Collections.reverse(listReadToUSB);
         List<Map<String, String>> listReadToUSB=  BGService.myDB.getNotUpdatedValues (table, BGService.columnsTable, check_column, check_value, max);
+        Collections.reverse(listReadToUSB);
+
         if (listReadToUSB !=null){
             mHost.sendUSBMessages(listReadToUSB);
             mHost.sendUSBmessage(USBHost._END_COMMAND);
 
         } else
             mHost.sendUSBmessage(USBHost._NO_DATA);
+
+        BGService.ackInProgress = false;
+
     }
 
 

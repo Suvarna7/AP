@@ -499,7 +499,7 @@ public class IITDatabaseManager {
             System.out.println("Cursor size: " + cursorSync.getCount());
             //If Cursor is valid
             if (cursorSync != null ) {
-                if (cursorSync.moveToFirst()) {
+                if (cursorSync.moveToLast()) {
                     int index = 0;
                    do {
                        HashMap<String, String> map = new HashMap<String, String>();
@@ -517,7 +517,7 @@ public class IITDatabaseManager {
                        wordList.add(map);
                        index ++;
 
-                    } while (cursorSync.moveToNext() && index < max);
+                    } while (cursorSync.moveToPrevious() && index < max);
                     System.out.println("Done reading: "+index);
 
 
@@ -870,7 +870,7 @@ public class IITDatabaseManager {
             System.out.println("ACK Process: "+last_up);
             //Get all not sync previous columns:
             //String selectQuery = "SELECT  * FROM " + table + " WHERE "+syncColumn+" = '" + syncStatusNo +"'";
-            String selectQuery = "SELECT  * FROM " + table + " WHERE "+syncColumn+" = \"" + syncStatusNo +"\" ORDER BY "+timeStampColumn+" ASC";
+           // String selectQuery = "SELECT  * FROM " + table + " WHERE "+syncColumn+" = \"" + syncStatusNo +"\" ORDER BY "+timeStampColumn+" ASC";
 
             // SQLiteDatabase db_cursor =ctx.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READWRITE, null);
             SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -895,6 +895,8 @@ public class IITDatabaseManager {
                                 //Update values
                                 last_updated = cursorSync.getString(BGService._TIME_INDEX);
                                 updateSyncStatus(ctx, table,syncColumn, status,last_updated);
+                                //updateSyncStatus(ctx, table,syncColumn, syncStatusYes,last_updated);
+
                                 index ++;
 
                             } while (!last_up.equals(last_updated) && cursorSync.moveToNext()   );
