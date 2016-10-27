@@ -28,6 +28,7 @@ import com.empatica.sample.USB.USBHost;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -84,7 +85,6 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     //IIT Server manager and automatic sending
     public static Timer sendDataTimer;
     private static final int SENDING_AMOUNT = 100;
-    private static final int LOCAL_SENDING_AMOUNT = 25;
     //IIT Server manager
     IITServerConnector myServerManager;
     private static final String jsonID = "empaticaJSON";
@@ -603,6 +603,16 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
 
     }
 
+
+
+    private NetworkInfo checkInternetConnectivity(){
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo();
+    }
+
+    //*******************************************
+    //  Database USB interface
+
     /**
      * Read not synchronized values from DatabaseManager and send via USB
      *
@@ -611,7 +621,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
 
     public static String messageToUSB() {
         List<Map<String, String>> listReadToUSB = BGService.myDB.getNotUpdatedValues(BGService.empaticaMilTableName, BGService.columnsTable,
-                IITDatabaseManager.syncColumn, IITDatabaseManager.syncStatusNo);
+                IITDatabaseManager.syncColumn, IITDatabaseManager.syncStatusNo, USBHost.LOCAL_SENDING_AMOUNT);
         //Send to Server
         if (listReadToUSB != null) {
             String jSon = IITServerConnector.convertToJSON(listReadToUSB);
@@ -625,42 +635,17 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
      * Get all no sync values, and return a list of the JSON Strings to be sent
      * @return
      */
-    public static String[] messageAllAsync(String table, String check_column, String check_value) {
-        String[] result = new String[100];
-        List<Map<String, String>> listReadToUSB = BGService.myDB.getAllNotCheckedValues(table, BGService.columnsTable,
-                check_column, check_value);
+    public void messageAllAsync(String table, String check_column, String check_value, int max) {
+        //TODO NO ACK NOW
+        //List<Map<String, String>> listReadToUSB = BGService.myDB.getLastNSamples(table, BGService.columnsTable, check_column, check_value, max);
+        //Collections.reverse(listReadToUSB);
+        List<Map<String, String>> listReadToUSB=  BGService.myDB.getNotUpdatedValues (table, BGService.columnsTable, check_column, check_value, max);
         if (listReadToUSB !=null){
-            //Send to Server - CUT INTO SMALLER PIECES TOO
-            List<Map<String, String>> temp = new ArrayList<Map<String, String>>();
-            //List too long: break in smaller chunks
-            int sent = 0;
-            for (int i = 0; i < listReadToUSB.size(); i++) {
-                Map<String, String> val = listReadToUSB.get(i);
-                val.put("table_name", BGService.empaticaMilTableName);
-                temp.add(val);
-                if ((i + 1) % LOCAL_SENDING_AMOUNT == 0) {
-                    //System.out.println("Save temp");
-                    if (sent < 100) {
-                        result[sent] = IITServerConnector.convertToJSON(temp);
-                        sent++;
-                        temp = new ArrayList<Map<String, String>>();
-                        //System.out.println("Saved");
-                    }else
-                        return result;
+            mHost.sendUSBMessages(listReadToUSB);
+            mHost.sendUSBmessage(USBHost._END_COMMAND);
 
-
-
-                }
-            }
-            result[sent++]= IITServerConnector.convertToJSON(temp);
-            return result;
         } else
-            return null;
-    }
-
-    private NetworkInfo checkInternetConnectivity(){
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        return cm.getActiveNetworkInfo();
+            mHost.sendUSBmessage(USBHost._NO_DATA);
     }
 
 

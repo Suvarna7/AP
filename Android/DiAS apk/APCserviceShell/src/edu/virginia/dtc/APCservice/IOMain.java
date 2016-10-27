@@ -145,8 +145,8 @@ public class IOMain extends Service {
 		iitConnector = new IITServerConnector( ctx, sManager.dbManager);
 
 		
-		//Start usb host
-        startUSBConnection();
+		//TODO Start usb host
+        //startUSBConnection();
 
 
 	}
@@ -256,7 +256,7 @@ public class IOMain extends Service {
 								String jToSend =IITServerConnector.convertToJSON(dArgs);
 								//notSynchValues.add(jToSend);
 								//Send to IIT
-								iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
+								//iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
 							}else
 								Debug.i(TAG, FUNC_TAG, "No values to send to IIT");
 
@@ -277,7 +277,7 @@ public class IOMain extends Service {
 								String jToSend =IITServerConnector.convertToJSON(dArgs);
 								//notSynchValues.add(jToSend);
 								//Send to IIT
-								iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
+								//iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
 							}
 							else
 								Debug.i(TAG, FUNC_TAG, "No values to send to IIT");
@@ -343,7 +343,7 @@ public class IOMain extends Service {
 								String jToSend =IITServerConnector.convertToJSON(dArgs);
 								//notSynchValues.add(jToSend);
 								//Send to IIT
-								iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
+								//iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
 							}else
 								Debug.i(TAG, FUNC_TAG, "No values to send to IIT");
 							
@@ -403,8 +403,8 @@ public class IOMain extends Service {
 							}else{
 								//TODO USB Alert to be displayed
 								
-								//Run reconnect Thread:
-								startUSBConnection();
+								//TOD Run reconnect Thread:
+								//startUSBConnection();
 							}
 							//Reset arrays
 
@@ -532,7 +532,7 @@ public class IOMain extends Service {
 					//Add to the not syncrhonized values
 					String jToSend =IITServerConnector.convertToJSON(dArgs);
 					//Send to IIT
-					iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
+					//iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
 				}else
 					Debug.i("Subbolus", "calculating", "No values to send to IIT");
 				
@@ -651,7 +651,7 @@ public class IOMain extends Service {
 	/**
 	 * Start USB host to connect to laptop
 	 */
-	public void startUSBConnection(){
+	public void startUSBConnection2(){
 		//Disconenct host
 		//mHost.disconnectUSBHost();
 		

@@ -10,6 +10,7 @@ import com.empatica.empalink.EmpaDeviceManager;
 import com.empatica.empalink.delegate.EmpaDataDelegate;
 import com.empatica.sample.Database.IITDatabaseManager;
 import com.empatica.sample.Database.ThreadSafeArrayList;
+import com.empatica.sample.USB.USBHost;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -97,7 +98,9 @@ public class BGService extends Service implements EmpaDataDelegate{
     private static int STORING_AMOUNT = 1000;
     private static int storing_counter;
 
-    //private static List<ThreadSafeArrayList<String> > failedToUpdate;
+    private static List<ThreadSafeArrayList<String> > failedToUpdate;
+
+    public static boolean ackInProgress;
 
 
 
@@ -119,6 +122,7 @@ public class BGService extends Service implements EmpaDataDelegate{
     @Override
     public void onCreate() {
     	tableInit = false;
+        ackInProgress = false;
     	index = 0;
         //Toast.makeText(this, "The new Service was Created", Toast.LENGTH_LONG).show();
         //*** Empatica managers
@@ -169,7 +173,7 @@ public class BGService extends Service implements EmpaDataDelegate{
 
 
         //Create:
-       // failedToUpdate = new ArrayList<ThreadSafeArrayList<String> >();
+        failedToUpdate = new ArrayList<ThreadSafeArrayList<String> >();
 
 
 
@@ -383,6 +387,11 @@ public class BGService extends Service implements EmpaDataDelegate{
                 if (mActivity.connected) {
 
                     if (!connectionEstablishedFlag) {
+                        //Inform laptop that no data will be send
+                        //Send no data message
+                        mActivity.mHost.sendUSBmessage(USBHost._END_COMMAND);
+                        mActivity.mHost.sendUSBmessage(USBHost._NO_DATA);
+
                         //Display the dialog
                         Intent dialogIntent = new Intent(mActivity, ConnectionDialog.class);
                         dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -395,7 +404,7 @@ public class BGService extends Service implements EmpaDataDelegate{
                 }
 
             }
-        }, 60*1000, 60*1000); // delay(seconds*1000), period(seconds*1000)
+        }, 60*1000, 5*60*1000); // delay(seconds*1000), period(seconds*1000)
     }
 
     /**
@@ -598,8 +607,12 @@ public class BGService extends Service implements EmpaDataDelegate{
 
 
             //TODO Add to database: instantly
-           storeSampleInDatabase(tempList, empaticaMilTableName, columnsTable);
-            //storeGlobalListInDatabase();
+            if (!ackInProgress) {
+                storeSampleInDatabase(tempList, empaticaMilTableName, columnsTable);
+                storeGlobalListInDatabase();
+            }else
+                updateTempList(tempList);
+
 
            // storeSampleInDatabase(tempListSec, empaticaSecTableName);
 
@@ -671,7 +684,7 @@ public class BGService extends Service implements EmpaDataDelegate{
             //while (!myDB.updateDatabaseTable(table, sample, true)){
             if(!myDB.insertIntoDatabaseTable(table, sample, columns)){
                 //Store in global list
-                //failedToUpdate.add(sample);
+                failedToUpdate.add(sample);
             }
         } catch (Exception e) {
             System.out.println("Store sample exception " + e);
@@ -683,7 +696,7 @@ public class BGService extends Service implements EmpaDataDelegate{
      * @return true if done with storing
      */
 
-    /*private static boolean storeGlobalListInDatabase(){
+    private static boolean storeGlobalListInDatabase(){
 
         for (int i = 0; i < failedToUpdate.size(); i++) {
             try {
@@ -698,7 +711,11 @@ public class BGService extends Service implements EmpaDataDelegate{
         return true;
 
 
-    }*/
+    }
+
+    private static void updateTempList( ThreadSafeArrayList<String> sample){
+        failedToUpdate.add(sample);
+    }
 
 
 

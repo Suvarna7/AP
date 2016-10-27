@@ -12,16 +12,18 @@ public class MyDatabaseHelper extends SQLiteOpenHelper{
     private static final String DATABASE_NAME = IITDatabaseManager.DB_LOCAL_URL+IITDatabaseManager.DEFAULT_DB_NAME;
     private static final int DATABASE_VERSION = 2;
     // Database creation sql statement
-    private static final String DATABASE_CREATE = "create table MyEmployees ( _id integer primary key,name text not null);";
+    //private static final String DATABASE_CREATE = "create table MyEmployees ( _id integer primary key,name text not null);";
 
     public MyDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        System.out.println("wHERE IS THE DATABASE?? " + DATABASE_NAME);
 
     }
 
     @Override
     public void onCreate(SQLiteDatabase database) {
 
+        System.out.println("wHERE IS THE DATABASE?? " + DATABASE_NAME);
         //database.execSQL(DATABASE_CREATE);
     }
 

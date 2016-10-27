@@ -292,8 +292,8 @@ public class SensorsManager {
 	public List<Map<String, String>> read_lastSamples_IITDatabaseTable( String table_name, boolean remote, int max_samples){
 		//Depending on the name, select column names:
 		String[] column_names;
-		 String check_column;
-		 String check_value;
+		String check_column;
+		String check_value;
 		if (table_name.equals(_EMPATICA_TABLE_NAME))
 			column_names = empatica_columnsTable;
 		else{

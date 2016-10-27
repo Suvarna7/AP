@@ -23,11 +23,10 @@ public class USBReadThread extends Thread {
 	public boolean started;
     public USBHost mHost;
 
-
-
-
 	IITDatabaseManager mDatabase;
 	Context dbContext;
+
+	boolean firstRead;
 
 	public USBReadThread(USBHost host, Context ctx){
     	System.out.println("Create read");
@@ -36,24 +35,20 @@ public class USBReadThread extends Thread {
     	mHost = host;
 		dbContext = ctx;
 		mDatabase = new IITDatabaseManager(ctx);
+		firstRead = true;
 
 	}
 
 	public void run() {
 		started = true;
-		System.out.println( mHost.socketIn+" mm " + shut);
 
-		while(!shut){
+		while(!shut) {
 
-			if (mHost!= null && mHost.socketIn != null && mHost.socketIn.hasNext()) {
+			if (mHost != null && mHost.socketIn != null && mHost.socketIn.hasNext()) {
 				String line = mHost.socketIn.nextLine();
 
 				if (line != null) {
-					//System.out.println("Received line: " + line);
 
-
-
-					//System.out.println("Received command: " + line);
 					//If it is a known Command --> we send data
 					//SEND COMMAND
 					if (line.equals(USBHost._GET_DATA)) {
@@ -71,82 +66,107 @@ public class USBReadThread extends Thread {
 
 					}
 
-					//ACK COMMAND - Synchronized values
-					else if (line.contains(USBHost._ACK_SYNCHRONIZED)) {
-						//System.out.println(line);
-
-						//We can get a JSON Object from USB line
-						try {
-							JSONArray arr = new JSONArray(line);
-							for (int i = 0; i < arr.length(); i++) {
-								JSONObject jsonObj = (JSONObject) arr.get(i);
-								//TODO dbManager.updateSyncStatus(databaseContext, (String) jsonObj.get("table_name"),
-								try {
-									mDatabase.ackSyncStatusAllPrevious(dbContext, BGService.empaticaMilTableName,
-											(String) jsonObj.get("synchronized"), (String) jsonObj.get("time_stamp"));
-								}catch (Exception e){
-									System.out.println("Exception when sync from USB: "+e);
-								}
-
-									//System.out.println("JSON FROM USB:" + jsonObj.toString());
-							}
-						} catch (JSONException e) {
-							e.printStackTrace();
-							System.out.println("Wrong USB ACK Format: " + e);
-
-						}
-
-					}//ACK of connection established int e other side
-					else if (line.equals(USBHost._CONNECTION_ESTABLISHED)){
+					//ACK of connection established int e other side
+					else if (line.equals(USBHost._CONNECTION_ESTABLISHED)) {
 						//Post result in Command field:
 						showCommand(line);
 
 						//TODO
 						mHost.sendUSBmessage(USBHost._CONNECTION_ESTABLISHED);
 						mHost.updateConnectedStatus("Connected", "USB HOST CONNECTED - established!  :) ", false);
+						firstRead = true;
 
 
 					}
 					//When disconnection request
-					else if (line.equals(USBHost._CONNECTION_END)){
+					else if (line.equals(USBHost._CONNECTION_END)) {
 						//Post result in Command field:
 						showCommand(line);
 						//TODO
 						mHost.updateConnectedStatus("CONNECT USB", "USB HOST DISCONNECTED - Press Connect USB in phone ", true);
 						mHost.disconnectUSBHost();
 
-					}
-					//All not syncrhonized data is requested
-					else if(line.equals(USBHost._GET_ALL_NO_SYNC)){
+
+
+
+					}//All not synchronized data is requested
+					 else if (line.contains(USBHost._GET_ALL_NO_SYNC)) {
 						//Send all not sync values
 						//Post result in Command field:
 						showCommand(line);
 
-						String[] jSons = MainActivity.messageAllAsync(BGService.empaticaMilTableName,
-								IITDatabaseManager.syncColumn, IITDatabaseManager.syncStatusNo);
-						if (jSons != null) {
-							for (String json: jSons)
+						try {
+							JSONObject json = new JSONObject(line);
+							String sensor = (String) json.get(USBHost._SENSOR_ID);
+							//String num_samples = (String)json.get(USBHost._NUM_SAMPLES);
+							//All samples requested
+							//if (num_samples.equals(USBHost._ALL_SAMPLES)){
+							if (sensor.equals(USBHost._EMPATICA)){
+
+								if (firstRead){
+									//Send more samples of data
+									 mHost.messageNAsync(BGService.empaticaMilTableName, IITDatabaseManager.MAX_READ_SAMPLES_UPDATE);
+									firstRead = false;
+								}else{
+									//The rest, according to the interval
+									 mHost.messageAllAsync(BGService.empaticaMilTableName);
+								}
+							}
+
+						} catch (JSONException e) {
+							System.out.println("Get all no sync wrong structure: " + e);
+						} catch (Exception e) {
+							System.out.println("Retrieving JSON data exception: " + e);
+						}
+
+						//todo  After reading, send all data
+						/*if (jSons != null) {
+							for (String json : jSons)
 								mHost.sendUSBmessage(json);
-
 							mHost.sendUSBmessage(USBHost._END_COMMAND);
-
 
 						} else
 							//Send no data message
-							mHost.sendUSBmessage(USBHost._NO_DATA);
+							mHost.sendUSBmessage(USBHost._NO_DATA);*/
 
-					}/*else{
-						//In any other case, restart
-						System.out.println("Reading thread start again");
-						//mHost.readingThread.start();
+					}//ACK COMMAND - Synchronized values
+					else if (line.contains(USBHost._ACK_SYNCHRONIZED)) {
+						//System.out.println(line);
 
-					}*/
+						//We can get a JSON Object from USB line
+						try {
+							JSONArray arr = new JSONArray(line);
+							BGService.ackInProgress = true;
+							for (int i = 0; i < arr.length(); i++) {
+								JSONObject jsonObj = (JSONObject) arr.get(i);
+								//TODO dbManager.updateSyncStatus(databaseContext, (String) jsonObj.get("table_name"),
+								try {
+									//TODO BLOOOOOOOOCKS THE APP
+									// Invalid status - the only thing left to do is end transaction -> but blocks db instead
+									System.out.println("Value of synchronized: "+(String) jsonObj.get("synchronized"));
+									mDatabase.ackSyncStatusAllPrevious(dbContext, BGService.empaticaMilTableName,
+										(String) jsonObj.get("synchronized"), (String) jsonObj.get("time_stamp"));
+								} catch (Exception e) {
+									System.out.println("Exception when sync from USB: " + e);
+								}
+
+								//System.out.println("JSON FROM USB:" + jsonObj.toString());
+							}
+						} catch (JSONException e) {
+							e.printStackTrace();
+							System.out.println("Wrong USB ACK Format: " + e);
+
+						}
+						BGService.ackInProgress = false;
+
+
+					}
 				}
+
+
+				//System.out.println("End of while in reading thread... will start? "+ !shut);
+
 			}
-
-
-			//System.out.println("End of while in reading thread... will start? "+ !shut);
-
 		}
 		
 	}
