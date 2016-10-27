@@ -51,7 +51,14 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     public static final String EMPATICA_API_KEY = "f92ddb7260a54f5790038ba90ef4d1ad"; // TODO insert your API Key here
 
     //GUI labels
+    //Connetion status
     public TextView internet_conn;
+    public TextView statusLabel;
+    public TextView deviceNameLabel;
+    private String deviceName;
+
+    //Empatica data
+    public RelativeLayout dataCnt;
     public TextView accel_xLabel;
     public TextView accel_yLabel;
     public TextView accel_zLabel;
@@ -61,10 +68,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     public TextView hrLabel;
     public TextView temperatureLabel;
     public TextView batteryLabel;
-    public TextView statusLabel;
-    public TextView deviceNameLabel;
-    public TextView usbConenctionStatus;
-    public RelativeLayout dataCnt;
+
     //Buttons
     public static Button connectButton;
     private Button stopServiceButton;
@@ -78,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     private static boolean alreadyInitialized = false;
 
     //USB Connection
+    public TextView usbConenctionStatus;
     public static USBHost mHost;
     public TextView usbCommand;
     public static String usbCommandValue;
@@ -131,8 +136,6 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
 
 
 
-
-
         //Set context
         appContext = this;
         appMain = this;
@@ -161,6 +164,22 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
             //startSendingTimer();
         }else{
             //Set the view for Connected
+            System.out.println("Coming back!!");
+            //Make connected screen visible
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        connectButton.setVisibility(View.INVISIBLE);
+                        dataCnt.setVisibility(View.VISIBLE);
+                        statusLabel.setText(EmpaStatus.CONNECTED.toString());
+
+
+                    }
+                });
+            updateLabel(internet_conn, "INTERNET");
+            updateLabel(statusLabel, EmpaStatus.CONNECTED.toString());
+            updateLabel(deviceNameLabel, "To: " + deviceName);
 
         }
 
@@ -284,6 +303,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
             BGService.deviceManager.stopScanning();
             try {
                 // Connect to the device
+                this.deviceName =  deviceName;
                 BGService.deviceManager.connectDevice(bluetoothDevice);
                 updateLabel(deviceNameLabel, "To: " + deviceName);
 
@@ -380,7 +400,6 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
             });
             updateLabel(deviceNameLabel, "");
             connected = false;
-
 
         }
     }
