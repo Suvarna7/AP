@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     public TextView internet_conn;
     public TextView statusLabel;
     public TextView deviceNameLabel;
-    private String deviceName;
+    private static String device;
 
     //Empatica data
     public RelativeLayout dataCnt;
@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                 });
             updateLabel(internet_conn, "INTERNET");
             updateLabel(statusLabel, EmpaStatus.CONNECTED.toString());
-            updateLabel(deviceNameLabel, "To: " + deviceName);
+            updateLabel(deviceNameLabel, "To: " + device);
 
         }
 
@@ -303,7 +303,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
             BGService.deviceManager.stopScanning();
             try {
                 // Connect to the device
-                this.deviceName =  deviceName;
+                device =  deviceName;
                 BGService.deviceManager.connectDevice(bluetoothDevice);
                 updateLabel(deviceNameLabel, "To: " + deviceName);
 
