@@ -30,7 +30,8 @@ ack_data = '';
                 else
                     if (var(1:1)=='[')
                         %Handle received Data - JSON ARRAY
-                        [table_name, data, json, ack_data] = parse_json(var);
+                        [table_name, data, json, ack_data] = extract_json(var);
+                        
                         if (length(data_to_save)<1)
                             data_to_save = [data_to_save;data];
                         else

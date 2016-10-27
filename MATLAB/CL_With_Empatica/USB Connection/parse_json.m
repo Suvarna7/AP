@@ -29,12 +29,13 @@ function [table_name, value, json, ack_string] = parse_value(json)
         json = strtrim(json);
         
         switch lower(id)
+            %Start the string
             case '"'
                 [value, json] = parse_string(json);
-                
+            %Start a JSON object    
             case '{'
                 [value, json] = parse_object(json);
-                
+            %Start a JSON array    
             case '['
                 [table_name, value, json, ack_string] = parse_array(json);
                 
@@ -75,7 +76,7 @@ function [table_name, data, list_jsons, ack_string] = parse_array(json)
     data=[];
     rows = [];
     list_jsons = json(1:end-1);
-    ack_string = '[';
+    %ack_string = '[';
     while ~isempty(list_jsons)
 %         if strcmp(json(1),']') % Check if the array is closed and finished
 %             json(1) = [];
@@ -94,7 +95,8 @@ function [table_name, data, list_jsons, ack_string] = parse_array(json)
                 rows =[rows; row];
                
                 %ACK VALUES
-                 ack_string =strcat(ack_string,ack_json,',');
+                % ack_string =strcat(ack_string,ack_json,',');
+                ack_string =ack_json;
 
             else
                 'JSON was split !! see why...'
@@ -125,7 +127,8 @@ function [table_name, data, list_jsons, ack_string] = parse_array(json)
 %         saved_data = data
         data = [data; rows(i,:)];  % #ok<AGROW>
     end
-    ack_string = strcat(ack_string(1:end-1),']');
+    %ack_string = strcat(ack_string(1:end-1),']');
+    ack_string = strcat('[',ack_string,']');
 
 end
 

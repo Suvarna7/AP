@@ -1,0 +1,19 @@
+MATLAB:mtimes:inputsMustBe2D
+Inputs must be 2-D, or at least one input must be scalar.
+To compute elementwise TIMES, use TIMES (.*) instead.
+    file: 'C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\CL_With_Empatica\opt_recursive.m'
+    name: 'opt_recursive'
+    line: 2
+
+    file: 'C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\CL_With_Empatica\m20150711_gpc.m'
+    name: 'm20150711_gpc'
+    line: 38
+
+    file: 'C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\CL_With_Empatica\m20160509_CL_GUI.m'
+    name: 'gui_run_algorithm_Callback'
+    line: 290
+
+    file: 'C:\Program Files\MATLAB\R2014a\toolbox\matlab\guide\gui_mainfcn.m'
+    name: 'gui_mainfcn'
+    line: 95
+
