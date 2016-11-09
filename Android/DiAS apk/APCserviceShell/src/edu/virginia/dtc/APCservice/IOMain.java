@@ -27,7 +27,7 @@ import edu.virginia.dtc.SysMan.Log;
 import edu.virginia.dtc.SysMan.Params;
 import edu.virginia.dtc.SysMan.Safety;
 import edu.virginia.dtc.SysMan.State;
-
+import android.content.ContentResolver;
 import android.content.Context;
 import android.annotation.SuppressLint;
 import android.app.Service;
@@ -69,7 +69,7 @@ public class IOMain extends Service {
 
 	//Sensors reader
 	public SensorsManager sManager;
-	private SubBolusCreator insulinManager;
+	public SubBolusCreator insulinManager;
 
 	//TODO Algorithm Manager
 	//private AlgorithmManager aManager;
@@ -88,6 +88,7 @@ public class IOMain extends Service {
 
 	//APP Context
 	public Context ctx;
+	public ContentResolver cv;
 	//final int PUMP_VAL_ID = 50;
 	
     //USB Connection
@@ -133,7 +134,7 @@ public class IOMain extends Service {
 
 		//Set context
 		ctx = this.getApplicationContext();
-
+		cv = getContentResolver();
 		//Init others
 		dArgs = new ArrayList<Map<String, String>>();
 
@@ -146,7 +147,7 @@ public class IOMain extends Service {
 
 		
 		//TODO Start usb host
-        //startUSBConnection();
+        startUSBConnection();
 
 
 	}
@@ -310,7 +311,6 @@ public class IOMain extends Service {
 
 							 }*/
 
-							//TODO Send all values to IIT server if there is something to send
 							/*if (dArgs !=null && dArgs.size()> 0){
 								//Add to the not syncrhonized values
 								String jToSend =iitConnector.convertToJSON(dArgs);
@@ -388,25 +388,31 @@ public class IOMain extends Service {
 							 *  ALGORITHM - USB to LAPTOP
 							 */
 
+							// *************** SEND DATA AND WAIT ***********
 							//TODO Call algorithm - FROM USB Connection
 							//correction = 0;
 							//correction = AlgorithmManager.runAlgorithm(cgmArray.get(cgmArray.size()-1) ,getArrayFixed(bodymediaArray.get(BodyMediaMatrix._EE)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._GSR)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._ACT)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._SLEEP)));
 							if (mHost.connected){
 								//SEND READ READY:
-								mHost.sendUSBmessage(USBHost._PHONE_READY);
+								//mHost.sendUSBmessage(USBHost._PHONE_READY);
 								
 								//Wait for bolus response or something else
-								double[] alg = waitForAlgorithmResponse();
-								correction = alg[0];
-								diff_rate = alg[1];
+								//double[] alg = waitForAlgorithmResponse();
+								//correction = alg[0];
+								//diff_rate = alg[1];
 
 							}else{
 								//TODO USB Alert to be displayed
-								
-								//TOD Run reconnect Thread:
-								//startUSBConnection();
+						        Toast.makeText(ctx, "No USB Connection! Trying to reconnect...", Toast.LENGTH_LONG).show();
+
+								//TODO Run reconnect Thread:
+								startUSBConnection();
 							}
-							//Reset arrays
+							
+							// *************** DATA IS SEND ASYNCHR ***********
+							//Update insulin values
+							correction = USBReadThread.last_read_bolus;
+							diff_rate = USBReadThread.last_read_basal;
 
 
 
@@ -522,67 +528,9 @@ public class IOMain extends Service {
 				// BOLUS and BASAL commands
 				// ************************************************
 				
-				//Prepare data for insulin bolus and basal
-				dArgs = new ArrayList<Map<String, String>>();
-				//Process sub boluses
-				dArgs = insulinManager.handleInsulinValue( correction,  diff_rate, asynchronous, getContentResolver(), ctx);
-				if (dArgs !=null && dArgs.size()> 0){
-					Debug.i("Subbolus", "calculating", "Sending boluses to IIT");
-
-					//Add to the not syncrhonized values
-					String jToSend =IITServerConnector.convertToJSON(dArgs);
-					//Send to IIT
-					//iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
-				}else
-					Debug.i("Subbolus", "calculating", "No values to send to IIT");
-				
-				
-				//**************************************************
-				// BOLUS
-				// ******************************************
-				//dArgs = new ArrayList<Map<String, String>>();
-				//dArgs = insulinManager.handleBolusValue( correction,   asynchronous, getContentResolver(), ctx);
+				//String jSend  = insulinManager.sendInsulinCommands( correction,  diff_rate, asynchronous, getContentResolver(), ctx);
 
 				
-				// Send all bolus values to IIT server if there is something to send
-				/*if (dArgs !=null && dArgs.size()> 0){
-					Debug.i("Subbolus", "calculating", "Sending boluses to IIT");
-
-					//Add to the not syncrhonized values
-					String jToSend =IITServerConnector.convertToJSON(dArgs);
-					//Send to IIT
-					iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
-				}else
-					Debug.i("Subbolus", "calculating", "No values to send to IIT");
-
-				// Send values that were not correctly updated on the server
-				/*for (String jsonToSend: notSynchValues){
-					iitConnector.sendToIIT(jsonToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
-				}*/
-
-				//*************************************************
-				// BASAL
-				// ************************************************
-				//Prepare data for insulin basal
-				/*dArgs = new ArrayList<Map<String, String>>();
-				//TODO - Nothing happens now : Process basal rate
-				//TEST WITH BASAL RATE = 1
-				dArgs = insulinManager.handleBasalRateValue(  diff_rate,   asynchronous, getContentResolver(), ctx);
-
-				//Send all basal values to IIT server if there is something to send
-				if (dArgs !=null && dArgs.size()> 0){
-					//Add to the not synchronized values
-					String jToSend =IITServerConnector.convertToJSON(dArgs);
-					//notSynchValues.add(jToSend);
-					//Send to IIT
-					iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
-				}else
-					Debug.i("Basal", "calculating", "No values to send to IIT");
-
-				//Send values that were not correctly updated on the server
-				/*for (String jsonToSend: notSynchValues){
-					iitConnector.sendToIIT(jsonToSend, IITServerConnector.IIT_SERVER_URL);
-				}*/
 
 
 				//***********************************************************************************************
@@ -651,7 +599,7 @@ public class IOMain extends Service {
 	/**
 	 * Start USB host to connect to laptop
 	 */
-	public void startUSBConnection2(){
+	public void startUSBConnection(){
 		//Disconenct host
 		//mHost.disconnectUSBHost();
 		
@@ -659,11 +607,11 @@ public class IOMain extends Service {
         mHost = new USBHost(this, this);
         
         //Start USB Connection
-        mHost.intent = new Intent(mHost.ctx, IOMain.class);
+        mHost.intent = new Intent(ctx, IOMain.class);
         mHost.mHandler=new Handler();
         new Thread(mHost.initializeConnection).start();
         String msg="Attempting to connect…";
-        Toast.makeText(mHost.ctx, msg, Toast.LENGTH_LONG).show();
+        Toast.makeText(ctx, msg, Toast.LENGTH_LONG).show();
 	}
 	
 	private double[] waitForAlgorithmResponse(){

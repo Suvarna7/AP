@@ -15,7 +15,9 @@ import edu.virginia.dtc.APCservice.IOMain;
 import edu.virginia.dtc.APCservice.Database.IITDatabaseManager;
 import edu.virginia.dtc.APCservice.Database.ThreadSafeArrayList;
 import edu.virginia.dtc.APCservice.Server.IITServerConnector;
+import edu.virginia.dtc.APCservice.USB.USBReadThread;
 import edu.virginia.dtc.SysMan.Controllers;
+import edu.virginia.dtc.SysMan.Debug;
 import edu.virginia.dtc.SysMan.Event;
 import edu.virginia.dtc.SysMan.Params;
 
@@ -56,6 +58,76 @@ public class SubBolusCreator {
 
 		current_basal = 0;
 		last_bolus = 0;
+	}
+	
+	public String sendInsulinCommands(double correction, double diff_rate, boolean asynchronous, ContentResolver cv, Context ctx){
+		//*************************************************
+		// BOLUS and BASAL commands
+		// ************************************************
+		
+		//Prepare data for insulin bolus and basal
+		List<Map<String, String>> dArgs = new ArrayList<Map<String, String>>();
+		//Process sub boluses
+		dArgs = handleInsulinValue( correction,  diff_rate, asynchronous, cv, ctx);
+		String jToSend = null;
+		if (dArgs !=null && dArgs.size()> 0){
+			Debug.i("Subbolus", "calculating", "Sending boluses to IIT");
+
+			//Add to the not syncrhonized values
+			 jToSend =IITServerConnector.convertToJSON(dArgs);
+			//Send to IIT
+			//iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
+		}else
+			Debug.i("Subbolus", "calculating", "No values to send to IIT");
+		
+		return jToSend;
+		
+		//**************************************************
+		// BOLUS
+		// ******************************************
+		//dArgs = new ArrayList<Map<String, String>>();
+		//dArgs = insulinManager.handleBolusValue( correction,   asynchronous, getContentResolver(), ctx);
+
+		
+		// Send all bolus values to IIT server if there is something to send
+		/*if (dArgs !=null && dArgs.size()> 0){
+			Debug.i("Subbolus", "calculating", "Sending boluses to IIT");
+
+			//Add to the not syncrhonized values
+			String jToSend =IITServerConnector.convertToJSON(dArgs);
+			//Send to IIT
+			iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
+		}else
+			Debug.i("Subbolus", "calculating", "No values to send to IIT");
+
+		// Send values that were not correctly updated on the server
+		/*for (String jsonToSend: notSynchValues){
+			iitConnector.sendToIIT(jsonToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
+		}*/
+
+		//*************************************************
+		// BASAL
+		// ************************************************
+		//Prepare data for insulin basal
+		/*dArgs = new ArrayList<Map<String, String>>();
+		//TODO - Nothing happens now : Process basal rate
+		//TEST WITH BASAL RATE = 1
+		dArgs = insulinManager.handleBasalRateValue(  diff_rate,   asynchronous, getContentResolver(), ctx);
+
+		//Send all basal values to IIT server if there is something to send
+		if (dArgs !=null && dArgs.size()> 0){
+			//Add to the not synchronized values
+			String jToSend =IITServerConnector.convertToJSON(dArgs);
+			//notSynchValues.add(jToSend);
+			//Send to IIT
+			iitConnector.sendToIIT(jToSend, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
+		}else
+			Debug.i("Basal", "calculating", "No values to send to IIT");
+
+		//Send values that were not correctly updated on the server
+		/*for (String jsonToSend: notSynchValues){
+			iitConnector.sendToIIT(jsonToSend, IITServerConnector.IIT_SERVER_URL);
+		}*/
 	}
 
 

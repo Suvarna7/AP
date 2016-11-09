@@ -16,6 +16,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -43,7 +44,6 @@ import java.util.Scanner;
 
 	 //Tags
 	 public static final String TAG= "Connection";
-	 public Context ctx;
 	 public Handler mHandler;
 
 	 //Commands
@@ -73,20 +73,21 @@ import java.util.Scanner;
 	 public static final String _SENSOR_ID = "sensor_table";
 	 public static final String _NUM_SAMPLES = "samples_to_read";
 	 public static final String _ALL_SAMPLES = "-1";
-	public static final String _EMPATICA = "empatica";
-	public static final String _DEXCOM = "dexcom";
-	public static final String _ZEPHYR = "zephyr";
+	 public static final String _EMPATICA = "empatica";
+	 public static final String _DEXCOM = "dexcom";
+	 public static final String _ZEPHYR = "zephyr";
 	 
 	 //Max number of messages to be accepted thru usb
 	 private static final int LOCAL_SENDING_AMOUNT = 25;
 	 
-	 //Main activity variable
+	 //Main activity variables
 	 IOMain ioActivity;
+	 Context ctx;
 
 
-	 public USBHost (Context context, IOMain mainAct){
-		 ctx = context;
-		 readingThread = new USBReadThread( this, ctx);
+	 public USBHost (IOMain mainAct, Context ctx){
+		 this.ctx = ctx;
+		 readingThread = new USBReadThread( this, ctx, mainAct.sManager.dbManager);
 		 connected = false;
 		 ioActivity = mainAct;
 
@@ -156,11 +157,10 @@ import java.util.Scanner;
 					 else {
 						 //readingThread.shutup();
 						 //readingThread.restart();
-
 						 System.out.println("Thread already started! ");
 						 //Re initiate
 						 USBHost temp_reference = readingThread.mHost;
-						 readingThread = new USBReadThread(temp_reference, ctx);
+						 readingThread = new USBReadThread(temp_reference, ctx, ioActivity.sManager.dbManager);
 						 readingThread.start();
 					 }
 
@@ -302,8 +302,8 @@ import java.util.Scanner;
 	  * Get all no sync values, and return a list of the JSON Strings to be sent
 	  * @return
 	  */
-	 public String[] messageAllAsync(String table) {
-		return messageNAsync(table, IITDatabaseManager.MAX_READ_SAMPLES_UPDATE);
+	 public void messageAllAsync(String table) {
+		messageNAsync(table, IITDatabaseManager.MAX_READ_SAMPLES_UPDATE);
 	 }
 	 /**
 	  * Message N samples of the async values
@@ -312,46 +312,28 @@ import java.util.Scanner;
 	  * @return
 	  */
 	 
-	 public String[] messageNAsync(String table, int samples) {
+	 public void messageNAsync(String table, int samples) {
 		 String[] result = new String[100];
 		 List<Map<String, String>> listReadToUSB = ioActivity.sManager.read_lastSamples_IITDatabaseTable(table, false, samples);
+	     Collections.reverse(listReadToUSB);
 
 		 //Prepare values to be sent via USB:
-		 if (listReadToUSB !=null){
-			 //Send to Server - CUT INTO SMALLER PIECES TOO
-			 List<Map<String, String>> temp = new ArrayList<Map<String, String>>();
-			 //List too long: break in smaller chunks
-			 int sent = 0;
-			 for (int i = 0; i < listReadToUSB.size(); i++) {
-				 Map<String, String> val = listReadToUSB.get(i);
-				 val.put("table_name", table);
-				 temp.add(val);
-				 if ((i + 1) % LOCAL_SENDING_AMOUNT == 0) {
-					 System.out.println("Save temp");
-					 if (sent < 100) {
-						 result[sent] = IITServerConnector.convertToJSON(temp);
-						 sent++;
-						 temp = new ArrayList<Map<String, String>>();
-						 System.out.println("Saved");
-					 }else
-						 return result;
+		 if (listReadToUSB.size() !=0){
+	            sendUSBList(listReadToUSB, table);
+	            sendUSBmessage(USBHost._END_COMMAND);
 
-
-
-				 }
-			 }
-			 result[sent++]= IITServerConnector.convertToJSON(temp);
-			 return result;
-		 } else
-			 return null;
+	        } else
+	            sendUSBmessage(USBHost._NO_DATA);
+		  
+		
 	 }
 	 /**
 	  * Send all not async samples
 	  * @param table
 	  * @return
 	  */
-	 public String[] messageLastDias (String table){
-		 String[] result = new String[1];
+	 public void messageLastDias (String table){
+		 //String[] result = new String[1];
 		 //Get list of values
 		 List<Map<String, String>> temp = null;
 		 if (table.equals(_DEXCOM)){
@@ -360,14 +342,61 @@ import java.util.Scanner;
 			 temp = new ArrayList< Map<String, String>>();
 			 temp.add(value);
 		 }else if (table.equals(_ZEPHYR)){
-			 temp = ioActivity.sManager.readDiASExerciseTable(ioActivity.ctx, null);
+			 temp = ioActivity.sManager.readDiASExerciseTable(ctx, null);
 
 		 }
 		 //Convert in list of JSON Strings
-		 result[0] = IITServerConnector.convertToJSON(temp);
-		 return result;
+		 //result[0] = IITServerConnector.convertToJSON(temp);
+		 
+		 //Send sample via USB
+		 if (temp.size()!=0){
+			 sendUSBmessage(IITServerConnector.convertToJSON(temp));
+	         sendUSBmessage(USBHost._END_COMMAND);
+
+		 }else
+	         sendUSBmessage(USBHost._NO_DATA);
+
+
+		 //return result;
 
 	 }
+	 
+	 /**
+	     * Send the list of values via USB
+	     * Convert the list into JSON messages
+	     * @param values List<Map<String, String></>
+	     */
+	    public void  sendUSBList(List<Map<String, String>> values, String table){
+	        int n = values.size();
+	        int max_jsons = 1+(int)Math.ceil(n/USBHost.LOCAL_SENDING_AMOUNT);
+
+	        //Send to Server - CUT INTO SMALLER PIECES TOO
+	        List<Map<String, String>> temp = new ArrayList<Map<String, String>>();
+	        //List too long: break in smaller chunks
+	        int sent = 0;
+	        for (int i = 0; i < n && sent < max_jsons; i++) {
+	            Map<String, String> val = values.get(i);
+	            val.put("table_name", table);
+	            temp.add(val);
+	            if ((i + 1) % USBHost.LOCAL_SENDING_AMOUNT == 0) {
+	                //System.out.println("Save temp");
+
+	                //SEND RIGHT HERE
+	                sendUSBmessage(IITServerConnector.convertToJSON(temp));
+
+	                //result[sent] = IITServerConnector.convertToJSON(temp);
+	                sent++;
+	                temp = new ArrayList<Map<String, String>>();
+	                //System.out.println("Saved");
+	            }
+	        }
+	        //SEND RIGHT HERE
+	        if (temp.size()!=0)
+	        	sendUSBmessage(IITServerConnector.convertToJSON(temp));
+
+	        //Remaining
+	        //result[sent]= IITServerConnector.convertToJSON(temp);
+	    }
 	 
 
  }

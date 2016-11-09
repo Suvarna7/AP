@@ -69,7 +69,7 @@ public class SensorsManager {
 
 	public SensorsManager(Context ctx){
 		//Read sensors values from IIT database
-		dbManager = new IITDatabaseManager(ctx, IITDatabaseManager.DEFAULT_DB_NAME);
+		dbManager = new IITDatabaseManager(ctx);
 		
 		simpleFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -294,6 +294,7 @@ public class SensorsManager {
 		String[] column_names;
 		String check_column;
 		String check_value;
+
 		if (table_name.equals(_EMPATICA_TABLE_NAME))
 			column_names = empatica_columnsTable;
 		else{
@@ -311,7 +312,7 @@ public class SensorsManager {
 			check_value = IITDatabaseManager.syncStatusNo;
 		}
 		//Get last not updated values
-		List<Map<String, String>> listReadToUSB = dbManager.getNotUpdatedValuesUpToN(table_name, column_names,
+		List<Map<String, String>> listReadToUSB = dbManager.getNotUpdatedValues(table_name, column_names,
 			 check_column, check_value, max_samples);
 		//Include table name
 		List<Map<String, String>> temp = new ArrayList<Map<String, String>>();

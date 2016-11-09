@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import edu.virginia.dtc.APCservice.HypoDialog;
 import edu.virginia.dtc.APCservice.DataManagement.SensorsManager;
+import edu.virginia.dtc.APCservice.Database.ACKThread;
 import edu.virginia.dtc.APCservice.Database.IITDatabaseManager;
 
 import org.json.JSONArray;
@@ -23,24 +24,26 @@ public class USBReadThread extends Thread {
 	public static boolean processing_algorithm;
 	public static double last_read_bolus;
 	public static double last_read_basal;
-
-
-
+	
+	private boolean empaticaFirstRead;
 
 
 	IITDatabaseManager mDatabase;
 	Context dbContext;
+	ACKThread myACK;
 
-	public USBReadThread(USBHost host, Context ctx){
+	public USBReadThread(USBHost host, Context ctx, IITDatabaseManager db){
 		System.out.println("Create read");
 		shut = false;
 		started = false;
 		mHost = host;
 		dbContext = ctx;
-		mDatabase = new IITDatabaseManager(ctx);
+		mDatabase = db;
 		processing_algorithm = false;
 		last_read_bolus = 0;
 		last_read_basal = 1;
+		empaticaFirstRead = false;
+		myACK = new ACKThread(mDatabase, ctx);
 
 	}
 
@@ -75,34 +78,7 @@ public class USBReadThread extends Thread {
 							mHost.sendUSBmessage(USBHost._NO_DATA);
 
 					}
-					//ACK COMMAND - Synchronized values
-					else if (line.contains(USBHost._ACK_SYNCHRONIZED)) {
-						//System.out.println(line);
-
-						//We can get a JSON Object from USB line
-						try {
-							JSONArray arr = new JSONArray(line);
-							for (int i = 0; i < arr.length(); i++) {
-								JSONObject jsonObj = (JSONObject) arr.get(i);
-								//TODO dbManager.updateSyncStatus(databaseContext, (String) jsonObj.get("table_name"),
-								try {
-									if(mDatabase.ackSyncStatusAllPrevious(dbContext, SensorsManager._EMPATICA_TABLE_NAME,
-											(String) jsonObj.get("synchronized"), (String) jsonObj.get("time_stamp"))){
-										//Wait for database to be available
-									}
-								}catch (Exception e){
-									System.out.println("Exception when sync from USB: "+e);
-								}
-
-								//System.out.println("JSON FROM USB:" + jsonObj.toString());
-							}
-						} catch (JSONException e) {
-							e.printStackTrace();
-							System.out.println("Wrong USB ACK Format: " + e);
-
-						}
-
-					}//ACK of connection established int e other side
+					//ACK of connection established int e other side
 					else if (line.equals(USBHost._CONNECTION_ESTABLISHED)){
 						//Post result in Command field:
 						showCommand(line);
@@ -135,22 +111,30 @@ public class USBReadThread extends Thread {
 						try {
 						//Extract bolus value
 						JSONObject json = new JSONObject(line);
+						//First bolus
 						try{
 							last_read_bolus= (Double)json.get("bolus");
-							last_read_basal = (Double)json.get("basal");
 						}catch (Exception e){
-							System.out.println("Convert to double problem!"+e);
+							System.out.println("Convert to double bolus problem! "+e);
 							try{
 								int var = (Integer)json.get("bolus");
 								last_read_bolus = (double)var;
-								 var = (Integer)json.get("basal");
-								 last_read_basal = (double)var;
-								
-								
 							}catch (Exception e2){
-								System.out.println("Convert to int problem!"+e);
+								System.out.println("Convert to int bolus problem!"+e);
 
 								
+							}
+						}
+						//Then basal
+						try{
+							last_read_basal = (Double)json.get("basal");
+						}catch (Exception e){
+							System.out.println("Convert to double basal problem! "+e);
+							try{
+								 int var = (Integer)json.get("basal");
+								 last_read_basal = (double)var;
+							}catch (Exception e2){
+								System.out.println("Convert to int basal problem!"+e);
 							}
 						}
 						
@@ -162,6 +146,10 @@ public class USBReadThread extends Thread {
 						}
 						//IOMain can continue with its normal execution
 						processing_algorithm = false;
+						
+						//Send the Insulin command from here:
+						String jSend  = mHost.ioActivity.insulinManager.sendInsulinCommands( last_read_bolus,  last_read_basal, false, mHost.ioActivity.cv, mHost.ioActivity.ctx);
+
 
 						
 					}
@@ -202,48 +190,53 @@ public class USBReadThread extends Thread {
                         mHost.ioActivity.startActivity(dialogIntent);
 						
 					}
-					//All not syncrhonized data is requested
+					//All not synchronized data is requested
 					else if(line.contains(USBHost._GET_ALL_NO_SYNC)){
 						//Send all not sync values
 						//Post result in Command field:
 						showCommand(line);
 
-						//Get JSON object:
-						String[] jSons = null;
-						try{
+						try {
 							JSONObject json = new JSONObject(line);
-							String sensor = (String)json.get(USBHost._SENSOR_ID);
+							String sensor = (String) json.get(USBHost._SENSOR_ID);
 							//String num_samples = (String)json.get(USBHost._NUM_SAMPLES);
 							//All samples requested
 							//if (num_samples.equals(USBHost._ALL_SAMPLES)){
-								if (sensor.equals(USBHost._EMPATICA))
-									jSons= mHost.messageAllAsync(SensorsManager._EMPATICA_TABLE_NAME);
-								else if (sensor.equals(USBHost._DEXCOM))
-									jSons= mHost.messageLastDias( USBHost._DEXCOM);
-								else if (sensor.equals(USBHost._ZEPHYR))
-									jSons= mHost.messageLastDias( USBHost._ZEPHYR);
-							//}
-							//Read up to N samples
-							/*else{
-								if (sensor.equals(USBHost._EMPATICA)){
-									//int samples = Integer.parseInt( num_samples);
-									int samples = IITDatabaseManager.MAX_READ_SAMPLES_UPDATE;
-									jSons= mHost.messageNAsync(SensorsManager._EMPATICA_TABLE_NAME, samples);
-								}else if (sensor.equals(USBHost._DEXCOM))
-									jSons= mHost.messageLastDias( USBHost._DEXCOM);
-								else if (sensor.equals(USBHost._ZEPHYR))
-									jSons= mHost.messageLastDias( USBHost._ZEPHYR);
-								
-							}*/
 
+							//EMPATICA Special case
+							if (sensor.equals(USBHost._EMPATICA)){
 
-						}catch(JSONException e){
-							System.out.println("Get all no sync wrong structure: "+e);
-						}catch (Exception e){
-							System.out.println("Retrieving JSON data exception: "+e);
+								if (empaticaFirstRead){
+									//Send more samples of data
+									 mHost.messageNAsync(SensorsManager._EMPATICA_TABLE_NAME, 2*(IITDatabaseManager.MAX_READ_SAMPLES_UPDATE));
+									 empaticaFirstRead = false;
+								}else{
+									//The rest, according to the interval
+									 mHost.messageAllAsync(SensorsManager._EMPATICA_TABLE_NAME);
+								}
+							}
+							//Lets consider anything else DiAS related
+							else if ((sensor.contains(USBHost._DEXCOM))){
+								mHost.messageLastDias(USBHost._DEXCOM);
+							}
+							//ALL OTHER sensors
+							else{
+								mHost.messageLastDias(sensor);
+
+							}
+
+						} catch (JSONException e) {
+							System.out.println("JSON: Get all no sync wrong structure: " + e);
+							mHost.sendUSBmessage(mHost._NO_DATA);
+
+						} catch (Exception e) {
+							System.out.println("Get all no sync data exception: " + e);
+							mHost.sendUSBmessage(mHost._NO_DATA);
 						}
 
-						if (jSons != null) {
+						
+						//After reading, send all data
+						/*if (jSons != null) {
 							for (String json: jSons)
 								mHost.sendUSBmessage(json);
 
@@ -252,9 +245,38 @@ public class USBReadThread extends Thread {
 
 						} else
 							//Send no data message
-							mHost.sendUSBmessage(USBHost._NO_DATA);
+							mHost.sendUSBmessage(USBHost._NO_DATA);*/
 
-					}/*else{
+					}
+					//ACK COMMAND - Synchronized values
+					else if (line.contains(USBHost._ACK_SYNCHRONIZED)) {
+						//System.out.println(line);
+
+						//We can get a JSON Object from USB line
+						try {
+							JSONArray arr = new JSONArray(line);
+							for (int i = 0; i < arr.length(); i++) {
+								JSONObject jsonObj = (JSONObject) arr.get(i);
+								String table = jsonObj.getString(USBHost._SENSOR_ID);
+								//TODO dbManager.updateSyncStatus(databaseContext, (String) jsonObj.get("table_name"),
+								if (table.equals(SensorsManager._EMPATICA_TABLE_NAME)){
+									myACK.setStatus((String) jsonObj.get("synchronized"));
+									myACK.setLastUpdated((String) jsonObj.get("time_stamp"));
+									myACK.run();
+								}
+								else{
+									System.out.println("ACK received, no action taken for: "+table);
+								}
+								//System.out.println("JSON FROM USB:" + jsonObj.toString());
+							}
+						} catch (JSONException e) {
+							e.printStackTrace();
+							System.out.println("Wrong USB ACK Format: " + e);
+
+						}
+
+					}
+					/*else{
 						//In any other case, restart
 						System.out.println("Reading thread start again");
 						//mHost.readingThread.start();
