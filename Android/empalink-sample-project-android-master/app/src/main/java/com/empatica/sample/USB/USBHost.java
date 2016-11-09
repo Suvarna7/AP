@@ -65,6 +65,8 @@ public class USBHost {
     //Sensor information
     public static final String _SENSOR_ID = "sensor_table";
     public static final String _EMPATICA = "empatica";
+    public static final String _DEXCOM = "dexcom";
+
 
     //Max number of messages to be accepted thru usb
     public static final int LOCAL_SENDING_AMOUNT = 25;
@@ -283,7 +285,7 @@ public class USBHost {
      * Conver the list into JSON messages
      * @param values List<Map<String, String></>
      */
-    public void  sendUSBMessages(List<Map<String, String>> values){
+    public void  sendUSBList(List<Map<String, String>> values, String table_name){
         int n = values.size();
         int max_jsons = 1+(int)Math.ceil(n/USBHost.LOCAL_SENDING_AMOUNT);
 
@@ -293,7 +295,7 @@ public class USBHost {
         int sent = 0;
         for (int i = 0; i < n && sent < max_jsons-1; i++) {
             Map<String, String> val = values.get(i);
-            val.put("table_name", BGService.empaticaMilTableName);
+            val.put("table_name", table_name);
             temp.add(val);
             if ((i + 1) % USBHost.LOCAL_SENDING_AMOUNT == 0) {
                 //System.out.println("Save temp");
@@ -308,7 +310,8 @@ public class USBHost {
             }
         }
         //SEND RIGHT HERE
-        sendUSBmessage(IITServerConnector.convertToJSON(temp));
+        if (temp != null)
+            sendUSBmessage(IITServerConnector.convertToJSON(temp));
         //sendUSBmessage(USBHost._END_COMMAND);
 
         //Remaining

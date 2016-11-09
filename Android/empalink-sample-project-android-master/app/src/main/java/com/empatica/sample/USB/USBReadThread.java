@@ -101,16 +101,24 @@ public class USBReadThread extends Thread {
 							//String num_samples = (String)json.get(USBHost._NUM_SAMPLES);
 							//All samples requested
 							//if (num_samples.equals(USBHost._ALL_SAMPLES)){
+
+							//EMPATICA Special case
 							if (sensor.equals(USBHost._EMPATICA)){
 
 								if (firstRead){
 									//Send more samples of data
-									 mHost.messageNAsync(BGService.empaticaMilTableName, IITDatabaseManager.MAX_READ_SAMPLES_UPDATE);
+									 mHost.messageNAsync(BGService.empaticaMilTableName, 2*(IITDatabaseManager.MAX_READ_SAMPLES_UPDATE));
 									firstRead = false;
 								}else{
 									//The rest, according to the interval
 									 mHost.messageAllAsync(BGService.empaticaMilTableName);
 								}
+							}
+							//ALL OTHER sensors
+							else{
+								//mHost.messageAllAsync(BGService.empaticaMilTableName);
+								mHost.sendUSBmessage(mHost._NO_DATA);
+
 							}
 
 						} catch (JSONException e) {
@@ -143,7 +151,7 @@ public class USBReadThread extends Thread {
 								try {
 									//TODO BLOOOOOOOOCKS THE APP
 									// Invalid status - the only thing left to do is end transaction -> but blocks db instead
-									System.out.println("Value of synchronized: "+(String) jsonObj.get("synchronized"));
+									//System.out.println("Value of synchronized: "+(String) jsonObj.get("synchronized"));
 									mDatabase.ackSyncStatusAllPrevious(dbContext, BGService.empaticaMilTableName,
 										(String) jsonObj.get("synchronized"), (String) jsonObj.get("time_stamp"));
 								} catch (Exception e) {

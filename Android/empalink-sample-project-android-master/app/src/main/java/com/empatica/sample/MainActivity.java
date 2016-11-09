@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
             //Initialize server connector
             //Send data to IIT
             myServerManager = new IITServerConnector(jsonID, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL,
-                    IITServerConnector.IIT_SERVER_READ_TABLE_URL, BGService.myDB, this);
+                    IITServerConnector.IIT_SERVER_READ_TABLE_URL, BGService.storingManager.myDB, this);
             sendDataTimer = new Timer();
             //TODO NO SERVER BACKUP
             //startSendingTimer();
@@ -550,7 +550,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                                 //1. Obtain not synchronized values from database
 
                                 // List<Map<String, String>> listReadToServer = null;
-                                List<Map<String, String>> listReadToServer = BGService.myDB.getAllNotCheckedValues(BGService.empaticaMilTableName, BGService.columnsTable,
+                                List<Map<String, String>> listReadToServer = BGService.storingManager.myDB.getAllNotCheckedValues(BGService.empaticaMilTableName, BGService.columnsTable,
                                         IITDatabaseManager.upDateColumn, IITDatabaseManager.updatedStatusNo);
                                 //List<Map<String, String>> listReadToServer = new ArrayList<Map<String, String>>();
                                 //2. Send to Server
@@ -642,7 +642,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
      */
 
     public static String messageToUSB() {
-        List<Map<String, String>> listReadToUSB = BGService.myDB.getNotUpdatedValues(BGService.empaticaMilTableName, BGService.columnsTable,
+        List<Map<String, String>> listReadToUSB = BGService.storingManager.myDB.getNotUpdatedValues(BGService.empaticaMilTableName, BGService.columnsTable,
                 IITDatabaseManager.syncColumn, IITDatabaseManager.syncStatusNo, USBHost.LOCAL_SENDING_AMOUNT);
         //Send to Server
         if (listReadToUSB != null) {
@@ -662,11 +662,11 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
         BGService.ackInProgress = true;
         //List<Map<String, String>> listReadToUSB = BGService.myDB.getLastNSamples(table, BGService.columnsTable, check_column, check_value, max);
         //Collections.reverse(listReadToUSB);
-        List<Map<String, String>> listReadToUSB=  BGService.myDB.getNotUpdatedValues (table, BGService.columnsTable, check_column, check_value, max);
+        List<Map<String, String>> listReadToUSB=  BGService.storingManager.myDB.getNotUpdatedValues (table, BGService.columnsTable, check_column, check_value, max);
         Collections.reverse(listReadToUSB);
 
         if (listReadToUSB !=null){
-            mHost.sendUSBMessages(listReadToUSB);
+            mHost.sendUSBList(listReadToUSB, table);
             mHost.sendUSBmessage(USBHost._END_COMMAND);
 
         } else

@@ -45,6 +45,7 @@ public class IITDatabaseManager {
     private MyDatabaseHelper dbHelper;
     //private static SQLiteDatabase db;
     private static Cursor cursorSync;
+    private static int CURSOR_WINDOW_LIMIT = 2000;
 
 
     //Database info
@@ -53,6 +54,7 @@ public class IITDatabaseManager {
     static String DB_LOCAL_URL =  EXTERNAL_DIRECTORY_PATH+"/IIT_database/";
     public static String DEFAULT_DB_NAME = "dbSensors.db";
     public static String DEFAULT_DB_NAME_NE = "dbSensors";
+
 
     private String db_name;
 
@@ -90,13 +92,16 @@ public class IITDatabaseManager {
     public static int MAX_READ_SAMPLES_SYNCHRONIZE = 5*64*60;
 
 
-
     /**
      * Default constractor, only needs context
      * @param ctx context
      */
     public IITDatabaseManager(Context ctx){
-        dbHelper = new MyDatabaseHelper(ctx);
+        //Update database file:
+        db_name = DEFAULT_DB_NAME;
+        databaseFile = DB_LOCAL_URL + db_name;
+        dbHelper = new MyDatabaseHelper(ctx, databaseFile);
+
         initDatabase(ctx);
     }
 
@@ -105,13 +110,15 @@ public class IITDatabaseManager {
      * @param ctx context
      * name of the database
      */
-   /* public IITDatabaseManager(Context ctx, String databaseName){
+    public IITDatabaseManager(Context ctx, String databaseName){
+        //Update database file:
         db_name = databaseName;
-        dbHelper = new MyDatabaseHelper(ctx);
+        databaseFile = DB_LOCAL_URL + db_name;
+        dbHelper = new MyDatabaseHelper(ctx, databaseFile);
 
         initDatabase(ctx);
 
-    }*/
+    }
 
 
     /*
@@ -119,14 +126,16 @@ public class IITDatabaseManager {
      */
     private void initDatabase(Context ctx) {
         dbContext = ctx;
-        db_name = DEFAULT_DB_NAME;
-        //Update database file:
-        databaseFile = DB_LOCAL_URL + db_name;
+
 
         //Create database:
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        db.beginTransaction();
         try {
+            db.beginTransaction();
+            //Enable Wrtie Ahead Logging (WAL)
+            db.enableWriteAheadLogging();
+
+            //Test db
             db.execSQL("CREATE TABLE IF NOT EXISTS sample_table (created CHAR(1))");
             db.setTransactionSuccessful();
         } catch(Exception e){
@@ -178,12 +187,118 @@ public class IITDatabaseManager {
         }
     }
 
+    public void deleteTableFromDatabase(String table){
+        try{
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            db.beginTransaction();
+            try{
+                String updateQuery = "DROP TABLE " + table;
+                db.execSQL(updateQuery);
+
+            }catch(Exception e){
+                Log.d(TAG, "Error storing new sample in "+table +": "+e);
+            }finally {
+                if (db.inTransaction())
+                    db.endTransaction();
+            }
+        }catch (Exception e){
+            System.out.println("Exception opening writable database to store: " + e);
+
+        }
+
+    }
+
+
     /**
-     * Update table in database
-     * @param table
-     * @param values
-     * @param store whether to store new values or delete table
+     * Dlete all rows of given table
+     * @param table  table name
+     * @return
      */
+    public boolean deleteAllRows(String table){
+        try{
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            db.beginTransaction();
+            try{
+                //Delete all rows
+                db.delete(table, null, null);
+                db.setTransactionSuccessful();
+
+                //Reset rowid column
+               // String reset =  "UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='"+table+"'";
+                //db.execSQL(reset);
+
+                //Drop table
+                //sql =  "DROP TABLE IF EXISTS "+table;
+                //db.execSQL(sql);
+
+
+
+            }catch(Exception e){
+                Log.d(TAG, "Error deleting all rows in "+table +": "+e);
+            }finally {
+                if (db.inTransaction())
+                    db.endTransaction();
+                //Reset table
+                //String sql =  "VACUUM "+table+"";
+                //db.execSQL(sql);
+            }
+            return true;
+        }catch (Exception e){
+            System.out.println("Exception opening writable database to store: " + e);
+            return false;
+
+        }
+
+    }
+
+    /**
+     * Dlete all rows of given table
+     * @param table  table name
+     * @return
+     */
+    public boolean deleteNRowsFromTable(String table, int rows){
+        try{
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            db.beginTransaction();
+            try{
+                //Delete all rows
+                System.out.println("Delete Rows: " + rows);
+                //String sql_statement = "DELETE FROM "+table+" WHERE rowid < "+rows;
+                //String sql_statement = "DELETE FROM "+table+" WHERE ROWID IN (SELECT TOP "+rows+" ROWID FROM "+table+")";
+                //String sql_statement = "DELETE FROM "+table+" WHERE ROWID IN (SELECT ROWID FROM "+table+" ORDER BY ROWID ASC LIMIT "+rows+")";
+
+                //db.delete(table, "ROWID < ?", new String[]{""+rows});
+                int del =db.delete(table, "ROWID IN (SELECT ROWID FROM "+table+" ORDER BY ROWID ASC LIMIT "+rows+")", null);
+                System.out.println("Deleted rows: " + del);
+                //db.execSQL(sql_statement);
+                db.setTransactionSuccessful();
+
+            }catch(Exception e){
+                Log.d(TAG, "Error deleting "+rows+" rows in "+table +": "+e);
+            }finally {
+                if (db.inTransaction())
+                    db.endTransaction();
+                //Reorder table
+                String sql =  "VACUUM "+table+"";
+                db.execSQL(sql);
+            }
+            return true;
+        }catch (Exception e){
+            System.out.println("Exception opening writable database to store: " + e);
+            return false;
+
+        }
+
+    }
+
+
+
+    /**
+         * Update table in database
+         * @param table
+         * @param values
+         * @param store whether to store new values or delete table
+         */
     public boolean updateDatabaseTable (String table, ThreadSafeArrayList<String> values, boolean store ){
         //TODO
         //System.out.println(EXTERNAL_DIRECTORY_PATH.getAbsolutePath());
@@ -256,6 +371,52 @@ public class IITDatabaseManager {
 
     }
 
+    public List<ThreadSafeArrayList<String>> readAllValuesFromTable(String table){
+        List<ThreadSafeArrayList<String>> result = new ArrayList<ThreadSafeArrayList<String>>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        db.beginTransaction();
+        try{
+            if ( db  !=null) {
+                //Create Cursor
+                cursorSync = db.query(table, null, null,null, null, null, timeStampColumn+" ASC", null);
+                Log.d("query", "cursor size: "+ cursorSync.getCount());
+
+                //If Cursor is valid
+                if (cursorSync != null ) {
+                    if (cursorSync.moveToFirst()) {
+                        int index = 0;
+                        String last_updated = "";
+                        do {
+                            //Values to send to server
+                            ThreadSafeArrayList<String> partial = new ThreadSafeArrayList<String>();
+                            String[] cols = cursorSync.getColumnNames();
+
+                            for (String column: cols){
+                                String val = "0";
+                                //Get the corresponding value
+                                val = cursorSync.getString(cursorSync.getColumnIndex(column));
+                                partial.set(val);
+                            }
+
+                            result.add(partial);
+
+                        } while (cursorSync.moveToNext()   );
+
+                    }
+                }
+            }
+            db.setTransactionSuccessful();
+        }catch (SQLiteException e){
+            System.out.println("Error with readall function, read table: "+e);
+        }     finally {
+            if (db.inTransaction())
+                db.endTransaction();
+        }
+        return result;
+    }
+
+
+
     /**
      * Create new table
      * @param table - name of the table to create
@@ -267,8 +428,8 @@ public class IITDatabaseManager {
             //If database is initialized
             String columnsQuery = prepareColumnsFromList(columnsOfTable, keyColumnInTable);
             SQLiteDatabase db = dbHelper.getWritableDatabase();
-            db.beginTransaction();
             try {
+                db.beginTransaction();
                 String initTable = "CREATE TABLE IF NOT EXISTS " + table + columnsQuery;
                 db.execSQL(initTable);
                 db.setTransactionSuccessful();
@@ -336,42 +497,6 @@ public class IITDatabaseManager {
 
     }
 
-    /**
-     * Read values from a given database
-     * @param ctx
-     * @param database
-     * @param column
-     * @return
-     */
-
-    static public List<String> readFromDatabase(Context ctx, String database, String column){
-        List<String> results = new ArrayList();
-        // SQLiteDatabase dbase = ctx.openOrCreateDatabase(databaseFile, Context.MODE_WORLD_WRITEABLE, null);
-        SQLiteDatabase dbase=ctx.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READWRITE, null);
-
-        //Create Cursor object to read versions from the table
-        Cursor c = dbase.rawQuery("SELECT "+column+" FROM " + database, null);
-
-        //If Cursor is valid
-        if (c != null ) {
-
-            //Move cursor to first row
-            if  (c.moveToFirst()) {
-                do {
-                    //Get value for column
-                    String val = c.getString(c.getColumnIndex(column));
-                    //Add the value to Arraylist 'results'
-                    results.add(val);
-                }while (c.moveToNext()); //Move to next row
-            }
-        }
-
-        //Print results
-        //for (int i = 0; i < results.size(); i++)
-        //Log.d("Database",results.get(i));
-        dbase.close();
-        return results;
-    }
 
 
     /**
@@ -456,9 +581,7 @@ public class IITDatabaseManager {
 
 
 
-/**********************************************************************************************
- *** Server communication part
- ********************************************************************************************/
+
 
     /**
      * Compose JSON out of SQLite records
@@ -496,10 +619,10 @@ public class IITDatabaseManager {
             //Choose the right array from table
             cursorSync = db_cursor.rawQuery(selectQuery, null);
 
-            System.out.println("Cursor size: " + cursorSync.getCount());
+            System.out.println("Empatica Cursor size: " + cursorSync.getCount());
             //If Cursor is valid
             if (cursorSync != null ) {
-                if (cursorSync.moveToLast()) {
+                if (cursorSync.moveToLast() && cursorSync.getPosition()>=0) {
                     int index = 0;
                    do {
                        HashMap<String, String> map = new HashMap<String, String>();
@@ -517,7 +640,7 @@ public class IITDatabaseManager {
                        wordList.add(map);
                        index ++;
 
-                    } while (cursorSync.moveToPrevious() && index < max);
+                    } while (cursorSync.moveToPrevious() && cursorSync.getPosition()>=0 && index < max);
                     System.out.println("Done reading: "+index);
 
 
@@ -560,9 +683,10 @@ public class IITDatabaseManager {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         //SQLiteDatabase db_cursor = dbContext.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READONLY, null);
 
-        db.beginTransaction();
         try{
-        System.out.println("Select query: "+selectQuery);
+            db.beginTransaction();
+
+            System.out.println("Select query: "+selectQuery);
         System.out.println("Db FOR CURSOR: "+db.toString());
         if (db !=null) {
             //Create Cursor
@@ -862,6 +986,16 @@ public class IITDatabaseManager {
         }
     }
 
+    /**
+     * Update all previous values as sync/updated, given a time_stamped sample
+     * Works as a cummulative ACK (kind of ~)
+     * @param ctx - context
+     * @param table - table name
+     * @param status - yes/no
+     * @param last_up - time_stamp acknowledged
+     * @return
+     */
+
     public boolean ackSyncStatusAllPrevious (Context ctx, String table,  String status, String last_up){
         //SQLiteDatabase database = ctx.openOrCreateDatabase(databaseFile, Context.MODE_WORLD_WRITEABLE, null);
         //SQLiteDatabase db1=ctx.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READWRITE, null);
@@ -870,9 +1004,9 @@ public class IITDatabaseManager {
             System.out.println("ACK Process: "+last_up);
             //Get all not sync previous columns:
             //String selectQuery = "SELECT  * FROM " + table + " WHERE "+syncColumn+" = '" + syncStatusNo +"'";
-           // String selectQuery = "SELECT  * FROM " + table + " WHERE "+syncColumn+" = \"" + syncStatusNo +"\" ORDER BY "+timeStampColumn+" ASC";
+            // String selectQuery = "SELECT  * FROM " + table + " WHERE "+syncColumn+" = \"" + syncStatusNo +"\" ORDER BY "+timeStampColumn+" ASC";
 
-            // SQLiteDatabase db_cursor =ctx.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READWRITE, null);
+            //SQLiteDatabase db =ctx.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READONLY, null);
             SQLiteDatabase db = dbHelper.getReadableDatabase();
             db.beginTransaction();
             try{
@@ -882,29 +1016,37 @@ public class IITDatabaseManager {
                     //Choose the right array from table
                     //cursorSync =    db .rawQuery(selectQuery, null);
                     //Cursor query (String table, String[] columns, String selection, String[] selectionArgs, String groupBy,
-                   // String having, String orderBy, String limit)
-                    cursorSync = db.query(table, null, syncColumn+" = \"" + syncStatusNo +"\"",null, null, null, timeStampColumn+" ASC", null);
+                    // String having, String orderBy, String limit)
+                    Cursor cursorSync = db.query(table, null, syncColumn+" = \"" + syncStatusNo +"\"",null, null, null, timeStampColumn+" ASC", null);
                     Log.d("query", "cursor size: "+ cursorSync.getCount());
 
                     //If Cursor is valid
                     if (cursorSync != null ) {
+                        System.out.println("Values to ACK, cursor: "+cursorSync.getCount());
                         if (cursorSync.moveToFirst()) {
                             int index = 0;
                             String last_updated = "";
                             do {
                                 //Update values
                                 last_updated = cursorSync.getString(BGService._TIME_INDEX);
-                                updateSyncStatus(ctx, table,syncColumn, status,last_updated);
-                                //updateSyncStatus(ctx, table,syncColumn, syncStatusYes,last_updated);
+                                System.out.println(last_updated);
+                                // ackSingleSample(ctx, table,syncColumn, status,last_updated, db);
 
+                                updateSyncStatus(ctx, table,syncColumn, syncStatusYes,last_updated);
                                 index ++;
+                                if (index%CURSOR_WINDOW_LIMIT == 0){
+                                    //Get new cursor!
+                                    cursorSync.close();
+                                    cursorSync = db.query(table, null, syncColumn+" = \"" + syncStatusNo +"\"",null, null, null, timeStampColumn+" ASC", null);
+                                    cursorSync.moveToFirst();
+                                }
 
                             } while (!last_up.equals(last_updated) && cursorSync.moveToNext()   );
                             System.out.println("Done ACK reading: "+index);
 
                         }
                     }
-                 }
+                }
                 db.setTransactionSuccessful();
             }catch (SQLiteException e){
                 System.out.println("Error with ACK function, read table: "+e);
