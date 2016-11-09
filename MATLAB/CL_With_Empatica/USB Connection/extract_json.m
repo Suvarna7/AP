@@ -59,7 +59,7 @@ if (json(1)== '[' && json(end)==']')
         end
         %Build ACK to send back
         %[{synchronized:y,table_name:empatica_table,time_stamp: "2016-10-13 14:22:06.218",usb_sync: y }]
-        ack= strcat('[{synchronized:y, table_name:',table_name,', time_stamp: "',time,'", usb_sync: y}]');
+        ack= strcat('[{synchronized:y, sensor_table:',table_name,', time_stamp: "',time,'", usb_sync: y}]');
     else
         'EXTRACT INVALID JSON: Unclosed JSONS inside the array'
     end
