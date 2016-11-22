@@ -107,7 +107,7 @@ Q_all =  zeros( 1000, 26);
 % ];
 % 
 % Q_old = [	 
-%      0.0
+%    0.0
 % 	 0.0
 % 	 0.0
 % 	 0.0
@@ -145,7 +145,7 @@ Q_all =  zeros( 1000, 26);
 
 
 %% 1. DEFINE PARAMETERS MATRIX
-%Calculate P matrix and its pseudo-inverse, fromt he input parameters
+%Calculate P matrix and its pseudo-inverse, from he input parameters
 P=(1/(lamda_old))*(P_old-(P_old*phi*pinv(lamda_old+phi'*P_old*phi)*phi'*P_old));
 assignin('base', 'P', P);
 

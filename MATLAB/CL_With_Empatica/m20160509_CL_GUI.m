@@ -138,16 +138,16 @@ end
 %% Get CGM reading and define sampling time
 try
     %MANUAL GS entering
-%     gs=[gs;173];
+    gs=[gs;173];
     %DEXCOM G4 USB GS entering 
     %gs=m20150711_get_CGM_value(gs);
     %DiAS GS entering
-    'Dexcom...'
-    global usb_con;
-    [~, gs_new] = read_last_samples(usb_con, 'dexcom');
-    gs_new(2,4)
-    gs=[gs;str2double(gs_new(2,4))];
-    'Received!'
+%     'Dexcom...'
+%     global usb_con;
+%     [~, gs_new] = read_last_samples(usb_con, 'dexcom');
+%     gs_new(2,4)
+%     gs=[gs;str2double(gs_new(2,4))];
+%     'Received!'
     
     kj=length(gs);
     flag_data_1=1;
