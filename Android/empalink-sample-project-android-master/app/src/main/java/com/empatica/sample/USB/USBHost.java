@@ -272,7 +272,7 @@ public class USBHost {
 
     public void messageNAsync(String table, int samples) {
         //Get last not SYNCHRONIZED values (Not sent via USB)
-         mActivity.messageAllAsync(table, IITDatabaseManager.syncColumn, IITDatabaseManager.syncStatusNo, samples);
+         mActivity.messageAsync(table, IITDatabaseManager.syncColumn, IITDatabaseManager.syncStatusNo, samples);
 
     }
 

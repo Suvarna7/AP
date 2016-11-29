@@ -25,7 +25,16 @@ public class StoringThread implements Runnable {
 
     private static boolean running;
 
+    //TODO Debug - IBI table
+    public static final String ibiTableName= "ibi_table";
+    public static final String[] ibiColumnsTable = new String[]{"time_stamp", "IBI", "HR"};
 
+
+
+    //SECURITY MARGIN WHEN READING ALL
+    // 1 cycle of variables generates: 64 + 32 + 4 + 4 + 1 = 105 entries in db --> 1 second ~105
+    // Max IBI delay observerd: 4 seconds
+    private static final int _MARGIN =  5*105;
 
     public StoringThread(Context ctx){
         //Create the database:
@@ -65,8 +74,9 @@ public class StoringThread implements Runnable {
         myDB.createTable(empaticaTableName, empaticaColumnsTable[0], new ArrayList<>(Arrays.asList(empaticaColumnsTable)));
         // myDB.createTable(empaticaSecTableName, columnsTable[0], new ArrayList<>(Arrays.asList(columnsTable)));
 
-        //DEBUG TABLE:
-        //myDB.createTable("debug_table", new ArrayList<>(Arrays.asList(new String[]{"column"})));
+        //TODO IBI TABLE:
+        myDB.createTable(ibiTableName, ibiColumnsTable[0], new ArrayList<>(Arrays.asList(ibiColumnsTable)));
+
 
         //Temp databasae
         tempDB = new IITDatabaseManager(context, TEMP_DB_NAME);
@@ -87,7 +97,8 @@ public class StoringThread implements Runnable {
      */
     public static void storeSampleInTempDatabase(ThreadSafeArrayList<String> sample, String table, String[] columns, List<ThreadSafeArrayList<String>> error){
         try{
-            if(!tempDB.insertIntoDatabaseTable(table, sample, columns)) {
+
+            if(!tempDB.insertAndUpdateIntoDatabaseTable(table, sample, columns)) {
                 //TODO when could not insert
 
             }
@@ -126,26 +137,32 @@ public class StoringThread implements Runnable {
     private void tempDatabaseToPermanent(){
         //Read temp database
         List<ThreadSafeArrayList<String>> tempValues = new ArrayList<ThreadSafeArrayList<String>>();
-        tempValues = tempDB.readAllValuesFromTable(empaticaTableName);
+        //Read all, except for the last 100 rows which may be updated in the following instants
+        // 1 cycle of variables generates: 64 + 32 + 4 + 4 + 1 = 105 entries in db
+        tempValues = tempDB.readAllValuesFromTableWithMargin(empaticaTableName, _MARGIN);
 
 
         //Store if there are enough samples
-        if (tempValues.size() > STORING_THRESHOLD) {
-            int n_samples=  tempValues.size();
+      //  if (tempValues.size() > STORING_THRESHOLD) {
 
-            //Start moving values to permanent
-            while (tempValues.size() > 0)
-                tempValues = storeGlobalListInDatabase(tempValues);
 
-            //Delete temp table
-            tempDB.deleteNRowsFromTable(empaticaTableName, n_samples);
-        }
+                int n_samples = tempValues.size();
+
+                //Start moving values to permanent
+                while (tempValues.size() > 0)
+                    tempValues = storeGlobalListInDatabase(tempValues);
+
+                //Delete temp table
+                tempDB.deleteNRowsFromTable(empaticaTableName, n_samples);
+
+       // }
         //Or wait till database is filled and read again
-        else{
+       /* else{
             try {
+                //Wait 10 seconds
                 Thread.currentThread().sleep(10000);
 
-                tempValues = tempDB.readAllValuesFromTable(empaticaTableName);
+                tempValues = tempDB.readAllValuesFromTableWithMargin(empaticaTableName, 105);
                 int n_samples = tempValues.size();
 
                 //Start moving values to permanent
@@ -160,7 +177,7 @@ public class StoringThread implements Runnable {
             }
 
 
-        }
+        }*/
 
     }
 
@@ -172,7 +189,7 @@ public class StoringThread implements Runnable {
     private List<ThreadSafeArrayList<String>> storeGlobalListInDatabase( List<ThreadSafeArrayList<String> > valuesToUpdate ){
 
         List<ThreadSafeArrayList<String>> error = new ArrayList<ThreadSafeArrayList<String>> ();
-        System.out.println("Store temp values: "+valuesToUpdate.get(0).get(0));
+        System.out.println("Store temp values: "+ valuesToUpdate.size()+" , "+valuesToUpdate.get(0).get(0));
 
         for (int i = 0; i < valuesToUpdate.size(); i++) {
 

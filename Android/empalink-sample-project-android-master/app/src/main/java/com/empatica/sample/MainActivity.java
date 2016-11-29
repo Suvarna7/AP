@@ -23,6 +23,7 @@ import com.empatica.empalink.config.EmpaSensorType;
 import com.empatica.empalink.config.EmpaStatus;
 import com.empatica.empalink.delegate.EmpaStatusDelegate;
 import com.empatica.sample.Database.IITDatabaseManager;
+import com.empatica.sample.Database.StoringThread;
 import com.empatica.sample.Server.IITServerConnector;
 import com.empatica.sample.USB.USBHost;
 
@@ -159,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
             //Initialize server connector
             //Send data to IIT
             myServerManager = new IITServerConnector(jsonID, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL,
-                    IITServerConnector.IIT_SERVER_READ_TABLE_URL, BGService.storingManager.myDB, this);
+                   IITServerConnector.IIT_SERVER_READ_TABLE_URL, StoringThread.myDB, this);
             sendDataTimer = new Timer();
             //TODO NO SERVER BACKUP
             //startSendingTimer();
@@ -369,8 +370,11 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
             });
             updateLabel(statusLabel, status.name() + " - Turn on your device");
             connectionS  = status.name() + " - Turn on your device";
-            // Start scanning
-            BGService.deviceManager.startScanning();
+            if (BGService.deviceManager != null ) {
+                BGService.deviceManager.stopScanning();
+                // Start scanning
+                BGService.deviceManager.startScanning();
+            }
             // The device manager has established a connection
         } else if (status == EmpaStatus.CONNECTED) {
             // Stop streaming after STREAMING_TIME
@@ -550,8 +554,12 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                                 //1. Obtain not synchronized values from database
 
                                 // List<Map<String, String>> listReadToServer = null;
-                                List<Map<String, String>> listReadToServer = BGService.storingManager.myDB.getAllNotCheckedValues(BGService.empaticaMilTableName, BGService.columnsTable,
-                                        IITDatabaseManager.upDateColumn, IITDatabaseManager.updatedStatusNo);
+                                /*List<Map<String, String>> listReadToServer =BGService.storingManager.myDB.getNotUpdatedValues(BGService.empaticaMilTableName, BGService.columnsTable,
+                                        IITDatabaseManager.upDateColumn, IITDatabaseManager.updatedStatusNo, IITDatabaseManager.MAX_READ_SAMPLES_UPDATE);*/
+                                List<Map<String, String>> listReadToServer =BGService.storingManager.myDB.getNotUpdatedValues(BGService.empaticaMilTableName, BGService.columnsTable,
+                                        IITDatabaseManager.syncColumn, IITDatabaseManager.syncStatusYes, IITDatabaseManager.MAX_READ_SAMPLES_UPDATE);
+
+
                                 //List<Map<String, String>> listReadToServer = new ArrayList<Map<String, String>>();
                                 //2. Send to Server
                                 if (listReadToServer != null) {
@@ -563,7 +571,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                                         val.put("table_name", BGService.empaticaMilTableName);
                                         temp.add(val);
                                         if ((i + 1) % SENDING_AMOUNT == 0) {
-                                            System.out.println("Send first 500: " + myServerManager.sending);
+                                            System.out.println("Send first 1S00: " + listReadToServer.size());
                                             String jSon = IITServerConnector.convertToJSON(temp);
                                             myServerManager.sendToIIT(jSon, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
 
@@ -573,11 +581,11 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                                                 //wait to receive something
                                             }
 
-                                            try {
+                                            /*try {
                                                 Thread.sleep(3000); // giving time to connect to wifi
                                             } catch (Exception e) {
                                                 System.out.println("Exception while waiting to send:" + e);
-                                            }
+                                            }*/
 
                                             temp = new ArrayList<Map<String, String>>();
                                         }
@@ -590,12 +598,13 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                                         myServerManager.sendToIIT(jSon, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
 
 
-                                        try {
+                                        /*try {
                                             Thread.sleep(2000); // giving time to connect to wifi
                                         } catch (Exception e) {
                                             System.out.println("Exception while waiting to send:" + e);
-                                        }
+                                        }*/
                                     }
+                                    System.out.println("/////// END SEDING TIMER");
                                     //myServerManager.debugServer("samples");
 
                                 }
@@ -642,7 +651,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
      */
 
     public static String messageToUSB() {
-        List<Map<String, String>> listReadToUSB = BGService.storingManager.myDB.getNotUpdatedValues(BGService.empaticaMilTableName, BGService.columnsTable,
+        List<Map<String, String>> listReadToUSB = BGService.storingManager.myDB.getNotUpdatedValues (BGService.empaticaMilTableName, BGService.columnsTable,
                 IITDatabaseManager.syncColumn, IITDatabaseManager.syncStatusNo, USBHost.LOCAL_SENDING_AMOUNT);
         //Send to Server
         if (listReadToUSB != null) {
@@ -657,7 +666,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
      * Get all no sync values, and return a list of the JSON Strings to be sent
      * @return
      */
-    public void messageAllAsync(String table, String check_column, String check_value, int max) {
+    public void messageAsync(String table, String check_column, String check_value, int max) {
         //TODO NO ACK NOW
         BGService.ackInProgress = true;
         //List<Map<String, String>> listReadToUSB = BGService.myDB.getLastNSamples(table, BGService.columnsTable, check_column, check_value, max);
@@ -674,6 +683,12 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
 
         BGService.ackInProgress = false;
 
+    }
+
+    public void updateDB(IITDatabaseManager db){
+        //Send data to IIT
+        myServerManager = new IITServerConnector(jsonID, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL,
+                IITServerConnector.IIT_SERVER_READ_TABLE_URL, db, this);
     }
 
 

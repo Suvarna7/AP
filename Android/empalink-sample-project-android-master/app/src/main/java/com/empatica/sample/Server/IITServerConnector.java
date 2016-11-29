@@ -110,7 +110,7 @@ public class IITServerConnector {
 	 * @param table - name of the table 
 	 */
 
-	public void debugSendToServer(String table){
+	/*public void debugSendToServer(String table){
 		//List<Map> args
 		//json = "[{\"table_name\": "+TABLE_NAME+"},{\"user\": mentira, \"heartrate\": 80, \"cgm\": 5}]";
 
@@ -130,7 +130,7 @@ public class IITServerConnector {
 		sendToIIT(convertToJSON(arg), WRITE_URL);
 
 
-	}
+	}*/
 
 
 	/**
@@ -140,7 +140,7 @@ public class IITServerConnector {
 
 	public void sendToIIT(String json, String url){
 
-		System.out.println("Sending: " + json);
+		System.out.println("Sending to server: " + json);
 		sending = true;
 
 		//Set parameters
@@ -226,6 +226,8 @@ protected static String getCurrentTime(){
 					JSONArray arr = new JSONArray(response);
 					//List<String> args = new ArrayList();
 					//Analyze each JSON object
+					System.out.println("****** Start server deleting");
+
 					for(int i=0; i<arr.length();i++){
 						JSONObject jsonObj = (JSONObject)arr.get(i);
 
@@ -269,9 +271,13 @@ protected static String getCurrentTime(){
 							//IOMain.notSynchValues.clear();
 
 						//System.out.println("Received server time:"+(String) jsonObj.get("time_stamp"));
-							dbManager.updateSyncStatus(databaseContext, (String) jsonObj.get("table_name"),
-									IITDatabaseManager.upDateColumn, (String) jsonObj.get("updated"), (String) jsonObj.get("time_stamp"));
 
+						//TODO Update db !! delete the rows
+						//	dbManager.updateSyncStatus(databaseContext, (String) jsonObj.get("table_name"), IITDatabaseManager.upDateColumn, (String) jsonObj.get("updated"), (String) jsonObj.get("time_stamp"));
+
+						if (((String) jsonObj.get("updated")).equals(IITDatabaseManager.updatedStatusYes)) {
+							//dbManager.deleteRowInTable((String) jsonObj.get("table_name"), (String) jsonObj.get("time_stamp"));
+						}
 						//dbManager.updateSyncStatus(databaseContext, (String) jsonObj.get("table_name"),
 						//		IITDatabaseManager.syncColumn, (String) jsonObj.get("updated"), (String) jsonObj.get("time_stamp"));
 
@@ -280,6 +286,7 @@ protected static String getCurrentTime(){
 
 
 				}
+					System.out.println("****** End server deleting");
 
 			} catch (JSONException e) {
 				e.printStackTrace();

@@ -20,8 +20,11 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <!-- Permission: USB connection -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Permission: Bluetooth
+    <uses-permission android:name="android.permission.BLUETOOTH" />-->
+
 
 
 

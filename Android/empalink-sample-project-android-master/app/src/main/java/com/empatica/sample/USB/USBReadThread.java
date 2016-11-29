@@ -123,8 +123,11 @@ public class USBReadThread extends Thread {
 
 						} catch (JSONException e) {
 							System.out.println("Get all no sync wrong structure: " + e);
+							mHost.sendUSBmessage(USBHost._NO_DATA);
+
 						} catch (Exception e) {
 							System.out.println("Retrieving JSON data exception: " + e);
+							mHost.sendUSBmessage(USBHost._NO_DATA );
 						}
 
 						//todo  After reading, send all data
@@ -137,7 +140,8 @@ public class USBReadThread extends Thread {
 							//Send no data message
 							mHost.sendUSBmessage(USBHost._NO_DATA);*/
 
-					}//ACK COMMAND - Synchronized values
+					}
+					//ACK COMMAND - Synchronized values
 					else if (line.contains(USBHost._ACK_SYNCHRONIZED)) {
 						//System.out.println(line);
 
@@ -154,12 +158,16 @@ public class USBReadThread extends Thread {
 									//System.out.println("Value of synchronized: "+(String) jsonObj.get("synchronized"));
 									mDatabase.ackSyncStatusAllPrevious(dbContext, BGService.empaticaMilTableName,
 										(String) jsonObj.get("synchronized"), (String) jsonObj.get("time_stamp"));
+									//Inform phone process ended
+									mHost.sendUSBmessage(USBHost._ACK_SYNCHRONIZED);
 								} catch (Exception e) {
 									System.out.println("Exception when sync from USB: " + e);
 								}
 
 								//System.out.println("JSON FROM USB:" + jsonObj.toString());
 							}
+
+
 						} catch (JSONException e) {
 							e.printStackTrace();
 							System.out.println("Wrong USB ACK Format: " + e);
