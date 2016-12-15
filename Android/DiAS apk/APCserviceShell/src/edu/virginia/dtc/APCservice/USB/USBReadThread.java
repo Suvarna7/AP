@@ -269,6 +269,8 @@ public class USBReadThread extends Thread {
 								}
 								//System.out.println("JSON FROM USB:" + jsonObj.toString());
 							}
+							//Inform phone process ended
+							mHost.sendUSBmessage(USBHost._ACK_SYNCHRONIZED);
 						} catch (JSONException e) {
 							e.printStackTrace();
 							System.out.println("Wrong USB ACK Format: " + e);
