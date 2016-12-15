@@ -16,6 +16,7 @@
     <string name = "string_stop_service"> STOP service </string>
     <string name = "string_start_service"> START service </string>
     <string name = "string_connect_usb"> CONNECT USB </string>
+    <string name = "string_delete_database"> DELETE DB </string>
     <string name = "connect_usb_init">START USB CONNECTION - Press CONNECT USB </string>
 
 

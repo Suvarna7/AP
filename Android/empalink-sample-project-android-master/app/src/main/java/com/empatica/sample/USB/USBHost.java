@@ -48,7 +48,7 @@ public class USBHost {
     public static final String TAG = "Connection";
 
     public static Context ctx;
-    private MainActivity mActivity;
+    public MainActivity mActivity;
     public Handler mHandler;
 
     //Commands
@@ -67,15 +67,19 @@ public class USBHost {
     public static final String _EMPATICA = "empatica";
     public static final String _DEXCOM = "dexcom";
 
+    //Max number of samples per JSON object (packet) to send via USB
+    private static final int LOCAL_SENDING_AMOUNT = 200;
 
-    //Max number of messages to be accepted thru usb
-    public static final int LOCAL_SENDING_AMOUNT = 25;
+    //Keep last_stamp time from Matlab
+    public static String last_time_ack;
+
 
 
     public USBHost(Context context, MainActivity activity) {
         mActivity = activity;
         ctx = context;
         readingThread = new USBReadThread(this, ctx);
+        last_time_ack = "time";
 
     }
 
@@ -259,7 +263,7 @@ public class USBHost {
      * @return
      */
     public void messageAllAsync(String table) {
-        messageNAsync(table, IITDatabaseManager.MAX_READ_SAMPLES_UPDATE);
+        messageNAsync(table, IITDatabaseManager.MAX_READ_SAMPLES_SYNCHRONIZE);
     }
 
     /**
@@ -272,7 +276,7 @@ public class USBHost {
 
     public void messageNAsync(String table, int samples) {
         //Get last not SYNCHRONIZED values (Not sent via USB)
-         mActivity.messageAsync(table, IITDatabaseManager.syncColumn, IITDatabaseManager.syncStatusNo, samples);
+         mActivity.messageAsync(table, IITDatabaseManager.syncColumn, IITDatabaseManager.syncStatusNo, samples, true);
 
     }
 

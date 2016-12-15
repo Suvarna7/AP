@@ -215,7 +215,7 @@ public class BGService extends Service implements EmpaDataDelegate{
         startConnectionTimer();
 
         //TODO Start key verification timer
-        startPeriodicVerificationOfKey(MainActivity.STREAMING_TIME);
+        //startPeriodicVerificationOfKey(MainActivity.STREAMING_TIME);
 
         //Reading thread
         if(MainActivity.mHost !=null && MainActivity.mHost.readingThread != null)
@@ -460,7 +460,7 @@ public class BGService extends Service implements EmpaDataDelegate{
             allValues[hrValue]=hrval;
 
         //TODO add to IBI table directly
-        /*double time = time_stamp * 1000;
+        double time = time_stamp * 1000;
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS", Locale.getDefault());
         String formatTimeStamp = dateFormat.format(time);
 
@@ -468,10 +468,11 @@ public class BGService extends Service implements EmpaDataDelegate{
         tempList.set(formatTimeStamp);
         tempList.set(allValues[ibiValue]);
         tempList.set(allValues[hrValue]);
-        storingManager.storeSampleInPermanentDatabase(tempList, StoringThread.ibiTableName, StoringThread.ibiColumnsTable, null);*/
+        storingManager.storeSampleInPermanentDatabase(tempList, StoringThread.ibiTableName, StoringThread.ibiColumnsTable, null);
 
         //Store in DB
         storeNewSample(time_stamp);
+
 
 
 
@@ -742,7 +743,7 @@ public class BGService extends Service implements EmpaDataDelegate{
     }
 
     private boolean receivedAll(){
-        return !(accelerationNotReceived || gsrNotReceived || bvpNotReceived || ibiNotReceived || temperatureNotReceived  );
+        return !(accelerationNotReceived || gsrNotReceived || bvpNotReceived || temperatureNotReceived  );
     }
 
 

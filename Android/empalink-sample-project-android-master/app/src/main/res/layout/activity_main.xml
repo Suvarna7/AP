@@ -258,6 +258,20 @@
         android:textColor = "@color/white_paleta"
         android:background="@color/ligher_green_paleta"
         />
+
+    <Button
+        android:id="@+id/delete_database_button"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/dataArea"
+        android:padding="5dp"
+        android:text="@string/string_delete_database"
+        android:textColor = "@color/white_paleta"
+        android:background="@color/lighter_red_paleta"
+        />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

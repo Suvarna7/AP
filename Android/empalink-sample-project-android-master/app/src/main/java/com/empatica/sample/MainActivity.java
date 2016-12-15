@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -76,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     private Button stopServiceButton;
     private Button startServiceButton;
     public Button connectUSBButton;
+    private Button  deleteB;
 
     //App context
     private Context appContext;
@@ -92,6 +94,9 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     //IIT Server manager and automatic sending
     public static Timer sendDataTimer;
     private static final int SENDING_AMOUNT = 100;
+    private static final int SENDING_PERIOD = 5*60*1000; //15 min
+    private static final int DELETING_MARGIN = 10*60*(64+32+4+4+1); // 10 min
+    private static final int DEL_AMOUNT = 3000;
     //IIT Server manager
     IITServerConnector myServerManager;
     private static final String jsonID = "empaticaJSON";
@@ -101,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        System.out.println("App created");
+        //System.out.println("App created");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -136,6 +141,9 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
         usbCommand = (TextView) findViewById(R.id.command_usb);
         usbConenctionStatus = (TextView) findViewById(R.id.connect_usb_status);
 
+        deleteB = (Button) findViewById(R.id.delete_database_button);
+        deleteB.setOnClickListener(deleteDatabaseListener);
+
 
 
         //Set context
@@ -162,11 +170,12 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
             myServerManager = new IITServerConnector(jsonID, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL,
                    IITServerConnector.IIT_SERVER_READ_TABLE_URL, StoringThread.myDB, this);
             sendDataTimer = new Timer();
-            //TODO NO SERVER BACKUP
-            //startSendingTimer();
+            //TODO SERVER BACKUP
+            startSendingTimer();
+
         }else{
             //Set the view for Connected
-            System.out.println("Coming back!!");
+            System.out.println("Coming back - mainActivity create again!!");
             if (connectionS.contains("CONNECTED") && !connectionS.contains("DISCONNECTED")) {
                 //Make connected screen visible
 
@@ -194,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
 
     @Override
     protected void onPause() {
-        System.out.println("App paused");
+        //System.out.println("App paused");
 
         super.onPause();
 
@@ -205,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
 
     @Override
     public void onResume() {
-        System.out.println("App resumed");
+        //System.out.println("App resumed");
 
         super.onResume();
         //Update context
@@ -228,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     @Override
     public void onStart() {
         super.onStart();
-        System.out.println("App started");
+        //System.out.println("App started");
 
 
         //Update context
@@ -250,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
 
     @Override
     protected void onDestroy() {
-        System.out.println("App destroyed");
+        //System.out.println("App destroyed");
 
         super.onDestroy();
         //BGService.deviceManager.cleanUp();
@@ -516,6 +525,16 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
 
 
 
+        }
+    };
+
+    View.OnClickListener deleteDatabaseListener  = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+           //Delete permanent database content
+            BGService.storingManager.myDB.deleteAllRows(BGService.empaticaMilTableName);
+
+            deleteB.setBackgroundColor(Color.LTGRAY);
 
         }
     };
@@ -551,20 +570,76 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                        protected Long doInBackground(URL... urls) {
                             //Send saved information to IIT server
                             if ( checkInternetConnectivity() != null) {
-                                //1. Obtain not synchronized values from database
 
-                                // List<Map<String, String>> listReadToServer = null;
-                                /*List<Map<String, String>> listReadToServer =BGService.storingManager.myDB.getNotUpdatedValues(BGService.empaticaMilTableName, BGService.columnsTable,
-                                        IITDatabaseManager.upDateColumn, IITDatabaseManager.updatedStatusNo, IITDatabaseManager.MAX_READ_SAMPLES_UPDATE);*/
-                                List<Map<String, String>> listReadToServer =BGService.storingManager.myDB.getNotUpdatedValues(BGService.empaticaMilTableName, BGService.columnsTable,
+                                //Number of samples to read and update to server
+                                int samplesToUpdate = BGService.storingManager.myDB.getNotCheckedValuesNumber(BGService.empaticaMilTableName,
                                         IITDatabaseManager.syncColumn, IITDatabaseManager.syncStatusYes, IITDatabaseManager.MAX_READ_SAMPLES_UPDATE);
 
+                                System.out.println("Sending timer: samples to update: " + samplesToUpdate);
+                                //To avoid memory errors, we use MAX_MEMORY_SAMPLES perform updates in chunks:
 
-                                //List<Map<String, String>> listReadToServer = new ArrayList<Map<String, String>>();
-                                //2. Send to Server
-                                if (listReadToServer != null) {
+                                /*while (samplesToUpdate >= DELETING_MARGIN){
+                                    //updateDatabase(IITDatabaseManager.MAX_MEMORY_SAMPLES, 0);
+                                    BGService.storingManager.myDB.deleteNRowsFromTable(BGService.empaticaMilTableName,
+                                                BGService.columnsTable[0], DEL_AMOUNT);
 
-                                    List<Map<String, String>> temp = new ArrayList<Map<String, String>>();
+                                    samplesToUpdate  = samplesToUpdate - DEL_AMOUNT;
+
+                                }*/
+
+                                //Update last samples To Read
+                                updateDatabase(samplesToUpdate, DELETING_MARGIN);
+
+                                //DEBUG Table
+                                //MainActivity.myDB.updateDatabaseTable("debug_table", new ArrayList<>(Arrays.asList(new String[]{"'A'"})), true);
+                            }
+
+                           return null;
+
+
+                        }
+
+                       protected void onPostExecute(Long result) {
+                            //Do nothing: just try and be async
+                           //System.out.println("Post sending");
+
+                       }
+                   }.execute();
+
+
+                }
+            }
+        }
+
+                , SENDING_PERIOD, SENDING_PERIOD); // delay(seconds*1000), period(seconds*1000)
+
+    }
+
+    /*
+     * Function to update local databas values:
+     * 1. Reads up to 20 minutes of syncrhonized samples
+     * 2. Sends those values to the server
+     * 3. Erase updated and synchronized samples (leaving a safety margin)
+     */
+
+    private boolean updateDatabase(int samples, int safetyMargin){
+        //1. Obtain not updated values from database
+
+        // List<Map<String, String>> listReadToServer = null;
+                                /*List<Map<String, String>> listReadToServer =BGService.storingManager.myDB.getNotUpdatedValues(BGService.empaticaMilTableName, BGService.columnsTable,
+                                        IITDatabaseManager.upDateColumn, IITDatabaseManager.updatedStatusNo, IITDatabaseManager.MAX_READ_SAMPLES_UPDATE);*/
+
+        //1. Obtain syncrhonized values from database
+        //List<Map<String, String>> listReadToServer =BGService.storingManager.myDB.getNotCheckedValues(BGService.empaticaMilTableName, BGService.columnsTable,
+               // IITDatabaseManager.syncColumn, IITDatabaseManager.syncStatusYes, samples);
+
+
+        //List<Map<String, String>> listReadToServer = new ArrayList<Map<String, String>>();
+        //2. Send to Server
+       // if (listReadToServer != null) {
+
+            //TODO NOT SENDING TO SERVER
+                                    /*List<Map<String, String>> temp = new ArrayList<Map<String, String>>();
                                     //List too long: break in smaller chunks
                                     for (int i = 0; i < listReadToServer.size(); i++) {
                                         Map<String, String> val = listReadToServer.get(i);
@@ -585,7 +660,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                                                 Thread.sleep(3000); // giving time to connect to wifi
                                             } catch (Exception e) {
                                                 System.out.println("Exception while waiting to send:" + e);
-                                            }*/
+                                            }
 
                                             temp = new ArrayList<Map<String, String>>();
                                         }
@@ -597,41 +672,40 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                                         String jSon = IITServerConnector.convertToJSON(temp);
                                         myServerManager.sendToIIT(jSon, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
 
-
                                         /*try {
                                             Thread.sleep(2000); // giving time to connect to wifi
                                         } catch (Exception e) {
                                             System.out.println("Exception while waiting to send:" + e);
-                                        }*/
-                                    }
-                                    System.out.println("/////// END SEDING TIMER");
-                                    //myServerManager.debugServer("samples");
+                                        }
+                                    }*/
+            //myServerManager.debugServer("samples");
 
-                                }
-                                //DEBUG Table
-                                //MainActivity.myDB.updateDatabaseTable("debug_table", new ArrayList<>(Arrays.asList(new String[]{"'A'"})), true);
-                            }
+            //3. Delete updated values
+            int deleting = samples - safetyMargin;
+            System.out.println("/////// END SENDING TIMER " + deleting);
+            boolean del = false;
 
-                           return null;
-
-
-                        }
-
-
-                       protected void onPostExecute(Long result) {
-                            //Do nothing: just try and be async
-                           //System.out.println("Post sending");
-
-                       }
-                   }.execute();
-
-
+            if (deleting > 0) {
+                while (deleting > DEL_AMOUNT) {
+                    del = BGService.storingManager.myDB.deleteNRowsFromTable(BGService.empaticaMilTableName,
+                            BGService.columnsTable[0], DEL_AMOUNT);
+                    if (del) {
+                        deleting = deleting - DEL_AMOUNT;
+                    }else{
+                        System.out.println("Not erased");
+                    }
                 }
+                //Finally deleting amount
+                del = BGService.storingManager.myDB.deleteNRowsFromTable(BGService.empaticaMilTableName,
+                        BGService.columnsTable[0], deleting);
             }
-        }
 
-                , 30*1000, 60*1000); // delay(seconds*1000), period(seconds*1000)
+            System.out.println("/////// END DELETING TIMER " + del);
 
+            return del;
+       // }
+       // else
+          //return false;
     }
 
 
@@ -644,35 +718,31 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     //*******************************************
     //  Database USB interface
 
-    /**
-     * Read not synchronized values from DatabaseManager and send via USB
-     *
-     * @return
-     */
 
-    public static String messageToUSB() {
-        List<Map<String, String>> listReadToUSB = BGService.storingManager.myDB.getNotUpdatedValues (BGService.empaticaMilTableName, BGService.columnsTable,
-                IITDatabaseManager.syncColumn, IITDatabaseManager.syncStatusNo, USBHost.LOCAL_SENDING_AMOUNT);
-        //Send to Server
-        if (listReadToUSB != null) {
-            String jSon = IITServerConnector.convertToJSON(listReadToUSB);
-            return jSon;
-
-        } else
-            return null;
-    }
 
     /**
      * Get all no sync values, and return a list of the JSON Strings to be sent
      * @return
      */
-    public void messageAsync(String table, String check_column, String check_value, int max) {
+    public void messageAsync(String table, String check_column, String check_value, int max, boolean ACK) {
         //TODO NO ACK NOW
         BGService.ackInProgress = true;
-        //List<Map<String, String>> listReadToUSB = BGService.myDB.getLastNSamples(table, BGService.columnsTable, check_column, check_value, max);
-        //Collections.reverse(listReadToUSB);
-        List<Map<String, String>> listReadToUSB=  BGService.storingManager.myDB.getNotUpdatedValues (table, BGService.columnsTable, check_column, check_value, max);
-        Collections.reverse(listReadToUSB);
+
+        List<Map<String, String>> listReadToUSB = null;
+        if(ACK){
+            while (listReadToUSB == null)
+                listReadToUSB=  BGService.storingManager.myDB.getNotCheckedValues(table, BGService.columnsTable, check_column, check_value, max);
+            //listReadToUSB = BGService.storingManager.myDB.getLastNSamples(table, BGService.columnsTable, max);
+            Collections.reverse(listReadToUSB);
+        }
+        else{
+            //listReadToUSB = BGService.storingManager.myDB.getLastNSamples(table, BGService.columnsTable, max);
+            while (listReadToUSB == null)
+                listReadToUSB=  BGService.storingManager.myDB.getNotCheckedValues(table, BGService.columnsTable, check_column, check_value, max);
+            Collections.reverse(listReadToUSB);
+        }
+
+
 
         if (listReadToUSB !=null){
             mHost.sendUSBList(listReadToUSB, table);

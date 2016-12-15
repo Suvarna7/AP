@@ -117,20 +117,25 @@ public class StoringThread implements Runnable {
      * @return
      */
     public void storeSampleInPermanentDatabase(ThreadSafeArrayList<String> sample, String table, String[] columns, List<ThreadSafeArrayList<String>> error){
-        try{
-            if(!myDB.insertIntoDatabaseTable(table, sample, columns)) {
-                //TODO when could not insert
+            try {
+                while (!myDB.insertIntoDatabaseTable(table, sample, columns)) {
+                    //TODO when could not insert
+
+                }
+            } catch (Exception e) {
+                System.out.println("Empatica store sample exception " + e);
+                //Save sample! in global list
+                if (error != null)
+                    error.add(sample);
+                else {
+                    error = new ArrayList<ThreadSafeArrayList<String>>();
+                    error.add(sample);
+                }
+
+                BGService.ackInProgress = false;
 
             }
-        }catch (Exception e) {
-            System.out.println("Empatica store sample exception " + e);
-            //Save sample! in global list
-            if (error != null)
-                error.add(sample);
 
-            BGService.ackInProgress = false;
-
-        }
     }
 
 
@@ -146,14 +151,14 @@ public class StoringThread implements Runnable {
       //  if (tempValues.size() > STORING_THRESHOLD) {
 
 
-                int n_samples = tempValues.size();
+        int n_samples = tempValues.size();
 
-                //Start moving values to permanent
-                while (tempValues.size() > 0)
-                    tempValues = storeGlobalListInDatabase(tempValues);
+        //Start moving values to permanent
+        while (tempValues.size() > 0)
+                tempValues = storeGlobalListInDatabase(tempValues);
 
-                //Delete temp table
-                tempDB.deleteNRowsFromTable(empaticaTableName, n_samples);
+        //Delete temp table
+        tempDB.deleteNRowsFromTable(empaticaTableName, BGService.columnsTable[0], n_samples);
 
        // }
         //Or wait till database is filled and read again

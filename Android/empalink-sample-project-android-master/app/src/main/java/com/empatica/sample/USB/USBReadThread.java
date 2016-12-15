@@ -25,7 +25,6 @@ public class USBReadThread extends Thread {
 
 	IITDatabaseManager mDatabase;
 	Context dbContext;
-
 	boolean firstRead;
 
 	public USBReadThread(USBHost host, Context ctx){
@@ -55,14 +54,7 @@ public class USBReadThread extends Thread {
 						//Post result in Command field:
 						showCommand(line);
 
-						String jSon = MainActivity.messageToUSB();
-						if (jSon != null) {
-							mHost.sendUSBmessage(jSon);
-							mHost.sendUSBmessage(USBHost._END_COMMAND);
-
-						} else
-							//Send no data message
-							mHost.sendUSBmessage(USBHost._NO_DATA);
+						mHost.mActivity.messageAsync(BGService.empaticaMilTableName, null, null, IITDatabaseManager.MAX_READ_SAMPLES_SYNCHRONIZE, false);
 
 					}
 
@@ -71,7 +63,7 @@ public class USBReadThread extends Thread {
 						//Post result in Command field:
 						showCommand(line);
 
-						//TODO
+						//TODO Only phone - send connection established back
 						mHost.sendUSBmessage(USBHost._CONNECTION_ESTABLISHED);
 						mHost.updateConnectedStatus("Connected", "USB HOST CONNECTED - established!  :) ", false);
 						firstRead = true;
@@ -85,8 +77,6 @@ public class USBReadThread extends Thread {
 						//TODO
 						mHost.updateConnectedStatus("CONNECT USB", "USB HOST DISCONNECTED - Press Connect USB in phone ", true);
 						mHost.disconnectUSBHost();
-
-
 
 
 					}//All not synchronized data is requested
@@ -107,7 +97,7 @@ public class USBReadThread extends Thread {
 
 								if (firstRead){
 									//Send more samples of data
-									 mHost.messageNAsync(BGService.empaticaMilTableName, 2*(IITDatabaseManager.MAX_READ_SAMPLES_UPDATE));
+									 mHost.messageNAsync(BGService.empaticaMilTableName, (IITDatabaseManager.MAX_READ_SAMPLES_SYNCHRONIZE));
 									firstRead = false;
 								}else{
 									//The rest, according to the interval
@@ -156,6 +146,7 @@ public class USBReadThread extends Thread {
 									//TODO BLOOOOOOOOCKS THE APP
 									// Invalid status - the only thing left to do is end transaction -> but blocks db instead
 									//System.out.println("Value of synchronized: "+(String) jsonObj.get("synchronized"));
+									mHost.last_time_ack = (String) jsonObj.get("time_stamp");
 									mDatabase.ackSyncStatusAllPrevious(dbContext, BGService.empaticaMilTableName,
 										(String) jsonObj.get("synchronized"), (String) jsonObj.get("time_stamp"));
 									//Inform phone process ended
