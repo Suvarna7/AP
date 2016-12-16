@@ -398,11 +398,15 @@ public class m20150711_gpc {
         }
 // <editor-fold defaultstate="collapsed" desc=" Run nonlinear optimization (OptRecursive class's .runOptimization method) based on armax parameters.Set lgvariables armax properties based on output.  ">
 
+// (double Y, Matrix phi, Matrix Q, Matrix P, double lambda, double err, Matrix Ymodel, double[] upperlimit, double[] lowerlimit, CobylaExitStatus exit) {
+
         OptInputs inputs = new OptInputs((gs.get(0, kj - 1)), phitemp,
-                armax_parameterstemp, armax_covariancetemp, (armax_lamda.get(kj - 1, 0)), 0, upperlim, lowerlim, null);
-        //TODO Call he other function!!! 
+                armax_parameterstemp, armax_covariancetemp, (armax_lamda.get(kj - 1, 0)), 0, 
+                upperlim, lowerlim, null);
+        //TODO Recursive Optimization
+        OptRecursive optRecursiveCons = new OptRecursive(inputs);
         //set the inputs to be the output of the current run. 
-        inputs = runOptimizationInStages(inputs);
+        inputs = optRecursiveCons.runOptimization();
         //TODO !!!
         //Load variables 
         m20150711_load_global_variables lgvariables = new m20150711_load_global_variables();
@@ -413,7 +417,7 @@ public class m20150711_gpc {
         lgvariables.armax_lamda = DIAS.createnewMatrix(kj + 1, 1, armax_lamda);
         lgvariables.armax_err = DIAS.createnewMatrix(kj + 1, 1, armax_error);
         lgvariables.armax_covariance = createnew3Dmatrix(lgvariables.armax_covariance, inputs.p().getRowDimension(), inputs.p().getColumnDimension(), kj + 1);
-        lgvariables.armax_lamda.set(kj, 0, inputs.lamda());
+        lgvariables.armax_lamda.set(kj, 0, inputs.lambda());
         lgvariables.armax_err.set(kj, 0, inputs.err());
 
         //2. Update their values:
@@ -1532,7 +1536,7 @@ We then use the matricecompareconstantmax() function on dividematrix to set the 
      * @param in Optimization Inputs
      * @return
      */
-    private OptInputs runOptimizationInStages(OptInputs in) {
+    /*private OptInputs runOptimizationInStages(OptInputs in) {
         OptRecursive optRecursiveCons = new OptRecursive(in);
         OptInputs res = optRecursiveCons.runOptimization();
         optRecursiveCons.saveOptRecursiveVariables();
@@ -1563,6 +1567,6 @@ We then use the matricecompareconstantmax() function on dividematrix to set the 
         }
         return res;
 
-    }
+    }*/
 
 }
