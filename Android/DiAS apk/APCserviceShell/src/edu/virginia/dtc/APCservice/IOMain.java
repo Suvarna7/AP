@@ -19,6 +19,7 @@ import edu.virginia.dtc.APCservice.Database.IITDatabaseManager;
 import edu.virginia.dtc.APCservice.Server.IITServerConnector;
 import edu.virginia.dtc.APCservice.USB.USBHost;
 import edu.virginia.dtc.APCservice.USB.USBReadThread;
+import edu.virginia.dtc.APCservice.USB.UsbReceiver;
 import edu.virginia.dtc.SysMan.Biometrics;
 import edu.virginia.dtc.SysMan.Controllers;
 import edu.virginia.dtc.SysMan.Debug;
@@ -148,6 +149,8 @@ public class IOMain extends Service {
 		
 		//TODO Start usb host
         startUSBConnection();
+        
+        
 
 
 	}
@@ -392,7 +395,7 @@ public class IOMain extends Service {
 							//TODO Call algorithm - FROM USB Connection
 							//correction = 0;
 							//correction = AlgorithmManager.runAlgorithm(cgmArray.get(cgmArray.size()-1) ,getArrayFixed(bodymediaArray.get(BodyMediaMatrix._EE)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._GSR)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._ACT)), getArrayFixed(bodymediaArray.get(BodyMediaMatrix._SLEEP)));
-							if (mHost.connected){
+							if (mHost.isConnected()){
 								//SEND READ READY:
 								//mHost.sendUSBmessage(USBHost._PHONE_READY);
 								
@@ -605,14 +608,18 @@ public class IOMain extends Service {
 		
         //Initialize server socket in a new separate thread
         mHost = new USBHost(this, this);
-        
-        //Start USB Connection
+		//Start USB Connection
         mHost.intent = new Intent(ctx, IOMain.class);
         mHost.mHandler=new Handler();
+        
         new Thread(mHost.initializeConnection).start();
+        
         String msg="Attempting to connect…";
         Toast.makeText(ctx, msg, Toast.LENGTH_LONG).show();
+        //Update Broadcast receiver
+        UsbReceiver.addUsbHost(mHost);
 	}
+	
 	
 	private double[] waitForAlgorithmResponse(){
 		USBReadThread.processing_algorithm = true;

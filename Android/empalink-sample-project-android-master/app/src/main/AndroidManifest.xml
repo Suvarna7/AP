@@ -58,6 +58,16 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="landscape">
         </activity>
+
+        <receiver android:name="com.empatica.sample.USB.UsbReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+                <action android:name="android.hardware.usb.action.ACTION_USB_DEVICE_DETACHED" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

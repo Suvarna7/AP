@@ -27,6 +27,9 @@
  */
 public class USBHost {
 
+    //Connection flag
+    public boolean connected;
+
     //Socket server variables
     ServerSocket server = null;
     public String connectionStatus = null;
@@ -115,8 +118,10 @@ public class USBHost {
 
                 mHandler.post(showConnectionStatus);
 
-                server = new ServerSocket(ANDROID_LOCAL_HOST);
-                server.setSoTimeout(TIMEOUT * 100000);
+               // if (server == null) {
+                    server = new ServerSocket(ANDROID_LOCAL_HOST);
+                    server.setSoTimeout(TIMEOUT * 100000);
+                //}
                 connectionStatus = "Server socket... " + server.getLocalPort() + " - " + server.getLocalSocketAddress();
                 mHandler.post(showConnectionStatus);
 
@@ -219,7 +224,8 @@ public class USBHost {
         //Disconnect server
         try {
             //Close and reset CLIENT
-            client.close();
+            if (client != null )
+                client.close();
             //client.shutdownInput();
             //client.shutdownOutput();
             client = null;
@@ -227,13 +233,16 @@ public class USBHost {
             readingThread.shutdown();
 
             //Sending socket
-            socketOut.close();
+            if (socketOut != null )
+                socketOut.close();
             socketOut = null;
 
             //Close SERVER
             server.close();
 
         } catch (IOException e) {
+            System.out.println("Exception while closing server: " + e);
+        } catch (Exception e){
             System.out.println("Exception while closing server: " + e);
         }
 
@@ -256,6 +265,16 @@ public class USBHost {
             Toast.makeText(ctx, connectionStatus, Toast.LENGTH_SHORT).show();
         }
     };
+
+    public boolean isConnected(){
+        try {
+            return connected && client != null && client.isConnected();
+        }catch (Exception e){
+            System.out.println("Thread to connect cannot be started: "+e);
+
+            return false;
+        }
+    }
 
     /**
      * Get all no sync values, and return a list of the JSON Strings to be sent

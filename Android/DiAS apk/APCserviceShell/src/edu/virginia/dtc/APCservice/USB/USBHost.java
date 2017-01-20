@@ -2,6 +2,7 @@ package edu.virginia.dtc.APCservice.USB;
 
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.usb.UsbManager;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
@@ -26,6 +27,8 @@ import java.util.Scanner;
  */
  public class USBHost {
 
+	 //USB Broadcast receiver
+	 
 	//Socket server variables
 	 ServerSocket server=null;
 	 public  String connectionStatus=null;
@@ -86,6 +89,7 @@ import java.util.Scanner;
 
 
 	 public USBHost (IOMain mainAct, Context ctx){
+
 		 this.ctx = ctx;
 		 readingThread = new USBReadThread( this, ctx, mainAct.sManager.dbManager);
 		 connected = false;
@@ -127,8 +131,13 @@ import java.util.Scanner;
 
 				 mHandler.post(showConnectionStatus);
 
-				 server = new ServerSocket(ANDROID_LOCAL_HOST);
-				 server.setSoTimeout(TIMEOUT * 100000);
+				 if (server == null){
+					server = new ServerSocket(ANDROID_LOCAL_HOST);
+				 	server.setSoTimeout(TIMEOUT * 100000);
+				 }else if (server.isClosed()){
+					 server = new ServerSocket(ANDROID_LOCAL_HOST);
+					 server.setSoTimeout(TIMEOUT * 100000);
+				 }
 				 connectionStatus="Server socket... " + server.getLocalPort() +" - "+ server.getLocalSocketAddress();
 				 mHandler.post(showConnectionStatus);
 
@@ -184,7 +193,7 @@ import java.util.Scanner;
 
 			 } catch (IOException e) {
 				 Log.e(TAG, "" + e);
-				 System.out.println("Server IO Exception");
+				 System.out.println("Server IO Exception: "+e);
 				 //connectionStatus="Server IO Exception - Restart connection/phone";
 				 //mHandler.post(showConnectionStatus);
 			 } finally {
@@ -296,6 +305,16 @@ import java.util.Scanner;
 
 		 } else
 			 return null;
+	 }
+	 
+	 public boolean isConnected(){
+		 try {
+	            return connected && client != null && client.isConnected();
+	        }catch (Exception e){
+	            System.out.println("Thread to connect cannot be started: "+e);
+
+	            return false;
+	        }
 	 }
 
 	 /**

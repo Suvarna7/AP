@@ -86,7 +86,7 @@ public class IITDatabaseManager {
 
     //1 second = 64 + 32 + 4 + 4 + 1 = 105 samples
     //Sending up to 10 minutes
-    public static int MAX_READ_SAMPLES_SYNCHRONIZE = 8*60*(64+32+4+4+1);
+    public static int MAX_READ_SAMPLES_SYNCHRONIZE = 4*60*(64+32+4+4+1);
 
     //Max number of samples that can be stored in a HashMap
     public static int MAX_MEMORY_SAMPLES = 10*60*(64+32+4+4+1);

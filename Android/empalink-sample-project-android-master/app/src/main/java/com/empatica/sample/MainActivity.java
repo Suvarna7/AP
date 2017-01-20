@@ -27,6 +27,7 @@ import com.empatica.sample.Database.IITDatabaseManager;
 import com.empatica.sample.Database.StoringThread;
 import com.empatica.sample.Server.IITServerConnector;
 import com.empatica.sample.USB.USBHost;
+import com.empatica.sample.USB.UsbReceiver;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -82,7 +83,6 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     //App context
     private Context appContext;
     private MainActivity appMain;
-    public boolean connected;
     private static boolean alreadyInitialized = false;
 
     //USB Connection
@@ -90,6 +90,8 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     public static USBHost mHost;
     public TextView usbCommand;
     public static String usbCommandValue;
+
+    //public final String USB_START_CONNECT= getString(R.string.connect_usb_init);
 
     //IIT Server manager and automatic sending
     public static Timer sendDataTimer;
@@ -155,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
             alreadyInitialized = true;
             //USB Connect start
             mHost = new USBHost(this, this);
+            UsbReceiver.addUsbHost(mHost);
 
             //Start service
             BGService.initContext(this);
@@ -162,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
             startService(new Intent(this, BGService.class));
 
             usbCommandValue = "waiting for a command..";
-            connected = false;
+            mHost.connected = false;
 
             //Server
             //Initialize server connector
@@ -402,7 +405,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                 }
             });
             //UPDATE CONNECTED STATUS
-            connected = true;
+            mHost.connected = true;
 
             // The device manager disconnected from a device
         } else if (status == EmpaStatus.DISCONNECTED) {
@@ -415,7 +418,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                 }
             });
             updateLabel(deviceNameLabel, "");
-            connected = false;
+            mHost.connected = false;
 
         }
     }
@@ -483,7 +486,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                 BGService.serviceStarted = false;
                 view.setBackgroundColor(getResources().getColor(R.color.dark_green_paleta));
                 startServiceButton.setBackgroundColor(getResources().getColor(R.color.ligher_green_paleta));
-                connected = false;
+                mHost.connected = false;
 
 
             }
@@ -562,7 +565,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                 //TODO
                //mHost.sendUSBmessage(USBHost._END_COMMAND);
 
-                if (connected) {
+                if (mHost.connected) {
                     //Store values in database every minute and reset:
 
                     new AsyncTask<URL, Integer, Long>() {
@@ -680,7 +683,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                                     }*/
             //myServerManager.debugServer("samples");
 
-            //3. Delete updated values
+            //TODO 3. Delete updated values
             int deleting = samples - safetyMargin;
             System.out.println("/////// END SENDING TIMER " + deleting);
             boolean del = false;
@@ -702,7 +705,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
 
             System.out.println("/////// END DELETING TIMER " + del);
 
-            return del;
+            return del ;
        // }
        // else
           //return false;
