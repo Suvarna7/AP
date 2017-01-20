@@ -389,6 +389,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
             }
             // The device manager has established a connection
         } else if (status == EmpaStatus.CONNECTED) {
+            BGService.EmpaticaDisconnected = false;
             // Stop streaming after STREAMING_TIME
             runOnUiThread(new Runnable() {
                 @Override

@@ -167,6 +167,16 @@ public class USBReadThread extends Thread {
 						BGService.ackInProgress = false;
 
 
+					}else if (line.contains(USBHost._TEST_USB)){
+						mHost.sendUSBmessage(USBHost._ACK_TEST_USB);
+					}
+					else if (line.contains(USBHost._TEST_DEVICE)){
+						//Test Empatica connected
+						if (BGService.EmpaticaDisconnected )
+							mHost.sendUSBmessage(USBHost._VERIFY_DEVICE_DISCONNECTED );
+						else
+							mHost.sendUSBmessage(USBHost._VERIFY_DEVICE_CONNECTED );
+
 					}
 				}
 

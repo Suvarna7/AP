@@ -116,10 +116,13 @@ public class BGService extends Service implements EmpaDataDelegate{
     private static final double    _IBI_MAX = 1.5;
     private static final double    _IBI_MIN= 0.25;
 
+    public static boolean EmpaticaDisconnected;
 
-    public BGService (){  /*Do nothing */ }
+
+    public BGService (){  /*Do nothing */ EmpaticaDisconnected = true;}
     public BGService(MainActivity main) {
         mActivity = main;
+        EmpaticaDisconnected = true;
     }
 
     public static void initContext(MainActivity main){

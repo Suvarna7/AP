@@ -139,9 +139,7 @@ end
 %% Check Smartphone connection state
 global usb_con;
 'USB CONNECTED:'
-usb_connected = check_usb(usb_con)
-'Empatica Connected:'
-emp_connected = check_bl_connection(usb_con, 'empatica')
+connected = check_usb(usb_con)
 
 
 %% Get CGM reading and define sampling time
@@ -231,7 +229,7 @@ catch theErrorInfo  %sends an error email to Kamuran and Iman (Add your email if
     set(handles.gui_error_message,'Visible','on')
 end
 %% Get Empatica data
-if (usb_connected)
+if (connected)
     'Empatica...'
     global usb_con;
     global empatica_data;
@@ -248,8 +246,7 @@ if (usb_connected)
 
     'Received!'
 else
-    %Show a warning!
-    'NO USB CONNECTION!!'
+    %Show a w
 end
 %% Calculate IOB
 try
