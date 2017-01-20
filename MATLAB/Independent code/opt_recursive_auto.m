@@ -222,9 +222,9 @@ options1=optimset('Algorithm','interior-point','Display','iter-detailed');
 
 % Q = fmincon(fun,x0,A,b,Aeq,beq,lb,ub,nonlcon,options)
 Q_old
-%[Q, fval, exitflag, output]=fmincon(@objective,Q_old,[],[],[],[],lowerlim,upperlim,@constraint,options1);%Find minimum of constrained nonlinear multivariable function:
-[Q, fval, exitflag, output]=fmincon(@objective,Q_old,[],[],[],[],[],[],@constraint,options1);%Find minimum of constrained nonlinear multivariable function:
-[Q_noc, fval, exitflag, output]=fmincon(@objective,Q_old,[],[],[],[],[],[],@no_constraint,options1);%Find minimum of constrained nonlinear multivariable function:
+[Q, fval, exitflag, output]=fmincon(@objective,Q_old,[],[],[],[],lowerlim,upperlim,@constraint,options1);%Find minimum of constrained nonlinear multivariable function:
+%[Q, fval, exitflag, output]=fmincon(@objective,Q_old,[],[],[],[],[],[],@constraint,options1);%Find minimum of constrained nonlinear multivariable function:
+%[Q_noc, fval, exitflag, output]=fmincon(@objective,Q_old,[],[],[],[],[],[],@no_constraint,options1);%Find minimum of constrained nonlinear multivariable function:
 
 %NOTE Constraint tolerance = 1.e-6
 assignin('base', 'options', options1);
