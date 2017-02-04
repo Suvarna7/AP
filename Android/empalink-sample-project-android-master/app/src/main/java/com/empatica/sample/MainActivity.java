@@ -166,6 +166,8 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
 
             usbCommandValue = "waiting for a command..";
             mHost.connected = false;
+            BGService.EmpaticaDisconnected = true;
+
 
             //Server
             //Initialize server connector
@@ -389,7 +391,6 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
             }
             // The device manager has established a connection
         } else if (status == EmpaStatus.CONNECTED) {
-            BGService.EmpaticaDisconnected = false;
             // Stop streaming after STREAMING_TIME
             runOnUiThread(new Runnable() {
                 @Override
@@ -406,7 +407,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                 }
             });
             //UPDATE CONNECTED STATUS
-            mHost.connected = true;
+            BGService.EmpaticaDisconnected = false;
 
             // The device manager disconnected from a device
         } else if (status == EmpaStatus.DISCONNECTED) {
@@ -419,7 +420,9 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                 }
             });
             updateLabel(deviceNameLabel, "");
-            mHost.connected = false;
+            BGService.EmpaticaDisconnected = true;
+
+
 
         }
     }
@@ -487,7 +490,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                 BGService.serviceStarted = false;
                 view.setBackgroundColor(getResources().getColor(R.color.dark_green_paleta));
                 startServiceButton.setBackgroundColor(getResources().getColor(R.color.ligher_green_paleta));
-                mHost.connected = false;
+                BGService.EmpaticaDisconnected = true;
 
 
             }

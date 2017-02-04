@@ -1,6 +1,6 @@
 function [ connected ] = check_usb( connection )
-%CHECK_USB Summary of this function goes here
-%   Detailed explanation goes here
+%CHECK_USB checks if the java program is connected to the phone via USB 
+%   - connection = connection to Java program
 
 %Send request
 fprintf(connection, 'usb_state'); 

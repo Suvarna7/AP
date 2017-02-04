@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.usb.UsbManager;
+import android.os.Vibrator;
 import android.widget.Toast;
 
 public class UsbReceiver extends BroadcastReceiver{
@@ -50,10 +51,15 @@ public class UsbReceiver extends BroadcastReceiver{
 							uHost.updateConnectedStatus("CONNECT", "START USB CONNECTION - Press CONNECT USB", true);
 							uHost.disconnectUSBHost();
 
-
 						} else {
 							uHost.connected = false;
 						}
+
+
+					//Vibrate
+					Vibrator vibrator;
+					vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+					vibrator.vibrate(1000);
 
 
 				} else if ("android.intent.action.ACTION_POWER_CONNECTED".equals(action)) {

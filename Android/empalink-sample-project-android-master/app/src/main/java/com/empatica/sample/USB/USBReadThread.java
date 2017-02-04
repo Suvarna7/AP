@@ -171,6 +171,8 @@ public class USBReadThread extends Thread {
 						mHost.sendUSBmessage(USBHost._ACK_TEST_USB);
 					}
 					else if (line.contains(USBHost._TEST_DEVICE)){
+						//Extract device information
+						//But for now....
 						//Test Empatica connected
 						if (BGService.EmpaticaDisconnected )
 							mHost.sendUSBmessage(USBHost._VERIFY_DEVICE_DISCONNECTED );

@@ -36,7 +36,7 @@ public class ConnectionDialog extends Activity {
         //Vibrate
         Vibrator vibrator;
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        vibrator.vibrate(500);
+        vibrator.vibrate(1000);
 
         alertDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override

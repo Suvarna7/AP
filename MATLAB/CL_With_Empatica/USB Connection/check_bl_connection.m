@@ -1,11 +1,13 @@
 function [ connected ] = check_bl_connection( con, device )
-%CHECK_BL_CONNECTION Summary of this function goes here
-%   Detailed explanation goes here
+%CHECK_BL_CONNECTION checks if the device is connected via Blutooth to the
+% phone
+%   - con = connection (to Java program)
+%   - device = device name. Current accepted names 'empatica'
 if (strcmp(device, 'empatica'))
-    fprintf(con, 'usb_state'); 
+    fprintf(con, '{command: verify_device; device:empatica}'); 
 end
 
-ready_to_read = true;
+ready_to_read = true;   
 while (ready_to_read)
       if (con.BytesAvailable > 0)
                 %Read new data from Java and phone

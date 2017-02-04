@@ -140,9 +140,6 @@ end
 global usb_con;
 'USB CONNECTED:'
 usb_connected = check_usb(usb_con)
-'Empatica Connected:'
-emp_connected = check_bl_connection(usb_con, 'empatica')
-
 
 %% Get CGM reading and define sampling time
 try
@@ -232,8 +229,13 @@ catch theErrorInfo  %sends an error email to Kamuran and Iman (Add your email if
 end
 %% Get Empatica data
 if (usb_connected)
+    'Empatica Connected:'
+    emp_connected = check_bl_connection(usb_con, 'empatica')
+
+
+    if (emp_connected)
     'Empatica...'
-    global usb_con;
+    %global usb_con;
     global empatica_data;
     [table, empatica_new] = read_last_samples(usb_con, 'empatica');
     % if (size(empatica_data)>0)
@@ -247,6 +249,9 @@ if (usb_connected)
     assignin('base', 'empatica', empatica_new);
 
     'Received!'
+    else
+        'NO EMPATICA CONNECTION!!'
+    end
 else
     %Show a warning!
     'NO USB CONNECTION!!'
