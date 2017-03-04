@@ -233,7 +233,8 @@ if (usb_connected)
     emp_connected = check_bl_connection(usb_con, 'empatica')
 
 
-    if (emp_connected)
+    %if (emp_connected)
+    if(true)
     'Empatica...'
     %global usb_con;
     global empatica_data;

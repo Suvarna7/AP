@@ -16,6 +16,7 @@ public class StoringThread implements Runnable {
     //Database
     public static IITDatabaseManager myDB;
     public static IITDatabaseManager tempDB;
+
     public static final String empaticaTableName= "empatica_table";
     private static final String TEMP_DB_NAME = "empaticaTempDB.db";
 
@@ -45,6 +46,9 @@ public class StoringThread implements Runnable {
 
     @Override
     public void run(){
+        //Call garbage collector
+        System.gc();
+
         running = true;
         System.out.println("Start storing: "+Thread.currentThread().getName());
         BGService.ackInProgress = true;

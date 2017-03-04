@@ -1,27 +1,16 @@
 package com.empatica.sample.Server;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.http.Header;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.content.Context;
 import android.text.format.Time;
 
-import com.empatica.sample.Database.IITDatabaseManager;
+import com.empatica.sample.Timers.SendDataTimer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 
@@ -47,11 +36,12 @@ public class IITServerConnector {
 	private String JSON_ID;
 	private String WRITE_URL;
 	private String READ_URL;
-	private AsyncHttpClient httpClient;
-	private IITDatabaseManager dbManager;
 	private ArrayList<String> tableNames;
-	private Context databaseContext ;
-	public  boolean sending;
+	public  static boolean sending;
+
+	//HTTTP client
+	private AsyncHttpClient httpClient;
+	private simpleHttpResponderAsync myResponder;
 
 	//Server Database:
 	//public static final String _SERVER_DB_NAME =  "IITdb.db";
@@ -75,14 +65,15 @@ public class IITServerConnector {
 	 * @param writeURL - server url tp write values
 	 * @param readURL - server url to read values
 	 */
-	public IITServerConnector(String jsonID, String writeURL, String readURL, IITDatabaseManager manager, Context ctx){
+	public IITServerConnector(String jsonID, String writeURL, String readURL){
 		httpClient =  new AsyncHttpClient();
+		myResponder =  new simpleHttpResponderAsync();
+
 		JSON_ID= jsonID;
 		WRITE_URL = writeURL;
 		READ_URL = readURL;
-		tableNames = new ArrayList<String>();
-		dbManager = manager;
-		databaseContext =  ctx;
+		tableNames = new ArrayList<>();
+
 
 
 	}
@@ -110,27 +101,31 @@ public class IITServerConnector {
 	 * @param table - name of the table 
 	 */
 
-	/*public void debugSendToServer(String table){
+	public void debugSendToServer(String table){
 		//List<Map> args
 		//json = "[{\"table_name\": "+TABLE_NAME+"},{\"user\": mentira, \"heartrate\": 80, \"cgm\": 5}]";
 
 		Map <String, String> map1 = new HashMap <String, String>();
-		Map <String, String> map = new HashMap <String, String>();
+		Map <String, String> map = new HashMap<String, String>();
 
 		List<Map<String, String>> arg = new ArrayList<Map<String, String>>();
-		map1.put("table_name", table);
+		map.put("table_name", table);
 		map.put("user", "mentira");
 		map.put("heart_rate", "80");
 		map.put("cgm", "105");
 		map.put("updated", "n");
+		map.put("time_stamp", getCurrentTime());
 
-		arg.add(map1);
+
+		//arg.add(map1);
 		arg.add(map);
 
 		sendToIIT(convertToJSON(arg), WRITE_URL);
 
+		System.out.println("Sent to server: "+WRITE_URL);
 
-	}*/
+
+	}
 
 
 	/**
@@ -141,6 +136,8 @@ public class IITServerConnector {
 	public void sendToIIT(String json, String url){
 
 		System.out.println("Sending to server: " + json);
+		System.out.println(url);
+
 		sending = true;
 
 		//Set parameters
@@ -148,7 +145,7 @@ public class IITServerConnector {
 		params.put(JSON_ID, json);
 
 		//Send http request
-		httpClient.post(url , params, asyncHTTPClient);
+		httpClient.post(url , params, myResponder);
 
 
 }
@@ -160,7 +157,7 @@ public class IITServerConnector {
  */
 public void readTableValuesIIT(String tableName, String url){
 	//Send the read command to IIT server
-	sendToIIT("{ \"table_name\": \""+tableName+"\"}", url);
+	sendToIIT("{ \"table_name\": \"" + tableName + "\"}", url);
 
 }
 
@@ -186,12 +183,12 @@ public  static String convertToJSON( List<Map<String, String>> args){
 /**
  * convertToString()
  */
-private String convertToString(byte[] args){
+public static String convertToString(byte[] args){
 	String str = "";
 	try{
 		str = new String(args, "UTF-8"); // for UTF-8 encoding
 	}catch (Exception e){
-
+		e.printStackTrace();
 	}
 	return str;
 }
@@ -211,125 +208,7 @@ protected static String getCurrentTime(){
 
 }
 
-	/****************************************************
-	 * HTTP ASYNC CLIENT
-	 */
-	private final AsyncHttpResponseHandler asyncHTTPClient = new AsyncHttpResponseHandler() {
 
-		//Handle succesful response
-		public void onSuccess(String response) {
-			System.out.println("Success response from server: "+response);
-
-				try {
-
-					//Convert to a JSON Array and get the arguments
-					JSONArray arr = new JSONArray(response);
-					//List<String> args = new ArrayList();
-					//Analyze each JSON object
-					System.out.println("****** Start server deleting");
-
-					for(int i=0; i<arr.length();i++){
-						JSONObject jsonObj = (JSONObject)arr.get(i);
-
-						/*if (jsonObj.get("syncrhonized").equals('n')){
-							//The value comes from a read request
-							String tableN = jsonObj.get("table_name").toString();
-
-							//Create table if it does not exist
-							if (tableNames.contains(tableN)){
-								tableNames.add(tableN);
-								JSONArray jsonArray = jsonObj.names();
-								ArrayList<String> columns = new ArrayList<String>();
-								//Build the List of columns
-
-								for (int j=0; j<jsonArray.length(); j++) {
-									String val = jsonArray.getString(j);
-									//Eliminate table_name column
-									if (!val.equals("table_name"))
-										columns.add( jsonArray.getString(j) );
-								}
-								//TODO Time_stamp should be send as the first columns
-								dbManager.createTable(tableN, columns.get(0), columns);
-							}
-							//Update values
-							//Build the List of values
-							ArrayList<String> values = new ArrayList<String>();
-							Iterator <String> it = jsonObj.keys();
-							while(it.hasNext()){
-								String val = (String)it.next();
-								//Eliminate table_name column and syncrhonized
-								if (!val.equals("table_name")&&!val.equals("synchronized"))
-									values.add(val);
-							}
-							//Update values in table TODO
-							dbManager.updateNewValuesDatabase(tableN, values, true);
-
-						}else{*/
-							//Result comes from inserting
-							//Check updated value:
-							//It was correctly included in the server -> reset table
-							//IOMain.notSynchValues.clear();
-
-						//System.out.println("Received server time:"+(String) jsonObj.get("time_stamp"));
-
-						//TODO Update db !! delete the rows
-						//	dbManager.updateSyncStatus(databaseContext, (String) jsonObj.get("table_name"), IITDatabaseManager.upDateColumn, (String) jsonObj.get("updated"), (String) jsonObj.get("time_stamp"));
-
-						if (((String) jsonObj.get("updated")).equals(IITDatabaseManager.updatedStatusYes)) {
-							//dbManager.deleteRowInTable((String) jsonObj.get("table_name"), (String) jsonObj.get("time_stamp"));
-						}
-						//dbManager.updateSyncStatus(databaseContext, (String) jsonObj.get("table_name"),
-						//		IITDatabaseManager.syncColumn, (String) jsonObj.get("updated"), (String) jsonObj.get("time_stamp"));
-
-
-						//}
-
-
-				}
-					System.out.println("****** End server deleting");
-
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-			System.out.println("Sending ends!");
-			sending = false;
-		}
-
-		//Handle failing response
-		public void onFailure(int statusCode, Throwable error, String content) {
-
-			System.out.println("Failed! server:" + statusCode);
-
-				if (statusCode == 404) {
-					System.out.println("Page not found");
-
-				} else if (statusCode == 500) {
-					System.out.println("Server failure");
-
-				} else {
-				}
-				sending = false;
-
-
-
-		}
-
-		@Override
-		public void onFailure(int arg0, Header[] arg1, byte[] arg2,
-							  Throwable arg3) {
-			String cont = convertToString(arg2);
-
-			onFailure(arg0, arg3, cont);
-
-		}
-
-		@Override
-		public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
-			String cont = convertToString(arg2);
-			onSuccess(cont);
-
-		}
-	};
 
 
 

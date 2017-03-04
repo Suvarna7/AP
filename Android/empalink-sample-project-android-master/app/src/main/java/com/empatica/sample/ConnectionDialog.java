@@ -10,6 +10,8 @@ import android.os.Vibrator;
 import android.view.View;
 import android.view.WindowManager;
 
+import com.empatica.sample.Timers.NotConnectedTimer;
+
 
 /**
  * ConenctionDialog - Dialog alert fragment to be shown when connection with the device is lost
@@ -22,7 +24,6 @@ public class ConnectionDialog extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-        BGService.EmpaticaDisconnected = true;
         alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
         alertDialog.setTitle("Empatica");
         alertDialog.setMessage("Check device connection");
@@ -31,7 +32,7 @@ public class ConnectionDialog extends Activity {
         BGService.notConnectedTimer.cancel();
         //Stop the BG_Service - without connection is not doing anything
         stopService(new Intent(this, BGService.class));
-        BGService.startTimer = false;
+        NotConnectedTimer.setTime(false);
 
         //Vibrate
         Vibrator vibrator;
@@ -42,7 +43,7 @@ public class ConnectionDialog extends Activity {
             @Override
             public void onCancel(DialogInterface dialog) {
                 //Reset timer
-                BGService.startTimer = true;
+                NotConnectedTimer.setTime(true);
 
                 //Connect button visible
                 MainActivity.connectButton.setVisibility(View.VISIBLE);

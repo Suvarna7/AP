@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -23,19 +22,11 @@ import com.empatica.empalink.config.EmpaSensorStatus;
 import com.empatica.empalink.config.EmpaSensorType;
 import com.empatica.empalink.config.EmpaStatus;
 import com.empatica.empalink.delegate.EmpaStatusDelegate;
-import com.empatica.sample.Database.IITDatabaseManager;
-import com.empatica.sample.Database.StoringThread;
-import com.empatica.sample.Server.IITServerConnector;
+import com.empatica.sample.Timers.SendDataTimer;
 import com.empatica.sample.USB.USBHost;
 import com.empatica.sample.USB.UsbReceiver;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+
 
 
 /**
@@ -50,11 +41,10 @@ import java.util.TimerTask;
 public class MainActivity extends AppCompatActivity implements EmpaStatusDelegate {
 
     private static final int REQUEST_ENABLE_BT = 1;
-    public static final long STREAMING_TIME = 25 * 60000; // Check key after 25 min
     public static final String EMPATICA_API_KEY = "f92ddb7260a54f5790038ba90ef4d1ad"; // TODO insert your API Key here
 
     //GUI labels
-    //Connetion status
+    //Connection status
     public TextView internet_conn;
     public TextView statusLabel;
     public TextView deviceNameLabel;
@@ -83,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     //App context
     private Context appContext;
     private MainActivity appMain;
-    private static boolean alreadyInitialized = false;
+    private static boolean alreadyInitialized;
 
     //USB Connection
     public TextView usbConenctionStatus;
@@ -94,15 +84,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     //public final String USB_START_CONNECT= getString(R.string.connect_usb_init);
 
     //IIT Server manager and automatic sending
-    public static Timer sendDataTimer;
-    private static final int SENDING_AMOUNT = 100;
-    private static final int SENDING_PERIOD = 5*60*1000; //15 min
-    private static final int DELETING_MARGIN = 10*60*(64+32+4+4+1); // 10 min
-    private static final int DEL_AMOUNT = 3000;
-    //IIT Server manager
-    IITServerConnector myServerManager;
-    private static final String jsonID = "empaticaJSON";
-
+    public static SendDataTimer sendDataTimer;
 
 
 
@@ -153,53 +135,6 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
         appMain = this;
 
 
-        if (!BGService.serviceStarted || !alreadyInitialized) {
-            alreadyInitialized = true;
-            //USB Connect start
-            mHost = new USBHost(this, this);
-            UsbReceiver.addUsbHost(mHost);
-
-            //Start service
-            BGService.initContext(this);
-            //Start background service
-            startService(new Intent(this, BGService.class));
-
-            usbCommandValue = "waiting for a command..";
-            mHost.connected = false;
-            BGService.EmpaticaDisconnected = true;
-
-
-            //Server
-            //Initialize server connector
-            //Send data to IIT
-            myServerManager = new IITServerConnector(jsonID, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL,
-                   IITServerConnector.IIT_SERVER_READ_TABLE_URL, StoringThread.myDB, this);
-            sendDataTimer = new Timer();
-            //TODO SERVER BACKUP
-            startSendingTimer();
-
-        }else{
-            //Set the view for Connected
-            System.out.println("Coming back - mainActivity create again!!");
-            if (connectionS.contains("CONNECTED") && !connectionS.contains("DISCONNECTED")) {
-                //Make connected screen visible
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        connectButton.setVisibility(View.INVISIBLE);
-                        dataCnt.setVisibility(View.VISIBLE);
-
-
-                    }
-                });
-                updateLabel(internet_conn, "INTERNET");
-                updateLabel(statusLabel, connectionS);
-                updateLabel(deviceNameLabel, "To: " + device);
-            }
-
-        }
-
 
 
 
@@ -219,7 +154,6 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
 
     @Override
     public void onResume() {
-        //System.out.println("App resumed");
 
         super.onResume();
         //Update context
@@ -242,10 +176,8 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     @Override
     public void onStart() {
         super.onStart();
-        //System.out.println("App started");
 
-
-        //Update context
+       /* //Update context
         BGService.initContext(this);
 
         //Make connected screen visible
@@ -257,7 +189,73 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                     connectButton.setVisibility(View.INVISIBLE);
                     dataCnt.setVisibility(View.VISIBLE);
                 }
-            });
+            });*/
+
+        if (!BGService.serviceStarted || !alreadyInitialized) {
+            System.out.println("Starting app - mainActivity create first time!!");
+
+            alreadyInitialized = true;
+
+            //USB Connect start
+            if (mHost == null) {
+                mHost = new USBHost(this, this);
+                usbCommandValue = "waiting for a command..";
+                mHost.connected = false;
+            }else{
+                //There a USB host active, keep USB button connected
+                mHost.updateConnectedStatus("Connected", "USB HOST CONNECTED - established!  :) ", false);
+
+            }
+
+            //Start background service
+            BGService.initContext(this);
+            startService(new Intent(this, BGService.class));
+
+            //Empatica disconencted
+            BGService.EmpaticaDisconnected = true;
+
+
+            //Server
+            //Initialize server connector
+            sendDataTimer = new SendDataTimer(this);
+            //TODO SERVER BACKUP
+            sendDataTimer.startTimer();
+
+        }else{
+            //Set the view for Connected
+            System.out.println("Coming back - mainActivity create again!!");
+
+
+            //Empatica conncted status
+            if (connectionS.contains("CONNECTED") && !connectionS.contains("DISCONNECTED")) {
+                //Make connected screen visible
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        connectButton.setVisibility(View.INVISIBLE);
+                        dataCnt.setVisibility(View.VISIBLE);
+                    }
+                });
+                updateLabel(internet_conn, "INTERNET");
+                updateLabel(statusLabel, connectionS);
+                updateLabel(deviceNameLabel, "To: " + device);
+            }else {
+                System.out.println("mainActivity Empatica disconnected");
+            }
+
+            //USB connected status
+            if (mHost != null && mHost.isConnected()) {
+                //There a USB host active, keep USB button connected
+                updateLabel(usbConenctionStatus, "USB HOST CONNECTED - established!  :) ");
+                updateButton(connectUSBButton, "Connected", getResources().getColor(R.color.dark_green_paleta), false);
+                System.out.println("mainActivity USB CONNECTED");
+
+            }else
+                System.out.println("mainActivity USB disconnected");
+
+
+
+        }
 
 
     }
@@ -276,7 +274,6 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
 
     @Override
     public void onStop() {
-        System.out.println("App stopped");
         //startStreamingPackets();
         super.onStop();
 
@@ -450,10 +447,12 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     }
 
     /* ***********************************************************
-        OnClickListeners
+        ON CLICK LISTENERS FOR BUTTONS
+        ********************************************************
      */
 
     /**
+     * Connect Empatica
      * Starts connection process when clicked
      */
     private View.OnClickListener connectListener = new View.OnClickListener() {
@@ -480,6 +479,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     };
 
     /**
+     * BGService STOP
      * Stops the background service when clicked
      */
     private View.OnClickListener stopListener = new View.OnClickListener() {
@@ -499,6 +499,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     };
 
     /**
+     * BGService START
      * Starts the background service when clicked
      */
     private View.OnClickListener startListener = new View.OnClickListener() {
@@ -508,7 +509,6 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                 BGService.initContext(appMain);
                 startService(new Intent(appContext, BGService.class));
                 BGService.serviceStarted = true;
-                int c = getResources().getColor(R.color.dark_green_paleta);
                 view.setBackgroundColor(getResources().getColor(R.color.dark_green_paleta));
                 stopServiceButton.setBackgroundColor(getResources().getColor(R.color.ligher_green_paleta));
 
@@ -517,6 +517,11 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
 
         }
     };
+
+    /**
+     * USB Connect
+     * Connect to PC via USB
+     */
 
     View.OnClickListener connectToPcListener = new View.OnClickListener() {
         @Override
@@ -531,9 +536,12 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
             Toast.makeText(mHost.ctx, msg, Toast.LENGTH_LONG).show();
 
 
-
         }
     };
+
+    /**
+     * Delete Database
+     */
 
     View.OnClickListener deleteDatabaseListener  = new View.OnClickListener() {
         @Override
@@ -546,6 +554,9 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
         }
     };
 
+    /* **************************************************
+       END OnClickLiseners
+     */
 
 
     public static void setCommandValue(String val) {
@@ -553,219 +564,22 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
 
     }
 
-    /********************************************************
-     * SEND VALUES TIMER
-     */
 
-    /**
-     * Timer to automatically send data to server
-     */
-
-    private void startSendingTimer() {
-
-        sendDataTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                //TODO
-               //mHost.sendUSBmessage(USBHost._END_COMMAND);
-
-                if (mHost.connected) {
-                    //Store values in database every minute and reset:
-
-                    new AsyncTask<URL, Integer, Long>() {
-                        @Override
-                       protected Long doInBackground(URL... urls) {
-                            //Send saved information to IIT server
-                            if ( checkInternetConnectivity() != null) {
-
-                                //Number of samples to read and update to server
-                                int samplesToUpdate = BGService.storingManager.myDB.getNotCheckedValuesNumber(BGService.empaticaMilTableName,
-                                        IITDatabaseManager.syncColumn, IITDatabaseManager.syncStatusYes, IITDatabaseManager.MAX_READ_SAMPLES_UPDATE);
-
-                                System.out.println("Sending timer: samples to update: " + samplesToUpdate);
-                                //To avoid memory errors, we use MAX_MEMORY_SAMPLES perform updates in chunks:
-
-                                /*while (samplesToUpdate >= DELETING_MARGIN){
-                                    //updateDatabase(IITDatabaseManager.MAX_MEMORY_SAMPLES, 0);
-                                    BGService.storingManager.myDB.deleteNRowsFromTable(BGService.empaticaMilTableName,
-                                                BGService.columnsTable[0], DEL_AMOUNT);
-
-                                    samplesToUpdate  = samplesToUpdate - DEL_AMOUNT;
-
-                                }*/
-
-                                //Update last samples To Read
-                                updateDatabase(samplesToUpdate, DELETING_MARGIN);
-
-                                //DEBUG Table
-                                //MainActivity.myDB.updateDatabaseTable("debug_table", new ArrayList<>(Arrays.asList(new String[]{"'A'"})), true);
-                            }
-
-                           return null;
-
-
-                        }
-
-                       protected void onPostExecute(Long result) {
-                            //Do nothing: just try and be async
-                           //System.out.println("Post sending");
-
-                       }
-                   }.execute();
-
-
-                }
-            }
-        }
-
-                , SENDING_PERIOD, SENDING_PERIOD); // delay(seconds*1000), period(seconds*1000)
-
-    }
-
-    /*
-     * Function to update local databas values:
-     * 1. Reads up to 20 minutes of syncrhonized samples
-     * 2. Sends those values to the server
-     * 3. Erase updated and synchronized samples (leaving a safety margin)
-     */
-
-    private boolean updateDatabase(int samples, int safetyMargin){
-        //1. Obtain not updated values from database
-
-        // List<Map<String, String>> listReadToServer = null;
-                                /*List<Map<String, String>> listReadToServer =BGService.storingManager.myDB.getNotUpdatedValues(BGService.empaticaMilTableName, BGService.columnsTable,
-                                        IITDatabaseManager.upDateColumn, IITDatabaseManager.updatedStatusNo, IITDatabaseManager.MAX_READ_SAMPLES_UPDATE);*/
-
-        //1. Obtain syncrhonized values from database
-        //List<Map<String, String>> listReadToServer =BGService.storingManager.myDB.getNotCheckedValues(BGService.empaticaMilTableName, BGService.columnsTable,
-               // IITDatabaseManager.syncColumn, IITDatabaseManager.syncStatusYes, samples);
-
-
-        //List<Map<String, String>> listReadToServer = new ArrayList<Map<String, String>>();
-        //2. Send to Server
-       // if (listReadToServer != null) {
-
-            //TODO NOT SENDING TO SERVER
-                                    /*List<Map<String, String>> temp = new ArrayList<Map<String, String>>();
-                                    //List too long: break in smaller chunks
-                                    for (int i = 0; i < listReadToServer.size(); i++) {
-                                        Map<String, String> val = listReadToServer.get(i);
-                                        val.put("table_name", BGService.empaticaMilTableName);
-                                        temp.add(val);
-                                        if ((i + 1) % SENDING_AMOUNT == 0) {
-                                            System.out.println("Send first 1S00: " + listReadToServer.size());
-                                            String jSon = IITServerConnector.convertToJSON(temp);
-                                            myServerManager.sendToIIT(jSon, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
-
-                                            System.out.println("Send status: " + myServerManager.sending);
-
-                                            while (myServerManager.sending) {
-                                                //wait to receive something
-                                            }
-
-                                            /*try {
-                                                Thread.sleep(3000); // giving time to connect to wifi
-                                            } catch (Exception e) {
-                                                System.out.println("Exception while waiting to send:" + e);
-                                            }
-
-                                            temp = new ArrayList<Map<String, String>>();
-                                        }
-                                    }
-                                    if (temp.size() > 0) {
-                                        //Send last values
-                                        System.out.println("Send remainig");
-
-                                        String jSon = IITServerConnector.convertToJSON(temp);
-                                        myServerManager.sendToIIT(jSon, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
-
-                                        /*try {
-                                            Thread.sleep(2000); // giving time to connect to wifi
-                                        } catch (Exception e) {
-                                            System.out.println("Exception while waiting to send:" + e);
-                                        }
-                                    }*/
-            //myServerManager.debugServer("samples");
-
-            //TODO 3. Delete updated values
-            int deleting = samples - safetyMargin;
-            System.out.println("/////// END SENDING TIMER " + deleting);
-            boolean del = false;
-
-            if (deleting > 0) {
-                while (deleting > DEL_AMOUNT) {
-                    del = BGService.storingManager.myDB.deleteNRowsFromTable(BGService.empaticaMilTableName,
-                            BGService.columnsTable[0], DEL_AMOUNT);
-                    if (del) {
-                        deleting = deleting - DEL_AMOUNT;
-                    }else{
-                        System.out.println("Not erased");
-                    }
-                }
-                //Finally deleting amount
-                del = BGService.storingManager.myDB.deleteNRowsFromTable(BGService.empaticaMilTableName,
-                        BGService.columnsTable[0], deleting);
-            }
-
-            System.out.println("/////// END DELETING TIMER " + del);
-
-            return del ;
-       // }
-       // else
-          //return false;
-    }
-
-
-
-    private NetworkInfo checkInternetConnectivity(){
+    public NetworkInfo checkInternetConnectivity(){
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         return cm.getActiveNetworkInfo();
     }
 
-    //*******************************************
-    //  Database USB interface
 
 
 
-    /**
-     * Get all no sync values, and return a list of the JSON Strings to be sent
-     * @return
-     */
-    public void messageAsync(String table, String check_column, String check_value, int max, boolean ACK) {
-        //TODO NO ACK NOW
-        BGService.ackInProgress = true;
 
-        List<Map<String, String>> listReadToUSB = null;
-        if(ACK){
-            while (listReadToUSB == null)
-                listReadToUSB=  BGService.storingManager.myDB.getNotCheckedValues(table, BGService.columnsTable, check_column, check_value, max);
-            //listReadToUSB = BGService.storingManager.myDB.getLastNSamples(table, BGService.columnsTable, max);
-            Collections.reverse(listReadToUSB);
-        }
-        else{
-            //listReadToUSB = BGService.storingManager.myDB.getLastNSamples(table, BGService.columnsTable, max);
-            while (listReadToUSB == null)
-                listReadToUSB=  BGService.storingManager.myDB.getNotCheckedValues(table, BGService.columnsTable, check_column, check_value, max);
-            Collections.reverse(listReadToUSB);
-        }
-
-
-
-        if (listReadToUSB !=null){
-            mHost.sendUSBList(listReadToUSB, table);
-            mHost.sendUSBmessage(USBHost._END_COMMAND);
-
-        } else
-            mHost.sendUSBmessage(USBHost._NO_DATA);
-
-        BGService.ackInProgress = false;
-
-    }
-
-    public void updateDB(IITDatabaseManager db){
-        //Send data to IIT
-        myServerManager = new IITServerConnector(jsonID, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL,
-                IITServerConnector.IIT_SERVER_READ_TABLE_URL, db, this);
+    public void popUpFragment(Class c){
+        //Display the dialog
+        Intent dialogIntent = new Intent(this, c);
+        dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(dialogIntent);
+        //Toast.makeText(mActivity, "No connection stablished!", Toast.LENGTH_LONG).show();
     }
 
 
