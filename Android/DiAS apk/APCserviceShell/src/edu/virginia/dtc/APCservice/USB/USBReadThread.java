@@ -250,7 +250,6 @@ public class USBReadThread extends Thread {
 					}
 					//ACK COMMAND - Synchronized values
 					else if (line.contains(USBHost._ACK_SYNCHRONIZED)) {
-						//System.out.println(line);
 
 						//We can get a JSON Object from USB line
 						try {

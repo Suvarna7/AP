@@ -135,6 +135,12 @@ catch theErrorInfo  %sends an error email to Kamuran and Iman (Add your email if
     set(handles.gui_text_error_message,'String','An error occured while loading data! Data is saved succesfully. Please run the algorithm again.')
     set(handles.gui_error_message,'Visible','on')
 end
+
+%% Check Smartphone connection state
+global usb_con;
+'USB CONNECTED:'
+usb_connected = check_usb(usb_con)
+
 %% Get CGM reading and define sampling time
 try
     %MANUAL GS entering
@@ -222,21 +228,34 @@ catch theErrorInfo  %sends an error email to Kamuran and Iman (Add your email if
     set(handles.gui_error_message,'Visible','on')
 end
 %% Get Empatica data
-'Empatica...'
-global usb_con;
-global empatica_data;
-[table, empatica_new] = read_last_samples(usb_con, 'empatica');
-% if (size(empatica_data)>0)
-%     %Other samples - skip column names
-%     empatica_data = [empatica_data;empatica_new(2:end,:)];
-% else
-%     %First sample - include columns names
-%     empatica_data = [empatica_data;empatica_new];
-% 
-% end
-assignin('base', 'empatica', empatica_new);
+if (usb_connected)
+    'Empatica Connected:'
+    emp_connected = check_bl_connection(usb_con, 'empatica')
 
-'Received!'
+
+    if (emp_connected)
+    'Empatica...'
+    %global usb_con;
+    global empatica_data;
+    [table, empatica_new] = read_last_samples(usb_con, 'empatica');
+    % if (size(empatica_data)>0)
+    %     %Other samples - skip column names
+    %     empatica_data = [empatica_data;empatica_new(2:end,:)];
+    % else
+    %     %First sample - include columns names
+    %     empatica_data = [empatica_data;empatica_new];
+    % 
+    % end
+    assignin('base', 'empatica', empatica_new);
+
+    'Received!'
+    else
+        'NO EMPATICA CONNECTION!!'
+    end
+else
+    %Show a warning!
+    'NO USB CONNECTION!!'
+end
 %% Calculate IOB
 try
     IOB_total(kj,1)=m20150711_calculate_IOB(bolus_insulin(1,:)',basal_insulin');

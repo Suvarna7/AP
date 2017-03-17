@@ -22,6 +22,7 @@ public class ConnectionDialog extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+        BGService.EmpaticaDisconnected = true;
         alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
         alertDialog.setTitle("Empatica");
         alertDialog.setMessage("Check device connection");
@@ -35,7 +36,7 @@ public class ConnectionDialog extends Activity {
         //Vibrate
         Vibrator vibrator;
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        vibrator.vibrate(500);
+        vibrator.vibrate(1000);
 
         alertDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override

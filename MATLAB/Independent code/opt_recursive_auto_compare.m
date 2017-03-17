@@ -227,10 +227,10 @@ Q_old
 
 %[Q, fval, exitflag, output]=fmincon_source(@objective,Q_old,[],[],[],[],[],[],@constraint,options1);%Find minimum of constrained nonlinear multivariable function:
 
-[Q_noc, fval, exitflag, output]=fmincon(@objective,Q_old,[],[],[],[],[],[],@no_constraint,options1);%Find minimum of constrained nonlinear multivariable function:
+%[Q_noc, fval, exitflag, output]=fmincon(@objective,Q_old,[],[],[],[],[],[],[],options1);%Find minimum of constrained nonlinear multivariable function:
 %ERRROOOOOOR --> Warning: Large-scale (trust region) method does not currently solve this type of problem,n using medium-scale (line
 % search) instead. 
-[Q_noc, fval, exitflag, output]=fmincon_source(@objective,Q_old,[],[],[],[],[],[],@no_constraint,options1);%Find minimum of constrained nonlinear multivariable function:
+%[Q_noc, fval, exitflag, output]=fmincon_source(@objective,Q_old,[],[],[],[],[],[],[],options1);%Find minimum of constrained nonlinear multivariable function:
 
 %NOTE Constraint tolerance = 1.e-6
 assignin('base', 'options', options1);

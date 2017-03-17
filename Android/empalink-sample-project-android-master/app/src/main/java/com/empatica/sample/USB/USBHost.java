@@ -64,6 +64,16 @@ public class USBHost {
     public static String _ACK_SYNCHRONIZED = "usb_sync";
     public static String _CONNECTION_ESTABLISHED = "connection_process_end";
     public static String _CONNECTION_END = "end_connection";
+    public static String _TEST_USB= "verify_usb";
+    public static String _ACK_TEST_USB= "ACK_usb";
+
+    public static String _TEST_DEVICE= "verify_device";
+    public static String _VERIFY_DEVICE_CONNECTED= "device_connected";
+    public static String _VERIFY_DEVICE_DISCONNECTED= "device_disconnected";
+
+
+
+
 
     //Sensor information
     public static final String _SENSOR_ID = "sensor_table";
@@ -300,7 +310,7 @@ public class USBHost {
     }
 
     //**************************************************************
-    // Read, send adn received messsages
+    // Read, send adn received messages
 
 
     /**
