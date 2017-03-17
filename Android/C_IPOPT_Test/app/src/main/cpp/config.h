@@ -17,6 +17,7 @@
 /* Great, let's define everything else. */
 #define HAVE_CASSERT 1 //We have cassert (don't use assert.h)
 #define HAVE_CSTRING 1 //We have cstring as well (don't use string.h)
+/* Adding an unnecessary line here. */ 
 
 /* Define to the debug sanity check level (0 is no test) */
 #define COIN_IPOPT_CHECKLEVEL 0
