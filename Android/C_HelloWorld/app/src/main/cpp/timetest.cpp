@@ -3,6 +3,7 @@
 #include <time.h>
 
 #include <cmath>
+#include <testheader.h>
 
 extern "C"
 jstring

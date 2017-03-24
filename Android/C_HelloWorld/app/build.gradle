@@ -13,6 +13,8 @@ android {
         externalNativeBuild {
             cmake {
                 cppFlags "-frtti -fexceptions"
+                //adding the include library for my dummy header.
+                cppFlags += "-I${file("src/main/cpp/include")}".toString()
             }
         }
     }
@@ -25,6 +27,12 @@ android {
     externalNativeBuild {
         cmake {
             path "CMakeLists.txt"
+        }
+    }
+    //adding cpp/include to source dirs
+    sourceSets {
+        main {
+            res.srcDirs += ['main/cpp/include']
         }
     }
 }

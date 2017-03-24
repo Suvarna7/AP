@@ -22,7 +22,8 @@ add_library( # Sets the name of the library.
 
 add_library( timetest
              SHARED
-             src/main/cpp/timetest.cpp )
+             src/main/cpp/timetest.cpp
+             src/main/cpp/include/testheader.h)
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because system libraries are included in the search path by
