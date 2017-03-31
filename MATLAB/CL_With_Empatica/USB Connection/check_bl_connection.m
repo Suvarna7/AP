@@ -8,7 +8,10 @@ if (strcmp(device, 'empatica'))
 end
 
 ready_to_read = true;   
-while (ready_to_read)
+finalTime = datenum(clock + [0, 0, 0, 0, 2, 0]);
+connected = false;
+
+while (ready_to_read && datenum(clock) < finalTime)
       if (con.BytesAvailable > 0)
                 %Read new data from Java and phone
                 DataReceived = fscanf(con);
@@ -16,9 +19,13 @@ while (ready_to_read)
                 if (strcmp(var, 'device_connected'))
                     connected = true;
                     ready_to_read = false;
+                elseif (strcmp(var, 'usb_disconnected'))
+                    connected = false;
+                    ready_to_read = false;
                 else
                     connected = false;
                     ready_to_read = false;
+                        
       end
  end
 

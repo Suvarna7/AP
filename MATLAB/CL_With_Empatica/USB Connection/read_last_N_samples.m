@@ -11,7 +11,8 @@ ready_to_read = true;
 data_to_save = [];
 table_name = 'no_data';
 %Wait till we read all samples
- while (ready_to_read)
+finalTime = datenum(clock + [0, 0, 0, 0, 5, 0])
+ while (ready_to_read && datenum(clock) < finalTime)
             %data = fread(t, 10)
             if (t.BytesAvailable > 0)
                 %Read new data from Java and phone
