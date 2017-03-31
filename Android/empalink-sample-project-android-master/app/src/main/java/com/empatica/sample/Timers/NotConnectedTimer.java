@@ -18,6 +18,9 @@ public class NotConnectedTimer extends BasicTimer {
     private static boolean connectionEstablishedFlag;
     private MainActivity mAct;
 
+    private final int _INIT_DELAY  = 5*60*1000; //miliseconds
+    private final int _PERIOD = 60*1000;//miliseconds
+
     public NotConnectedTimer(MainActivity act){
         super();
         startTimer = true;
@@ -41,6 +44,8 @@ public class NotConnectedTimer extends BasicTimer {
             @Override
             public void run() {
                 if (mAct.mHost.isConnected()) {
+                    //Send a connection ACK
+                    mAct.mHost.usbMesenger.sendUSBmessage(USBMessageSender._ACK_TEST_USB);
 
                     if (!connectionEstablishedFlag) {
                         //Inform laptop that no data will be send
@@ -57,7 +62,7 @@ public class NotConnectedTimer extends BasicTimer {
                 }
 
             }
-        }, 60*1000, 5*60*1000); // delay(seconds*1000), period(seconds*1000)
+        }, _INIT_DELAY, _PERIOD); // delay(seconds*1000), period(seconds*1000)
     }
 
 

@@ -1,4 +1,5 @@
 package com.empatica.sample.Server;
+import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -7,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import android.text.format.Time;
 
-import com.empatica.sample.Timers.SendDataTimer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.loopj.android.http.AsyncHttpClient;
@@ -29,8 +29,9 @@ public class IITServerConnector {
 	//JSON Identifier
 	public static final String JSON_ID_dias = "empaticaJSON";
 	//Server urls
-	public static final String IIT_SERVER_UPDATE_VALUES_URL = "http://216.47.158.133/phpSync/insert_into_table.php";
-	public static final String IIT_SERVER_READ_TABLE_URL = "http://216.47.158.133/phpSync/read_table_values.php";
+	private static final String IIT_SERVER_IP = "216.47.158.133";
+	public static final String IIT_SERVER_UPDATE_VALUES_URL = "http://"+ IIT_SERVER_IP+"/phpSync/insert_into_table.php";
+	public static final String IIT_SERVER_READ_TABLE_URL = "http://"+IIT_SERVER_IP+"/phpSync/read_table_values.php";
 	//debug page private final String IIT_SERVER_URL =   "http://216.47.158.133/phpSync/insertzephyrvalues.php";
 	
 	private String JSON_ID;
@@ -140,12 +141,17 @@ public class IITServerConnector {
 
 		sending = true;
 
-		//Set parameters
-		RequestParams params = new RequestParams();
-		params.put(JSON_ID, json);
+		//Check internet connection:
+		if (isConnectedToServer() ){
+			//Set parameters
+			RequestParams params = new RequestParams();
+			params.put(JSON_ID, json);
 
-		//Send http request
-		httpClient.post(url , params, myResponder);
+			//Send http request
+			httpClient.post(url, params, myResponder);
+		}else{
+			sending = false;
+		}
 
 
 }
@@ -190,6 +196,7 @@ public static String convertToString(byte[] args){
 	}catch (Exception e){
 		e.printStackTrace();
 	}
+	System.out.println("SERVER RESPONSE: "+str);
 	return str;
 }
 
@@ -207,6 +214,16 @@ protected static String getCurrentTime(){
 	return  simpleFormat.format(date);
 
 }
+
+	public boolean isConnectedToServer(){
+		try{
+			InetAddress ipAddr = InetAddress.getByName(IIT_SERVER_IP);
+			System.out.println("Connection to server: "+ ipAddr);
+			return !ipAddr.equals("");
+		}catch (Exception e){
+			return false;
+		}
+	}
 
 
 

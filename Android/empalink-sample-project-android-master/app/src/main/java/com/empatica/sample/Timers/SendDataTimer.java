@@ -23,8 +23,10 @@ import java.util.TimerTask;
  */
 public class SendDataTimer extends BasicTimer{
 
-    private static final int SENDING_PERIOD = 5*60*1000; //5 min
-    private static final int SENDING_AMOUNT = 100;
+    private static final int SENDING_PERIOD = 2*60*1000; //1 min
+    private static final int SENDING_AMOUNT = 2*IITDatabaseManager.ONE_SECOND_DATA;
+    public static int MAX_READ_SAMPLES_UPDATE = 30*60* IITDatabaseManager.ONE_SECOND_DATA;
+
     private static final int DELETING_MARGIN = 10*60*(64+32+4+4+1); // 10 min
     private static final int DEL_AMOUNT = 3000;
 
@@ -69,29 +71,24 @@ public class SendDataTimer extends BasicTimer{
                         protected Long doInBackground(URL... urls) {
                             System.out.println("SEND TIMER");
                             //Send saved information to IIT server
-                            if (mainCtx.checkInternetConnectivity() != null) {
+                            if (mainCtx.checkInternetConnectivity()) {
 
                                 //Number of samples to read and update to server
                                 int samplesToUpdate = BGService.storingManager.myDB.getNotCheckedValuesNumber(BGService.empaticaMilTableName,
-                                        IITDatabaseManager.syncColumn, IITDatabaseManager.syncStatusYes, IITDatabaseManager.MAX_READ_SAMPLES_UPDATE);
+                                        IITDatabaseManager.syncColumn, IITDatabaseManager.syncStatusYes, MAX_READ_SAMPLES_UPDATE);
 
                                 //TODO Update last samples To Read
-                                if (samplesToUpdate < IITDatabaseManager.MAX_READ_SAMPLES_UPDATE)
+                                if (samplesToUpdate < MAX_READ_SAMPLES_UPDATE)
                                     updateDatabase(samplesToUpdate, DELETING_MARGIN);
                                 else
-                                    updateDatabase(IITDatabaseManager.MAX_READ_SAMPLES_UPDATE, DELETING_MARGIN);
+                                    updateDatabase(MAX_READ_SAMPLES_UPDATE, DELETING_MARGIN);
 
                                 //TODO DEBUG mock data to send to server
                                // myServerManager.debugSendToServer("sampling");
-
-
                                 //TODO DEBUG Table
                                 //MainActivity.myDB.updateDatabaseTable("debug_table", new ArrayList<>(Arrays.asList(new String[]{"'A'"})), true);
                             }
-
                             return null;
-
-
                         }
 
                         protected void onPostExecute(Long result) {
@@ -119,12 +116,11 @@ public class SendDataTimer extends BasicTimer{
 
     private boolean updateDatabase(int samples, int safetyMargin){
         //1. Erase all previously updated values
-        deleteUpdatedValues(safetyMargin);
+        //deleteUpdatedValues(safetyMargin);
 
         //2. Obtain not updated values from database
         List<Map<String, String>> listReadToServer = StoringThread.myDB.getNotCheckedValues (BGService.empaticaMilTableName, BGService.columnsTable,
                 IITDatabaseManager.upDateColumn, IITDatabaseManager.updatedStatusNo, samples, false);
-        System.out.println("Sync: "+samples +" vs Update: "+listReadToServer.size());
 
         //1. Obtain syncrhonized values from database to delete
         //List<Map<String, String>> listReadToServer =BGService.storingManager.myDB.getNotCheckedValues(BGService.empaticaMilTableName, BGService.columnsTable,
@@ -135,7 +131,9 @@ public class SendDataTimer extends BasicTimer{
         //3. Send to Server
         if (listReadToServer != null) {
 
-            //TODO NOT SENDING TO SERVER
+            System.out.println("Sync: "+samples +" vs Update: "+listReadToServer.size());
+
+            //TODO SENDING TO SERVER
             List<Map<String, String>> temp = new ArrayList<Map<String, String>>();
             //List too long: break in smaller chunks
             for (int i = 0; i < listReadToServer.size(); i++) {
@@ -144,7 +142,7 @@ public class SendDataTimer extends BasicTimer{
                 temp.add(val);
                 if ((i + 1) % SENDING_AMOUNT == 0) {
                 //if ((i + 1) / SENDING_AMOUNT == 1) {
-                        System.out.println("Send first packs: " + listReadToServer.size());
+                        System.out.println("Send first packs: " + listReadToServer.size() + " vs " +temp.size());
                         String jSon = IITServerConnector.convertToJSON(temp);
                         myServerManager.sendToIIT(jSon, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
 
@@ -155,11 +153,11 @@ public class SendDataTimer extends BasicTimer{
                             //wait to receive something
                         }
 
-                        try {
+                        /*try {
                              Thread.sleep(15000); // giving time to connect to wifi
                         } catch (Exception e) {
                              System.out.println("Exception while waiting to send:" + e);
-                        }
+                        }*/
                         temp = new ArrayList<Map<String, String>>();
 
                            /*
@@ -201,9 +199,7 @@ public class SendDataTimer extends BasicTimer{
             //1. Get number of samples to be erased -- UPDATED
             //Number of samples to read and update to server
             int samplesToDelete = BGService.storingManager.myDB.getNotCheckedValuesNumber(BGService.empaticaMilTableName,
-                    IITDatabaseManager.upDateColumn , IITDatabaseManager.updatedStatusYes , IITDatabaseManager.MAX_READ_SAMPLES_UPDATE);
-
-
+                    IITDatabaseManager.upDateColumn , IITDatabaseManager.updatedStatusYes , MAX_READ_SAMPLES_UPDATE);
 
             int deleting = samplesToDelete - safetyMargin;
 

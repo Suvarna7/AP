@@ -28,6 +28,8 @@ public class simpleHttpResponderAsync extends AsyncHttpResponseHandler {
     public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
         String cont = IITServerConnector.convertToString(responseBody);
         onSuccess(cont);
+        System.out.println("ServerReceived");
+        IITServerConnector.sending = false;
 
     }
 
@@ -35,6 +37,8 @@ public class simpleHttpResponderAsync extends AsyncHttpResponseHandler {
     public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
         String cont = IITServerConnector.convertToString(responseBody);
         onFailure(statusCode, error, cont);
+        System.out.println("ServerReceived -"+statusCode);
+        IITServerConnector.sending = false;
 
     }
 
@@ -70,16 +74,15 @@ public class simpleHttpResponderAsync extends AsyncHttpResponseHandler {
 
                         String last_update = (String) jsonObj.get(IITDatabaseManager.default_timeStampColumn);
 
+                        System.out.print("server update: "+last_update);
                         //TODO Update database updated value
                         StoringThread.myDB.updateSyncStatus(BGService.empaticaMilTableName,
-                                IITDatabaseManager.upDateColumn, (String) jsonObj.get(IITDatabaseManager.upDateColumn), last_update);
+                            IITDatabaseManager.upDateColumn, (String) jsonObj.get(IITDatabaseManager.upDateColumn), last_update);
                         //Update last remote sent value
                         SendDataTimer.setLastUpdate(last_update);
 
                         //dbManager.updateSyncStatus(databaseContext, (String) jsonObj.get("table_name"),
                         //		IITDatabaseManager.syncColumn, (String) jsonObj.get("updated"), (String) jsonObj.get("time_stamp"));
-
-
                     }
 
 
@@ -105,9 +108,11 @@ public class simpleHttpResponderAsync extends AsyncHttpResponseHandler {
     //Handle failing response
     public void onFailure(int statusCode, Throwable error, String content) {
 
-        System.out.println("Failed! server:" + statusCode);
+        System.out.println("Failed! server: " + statusCode);
 
-        if (statusCode == 404) {
+        if(statusCode == 0)
+                onSuccess(content);
+        else if (statusCode == 404) {
             System.out.println("Page not found");
 
         } else if (statusCode == 500) {

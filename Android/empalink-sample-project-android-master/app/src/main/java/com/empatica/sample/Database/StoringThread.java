@@ -40,7 +40,6 @@ public class StoringThread implements Runnable {
     public StoringThread(Context ctx){
         //Create the database:
         initDatabaseManagers(ctx);
-
         running = false;
     }
 

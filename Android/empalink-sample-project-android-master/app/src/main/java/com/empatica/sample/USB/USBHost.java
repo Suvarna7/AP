@@ -154,7 +154,7 @@ public class USBHost {
                 try {
                     if (server != null)
                         server.close();
-                    else if (usbMesenger.client != null && socketIn != null && usbMesenger.socketOut != null) {
+                    else if (usbMesenger !=null && usbMesenger.client != null && socketIn != null && usbMesenger.socketOut != null) {
                         // print out success
                         connectionStatus = "Connection was successful!";
                         mHandler.post(showConnectionStatus);

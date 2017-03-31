@@ -1,4 +1,4 @@
-package com.empatica.sample.Database;
+package com.NewApp.Database;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -8,8 +8,6 @@ import android.database.sqlite.SQLiteDatabaseLockedException;
 import android.database.sqlite.SQLiteException;
 import android.os.Environment;
 import android.util.Log;
-
-import com.empatica.sample.BGService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +33,9 @@ import java.util.Map;
 
 public class IITDatabaseManager {
 
+	public static final String _EMPATICA_TABLE_NAME = "empatica";
+	public static final int _TIME_INDEX = 0;
+	
     private static final String TAG = "IIT_DATABASE";
     private MyDatabaseHelper dbHelper;
     //private static SQLiteDatabase db;
@@ -167,7 +168,7 @@ public class IITDatabaseManager {
                     String val = values.get(i);
                     update.put(columns[i], val);
 
-                    if (!val.equals("0") && i!=BGService._TIME_INDEX) {
+                    if (!val.equals("0") && i!=_TIME_INDEX) {
                         not_zero.put(columns[i], val);
                     }
 
@@ -182,14 +183,14 @@ public class IITDatabaseManager {
                 if (result < 0){
                     //Update values !=0
                     //WHERE timeStampColumn + " = " + columns[BGService._TIME_INDEX]
-                    result = db.update(table, not_zero, String.format("%s = ?", timeStampColumn),  new String[]{(String)update.get(columns[BGService._TIME_INDEX])} );
+                    result = db.update(table, not_zero, String.format("%s = ?", timeStampColumn),  new String[]{(String)update.get(columns[_TIME_INDEX])} );
                     if (result == 0){
                         //Did not update any value
                         result = db.insert(table, null, not_zero);
                         if(result <0) {
                             result = db.insert(table, null, update);
                             if (result < 0)
-                                db.update(table, not_zero, String.format("%s = ?", timeStampColumn), new String[]{"'" + (String) update.get(columns[BGService._TIME_INDEX]) + "'"});
+                                db.update(table, not_zero, String.format("%s = ?", timeStampColumn), new String[]{"'" + (String) update.get(columns[_TIME_INDEX]) + "'"});
 
                         }
                     }
@@ -200,7 +201,7 @@ public class IITDatabaseManager {
             }catch(Exception e){
                 Log.d(TAG, "Error storing new sample in " + table + ": " + e);
                 //Update values !=0
-                long result = db.update(table, not_zero, timeStampColumn + " = " + columns[BGService._TIME_INDEX], null);
+                long result = db.update(table, not_zero, timeStampColumn + " = " + columns[_TIME_INDEX], null);
                 System.out.println("Updated except "+table+":  " +result);
                 db.setTransactionSuccessful();
 
@@ -956,7 +957,7 @@ public class IITDatabaseManager {
                             String last_updated = "";
                             do {
                                 //Update values
-                                last_updated = cursorSync.getString(BGService._TIME_INDEX);
+                                last_updated = cursorSync.getString(_TIME_INDEX);
                                 System.out.println(last_updated);
                                 // ackSingleSample(ctx, table,syncColumn, status,last_updated, db);
 

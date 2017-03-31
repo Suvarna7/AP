@@ -24,12 +24,15 @@ public class USBMessageSender {
     public static String _GET_DATA = "get_values";
     public static String _GET_ALL = "get_all";
     public static String _GET_ALL_NO_SYNC = "get_all_no_sync";
+    public static String _START_SENDING = "first_value";
 
     public static String _END_COMMAND = "next_end";
     public static String _NO_DATA = "no_data";
     public static String _ACK_SYNCHRONIZED = "usb_sync";
     public static String _CONNECTION_ESTABLISHED = "connection_process_end";
     public static String _CONNECTION_END = "end_connection";
+    public static String _WRONG_COMMAND = "wrong_command";
+
     public static String _TEST_USB= "verify_usb";
     public static String _ACK_TEST_USB= "ACK_usb";
 
@@ -112,9 +115,12 @@ public class USBMessageSender {
             }
         }
         //SEND RIGHT HERE
-        if (temp != null)
+        if (temp != null && !temp.isEmpty()) {
             sendUSBmessage(IITServerConnector.convertToJSON(temp));
-        //sendUSBmessage(USBHost._END_COMMAND);
+
+        }else{
+            //DO NOTHING
+        }
 
         //Remaining
         //result[sent]= IITServerConnector.convertToJSON(temp);
@@ -122,7 +128,7 @@ public class USBMessageSender {
 
     public void sendUSBmessage(String msg) {
         if (socketOut != null) {
-            System.out.println("send msg");
+            System.out.println("send msg - "+msg);
             //socketOut.print(msg);
             socketOut.println(msg);
             socketOut.flush();
@@ -163,9 +169,10 @@ public class USBMessageSender {
         }
 
 
-        if (listReadToUSB !=null){
+        if (listReadToUSB !=null ){
             sendUSBList(listReadToUSB, table);
             sendUSBmessage(_END_COMMAND);
+
 
         } else
             sendUSBmessage(_NO_DATA);

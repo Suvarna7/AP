@@ -34,7 +34,7 @@ public class VerifyKeyTimer extends BasicTimer {
             public void run() {
                 //Verify key if there is internet available
 
-                if (mainAct.checkInternetConnectivity() != null && deviceManager != null) {
+                if (mainAct.checkInternetConnectivity() && deviceManager != null) {
                     //Verify key
                     deviceManager.authenticateWithAPIKey(mainAct.EMPATICA_API_KEY);
                     mainAct.updateLabel(mainAct.internet_conn, "INTERNET");

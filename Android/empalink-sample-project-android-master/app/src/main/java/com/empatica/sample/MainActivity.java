@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.empatica.empalink.ConnectionNotAllowedException;
+import com.empatica.empalink.EmpaDeviceManager;
 import com.empatica.empalink.config.EmpaSensorStatus;
 import com.empatica.empalink.config.EmpaSensorType;
 import com.empatica.empalink.config.EmpaStatus;
@@ -41,7 +42,9 @@ import com.empatica.sample.USB.UsbReceiver;
 public class MainActivity extends AppCompatActivity implements EmpaStatusDelegate {
 
     private static final int REQUEST_ENABLE_BT = 1;
-    public static final String EMPATICA_API_KEY = "f92ddb7260a54f5790038ba90ef4d1ad"; // TODO insert your API Key here
+    public static final String EMPATICA_API_KEY = "01f86c5b71ce435298d2ebc74e3e21a0"; // API Key YELLOW PHONE
+    //public static final String EMPATICA_API_KEY = "f92ddb7260a54f5790038ba90ef4d1ad"; // API Key RED PHONE
+
 
     //GUI labels
     //Connection status
@@ -128,15 +131,9 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
         deleteB = (Button) findViewById(R.id.delete_database_button);
         deleteB.setOnClickListener(deleteDatabaseListener);
 
-
-
         //Set context
         appContext = this;
         appMain = this;
-
-
-
-
 
     }
 
@@ -207,26 +204,27 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
 
             }
 
-            //Start background service
-            BGService.initContext(this);
-            startService(new Intent(this, BGService.class));
-
-            //Empatica disconencted
+            //Empatica disconnected
             BGService.EmpaticaDisconnected = true;
 
+            //Start background service
+            //Set context
+            appContext = this;
+            appMain = this;
+            BGService.initContext(appMain);
+            startService(new Intent(appContext, BGService.class));
 
             //Server
             //Initialize server connector
             sendDataTimer = new SendDataTimer(this);
             //TODO SERVER BACKUP
-            sendDataTimer.startTimer();
+            //sendDataTimer.startTimer();
 
         }else{
             //Set the view for Connected
             System.out.println("Coming back - mainActivity create again!!");
 
-
-            //Empatica conncted status
+            //Empatica connected status
             if (connectionS.contains("CONNECTED") && !connectionS.contains("DISCONNECTED")) {
                 //Make connected screen visible
                 runOnUiThread(new Runnable() {
@@ -283,7 +281,6 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     public void onRestart() {
         super.onRestart();
         BGService.initContext(this);
-
     }
 
     /* *******************************
@@ -361,6 +358,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     @Override
     public void didUpdateSensorStatus(EmpaSensorStatus status, EmpaSensorType type) {
         // No need to implement this right now
+        //System.out.println("EmpaSensor: "+status+ " and "+ type);
     }
 
     @Override
@@ -408,7 +406,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
 
             // The device manager disconnected from a device
         } else if (status == EmpaStatus.DISCONNECTED) {
-            //See only conenct button
+            //See only connect button
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -418,7 +416,6 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
             });
             updateLabel(deviceNameLabel, "");
             BGService.EmpaticaDisconnected = true;
-
 
 
         }
@@ -462,7 +459,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                 //If deviceManager is scanning, we stop it
                 BGService.deviceManager.stopScanning();
                 //Change empastatus to ready if there is Internet connection
-                if ( checkInternetConnectivity() != null) {
+                if ( checkInternetConnectivity()) {
                     BGService.deviceManager.authenticateWithAPIKey(EMPATICA_API_KEY);
                     updateLabel(internet_conn, "INTERNET");
 
@@ -565,9 +562,10 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     }
 
 
-    public NetworkInfo checkInternetConnectivity(){
+    public boolean checkInternetConnectivity(){
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        return cm.getActiveNetworkInfo();
+        return cm.getActiveNetworkInfo() != null;
+
     }
 
 
