@@ -234,22 +234,24 @@ if (usb_connected)
 
 
     %if (emp_connected)
-    if(true)
-    'Empatica...'
-    %global usb_con;
-    global empatica_data;
-    [table, empatica_new] = read_last_samples(usb_con, 'empatica');
-    % if (size(empatica_data)>0)
-    %     %Other samples - skip column names
-    %     empatica_data = [empatica_data;empatica_new(2:end,:)];
-    % else
-    %     %First sample - include columns names
-    %     empatica_data = [empatica_data;empatica_new];
-    % 
-    % end
-    assignin('base', 'empatica', empatica_new);
+    if(emp_connected)
+        'Get Empatica data...'
+        %global usb_con;
+        global empatica_data;
+        [table, empatica_new, conn] = read_last_samples(usb_con, 'empatica');
+        'USB Connection result' 
+        conn
+        % if (size(empatica_data)>0)
+        %     %Other samples - skip column names
+        %     empatica_data = [empatica_data;empatica_new(2:end,:)];
+        % else
+        %     %First sample - include columns names
+        %     empatica_data = [empatica_data;empatica_new];
+        % 
+        % end
+        assignin('base', 'empatica', empatica_new);
 
-    'Received!'
+        'Received!'
     else
         'NO EMPATICA CONNECTION!!'
     end

@@ -74,7 +74,7 @@ public class StoringThread implements Runnable {
         //myDB.updateDatabaseTable (empaticaTableName, null, false);
 
         //Create a table for Empatica
-        myDB.createTable(empaticaTableName, empaticaColumnsTable[0], new ArrayList<>(Arrays.asList(empaticaColumnsTable)));
+        myDB.createTable(empaticaTableName, empaticaColumnsTable[BGService._TIME_INDEX], new ArrayList<>(Arrays.asList(empaticaColumnsTable)));
         // myDB.createTable(empaticaSecTableName, columnsTable[0], new ArrayList<>(Arrays.asList(columnsTable)));
 
         //TODO IBI TABLE:

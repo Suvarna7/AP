@@ -204,8 +204,6 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
 
             }
 
-            //Empatica disconnected
-            BGService.EmpaticaDisconnected = true;
 
             //Start background service
             //Set context
@@ -225,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
             System.out.println("Coming back - mainActivity create again!!");
 
             //Empatica connected status
-            if (connectionS.contains("CONNECTED") && !connectionS.contains("DISCONNECTED")) {
+            if (connectionS != null && connectionS.contains("CONNECTED") && !connectionS.contains("DISCONNECTED")) {
                 //Make connected screen visible
                 runOnUiThread(new Runnable() {
                     @Override
@@ -384,7 +382,8 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                 // Start scanning
                 BGService.deviceManager.startScanning();
             }
-            // The device manager has established a connection
+
+        // The device manager has established a connection
         } else if (status == EmpaStatus.CONNECTED) {
             // Stop streaming after STREAMING_TIME
             runOnUiThread(new Runnable() {
@@ -416,7 +415,6 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
             });
             updateLabel(deviceNameLabel, "");
             BGService.EmpaticaDisconnected = true;
-
 
         }
     }

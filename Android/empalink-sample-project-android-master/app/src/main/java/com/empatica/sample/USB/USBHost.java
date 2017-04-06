@@ -149,6 +149,9 @@ public class USBHost {
                 System.out.println("Server IO Exception");
                 connectionStatus = "Server IO Exception - Restart connection/phone";
                 mHandler.post(showConnectionStatus);
+            } catch (IndexOutOfBoundsException iobException){
+                System.out.println("USBHost OutOfBounds... reader hasnext(): "+ iobException);
+
             } finally {
                 //close the server socket, we already have the client ?
                 try {

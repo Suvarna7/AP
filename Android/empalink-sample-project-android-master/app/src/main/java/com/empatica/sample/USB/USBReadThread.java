@@ -27,6 +27,7 @@ public class USBReadThread extends Thread {
 	IITDatabaseManager mDatabase;
 	Context dbContext;
 	boolean firstRead;
+	private boolean hasNextLineError;
 
 	public USBReadThread(USBHost host, Context ctx){
     	System.out.println("Create read");
@@ -36,14 +37,22 @@ public class USBReadThread extends Thread {
 		dbContext = ctx;
 		mDatabase = new IITDatabaseManager(ctx);
 		firstRead = true;
+		hasNextLineError = false;
 
 	}
 
-	public void run() {
+	public void run() throws IndexOutOfBoundsException{
 		started = true;
 
 		while(!shut) {
-				if (mHost != null && mHost.socketIn != null && mHost.socketIn.hasNextLine() &&mHost.socketIn.hasNext()) {
+			try {
+				mHost.socketIn.hasNextLine();
+			}catch (IndexOutOfBoundsException boundException) {
+				System.out.println("INDEX OUT OF BOUNDS! - hasNextLine() error in USBReadThread");
+				hasNextLineError = true;
+				mHost.usbMesenger.sendUSBmessage(USBMessageSender._END_COMMAND);
+			}
+				if (!hasNextLineError && mHost != null && mHost.socketIn != null && mHost.socketIn.hasNextLine()) {
 					String line = mHost.socketIn.nextLine();
 
 					if (line != null) {
@@ -74,7 +83,7 @@ public class USBReadThread extends Thread {
 
 						}
 						//When disconnection request
-						else if (line.equals(USBMessageSender._CONNECTION_END)) {
+						else if (line.contains(USBMessageSender._CONNECTION_END)) {
 							//Post result in Command field:
 							showCommand(line);
 							//TODO
@@ -86,8 +95,7 @@ public class USBReadThread extends Thread {
 						else if (line.contains(USBMessageSender._WRONG_COMMAND)) {
 							mHost.usbMesenger.sendUSBmessage(USBMessageSender._END_COMMAND);
 
-						}
-						else if (line.contains(USBMessageSender._TEST_USB)) {
+						} else if (line.contains(USBMessageSender._TEST_USB)) {
 							mHost.usbMesenger.sendUSBmessage(USBMessageSender._ACK_TEST_USB);
 						} else if (line.contains(USBMessageSender._TEST_DEVICE)) {
 							//Extract device information
@@ -111,6 +119,7 @@ public class USBReadThread extends Thread {
 								//String num_samples = (String)json.get(USBHost._NUM_SAMPLES);
 								//All samples requested
 								//if (num_samples.equals(USBHost._ALL_SAMPLES)){
+								mHost.usbMesenger.sendUSBmessage(USBMessageSender._START_SENDING);
 
 								//EMPATICA Special case
 								if (sensor.equals(USBMessageSender._EMPATICA)) {
@@ -192,6 +201,8 @@ public class USBReadThread extends Thread {
 					}
 					//System.out.println("End of while in reading thread... will start? "+ !shut);
 				}
+			//Reset error flag
+			hasNextLineError = false;
 
 		}
 		

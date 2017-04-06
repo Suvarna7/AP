@@ -5,7 +5,7 @@ function [ connected ] = check_usb( connection )
 %Send request
 fprintf(connection, 'usb_state'); 
 ready_to_read = true;
-finalTime = datenum(clock + [0, 0, 0, 0, 5, 0]);
+finalTime = datenum(clock + [0, 0, 0, 0, 0, 30]);
 connected = false;
  while (ready_to_read && datenum(clock) < finalTime)
       if (connection.BytesAvailable > 0)

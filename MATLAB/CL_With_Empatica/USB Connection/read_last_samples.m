@@ -16,7 +16,7 @@ global ack_data;
 ack_data = '';
 %Wait till we read all samples
 initialTime = datenum(clock + [0, 0, 0, 0, 0, 30]);
-finalTime = datenum(clock + [0, 0, 0, 0, 4, 0]);
+finalTime = datenum(clock + [0, 0, 0, 0, 3, 0]);
 
 % Break while loop if:
 %   - last command is been received: ready_to_read = true
@@ -30,13 +30,14 @@ finalTime = datenum(clock + [0, 0, 0, 0, 4, 0]);
                 DataReceived = fscanf(t);
                 var = DataReceived(1:length(DataReceived)-2);
                 if (strcmp(var, 'first_value'))
+                    'Initial message !'
                     init_flag = true;
                 elseif(strcmp(var, 'no_more_values'))
                     %End of sample sending
-                    out = 'Received JSON !'
+                    'Received all messages !'
                     %assignin('base', table_name, data_to_save);
                     %data_to_save = [];
-                    done_reading = false;
+                    done_reading = true;
                     fprintf(t, ack_data);
 
                 else
@@ -57,7 +58,7 @@ finalTime = datenum(clock + [0, 0, 0, 0, 4, 0]);
             end
             
             %USB Connection
-            if((datenum(clock) < initialTime && ~init_flag)|| datenum(clock) > finalTime)
+            if((datenum(clock) > initialTime && ~init_flag)|| datenum(clock) > finalTime)
                 usb_state = false;
             end
 end

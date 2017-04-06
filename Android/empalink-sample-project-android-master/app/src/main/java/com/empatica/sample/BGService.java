@@ -103,7 +103,11 @@ public class BGService extends Service implements EmpaDataDelegate{
     }
 
     public static void initContext(MainActivity main){
+
         mActivity = main;
+
+        //Empatica disconnected
+        //EmpaticaDisconnected = true;
     }
 
     @Override
@@ -145,8 +149,6 @@ public class BGService extends Service implements EmpaDataDelegate{
         BATTERY = 0;
         initArrayOfValues();
 
-
-
         //Received flags:
         resetReceivedFlags();
 
@@ -155,6 +157,9 @@ public class BGService extends Service implements EmpaDataDelegate{
         d1 = 0;
         t2 = 0;
         t3 = 0;
+
+        //Empatica disconnected
+        EmpaticaDisconnected = true;
 
 
     }
