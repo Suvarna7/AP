@@ -40,12 +40,15 @@ public class MainActivity extends Activity {
 	
 	
 	private static Button plotButton;
+	private Context ctx;
 
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        //Set mainApp context
+        ctx = this;
         /*Sending a message to android that we are going to initiate a pairing request*/
         IntentFilter filter = new IntentFilter("android.bluetooth.device.action.PAIRING_REQUEST");
         /*Registering a new BTBroadcast receiver from the Main Activity context with pairing request event*/
@@ -90,7 +93,7 @@ public class MainActivity extends Activity {
         			BluetoothDevice Device = adapter.getRemoteDevice(BhMacID);
         			String DeviceName = Device.getName();
         			_bt = new BTClient(adapter, BhMacID);
-        			_NConnListener = new NewConnectedListener(Newhandler,Newhandler);
+        			_NConnListener = new NewConnectedListener(Newhandler,Newhandler, ctx);
         			_bt.addConnectedEventListener(_NConnListener);
         			
         			TextView tv1 = (EditText)findViewById(R.id.labelHeartRate);
@@ -125,6 +128,7 @@ public class MainActivity extends Activity {
         			}
         		}
         	});
+        	
         }
         /*Obtaining the handle to act on the DISCONNECT button*/
         Button btnDisconnect = (Button) findViewById(R.id.ButtonDisconnect);

@@ -3,33 +3,37 @@ package com.NewApp ;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+
+import com.NewApp.Database.IITDatabaseManager;
 import com.NewApp.Database.ThreadSafeArrayList;
 import zephyr.android.BioHarnessBT.*;
 //import zephyr.android.BioHarnessBT.*;
 
+/**
+ * ConnectedListener for incoming Zephyr Bioharness packets
+ * @author Caterina Lazaro
+ * @version 3.0 
+ *
+ */
+
 public class NewConnectedListener extends ConnectListenerImplExtra
 {
-	private boolean complete1;
-	private boolean complete2;
-	private String msg1;
-	private String msg2;
-	private String msg3;
-	private String msg4;
-	private String prevMsg1;
-	private String prevMsg2;
-	private String prevMsg3;
-	private String prevMsg4;
+	
 
-	private double second ;
-	private double prevSecond ;
-	private double gpSecond ;
-	private double prevGpSecond ;
+	private ThreadSafeArrayList samplesArray;
+	private IITDatabaseManager myDB;
+	private String tableName =  "zephyr_table";
+	private static final String[] zephyrColumns = new String[]{"time_stamp", "Acc_x", "Acc_y", "Acc_z", "GSR", "BVP",
+            "IBI", "HR", "temperature","battery_level"};
+	private static final int _TIME_INDEX = 0; 
 
 	private String timestamp ;
 	
@@ -70,26 +74,19 @@ public class NewConnectedListener extends ConnectListenerImplExtra
 	public static List<String> sensorValues = new ArrayList();
 	public static ThreadSafeArrayList sensorSafeValues = new ThreadSafeArrayList();
 
-	public NewConnectedListener(Handler handler,Handler _NewHandler) {
+	public NewConnectedListener(Handler handler,Handler _NewHandler, Context ctx) {
 		super(handler, null);
 		_OldHandler= handler;
 		_aNewHandler = _NewHandler;
+		
+		//Create samples list
+		samplesArray = new ThreadSafeArrayList();
+		
+		//Create Database
+        myDB = new IITDatabaseManager(ctx);
 
-		complete1 = false;
-		complete2 = false;
-		msg1="";
-		msg2="";
-		msg3 = "";
-		msg4 = "";
-		prevMsg1="";
-		prevMsg2="";
-		prevMsg3 = "";
-		prevMsg4 = "";
-		second = 0;
-		gpSecond = 0;
-		prevSecond = 0;
-		prevGpSecond = 0;
-		timestamp = "";
+		//Create BIOHARNESS table
+        myDB.createTable(tableName, zephyrColumns[_TIME_INDEX], new ArrayList<String>(Arrays.asList(zephyrColumns)));
 
 	}
 
@@ -126,10 +123,6 @@ public class NewConnectedListener extends ConnectListenerImplExtra
 				//byte RcvdBytes = msg.getNumRvcdBytes() ;
 				int MsgID = msg.getMsgID();
 				byte [] DataArray = msg.getBytes();
-
-
-
-
 
 				switch (MsgID)
 				{
@@ -233,7 +226,6 @@ public class NewConnectedListener extends ConnectListenerImplExtra
 				int gpHour = (int) gpCalc;
 				gpCalc = (gpCalc-gpHour)*60;
 				int gpMinute = (int) gpCalc;
-				gpSecond = (gpCalc - gpMinute)*60;
 
 				/*Messages to save:
 					msg1 = "posture"); "activity");("heart_rate"); ("breath_rate"); "vertical_min"); ("vertical_peak"); ("lateral_min");
@@ -243,70 +235,8 @@ public class NewConnectedListener extends ConnectListenerImplExtra
 					msg4 = ("link_quality")("rssi"); ("tx_power"); ("device_temperature"); ("hrv"); ("rog"); ("rog_time"); 	("last_update");
 					("upDateStatus");*/
 
-					//Save previous values!
+					//TODO Save values in Database
 
-					if (msg1.equals("") || msg3.equals("")){
-						prevMsg1 = "("+PostureInt+ ", " +vmu +", "+HRate + ", "
-								+ RespRate+", " +vMin +", " +vPeak+", " +hMin+", " +hPeak+", " +zMin+", " +zPeak+", " +peakAcc+", "
-								+ECGAmpl +", "+ ECGNoise;
-						prevMsg3 = ", "+ BatStatus  ;
-					}else {
-						prevMsg1 = msg1;
-						prevMsg3 = msg3;
-					}
-
-					msg1 = "("+PostureInt+ ", " +vmu +", "+HRate + ", "
-							+ RespRate+", " +vMin +", " +vPeak+", " +hMin+", " +hPeak+", " +zMin+", " +zPeak+", " +peakAcc+", "
-							+ECGAmpl +", "+ ECGNoise;
-					msg3 = ", "+ BatStatus  ;
-
-				/*if (ConnStatus == 0)
-					msg3 = ", "+ BatStatus  ;
-				else
-					msg3 = ", "+ BatStatus +", " +ConnStatus ;*/
-
-					complete1 = true;
-
-					/****************
-					 * Save files:
-					 * Test if we are ready to save another row in the table!
-					 * Compare gpSecond and Second
-					 * ****************************************************/
-
-					//From this message: gpSecond
-					if (complete2){
-						if(second==gpSecond) {
-							timestamp = gpTimestampYear + "-" + gpTimestampMonth + "-" + gpTimestampDay + " " + gpHour + ":" + gpMinute + ":" + gpSecond;
-							sensorValues.add(msg1 + msg2 + msg3 + msg4 + ", '" + timestamp + "', 'no')");
-							sensorSafeValues.set(msg1 + msg2 + msg3 + msg4 + ", '" + timestamp + "', 'no')");
-							complete1 = false;
-							complete2 = false;
-						}else if (second < gpSecond){
-							//Our packet arrived one second earlier!
-							//Get info values from previous second - msg1 and msg3
-							sensorValues.add(prevMsg1 + msg2 + prevMsg3 + msg4 + ", '" + timestamp + "', 'no')");
-							sensorSafeValues.set(prevMsg1 + msg2 + prevMsg3 + msg4 + ", '" + timestamp + "', 'no')");
-							//System.out.println("Prev 1 and 3" +prevMsg1 + msg2 + prevMsg3 + msg4 + ", '" + timestamp + "', 'no')");
-							complete1 = false;
-							complete2 = false;
-						}
-						else{
-							//Info values for next second
-							//We have to wait to get these next values
-							//But, we can save the previous messages from the the other part
-							timestamp = gpTimestampYear + "-" + gpTimestampMonth + "-" + gpTimestampDay + " " + gpHour + ":" + gpMinute + ":" + gpSecond;
-
-							sensorValues.add(msg1 + prevMsg2 + msg3 + prevMsg4 + ", '" + timestamp+"', 'no')");
-							sensorSafeValues.set(msg1 + prevMsg2 + msg3 + prevMsg4 + ", '" + timestamp + "', 'no')");
-							//System.out.println("Prev 2 and 4" + msg1 + prevMsg2 + msg3 + prevMsg4 + ", '" + timestamp + "', 'no')");
-
-							complete1 = false;
-							complete2 = false;
-						}
-
-					}else{
-						//Wait for the other part of the message
-					}
 
 					
 
@@ -362,7 +292,6 @@ public class NewConnectedListener extends ConnectListenerImplExtra
 					int hour = (int) calc;
 					calc = (calc-hour)*60;
 					int minute = (int) calc;
-					second = (calc - minute)*60;
 
 					byte ROGStat = SummaryInfoPacket.GetROGStatus(DataArray);
 					int ROGTime = SummaryInfoPacket.GetROGTime(DataArray);
@@ -385,61 +314,15 @@ public class NewConnectedListener extends ConnectListenerImplExtra
 					 msg4 = ("link_quality");("rssi"); ("tx_power"); ("device_temperature"); ("hrv"); ("rog"); ("rog_time"); 	("last_update");
 					 ("upDateStatus");*/
 
-					//Save previous messages
-					if (msg2.equals("") || msg4.equals("")){
-						prevMsg2 =  ", " +HConfidence+", "+ SConfidence;
-						prevMsg4 = ", "+linkQ+",  "+rssi+",   "+tx_power+", "+InternalTemp+ ", " +hrv +", " +ROGStat+", " +ROGTime;
-					}else {
-						prevMsg2 = msg2;
-						prevMsg4 = msg4;
-					}
-					msg2 =  ", " +HConfidence+", "+ SConfidence;
-					msg4 = ", "+linkQ+",  "+rssi+",   "+tx_power+", "+InternalTemp+ ", " +hrv +", " +ROGStat+", " +ROGTime;
-
-					complete2 = true;
+					//TODO Save previous messages
+					
 
 					/****************
 					 * Save files:
 					 * Test if we are ready to save another row in the table!
 					 * Compare gpSecond and Second
 					 * ****************************************************/
-					if ( complete1){
-						if(second == gpSecond) {
-							//We have a new row to save!
-							timestamp = timestampYear + "-" + timestampMonth + "-" + timestampDay + " " + hour + ":" + minute + ":" + second;
-							sensorValues.add(msg1 + msg2 + msg3 + msg4 + ", '" + timestamp+"', 'no')");
-							sensorSafeValues.set(msg1 + msg2 + msg3 + msg4 + ", '" + timestamp + "', 'no')");
-							//System.out.println(msg1 + msg2 + msg3 + msg4 + ", '" + timestamp + "', 'no')");
-
-							complete1 = false;
-							complete2 = false;
-						}else if(second > gpSecond){
-							//Our packet arrived one second earlier!
-							//Info values from previous second - msg1 and msg3
-							sensorValues.add(msg1 + prevMsg2 + msg3 + prevMsg4 + ", '" + timestamp+"', 'no')");
-							sensorSafeValues.set(msg1 + prevMsg2 + msg3 + prevMsg4 + ", '" + timestamp + "', 'no')");
-							//System.out.println("Prev 1 and 3 " +prevMsg1 + msg2 + prevMsg3 + msg4 + ", '" + timestamp + "', 'no')");
-
-							complete1 = false;
-							complete2 = false;
-						}else{
-							//Info values for next second
-							//We have to wait to get these next values
-							//But, we can save the previous messages from the the other part
-							timestamp = timestampYear + "-" + timestampMonth + "-" + timestampDay + " " + hour + ":" + minute + ":" + second;
-							sensorValues.add(prevMsg1 + msg2 + prevMsg3 + msg4 + ", '" + timestamp+"', 'no')");
-							sensorSafeValues.set(prevMsg1 + msg2 + prevMsg3 + msg4 + ", '" + timestamp + "', 'no')");
-							//System.out.println("Prev 2 and 4 !!!" + msg1 + prevMsg2 + msg3 + prevMsg4 + ", '" + timestamp + "', 'no')");
-
-							complete1 = false;
-							complete2 = false;
-
-						}
-					}else{
-						//Wait for the messages to be ready
-
-					}
-
+					
 
 					
 					break;
