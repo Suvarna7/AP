@@ -17,6 +17,11 @@
 /* Great, let's define everything else. */
 #define HAVE_CASSERT 1 //We have cassert (don't use assert.h)
 #define HAVE_CSTRING 1 //We have cstring as well (don't use string.h)
+#define HAVE_CTIME //We have ctime.h
+#define HAVE_CTYPE_H //We have ctype.h
+#define HAVE_CSTDARG //we have the CSTDARG library (don't use stdarg.h)
+#define HAVE_RAND // random-number generator
+#define HAVE_STDLIB_H //We have ctype.h
 /* Adding an unnecessary line here. */
 
 /* Define to the debug sanity check level (0 is no test) */
