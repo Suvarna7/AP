@@ -106,8 +106,15 @@ public class StoringThread implements Runnable {
 
             }
         }catch (Exception e) {
-            System.out.println("Empatica store sample exception " + e);
-            //Save sample! in global list
+            System.out.println("Empatica storeSampleInTempDatabase exception " + e);
+            //Save sample! in error list
+            if (error != null)
+                error.add(sample);
+            else {
+                error = new ArrayList<ThreadSafeArrayList<String>>();
+                error.add(sample);
+            }
+
 
             BGService.ackInProgress = false;
 
@@ -126,7 +133,7 @@ public class StoringThread implements Runnable {
 
                 }
             } catch (Exception e) {
-                System.out.println("Empatica store sample exception " + e);
+                System.out.println("Empatica storeSampleInPermanentDatabase exception " + e);
                 //Save sample! in global list
                 if (error != null)
                     error.add(sample);
@@ -206,7 +213,7 @@ public class StoringThread implements Runnable {
                 //myDB.updateDatabaseTable(empaticaMilTableName, valuesToUpdate.get(i), true);
                 storeSampleInPermanentDatabase(valuesToUpdate.get(i), empaticaTableName, empaticaColumnsTable, error);
             } catch (Exception e) {
-                System.out.println("Store global exception " + e);
+                System.out.println("Empatica storeGlobalListInDatabase exception " + e);
                 //Reduce i, to try again to save the sample
                 error.add(valuesToUpdate.get(i));
             }

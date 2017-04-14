@@ -7,27 +7,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.empatica.empalink.ConnectionNotAllowedException;
-import com.empatica.empalink.EmpaDeviceManager;
 import com.empatica.empalink.config.EmpaSensorStatus;
 import com.empatica.empalink.config.EmpaSensorType;
 import com.empatica.empalink.config.EmpaStatus;
 import com.empatica.empalink.delegate.EmpaStatusDelegate;
 import com.empatica.sample.Timers.SendDataTimer;
 import com.empatica.sample.USB.USBHost;
-import com.empatica.sample.USB.UsbReceiver;
-
-
 
 
 /**
@@ -41,12 +38,16 @@ import com.empatica.sample.USB.UsbReceiver;
 
 public class MainActivity extends AppCompatActivity implements EmpaStatusDelegate {
 
+    //Empatica variables
     private static final int REQUEST_ENABLE_BT = 1;
     public static final String EMPATICA_API_KEY = "01f86c5b71ce435298d2ebc74e3e21a0"; // API Key YELLOW PHONE
     //public static final String EMPATICA_API_KEY = "f92ddb7260a54f5790038ba90ef4d1ad"; // API Key RED PHONE
 
 
-    //GUI labels
+    //GUI
+    //Wake lock
+    protected PowerManager.WakeLock mWakeLock;
+
     //Connection status
     public TextView internet_conn;
     public TextView statusLabel;
@@ -96,6 +97,11 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
         //System.out.println("App created");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Screen ON
+
+
+        keepScreenON(true);
 
         // Initialize vars that reference UI components
         internet_conn = (TextView) findViewById(R.id.internetConnection);
@@ -259,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     @Override
     protected void onDestroy() {
         //System.out.println("App destroyed");
-
+        keepScreenON(false);
         super.onDestroy();
         //BGService.deviceManager.cleanUp();
 
@@ -576,6 +582,23 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
         dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(dialogIntent);
         //Toast.makeText(mActivity, "No connection stablished!", Toast.LENGTH_LONG).show();
+    }
+
+    public void keepScreenON(boolean on){
+        if (on){
+        /* This code together with the one in onDestroy()
+         * will make the screen be always on until this Activity gets destroyed. */
+
+            //final PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            //this.mWakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "EmpaticaWake");
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            //this.mWakeLock.acquire();
+        }else{
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            //this.mWakeLock.release();
+
+
+        }
     }
 
 

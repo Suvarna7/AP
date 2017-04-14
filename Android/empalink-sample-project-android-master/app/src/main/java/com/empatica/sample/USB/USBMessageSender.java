@@ -21,8 +21,6 @@ public class USBMessageSender {
      */
 
     //Commands
-    public static String _GET_DATA = "get_values";
-    public static String _GET_ALL = "get_all";
     public static String _GET_ALL_NO_SYNC = "get_all_no_sync";
     public static String _START_SENDING = "first_value";
 
@@ -77,7 +75,7 @@ public class USBMessageSender {
 
     public void messageNAsync(String table, int samples) {
         //Get last not SYNCHRONIZED values (Not sent via USB)
-        messageAsync(table, IITDatabaseManager.syncColumn, IITDatabaseManager.syncStatusNo, samples, true);
+        messageAsync2(table, IITDatabaseManager.syncColumn, IITDatabaseManager.syncStatusNo, samples, true);
 
     }
 
@@ -147,33 +145,23 @@ public class USBMessageSender {
     }
 
     /**
-     * Get all no sync values, and return a list of the JSON Strings to be sent
+     * Send all no sync values, and return a list of the JSON Strings to be sent
      * @return
      */
-    public void messageAsync(String table, String check_column, String check_value, int max, boolean ACK) {
+    public void messageAsync2(String table, String check_column, String check_value, int max, boolean mostRecent) {
         //TODO NO ACK NOW
         BGService.ackInProgress = true;
 
         List<Map<String, String>> listReadToUSB = null;
-        if(ACK){
-            while (listReadToUSB == null)
-                listReadToUSB=  BGService.storingManager.myDB.getNotCheckedValues(table, BGService.columnsTable, check_column, check_value, max, true);
-            //listReadToUSB = BGService.storingManager.myDB.getLastNSamples(table, BGService.columnsTable, max);
+        while (listReadToUSB == null)
+            listReadToUSB=  BGService.storingManager.myDB.getNotCheckedValues(table, BGService.columnsTable, check_column, check_value, max, mostRecent);
+        //listReadToUSB = BGService.storingManager.myDB.getLastNSamples(table, BGService.columnsTable, max);
+        if(mostRecent)
             Collections.reverse(listReadToUSB);
-        }
-        else{
-            //listReadToUSB = BGService.storingManager.myDB.getLastNSamples(table, BGService.columnsTable, max);
-            while (listReadToUSB == null)
-                listReadToUSB=  BGService.storingManager.myDB.getNotCheckedValues(table, BGService.columnsTable, check_column, check_value, max, true);
-            Collections.reverse(listReadToUSB);
-        }
-
 
         if (listReadToUSB !=null ){
             sendUSBList(listReadToUSB, table);
             sendUSBmessage(_END_COMMAND);
-
-
         } else
             sendUSBmessage(_NO_DATA);
 

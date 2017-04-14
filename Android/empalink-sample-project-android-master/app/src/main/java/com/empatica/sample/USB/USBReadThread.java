@@ -57,17 +57,9 @@ public class USBReadThread extends Thread {
 
 					if (line != null) {
 						//If it is a known Command --> we send data
-						//SEND COMMAND
-						if (line.equals(USBMessageSender._GET_DATA)) {
-							//Post result in Command field:
-							showCommand(line);
-
-							mHost.usbMesenger.messageAsync(BGService.empaticaMilTableName, null, null, IITDatabaseManager.MAX_READ_SAMPLES_SYNCHRONIZE, false);
-
-						}
 
 						//ACK of connection established int e other side
-						else if (line.equals(USBMessageSender._CONNECTION_ESTABLISHED)) {
+						if (line.equals(USBMessageSender._CONNECTION_ESTABLISHED)) {
 							//Post result in Command field:
 							showCommand(line);
 
@@ -126,7 +118,9 @@ public class USBReadThread extends Thread {
 
 									if (firstRead) {
 										//Send more samples of data
-										mHost.usbMesenger.messageNAsync(BGService.empaticaMilTableName, (IITDatabaseManager.MAX_READ_SAMPLES_SYNCHRONIZE));
+										//mHost.usbMesenger.messageNAsync(BGService.empaticaMilTableName, (IITDatabaseManager.MAX_READ_SAMPLES_SYNCHRONIZE));
+										mHost.usbMesenger.messageAllAsync(BGService.empaticaMilTableName);
+
 										firstRead = false;
 									} else {
 										//The rest, according to the interval
@@ -148,7 +142,6 @@ public class USBReadThread extends Thread {
 								System.out.println("Retrieving JSON data exception: " + e);
 								mHost.usbMesenger.sendUSBmessage(USBMessageSender._NO_DATA);
 							}
-
 							//todo  After reading, send all data
 						/*if (jSons != null) {
 							for (String json : jSons)

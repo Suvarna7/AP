@@ -15,15 +15,15 @@ while (ready_to_read && datenum(clock) < finalTime)
       if (con.BytesAvailable > 0)
                 %Read new data from Java and phone
                 DataReceived = fscanf(con);
-                var = DataReceived(1:length(DataReceived)-2)
-                if (strcmp(var, 'device_connected'))
+                var = DataReceived(1:length(DataReceived)-2);
+                if (strfind(var, 'device_connected'))
                     connected = true;
                     ready_to_read = false;
-                elseif (findstr(var, 'device_disconnected'))
+                elseif (strfind(var, 'device_disconnected'))
                     connected = false;
                     ready_to_read = false;
                 else
-                    connected = false;
+                    connected = true;
                     ready_to_read = false;
                         
       end

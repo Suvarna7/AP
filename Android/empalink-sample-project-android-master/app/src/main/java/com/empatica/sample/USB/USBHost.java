@@ -6,20 +6,14 @@
         import android.util.Log;
         import android.widget.Toast;
 
-        import com.empatica.sample.BGService;
-        import com.empatica.sample.Database.IITDatabaseManager;
         import com.empatica.sample.MainActivity;
         import com.empatica.sample.R;
-        import com.empatica.sample.Server.IITServerConnector;
 
         import java.io.IOException;
         import java.io.PrintWriter;
         import java.net.ServerSocket;
         import java.net.Socket;
         import java.net.SocketTimeoutException;
-        import java.util.ArrayList;
-        import java.util.List;
-        import java.util.Map;
         import java.util.Scanner;
 
 /**
@@ -69,7 +63,7 @@ public class USBHost {
         readingThread = new USBReadThread(this, ctx);
         last_time_ack = "time";
 
-        UsbReceiver.addUsbHost(this);
+        USBReceiver.addUsbHost(this);
 
 
     }

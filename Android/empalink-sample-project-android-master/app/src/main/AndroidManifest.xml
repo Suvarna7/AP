@@ -24,6 +24,8 @@
 
     <!-- Permission: Bluetooth
     <uses-permission android:name="android.permission.BLUETOOTH" />-->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
 
 
 
@@ -60,7 +62,7 @@
             android:screenOrientation="landscape">
         </activity>
 
-        <receiver android:name="com.empatica.sample.USB.UsbReceiver" >
+        <receiver android:name=".USB.USBReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
                 <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />

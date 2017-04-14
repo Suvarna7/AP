@@ -13,6 +13,8 @@ import com.empatica.sample.Database.ThreadSafeArrayList;
 import com.empatica.sample.Timers.NotConnectedTimer;
 import com.empatica.sample.Timers.VerifyKeyTimer;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 
@@ -534,7 +536,12 @@ public class BGService extends Service implements EmpaDataDelegate{
 
             //TODO Add to database: instantly
             //Store current sample
-            storingManager.storeSampleInTempDatabase(tempList, empaticaMilTableName, columnsTable, null);
+            List<ThreadSafeArrayList<String>> error = new ArrayList<ThreadSafeArrayList<String>>();
+            storingManager.storeSampleInTempDatabase(tempList, empaticaMilTableName, columnsTable, error);
+
+            for  (ThreadSafeArrayList<String> sample: error){
+                storingManager.storeSampleInTempDatabase(sample, empaticaMilTableName, columnsTable, error);
+            }
 
             //Run storing thread to store all previous
             if (receivedAll() && StoringThread.shouldStartTransaction()) {
