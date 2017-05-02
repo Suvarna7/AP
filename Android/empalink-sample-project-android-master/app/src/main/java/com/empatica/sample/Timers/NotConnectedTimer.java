@@ -19,10 +19,11 @@ public class NotConnectedTimer extends BasicTimer {
     private MainActivity mAct;
 
     private final int _INIT_DELAY  = 5*60*1000; //miliseconds
+    //Period to send 'USB connection ACK' to PC
     private final int _PERIOD = 10*1000;//miliseconds
-
+    //Pulse # of times to wait before verifying Empatica connection
     private int pulse;
-    private final int _PULSES = 7;
+    private final int _PULSES = 7; //Verify every: _PULSES*_PERIOD
 
     public NotConnectedTimer(MainActivity act){
         super();
@@ -49,13 +50,13 @@ public class NotConnectedTimer extends BasicTimer {
             public void run() {
                 if (mAct.mHost.isConnected()) {
                     //Send a connection ACK
-                    mAct.mHost.usbMesenger.sendUSBmessage(USBMessageSender._ACK_TEST_USB);
+                    mAct.mHost.usbMessenger.sendUSBmessage(USBMessageSender._ACK_TEST_USB);
 
                     if (!connectionEstablishedFlag && pulse%_PULSES==0) {
                         //Inform laptop that no data will be send
                         //Send no data message
-                        mAct.mHost.usbMesenger.sendUSBmessage(USBMessageSender._END_COMMAND);
-                        mAct.mHost.usbMesenger.sendUSBmessage(USBMessageSender._NO_DATA);
+                        mAct.mHost.usbMessenger.sendUSBmessage(USBMessageSender._END_COMMAND);
+                        mAct.mHost.usbMessenger.sendUSBmessage(USBMessageSender._NO_DATA);
 
                         mAct.popUpFragment(ConnectionDialog.class);
 

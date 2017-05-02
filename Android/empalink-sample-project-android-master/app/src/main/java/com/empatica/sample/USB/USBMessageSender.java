@@ -1,20 +1,26 @@
 package com.empatica.sample.USB;
 
+import android.util.Log;
+
 import com.empatica.sample.BGService;
 import com.empatica.sample.Database.IITDatabaseManager;
 import com.empatica.sample.Server.IITServerConnector;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 /**
  * Created by Cat on 2/21/2017.
  */
 public class USBMessageSender {
+    public static final String TAG = "USB Messenger";
+
 
     /* *********************************
      LIST OF COMMANDS
@@ -46,14 +52,22 @@ public class USBMessageSender {
     //Max number of samples per JSON object (packet) to send via USB
     private static final int LOCAL_SENDING_AMOUNT = 200;
 
-    //Socket out
+    //Sockets
+    Scanner socketIn;
     public PrintWriter socketOut;
     public Socket client = null;
 
-    public USBMessageSender (PrintWriter socket, Socket client){
+    public USBMessageSender (PrintWriter socket, Socket client)throws IOException {
+        createSocketIn(client);
         socketOut = socket;
         this.client = client;
     }
+
+    private void createSocketIn(Socket client)throws IOException {
+        socketIn = new Scanner(client.getInputStream());
+
+    }
+
 
 
     /**

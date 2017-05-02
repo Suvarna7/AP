@@ -46,15 +46,17 @@ public class USBReadThread extends Thread {
 
 		while(!shut) {
 			try {
-				mHost.socketIn.hasNextLine();
+				mHost.usbMessenger.socketIn.hasNextLine();
+				hasNextLineError = false;
 			}catch (IndexOutOfBoundsException boundException) {
 				System.out.println("INDEX OUT OF BOUNDS! - hasNextLine() error in USBReadThread");
 				hasNextLineError = true;
-				mHost.usbMesenger.sendUSBmessage(USBMessageSender._END_COMMAND);
+				mHost.usbMessenger.sendUSBmessage(USBMessageSender._END_COMMAND);
+				//Reset socket!
+				mHost.usbResetCommunicationLink();
 			}
-				if (!hasNextLineError && mHost != null && mHost.socketIn != null && mHost.socketIn.hasNextLine()) {
-					String line = mHost.socketIn.nextLine();
-
+			if (!hasNextLineError && mHost != null && mHost.usbMessenger.socketIn != null && mHost.usbMessenger.socketIn.hasNextLine()) {
+					String line = mHost.usbMessenger.socketIn.nextLine();
 					if (line != null) {
 						//If it is a known Command --> we send data
 
@@ -64,7 +66,7 @@ public class USBReadThread extends Thread {
 							showCommand(line);
 
 							//TODO Only phone - send connection established back
-							mHost.usbMesenger.sendUSBmessage(USBMessageSender._CONNECTION_ESTABLISHED);
+							mHost.usbMessenger.sendUSBmessage(USBMessageSender._CONNECTION_ESTABLISHED);
 							mHost.updateConnectedStatus("Connected", "USB HOST CONNECTED - established!  :) ", false);
 							mHost.connected = true;
 							firstRead = true;
@@ -78,25 +80,25 @@ public class USBReadThread extends Thread {
 						else if (line.contains(USBMessageSender._CONNECTION_END)) {
 							//Post result in Command field:
 							showCommand(line);
-							//TODO
+							//Disconnect USB
 							mHost.updateConnectedStatus("CONNECT USB", "USB HOST DISCONNECTED - Press Connect USB in phone ", true);
-							//mHost.disconnectUSBHost();
+							mHost.disconnectUSBHost();
 
 
 						}//Wrong command
 						else if (line.contains(USBMessageSender._WRONG_COMMAND)) {
-							mHost.usbMesenger.sendUSBmessage(USBMessageSender._END_COMMAND);
+							mHost.usbMessenger.sendUSBmessage(USBMessageSender._END_COMMAND);
 
 						} else if (line.contains(USBMessageSender._TEST_USB)) {
-							mHost.usbMesenger.sendUSBmessage(USBMessageSender._ACK_TEST_USB);
+							mHost.usbMessenger.sendUSBmessage(USBMessageSender._ACK_TEST_USB);
 						} else if (line.contains(USBMessageSender._TEST_DEVICE)) {
 							//Extract device information
 							//But for now....
 							//Test Empatica connected
 							if (BGService.EmpaticaDisconnected)
-								mHost.usbMesenger.sendUSBmessage(USBMessageSender._VERIFY_DEVICE_DISCONNECTED);
+								mHost.usbMessenger.sendUSBmessage(USBMessageSender._VERIFY_DEVICE_DISCONNECTED);
 							else
-								mHost.usbMesenger.sendUSBmessage(USBMessageSender._VERIFY_DEVICE_CONNECTED);
+								mHost.usbMessenger.sendUSBmessage(USBMessageSender._VERIFY_DEVICE_CONNECTED);
 
 						}
 						// All not synchronized data is requested
@@ -111,7 +113,7 @@ public class USBReadThread extends Thread {
 								//String num_samples = (String)json.get(USBHost._NUM_SAMPLES);
 								//All samples requested
 								//if (num_samples.equals(USBHost._ALL_SAMPLES)){
-								mHost.usbMesenger.sendUSBmessage(USBMessageSender._START_SENDING);
+								mHost.usbMessenger.sendUSBmessage(USBMessageSender._START_SENDING);
 
 								//EMPATICA Special case
 								if (sensor.equals(USBMessageSender._EMPATICA)) {
@@ -119,28 +121,28 @@ public class USBReadThread extends Thread {
 									if (firstRead) {
 										//Send more samples of data
 										//mHost.usbMesenger.messageNAsync(BGService.empaticaMilTableName, (IITDatabaseManager.MAX_READ_SAMPLES_SYNCHRONIZE));
-										mHost.usbMesenger.messageAllAsync(BGService.empaticaMilTableName);
+										mHost.usbMessenger.messageAllAsync(BGService.empaticaMilTableName);
 
 										firstRead = false;
 									} else {
 										//The rest, according to the interval
-										mHost.usbMesenger.messageAllAsync(BGService.empaticaMilTableName);
+										mHost.usbMessenger.messageAllAsync(BGService.empaticaMilTableName);
 									}
 								}
 								//ALL OTHER sensors
 								else {
 									//mHost.messageAllAsync(BGService.empaticaMilTableName);
-									mHost.usbMesenger.sendUSBmessage(USBMessageSender._NO_DATA);
+									mHost.usbMessenger.sendUSBmessage(USBMessageSender._NO_DATA);
 
 								}
 
 							} catch (JSONException e) {
 								System.out.println("Get all no sync wrong structure: " + e);
-								mHost.usbMesenger.sendUSBmessage(USBMessageSender._NO_DATA);
+								mHost.usbMessenger.sendUSBmessage(USBMessageSender._NO_DATA);
 
 							} catch (Exception e) {
 								System.out.println("Retrieving JSON data exception: " + e);
-								mHost.usbMesenger.sendUSBmessage(USBMessageSender._NO_DATA);
+								mHost.usbMessenger.sendUSBmessage(USBMessageSender._NO_DATA);
 							}
 							//todo  After reading, send all data
 						/*if (jSons != null) {
@@ -173,7 +175,7 @@ public class USBReadThread extends Thread {
 										mDatabase.runAckSync(BGService.empaticaMilTableName,
 												(String) jsonObj.get("synchronized"), (String) jsonObj.get("time_stamp"));
 										//Inform phone process ended
-										mHost.usbMesenger.sendUSBmessage(USBMessageSender._ACK_SYNCHRONIZED);
+										mHost.usbMessenger.sendUSBmessage(USBMessageSender._ACK_SYNCHRONIZED);
 									} catch (Exception e) {
 										System.out.println("Exception when sync from USB: " + e);
 									}

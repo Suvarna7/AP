@@ -39,7 +39,8 @@ finalTime = datenum(clock + [0, 0, 0, 0, 3, 0]);
                     %data_to_save = [];
                     done_reading = true;
                     fprintf(t, ack_data);
-
+                elseif(strcmp(var, 'usb_sync'))
+                    'USB related ?'
                 else
                     if (var(1:1)=='[')
                         %Handle received Data - JSON ARRAY
@@ -51,6 +52,9 @@ finalTime = datenum(clock + [0, 0, 0, 0, 3, 0]);
                             data_to_save =[data_to_save; data(2:end,:)];
                         end
                         %fprintf(t, ack);
+                    else
+                        'Received other:'
+                        var
 
                     end
 

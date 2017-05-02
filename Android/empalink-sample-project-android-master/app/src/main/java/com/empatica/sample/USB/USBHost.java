@@ -31,8 +31,7 @@ public class USBHost {
     public Intent intent;
     private static final int ANDROID_LOCAL_HOST = 38600;
 
-    //Socekts
-    Scanner socketIn;
+
     //PrintWriter socketOut;
     //Socket client = null;
 
@@ -48,9 +47,8 @@ public class USBHost {
     public MainActivity mActivity;
     public Handler mHandler;
 
-
     //USB Messages handler
-    public USBMessageSender usbMesenger;
+    public USBMessageSender usbMessenger;
 
     //Keep last_stamp time from Matlab
     public static String last_time_ack;
@@ -98,13 +96,12 @@ public class USBHost {
                 mHandler.post(showConnectionStatus);
 
                 //Socket IN --> If refused
-                createSocketIn(client);
                 connectionStatus = "Socket in";
                 mHandler.post(showConnectionStatus);
                 PrintWriter socketOut = new PrintWriter(client.getOutputStream(), true);
 
                 //Create USB Messenger
-                usbMesenger = new USBMessageSender(socketOut, client);
+                usbMessenger = new USBMessageSender(socketOut, client);
 
                 //Start reading thread:
                 try {
@@ -143,6 +140,9 @@ public class USBHost {
                 System.out.println("Server IO Exception");
                 connectionStatus = "Server IO Exception - Restart connection/phone";
                 mHandler.post(showConnectionStatus);
+                //Not connected, update status
+                //Change Connect USB Button
+                updateConnectedStatus("USB CONNECT", "USB PC Client not established", true);
             } catch (IndexOutOfBoundsException iobException){
                 System.out.println("USBHost OutOfBounds... reader hasnext(): "+ iobException);
 
@@ -151,7 +151,7 @@ public class USBHost {
                 try {
                     if (server != null)
                         server.close();
-                    else if (usbMesenger !=null && usbMesenger.client != null && socketIn != null && usbMesenger.socketOut != null) {
+                    else if (usbMessenger !=null && usbMessenger.client != null && usbMessenger.socketIn != null && usbMessenger.socketOut != null) {
                         // print out success
                         connectionStatus = "Connection was successful!";
                         mHandler.post(showConnectionStatus);
@@ -165,44 +165,24 @@ public class USBHost {
         }
     };
 
-    private void createSocketIn(Socket client) {
-        try {
-            socketIn = new Scanner(client.getInputStream());
 
-
-        } catch (IOException e) {
-            Log.e(TAG, "" + e);
-            System.out.println("Server IO Exception");
-            connectionStatus = "Server IO Exception - Restart connection/phone";
-            mHandler.post(showConnectionStatus);
-
-            //Not connected, update status
-            //Change Connect USB Button
-            updateConnectedStatus("USB CONNECT", "USB PC Client not established", true);
-
-            if (client != null)
-                createSocketIn(client);
-
-        }
-
-    }
 
     public void disconnectUSBHost() {
         //Disconnect server
         try {
             //Close and reset CLIENT
-            if (usbMesenger.client != null )
-                usbMesenger.client.close();
+            if (usbMessenger.client != null )
+                usbMessenger.client.close();
             //client.shutdownInput();
             //client.shutdownOutput();
-            usbMesenger.client = null;
+            usbMessenger.client = null;
             //Stop reading thread
             readingThread.shutdown();
 
             //Sending socket
-            if (usbMesenger.socketOut != null )
-                usbMesenger.socketOut.close();
-            usbMesenger.socketOut = null;
+            if (usbMessenger.socketOut != null )
+                usbMessenger.socketOut.close();
+            usbMessenger.socketOut = null;
 
             //Close SERVER
             server.close();
@@ -239,12 +219,16 @@ public class USBHost {
 
     public boolean isConnected(){
         try {
-            return connected && usbMesenger.client != null && usbMesenger.client.isConnected();
+            return connected && usbMessenger.client != null && usbMessenger.client.isConnected();
         }catch (Exception e){
             System.out.println("Thread to connect cannot be started: "+e);
 
             return false;
         }
+    }
+
+    public void usbResetCommunicationLink(){
+        usbMessenger.socketOut.flush();
     }
 
 

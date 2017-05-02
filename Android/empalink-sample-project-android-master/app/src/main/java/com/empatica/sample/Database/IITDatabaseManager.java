@@ -312,8 +312,6 @@ public class IITDatabaseManager {
                 //sql =  "DROP TABLE IF EXISTS "+table;
                 //db.execSQL(sql);
 
-
-
             }catch(Exception e){
                 Log.d(TAG, "Error deleting all rows in " + table + ": " + e);
             }finally {
@@ -391,16 +389,17 @@ public class IITDatabaseManager {
     public List<ThreadSafeArrayList<String>> readAllValuesFromTableWithMargin (String table, int margin){
         List<ThreadSafeArrayList<String>> result = new ArrayList<ThreadSafeArrayList<String>>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        try{
-            db.beginTransaction();
+        if ( db  !=null) {
 
-            if ( db  !=null) {
+            try {
+                db.beginTransaction();
+
                 //Create Cursor
-                Cursor cursorSync = db.query(table, null, null,null, null, null, timeStampColumn+" ASC", null);
-                Log.d("query", "cursor size: "+ cursorSync.getCount());
+                Cursor cursorSync = db.query(table, null, null, null, null, null, timeStampColumn + " ASC", null);
+                Log.d("query", "cursor size: " + cursorSync.getCount());
 
                 //If Cursor is valid
-                if (cursorSync != null ) {
+                if (cursorSync != null) {
                     if (cursorSync.moveToFirst()) {
                         do {
                             //Values to send to server
@@ -415,32 +414,33 @@ public class IITDatabaseManager {
                                     if (column_index >= 0)
                                         val = cursorSync.getString(column_index);
                                     else
-                                        System.out.println("Column not in cursor: "+column);
+                                        System.out.println("Column not in cursor: " + column);
                                     partial.set(val);
                                 }
-                            }catch (IllegalStateException ce){
-                                System.out.println("Cursor Illegal state in readAllValues: "+ce);
+                            } catch (IllegalStateException ce) {
+                                System.out.println("Cursor Illegal state in readAllValues: " + ce);
                                 //Reset cursor!
                                 cursorSync.close();
-                                cursorSync = db.query(table, null, null,null, null, null, timeStampColumn+" ASC", null);
+                                cursorSync = db.query(table, null, null, null, null, null, timeStampColumn + " ASC", null);
                                 cursorSync.moveToFirst();
                             }
 
                             result.add(partial);
 
-                        } while (cursorSync.moveToNext()  && cursorSync.getPosition() < (cursorSync.getCount() - margin) &&cursorSync.getPosition()>0 );
+                        }
+                        while (cursorSync.moveToNext() && cursorSync.getPosition() < (cursorSync.getCount() - margin) && cursorSync.getPosition() > 0);
 
                     }
                 }
                 cursorSync.close();
 
+                db.setTransactionSuccessful();
+            } catch (SQLiteException e) {
+                System.out.println("Error with readall function, read table: " + e);
+            } finally {
+                if (db.inTransaction())
+                    db.endTransaction();
             }
-            db.setTransactionSuccessful();
-        }catch (SQLiteException e){
-            System.out.println("Error with readall function, read table: "+e);
-        }     finally {
-            if (db.inTransaction())
-                db.endTransaction();
         }
         return result;
     }
@@ -590,60 +590,76 @@ public class IITDatabaseManager {
 
         //SQLiteDatabase db_cursor = dbContext.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READONLY, null);
         SQLiteDatabase db_cursor = dbHelper.getReadableDatabase();
-
-
         if (db_cursor !=null) {
-            //Create Cursor
-            //Choose the right array from table
-            Cursor cursorSync = db_cursor.rawQuery(selectQuery, null);
+            try {
+                db_cursor.beginTransaction();
 
-            if (cursorSync != null ) {
-                //System.out.println("Empatica Cursor size: " + cursorSync.getCount());
-                try {
-                    //If Cursor is valid
-                    if (cursorSync.moveToFirst() && cursorSync.getPosition() >= 0) {
-                        try {
-                            do {
-                                HashMap<String, String> map = new HashMap<String, String>();
-                                for (int i = 0; i < columns.length; i++) {
-                                    map.put(columns[i], cursorSync.getString(cursorSync.getColumnIndex(columns[i])));
-                                    //lastUpd.add(cursorSync.getString(i));
+                //Create Cursor
+                //Choose the right array from table
+                Cursor cursorSync = db_cursor.rawQuery(selectQuery, null);
+
+                if (cursorSync != null) {
+                    //System.out.println("Empatica Cursor size: " + cursorSync.getCount());
+                    try {
+                        //If Cursor is valid
+                        if (cursorSync.moveToFirst() && cursorSync.getPosition() >= 0) {
+                            try {
+                                do {
+                                    HashMap<String, String> map = new HashMap<String, String>();
+                                    for (int i = 0; i < columns.length; i++) {
+                                        map.put(columns[i], cursorSync.getString(cursorSync.getColumnIndex(columns[i])));
+                                        //lastUpd.add(cursorSync.getString(i));
+                                    }
+
+                                    //Include updated value
+                                    map.put(col, cursorSync.getString(columns.length + 1));
+
+                                    //Include sync value:
+                                    map.put(syncColumn, cursorSync.getString(columns.length));
+
+                                    wordList.add(map);
+
                                 }
+                                while (cursorSync.moveToNext());
+                                //while (cursorSync.moveToNext() && cursorSync.getPosition() >= 0&& index < max);
 
-                                //Include updated value
-                                map.put(col, cursorSync.getString(columns.length + 1));
+                            } catch (Exception e) {
+                                //Close cursor and db:
+                                cursorSync.close();
+                                db_cursor.close();
 
-                                //Include sync value:
-                                map.put(syncColumn, cursorSync.getString(columns.length));
-
-                                wordList.add(map);
-
+                                return wordList;
                             }
-                            while (cursorSync.moveToNext());
-                            //while (cursorSync.moveToNext() && cursorSync.getPosition() >= 0&& index < max);
 
-                        } catch (Exception e) {
-                            //Close cursor and db:
-                            cursorSync.close();
-                            db_cursor.close();
-
-                            return wordList;
                         }
+                        //Close cursor
+                        cursorSync.close();
+                        db_cursor.setTransactionSuccessful();
 
+                    } catch (IllegalStateException ie) {
+                        //Illegal state exception ! Do nothing, just print
+                        System.out.println("Get not updated values cursor illegal state exception: ? " +
+                                cursorSync);
+                        return null;
+                    } finally {
+                        if (db_cursor.inTransaction())
+                            db_cursor.endTransaction();
+
+                        //TODO db_cursor.close();
                     }
-                    //Close cursor
-                    cursorSync.close();
-                }catch (IllegalStateException ie){
-                    //Illegal state exception ! Do nothing, just print
-                    System.out.println("Get not updated values cursor illegal state exception: ? "+
-                            cursorSync);
-                    return null;
-                }
 
 
+                }else
+                    db_cursor.setTransactionSuccessful();
+
+            }catch (SQLiteException e){
+                System.out.println("Error with getNotCheckedValues function, read table: "+e);
+            }finally {
+                if (db_cursor.inTransaction())
+                    db_cursor.endTransaction();
+
+                //TODO db_cursor.close();
             }
-            //Close db
-            db_cursor.close();
         }
 
         //Use GSON to serialize Array List to JSON
@@ -660,8 +676,6 @@ public class IITDatabaseManager {
      * @return
      */
     public  int getNotCheckedValuesNumber( String table, String col, String status, int max) {
-
-
         //Ordered selection
         String selectQuery = "SELECT  * FROM " + table + " WHERE " + col + " = \"" + status + "\" ORDER BY " + timeStampColumn + " DESC "
                 + "LIMIT " + max;
@@ -671,35 +685,31 @@ public class IITDatabaseManager {
         /*TODO while (db_select.inTransaction() ){
             //Wait for it to finish
         }*/
-        try {
-            db_select.beginTransaction();
+        if (db_select != null) {
 
-            if (db_select != null) {
+            try {
+            db_select.beginTransaction();
                 //Create Cursor
                 //Choose the right array from table
                 Cursor cursorSync = db_select.rawQuery(selectQuery, null);
 
                 if (cursorSync != null) {
+                    int res = 0;
                     try {
                         //If Cursor is valid
                         int values = cursorSync.getCount();
-                        //Close cursor
-                        cursorSync.close();
                         db_select.setTransactionSuccessful();
-
-                        //Close db
-                        return values;
+                        res =  values;
 
                     } catch (Exception e) {
-                        //Close cursor and db:
-                        cursorSync.close();
-                        db_select.setTransactionSuccessful();
-
-                        return 0;
+                        res =  0;
                     } finally {
+                        //Close cursor
+                        cursorSync.close();
                         if (db_select.inTransaction())
                             db_select.endTransaction();
                         //TODO db.close();
+                        return res;
                     }
                 } else {
                     //Close db
@@ -708,20 +718,23 @@ public class IITDatabaseManager {
                     if (db_select.inTransaction())
                         db_select.endTransaction();
                     //TODO db.close();
-
-
                     return 0;
                 }
 
-            } else {
-                db_select.setTransactionSuccessful();
+            }catch(Exception e){
+                System.out.println("Begin trans error - "+e);
+                return 0;
+            }finally {
                 if (db_select.inTransaction())
                     db_select.endTransaction();
-                //TODO db.close();
-                return 0;
+
+                //TODO db_cursor.close();
             }
-        }catch(Exception e){
-            System.out.println("Begin trans error - "+e);
+        } else {
+            db_select.setTransactionSuccessful();
+            if (db_select.inTransaction())
+                db_select.endTransaction();
+            //TODO db.close();
             return 0;
         }
     }

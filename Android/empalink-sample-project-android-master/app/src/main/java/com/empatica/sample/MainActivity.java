@@ -40,9 +40,9 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
 
     //Empatica variables
     private static final int REQUEST_ENABLE_BT = 1;
-    public static final String EMPATICA_API_KEY = "01f86c5b71ce435298d2ebc74e3e21a0"; // API Key YELLOW PHONE
-    //public static final String EMPATICA_API_KEY = "f92ddb7260a54f5790038ba90ef4d1ad"; // API Key RED PHONE
-
+    //public static final String EMPATICA_API_KEY = "01f86c5b71ce435298d2ebc74e3e21a0"; // API Key YELLOW PHONE
+    public static final String EMPATICA_API_KEY = "f92ddb7260a54f5790038ba90ef4d1ad"; // API Key RED PHONE
+    //public static final String EMPATICA_API_KEY = "bb7af54058a34b9987d31953912f11e5"; //API Key PINK PHONE
 
     //GUI
     //Wake lock
@@ -371,26 +371,9 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
         // Update the UI
         updateLabel(statusLabel, status.name());
         connectionS = status.name();
-        // The device manager is ready for use
-        if (status == EmpaStatus.READY) {
-            //Make sure connection button is not used
-            //See only conenct button
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    connectButton.setVisibility(View.INVISIBLE);
-                }
-            });
-            updateLabel(statusLabel, status.name() + " - Turn on your device");
-            connectionS  = status.name() + " - Turn on your device";
-            if (BGService.deviceManager != null ) {
-                BGService.deviceManager.stopScanning();
-                // Start scanning
-                BGService.deviceManager.startScanning();
-            }
 
         // The device manager has established a connection
-        } else if (status == EmpaStatus.CONNECTED) {
+        if (status == EmpaStatus.CONNECTED) {
             // Stop streaming after STREAMING_TIME
             runOnUiThread(new Runnable() {
                 @Override
@@ -409,8 +392,27 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
             //UPDATE CONNECTED STATUS
             BGService.EmpaticaDisconnected = false;
 
-            // The device manager disconnected from a device
-        } else if (status == EmpaStatus.DISCONNECTED) {
+        }
+        // The device manager is ready for use
+        else if (status == EmpaStatus.READY) {
+            //Make sure connection button is not used
+            //See only connect button
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    connectButton.setVisibility(View.INVISIBLE);
+                }
+            });
+            updateLabel(statusLabel, status.name() + " - Turn on your device");
+            connectionS  = status.name() + " - Turn on your device";
+            if (BGService.deviceManager != null ) {
+                BGService.deviceManager.stopScanning();
+                // Start scanning
+                BGService.deviceManager.startScanning();
+            }
+        }
+        // The device manager disconnected from a device
+        else if (status == EmpaStatus.DISCONNECTED) {
             //See only connect button
             runOnUiThread(new Runnable() {
                 @Override
@@ -421,10 +423,8 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
             });
             updateLabel(deviceNameLabel, "");
             BGService.EmpaticaDisconnected = true;
-
         }
     }
-
 
     // Update a label with some text, making sure this is run in the UI thread
     public void updateLabel(final TextView label, final String text) {
