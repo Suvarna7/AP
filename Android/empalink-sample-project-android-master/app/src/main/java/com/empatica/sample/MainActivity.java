@@ -362,7 +362,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     @Override
     public void didUpdateSensorStatus(EmpaSensorStatus status, EmpaSensorType type) {
         // No need to implement this right now
-        //System.out.println("EmpaSensor: "+status+ " and "+ type);
+        System.out.println("EmpaSensor: "+status+ " and "+ type);
     }
 
     @Override
