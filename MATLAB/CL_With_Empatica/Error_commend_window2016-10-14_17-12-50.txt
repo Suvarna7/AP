@@ -1,0 +1,18 @@
+MATLAB:badsubscript
+Index exceeds matrix dimensions.
+    file: 'E:\CL_GUI\m20160509_CL_GUI.m'
+    name: 'gui_run_algorithm_Callback'
+    line: 402
+
+    file: 'C:\Program Files\MATLAB\R2014a\toolbox\matlab\guide\gui_mainfcn.m'
+    name: 'gui_mainfcn'
+    line: 95
+
+    file: 'E:\CL_GUI\m20160509_CL_GUI.m'
+    name: 'm20160509_CL_GUI'
+    line: 42
+
+    file: ''
+    name: '@(hObject,eventdata)m20160509_CL_GUI('gui_run_algorithm_Callback',hObject,eventdata,guidata(hObje...'
+    line: 0
+

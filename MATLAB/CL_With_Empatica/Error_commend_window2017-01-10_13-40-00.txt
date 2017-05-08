@@ -1,0 +1,18 @@
+MATLAB:UndefinedFunction
+Undefined function 'ReceiverManager' for input arguments of type 'char'.
+    file: 'C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\CL_With_Empatica\m20150711_get_CGM_value.m'
+    name: 'm20150711_get_CGM_value'
+    line: 8
+
+    file: 'C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\CL_With_Empatica\m20160509_CL_GUI.m'
+    name: 'gui_run_algorithm_Callback'
+    line: 143
+
+    file: 'C:\Program Files\MATLAB\R2014a\toolbox\matlab\guide\gui_mainfcn.m'
+    name: 'gui_mainfcn'
+    line: 95
+
+    file: 'C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\CL_With_Empatica\m20160509_CL_GUI.m'
+    name: 'm20160509_CL_GUI'
+    line: 42
+

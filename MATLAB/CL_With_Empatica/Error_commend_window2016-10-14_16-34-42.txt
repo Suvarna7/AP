@@ -1,0 +1,55 @@
+MATLAB:UndefinedFunction
+Undefined function 'ldl' for input arguments of type 'double' and attributes 'full 3d real'.
+    file: 'E:\CL_GUI\m20141215_ukf_meal.m'
+    name: 'm20141215_ukf_meal'
+    line: 17
+
+    file: 'E:\CL_GUI\m20150711_run_meal_detection_bolus_algorithm.m'
+    name: 'm20150711_run_meal_detection_bolus_algorithm'
+    line: 34
+
+    file: 'E:\CL_GUI\m20160509_CL_GUI.m'
+    name: 'gui_run_algorithm_Callback'
+    line: 237
+
+    file: 'C:\Program Files\MATLAB\R2014a\toolbox\matlab\guide\gui_mainfcn.m'
+    name: 'gui_mainfcn'
+    line: 95
+
+MATLAB:mtimes:inputsMustBe2D
+Inputs must be 2-D, or at least one input must be scalar.
+To compute elementwise TIMES, use TIMES (.*) instead.
+    file: 'E:\CL_GUI\opt_recursive.m'
+    name: 'opt_recursive'
+    line: 2
+
+    file: 'E:\CL_GUI\m20150711_gpc.m'
+    name: 'm20150711_gpc'
+    line: 38
+
+    file: 'E:\CL_GUI\m20160509_CL_GUI.m'
+    name: 'gui_run_algorithm_Callback'
+    line: 265
+
+    file: 'C:\Program Files\MATLAB\R2014a\toolbox\matlab\guide\gui_mainfcn.m'
+    name: 'gui_mainfcn'
+    line: 95
+
+MATLAB:nonLogicalConditional
+Operands to the || and && operators must be convertible to logical scalar values.
+    file: 'E:\CL_GUI\m20150510_hypo_algorithm.m'
+    name: 'm20150510_hypo_algorithm'
+    line: 2
+
+    file: 'E:\CL_GUI\m20150711_hypo_alarm.m'
+    name: 'm20150711_hypo_alarm'
+    line: 25
+
+    file: 'E:\CL_GUI\m20160509_CL_GUI.m'
+    name: 'gui_run_algorithm_Callback'
+    line: 337
+
+    file: 'C:\Program Files\MATLAB\R2014a\toolbox\matlab\guide\gui_mainfcn.m'
+    name: 'gui_mainfcn'
+    line: 95
+

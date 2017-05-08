@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="aws-android-sdk-ddb-mapper-2.3.9">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-android-sdk-ddb-mapper/2.3.9/b64f410bf2f4d4db5642f066d9bad54d2ea4608c/aws-android-sdk-ddb-mapper-2.3.9.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-android-sdk-ddb-mapper/2.3.9/c9707fc4360f7acf20ec5b603085af8c17418ea2/aws-android-sdk-ddb-mapper-2.3.9-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

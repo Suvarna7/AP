@@ -25,6 +25,12 @@ import java.util.Map;
  *
  * SENSOR TABLES:
  *
+ *  1. Bodymedia: columns{"time_stamp", "activity_type","heart_rate",
+ "longitudinal_accel",  "lateral_accel", "transverse_accel", "long_accel_peak", "lat_accel_peak",
+ "tran_accel_peak", "long_accel_avg", "lat_accel_avg", "tran_accel_avg", "long_accel_mad",
+ "lat_accel_mad", "tran_accel_mad", "gsr", "gsr_avg", "skin_temp",  "skin_temp_avg", "cover_temp",
+ "heat_flux_avg", "steps", "sleep", "calories", "vigorous",
+ "METs", "memory", "battery"}
 
  2. Empatica: columns {"time_stamp", "Acc_x", "Acc_y", "Acc_z", "GSR", "BVP",
  "IBI", "temperature","battery_level"}
@@ -46,17 +52,19 @@ public class IITDatabaseManager {
     //private static String DB_LOCAL_URL =  "/storage/emulated/legacy/IIT_database/";
     static String DB_LOCAL_URL =  EXTERNAL_DIRECTORY_PATH+"/IIT_database/";
     public static String DEFAULT_DB_NAME = "dbSensors.db";
+    public static String DEFAULT_DB_NAME_NE = "dbSensors";
+
+
     private String db_name;
 
     static String databaseFile;
     //Time_Stamp column name:
-    public static String timeStampColumn;
-    public static final String default_timeStampColumn = "time_stamp";
+    private static String timeStampColumn;
     //Updated : for the server
     public static final String updatedStatusNo = "n";
     public static final String updatedStatusYes = "y";
     public static final String upDateColumn = "updated";
-    //Synchronized : for the internal database and USB
+    //Syncrhonized : for the internal database and USB
     public static final String syncStatusNo = "n";
     public static final String syncStatusYes = "y";
     public static final String syncColumn = "synchronized";
@@ -68,19 +76,21 @@ public class IITDatabaseManager {
     //static String databaseFile = sdcard.getAbsolutePath() + File.separator+ "external_sd" + File.separator + "ZephyrDB" ;
     //static String databaseFile = sdcard.getAbsolutePath() + File.separator + "ZephyrDB" ;
 
+    //Context
+    private  Context dbContext;
+
     private boolean initialized = false;
     //1 second = 64 + 32 + 4 + 4 + 1 = 105 samples
     //Sending up to 40 minutes
-    public static int ONE_SECOND_DATA = (64+32+4+4+1);
+    public static int MAX_READ_SAMPLES_UPDATE = 30*60*(64+32+4+4+1);
 
     //1 second = 64 + 32 + 4 + 4 + 1 = 105 samples
     //Sending up to 10 minutes
-    public static int MAX_READ_SAMPLES_SYNCHRONIZE = 6*60* ONE_SECOND_DATA;
+    public static int MAX_READ_SAMPLES_SYNCHRONIZE = 4*60*(64+32+4+4+1);
 
     //Max number of samples that can be stored in a HashMap
-    public static int MAX_MEMORY_SAMPLES = 10*60* ONE_SECOND_DATA;
+    public static int MAX_MEMORY_SAMPLES = 10*60*(64+32+4+4+1);
 
-    ACKThread myACK;
 
     /**
      * Default constractor, only needs context
@@ -115,6 +125,8 @@ public class IITDatabaseManager {
     * initDatabase ()
      */
     private void initDatabase(Context ctx) {
+        dbContext = ctx;
+
 
         try {
             //Create database:
@@ -142,17 +154,14 @@ public class IITDatabaseManager {
 
         }
 
-        //Create ACK thread
-        myACK = new ACKThread();
-
     }
 
     /**
-     * * Insert or update values using MyDatabaseHelper
-     * @param table table name
-     * @param values list of values o update
-     * @param columns column names
-     * @return success boolean
+     * Insert or update values using MyDatabaseHelper
+     * @param table
+     * @param values
+     * @param columns
+     * @return
      */
     public boolean insertAndUpdateIntoDatabaseTable(String table, ThreadSafeArrayList<String> values, String[] columns){
         try{
@@ -177,6 +186,9 @@ public class IITDatabaseManager {
                 //Add update
                 update.put(upDateColumn, updatedStatusNo);
 
+                //long result =  db.update(table, not_zero, timeStampColumn + " = " + columns[BGService._TIME_INDEX], null);
+                //System.out.println("Updated " + table + ":  " + result);
+
                 long result = db.insert(table, null, update);
                 //System.out.println("Updated insert "+db_name+",  "+table+":  "+result);
                 if (result < 0){
@@ -189,7 +201,7 @@ public class IITDatabaseManager {
                         if(result <0) {
                             result = db.insert(table, null, update);
                             if (result < 0)
-                                db.update(table, not_zero, String.format("%s = ?", timeStampColumn), new String[]{"'" + (String) update.get(columns[BGService._TIME_INDEX]) + "'"});
+                                result = db.update(table, not_zero, String.format("%s = ?", timeStampColumn), new String[]{"'" + (String) update.get(columns[BGService._TIME_INDEX]) + "'"});
 
                         }
                     }
@@ -201,7 +213,7 @@ public class IITDatabaseManager {
                 Log.d(TAG, "Error storing new sample in " + table + ": " + e);
                 //Update values !=0
                 long result = db.update(table, not_zero, timeStampColumn + " = " + columns[BGService._TIME_INDEX], null);
-                System.out.println("Updated except "+table+":  " +result);
+                System.out.println("Updated except "+table+":  "+result);
                 db.setTransactionSuccessful();
 
             }finally {
@@ -276,7 +288,7 @@ public class IITDatabaseManager {
                 db.execSQL(updateQuery);
 
             }catch(Exception e){
-                Log.d(TAG, "Error storing new sample in " + table +": "+e);
+                Log.d(TAG, "Error storing new sample in "+table +": "+e);
             }finally {
                 if (db.inTransaction())
                     db.endTransaction();
@@ -312,6 +324,8 @@ public class IITDatabaseManager {
                 //sql =  "DROP TABLE IF EXISTS "+table;
                 //db.execSQL(sql);
 
+
+
             }catch(Exception e){
                 Log.d(TAG, "Error deleting all rows in " + table + ": " + e);
             }finally {
@@ -343,7 +357,7 @@ public class IITDatabaseManager {
                 db.beginTransaction();
 
                 //Delete all rows
-                System.out.println("Delete Rows (" + table + "): " + rows);
+                System.out.println("Delete Rows ("+table+"): " + rows);
                 //String sql_statement = "DELETE FROM "+table+" WHERE rowid < "+rows;
                 //String sql_statement = "DELETE FROM "+table+" WHERE ROWID IN (SELECT TOP "+rows+" ROWID FROM "+table+")";
                 //String sql_statement = "DELETE FROM "+table+" WHERE ROWID IN (SELECT ROWID FROM "+table+" ORDER BY ROWID ASC LIMIT "+rows+")";
@@ -389,17 +403,16 @@ public class IITDatabaseManager {
     public List<ThreadSafeArrayList<String>> readAllValuesFromTableWithMargin (String table, int margin){
         List<ThreadSafeArrayList<String>> result = new ArrayList<ThreadSafeArrayList<String>>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        if ( db  !=null) {
+        try{
+            db.beginTransaction();
 
-            try {
-                db.beginTransaction();
-
+            if ( db  !=null) {
                 //Create Cursor
-                Cursor cursorSync = db.query(table, null, null, null, null, null, timeStampColumn + " ASC", null);
-                Log.d("query", "cursor size: " + cursorSync.getCount());
+                Cursor cursorSync = db.query(table, null, null,null, null, null, timeStampColumn+" ASC", null);
+                Log.d("query", "cursor size: "+ cursorSync.getCount());
 
                 //If Cursor is valid
-                if (cursorSync != null) {
+                if (cursorSync != null ) {
                     if (cursorSync.moveToFirst()) {
                         do {
                             //Values to send to server
@@ -414,33 +427,32 @@ public class IITDatabaseManager {
                                     if (column_index >= 0)
                                         val = cursorSync.getString(column_index);
                                     else
-                                        System.out.println("Column not in cursor: " + column);
+                                        System.out.println("Column not in cursor: "+column);
                                     partial.set(val);
                                 }
-                            } catch (IllegalStateException ce) {
-                                System.out.println("Cursor Illegal state in readAllValues: " + ce);
+                            }catch (IllegalStateException ce){
+                                System.out.println("Cursor Illegal state in readAllValues: "+ce);
                                 //Reset cursor!
                                 cursorSync.close();
-                                cursorSync = db.query(table, null, null, null, null, null, timeStampColumn + " ASC", null);
+                                cursorSync = db.query(table, null, null,null, null, null, timeStampColumn+" ASC", null);
                                 cursorSync.moveToFirst();
                             }
 
                             result.add(partial);
 
-                        }
-                        while (cursorSync.moveToNext() && cursorSync.getPosition() < (cursorSync.getCount() - margin) && cursorSync.getPosition() > 0);
+                        } while (cursorSync.moveToNext()  && cursorSync.getPosition() < (cursorSync.getCount() - margin) &&cursorSync.getPosition()>0 );
 
                     }
                 }
                 cursorSync.close();
 
-                db.setTransactionSuccessful();
-            } catch (SQLiteException e) {
-                System.out.println("Error with readall function, read table: " + e);
-            } finally {
-                if (db.inTransaction())
-                    db.endTransaction();
             }
+            db.setTransactionSuccessful();
+        }catch (SQLiteException e){
+            System.out.println("Error with readall function, read table: "+e);
+        }     finally {
+            if (db.inTransaction())
+                db.endTransaction();
         }
         return result;
     }
@@ -573,93 +585,78 @@ public class IITDatabaseManager {
      * @return
      */
 
-    public  List<Map<String, String>> getNotCheckedValues( String table, String[] columns, String col, String status, int max, boolean most_recent) {
+    public  List<Map<String, String>> getNotCheckedValues( String table, String[] columns, String col, String status, int max) {
 
 
         List<Map<String, String>> wordList = new ArrayList<Map<String, String>>();
 
         //Ordered selection
-        String selectQuery;
-        if (most_recent)
-            selectQuery= "SELECT  * FROM " + table + " WHERE "+col+" = \""+ status +"\" ORDER BY "+timeStampColumn+" DESC "
+        //String selectQuery = "SELECT  * FROM " + table + " ORDER BY "+timeStampColumn+" ASC";
+        String selectQuery = "SELECT  * FROM " + table + " WHERE "+col+" = \""+ status +"\" ORDER BY "+timeStampColumn+" DESC "
                             + "LIMIT "+max;
-        else
-            selectQuery= "SELECT  * FROM " + table + " WHERE "+col+" = \""+ status +"\" ORDER BY "+timeStampColumn+" ASC "
-                    + "LIMIT "+max;
-
+        //String selectQuery = "SELECT  * FROM " + table + " WHERE "+col+" = " + status ;
 
         //SQLiteDatabase db_cursor = dbContext.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READONLY, null);
         SQLiteDatabase db_cursor = dbHelper.getReadableDatabase();
+
+
         if (db_cursor !=null) {
-            try {
-                db_cursor.beginTransaction();
+            //Create Cursor
+            //Choose the right array from table
+            Cursor cursorSync = db_cursor.rawQuery(selectQuery, null);
 
-                //Create Cursor
-                //Choose the right array from table
-                Cursor cursorSync = db_cursor.rawQuery(selectQuery, null);
-
-                if (cursorSync != null) {
-                    //System.out.println("Empatica Cursor size: " + cursorSync.getCount());
-                    try {
-                        //If Cursor is valid
-                        if (cursorSync.moveToFirst() && cursorSync.getPosition() >= 0) {
-                            try {
-                                do {
-                                    HashMap<String, String> map = new HashMap<String, String>();
-                                    for (int i = 0; i < columns.length; i++) {
-                                        map.put(columns[i], cursorSync.getString(cursorSync.getColumnIndex(columns[i])));
-                                        //lastUpd.add(cursorSync.getString(i));
-                                    }
-
-                                    //Include updated value
-                                    map.put(col, cursorSync.getString(columns.length + 1));
-
-                                    //Include sync value:
-                                    map.put(syncColumn, cursorSync.getString(columns.length));
-
-                                    wordList.add(map);
-
+            if (cursorSync != null ) {
+                //System.out.println("Empatica Cursor size: " + cursorSync.getCount());
+                try {
+                    //If Cursor is valid
+                    if (cursorSync.moveToFirst() && cursorSync.getPosition() >= 0) {
+                        try {
+                            do {
+                                HashMap<String, String> map = new HashMap<String, String>();
+                                //map.put("table_name", MainActivityBM.dispTableName);
+                                for (int i = 0; i < columns.length; i++) {
+                                    map.put(columns[i], cursorSync.getString(cursorSync.getColumnIndex(columns[i])));
+                                    //lastUpd.add(cursorSync.getString(i));
                                 }
-                                while (cursorSync.moveToNext());
-                                //while (cursorSync.moveToNext() && cursorSync.getPosition() >= 0&& index < max);
+                                //Include updated value: only in the server case
+                                //Otherwise... we include sync value again
+                                //map.put(col, cursorSync.getString(columns.length + 1));
 
-                            } catch (Exception e) {
-                                //Close cursor and db:
-                                cursorSync.close();
-                                db_cursor.close();
+                                //Include updatd alue
+                                map.put(col, cursorSync.getString(columns.length + 1));
 
-                                return wordList;
+                                //Include sync value:
+                                map.put(syncColumn, cursorSync.getString(columns.length));
+
+                                wordList.add(map);
+                                //System.out.println("Index number: "+index +" vs " + max);
+
                             }
+                            while (cursorSync.moveToNext());
+                            //while (cursorSync.moveToNext() && cursorSync.getPosition() >= 0&& index < max);
 
+                        } catch (Exception e) {
+                            //Close cursor and db:
+                            cursorSync.close();
+                            db_cursor.close();
+
+                            return wordList;
                         }
-                        //Close cursor
-                        cursorSync.close();
-                        db_cursor.setTransactionSuccessful();
 
-                    } catch (IllegalStateException ie) {
-                        //Illegal state exception ! Do nothing, just print
-                        System.out.println("Get not updated values cursor illegal state exception: ? " +
-                                cursorSync);
-                        return null;
-                    } finally {
-                        if (db_cursor.inTransaction())
-                            db_cursor.endTransaction();
-
-                        //TODO db_cursor.close();
                     }
+                    //Close cursor
+                    cursorSync.close();
+                }catch (IllegalStateException ie){
+                    //Illegal state exception ! Do nothing, just print
+                    System.out.println("Get not updated vlues cursor illegal state exception: ? "+
+                            cursorSync);
+                    return null;
+                }
 
 
-                }else
-                    db_cursor.setTransactionSuccessful();
-
-            }catch (SQLiteException e){
-                System.out.println("Error with getNotCheckedValues function, read table: "+e);
-            }finally {
-                if (db_cursor.inTransaction())
-                    db_cursor.endTransaction();
-
-                //TODO db_cursor.close();
             }
+            //Close db
+            db_cursor.close();
         }
 
         //Use GSON to serialize Array List to JSON
@@ -676,105 +673,53 @@ public class IITDatabaseManager {
      * @return
      */
     public  int getNotCheckedValuesNumber( String table, String col, String status, int max) {
+
+
+        List<Map<String, String>> wordList = new ArrayList<Map<String, String>>();
+
         //Ordered selection
+        //String selectQuery = "SELECT  * FROM " + table + " ORDER BY "+timeStampColumn+" ASC";
         String selectQuery = "SELECT  * FROM " + table + " WHERE " + col + " = \"" + status + "\" ORDER BY " + timeStampColumn + " DESC "
                 + "LIMIT " + max;
+        //String selectQuery = "SELECT  * FROM " + table + " WHERE "+col+" = " + status ;
 
         //SQLiteDatabase db_cursor = dbContext.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READONLY, null);
-        SQLiteDatabase db_select = dbHelper.getReadableDatabase();
-        /*TODO while (db_select.inTransaction() ){
-            //Wait for it to finish
-        }*/
-        if (db_select != null) {
+        SQLiteDatabase db_cursor = dbHelper.getReadableDatabase();
 
-            try {
-            db_select.beginTransaction();
-                //Create Cursor
-                //Choose the right array from table
-                Cursor cursorSync = db_select.rawQuery(selectQuery, null);
 
-                if (cursorSync != null) {
-                    int res = 0;
-                    try {
-                        //If Cursor is valid
-                        int values = cursorSync.getCount();
-                        db_select.setTransactionSuccessful();
-                        res =  values;
-
-                    } catch (Exception e) {
-                        res =  0;
-                    } finally {
-                        //Close cursor
-                        cursorSync.close();
-                        if (db_select.inTransaction())
-                            db_select.endTransaction();
-                        //TODO db.close();
-                        return res;
-                    }
-                } else {
-                    //Close db
-                    db_select.setTransactionSuccessful();
-
-                    if (db_select.inTransaction())
-                        db_select.endTransaction();
-                    //TODO db.close();
-                    return 0;
-                }
-
-            }catch(Exception e){
-                System.out.println("Begin trans error - "+e);
-                return 0;
-            }finally {
-                if (db_select.inTransaction())
-                    db_select.endTransaction();
-
-                //TODO db_cursor.close();
-            }
-        } else {
-            db_select.setTransactionSuccessful();
-            if (db_select.inTransaction())
-                db_select.endTransaction();
-            //TODO db.close();
-            return 0;
-        }
-    }
-
-    public  int getOlderSamplesNumber(String table, String col, String last_update){
-        //Ordered selection
-        String selectQuery = "SELECT  * FROM " + table + " WHERE " + col + " < \"" + last_update;
-        System.out.println("get older query "+selectQuery);
-        SQLiteDatabase db_select = dbHelper.getReadableDatabase();
-
-        //Obtain a cursor and count its entries
-        if (db_select != null) {
+        if (db_cursor != null) {
             //Create Cursor
             //Choose the right array from table
-            Cursor cursorSync = db_select.rawQuery(selectQuery, null);
+            Cursor cursorSync = db_cursor.rawQuery(selectQuery, null);
 
             if (cursorSync != null) {
+                //System.out.println("Empatica Cursor size: " + cursorSync.getCount());
                 try {
                     //If Cursor is valid
                     int values = cursorSync.getCount();
                     //Close cursor
                     cursorSync.close();
                     //Close db
+                    //db_cursor.close();
                     return values;
 
                 } catch (Exception e) {
                     //Close cursor and db:
                     cursorSync.close();
+                    //db_cursor.close();
 
                     return 0;
                 }
             } else {
                 //Close db
+                //db_cursor.close();
                 return 0;
             }
+
 
         }else{
             return 0;
         }
-
     }
 
 
@@ -788,6 +733,8 @@ public class IITDatabaseManager {
 
 
         List<Map<String, String>> wordList = new ArrayList<Map<String, String>>();
+        //String selectQuery = "SELECT  * FROM " + table + " WHERE "+col+" = '" + status +"' ORDER BY "+timeStampColumn+" ASC";
+        //String selectQuery = "SELECT * FROM " + table + " WHERE "+col+" = " + status ;
         String selectQuery = "SELECT  * FROM " + table +" ORDER BY "+timeStampColumn+" ASC";
 
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -887,10 +834,11 @@ public class IITDatabaseManager {
 
     /**
      * Update Sync status against each User ID
+     * @param ctx context from activity
      * @param status synchronize status
      * @param last_up last_updated value (acts as id)
      */
-    public void updateSyncStatus(String table, String status_col, String status, String last_up){
+    public void updateSyncStatus(Context ctx, String table, String status_col, String status, String last_up){
 
         //SQLiteDatabase database = ctx.openOrCreateDatabase(databaseFile, Context.MODE_WORLD_WRITEABLE, null);
         //SQLiteDatabase db1=ctx.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READWRITE, null);
@@ -922,22 +870,17 @@ public class IITDatabaseManager {
         }
     }
 
-    public void runAckSync(String table,  String status, String last_up){
-        myACK.presetRunningParams(this, table, status, last_up);
-        new Thread(myACK).start();
-
-    }
-
     /**
      * Update all previous values as sync/updated, given a time_stamped sample
      * Works as a cummulative ACK (kind of ~)
+     * @param ctx - context
      * @param table - table name
      * @param status - yes/no
      * @param last_up - time_stamp acknowledged
      * @return
      */
 
-    public boolean ackSyncStatusAllPrevious (String table,  String status, String last_up){
+    public boolean ackSyncStatusAllPrevious (Context ctx, String table,  String status, String last_up){
         //SQLiteDatabase database = ctx.openOrCreateDatabase(databaseFile, Context.MODE_WORLD_WRITEABLE, null);
         //SQLiteDatabase db1=ctx.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READWRITE, null);
         //If sync is successful:
@@ -949,8 +892,8 @@ public class IITDatabaseManager {
 
             //SQLiteDatabase db =ctx.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READONLY, null);
             SQLiteDatabase db = dbHelper.getReadableDatabase();
+            db.beginTransaction();
             try{
-                db.beginTransaction();
 
                 if ( db  !=null) {
                     //Create Cursor
@@ -973,7 +916,7 @@ public class IITDatabaseManager {
                                 System.out.println(last_updated);
                                 // ackSingleSample(ctx, table,syncColumn, status,last_updated, db);
 
-                                updateSyncStatus(table,syncColumn, syncStatusYes,last_updated);
+                                updateSyncStatus(ctx, table,syncColumn, syncStatusYes,last_updated);
                                 index ++;
                                 if (index%CURSOR_WINDOW_LIMIT == 0){
                                     //Get new cursor!

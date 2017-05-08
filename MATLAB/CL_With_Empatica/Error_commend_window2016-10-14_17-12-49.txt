@@ -1,0 +1,36 @@
+MATLAB:badsubscript
+Attempted to access ee(21,1); index out of bounds because size(ee)=[20,1].
+    file: 'E:\CL_GUI\m20150711_gpc.m'
+    name: 'm20150711_gpc'
+    line: 39
+
+    file: 'E:\CL_GUI\m20160509_CL_GUI.m'
+    name: 'gui_run_algorithm_Callback'
+    line: 275
+
+    file: 'C:\Program Files\MATLAB\R2014a\toolbox\matlab\guide\gui_mainfcn.m'
+    name: 'gui_mainfcn'
+    line: 95
+
+    file: 'E:\CL_GUI\m20160509_CL_GUI.m'
+    name: 'm20160509_CL_GUI'
+    line: 42
+
+MATLAB:badsubscript
+Attempted to access phys_act(21,1); index out of bounds because size(phys_act)=[20,1].
+    file: 'E:\CL_GUI\m20150711_hypo_alarm.m'
+    name: 'm20150711_hypo_alarm'
+    line: 6
+
+    file: 'E:\CL_GUI\m20160509_CL_GUI.m'
+    name: 'gui_run_algorithm_Callback'
+    line: 347
+
+    file: 'C:\Program Files\MATLAB\R2014a\toolbox\matlab\guide\gui_mainfcn.m'
+    name: 'gui_mainfcn'
+    line: 95
+
+    file: 'E:\CL_GUI\m20160509_CL_GUI.m'
+    name: 'm20160509_CL_GUI'
+    line: 42
+

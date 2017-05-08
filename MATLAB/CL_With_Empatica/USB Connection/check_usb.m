@@ -5,9 +5,7 @@ function [ connected ] = check_usb( connection )
 %Send request
 fprintf(connection, 'usb_state'); 
 ready_to_read = true;
-finalTime = datenum(clock + [0, 0, 0, 0, 0, 30]);
-connected = false;
- while (ready_to_read && datenum(clock) < finalTime)
+ while (ready_to_read)
       if (connection.BytesAvailable > 0)
                 %Read new data from Java and phone
                 DataReceived = fscanf(connection);
@@ -15,13 +13,9 @@ connected = false;
                 if (strcmp(var, 'usb_connected'))
                     connected = true;
                     ready_to_read = false;
-                elseif (strcmp(var, 'usb_disconnected'))
-                     connected = false;
-                     ready_to_read = false;
                 else
-                    connected = true;
+                    connected = false;
                     ready_to_read = false;
-                end
       end
  end
 

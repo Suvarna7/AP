@@ -1,0 +1,36 @@
+MATLAB:badsubscript
+Index exceeds matrix dimensions.
+    file: 'C:\Users\Experimens\Desktop\New folder\CL_GUI\m20150711_run_meal_detectio...'
+    name: 'm20150711_run_meal_detection_bolus_algorithm'
+    line: 18
+
+    file: 'C:\Users\Experimens\Desktop\New folder\CL_GUI\m20160509_CL_GUI.m'
+    name: 'gui_run_algorithm_Callback'
+    line: 228
+
+    file: 'C:\Program Files\MATLAB\MATLAB Production Server\R2015a\toolbox\matlab\gu...'
+    name: 'gui_mainfcn'
+    line: 95
+
+    file: 'C:\Users\Experimens\Desktop\New folder\CL_GUI\m20160509_CL_GUI.m'
+    name: 'm20160509_CL_GUI'
+    line: 42
+
+MATLAB:badsubscript
+Attempted to access gs(21,1); index out of bounds because size(gs)=[20,1].
+    file: 'C:\Users\Experimens\Desktop\New folder\CL_GUI\m20150711_gpc.m'
+    name: 'm20150711_gpc'
+    line: 38
+
+    file: 'C:\Users\Experimens\Desktop\New folder\CL_GUI\m20160509_CL_GUI.m'
+    name: 'gui_run_algorithm_Callback'
+    line: 256
+
+    file: 'C:\Program Files\MATLAB\MATLAB Production Server\R2015a\toolbox\matlab\gu...'
+    name: 'gui_mainfcn'
+    line: 95
+
+    file: 'C:\Users\Experimens\Desktop\New folder\CL_GUI\m20160509_CL_GUI.m'
+    name: 'm20160509_CL_GUI'
+    line: 42
+

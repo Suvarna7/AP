@@ -1,0 +1,18 @@
+MATLAB:nonLogicalConditional
+Operands to the || and && operators must be convertible to logical scalar values.
+    file: 'C:\Users\Experimens\Desktop\New folder\CL_GUI\m20160509_CL_GUI.m'
+    name: 'gui_run_algorithm_Callback'
+    line: 158
+
+    file: 'C:\Program Files\MATLAB\MATLAB Production Server\R2015a\toolbox\matlab\gu...'
+    name: 'gui_mainfcn'
+    line: 95
+
+    file: 'C:\Users\Experimens\Desktop\New folder\CL_GUI\m20160509_CL_GUI.m'
+    name: 'm20160509_CL_GUI'
+    line: 42
+
+    file: ''
+    name: '@(hObject,eventdata)m20160509_CL_GUI('gui_run_algorithm_Callback',hObject...'
+    line: 0
+

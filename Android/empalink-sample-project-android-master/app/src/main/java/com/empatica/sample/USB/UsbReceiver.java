@@ -8,11 +8,11 @@ import android.hardware.usb.UsbManager;
 import android.os.Vibrator;
 import android.widget.Toast;
 
-public class USBReceiver extends BroadcastReceiver{
+public class UsbReceiver extends BroadcastReceiver{
 	 private static USBHost uHost;
 	 
 
-	 public USBReceiver(){
+	 public UsbReceiver(){
 		 
 	 }
 	 /* public UsbReceiver(Context ctx){
@@ -37,14 +37,11 @@ public class USBReceiver extends BroadcastReceiver{
 			if (action !=null) {
 				if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
 					// Toast.makeText(context, "!! USB ATTACHED", Toast.LENGTH_LONG).show();
-					//TODO Turn ON Screen
-					uHost.mActivity.keepScreenON(true);
 
 					System.out.println("BroadcastReceiver USB Connected");
 
 				} else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
 					// Toast.makeText(context, "!! USB DETTACHED", Toast.LENGTH_LONG).show();
-					uHost.mActivity.keepScreenON(false);
 
 					System.out.println("BroadcastReceiver USB Disconnected");
 				} else if ("android.intent.action.ACTION_POWER_DISCONNECTED".equals(action)) {
@@ -64,13 +61,8 @@ public class USBReceiver extends BroadcastReceiver{
 					vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
 					vibrator.vibrate(1000);
 
-					//TODO Turn OFF Screen
-					uHost.mActivity.keepScreenON(false);
-
 
 				} else if ("android.intent.action.ACTION_POWER_CONNECTED".equals(action)) {
-					uHost.mActivity.keepScreenON(true);
-
 					if (uHost != null && !uHost.isConnected()) {
 						//Toast.makeText(context, "!! USB CONNECTED", Toast.LENGTH_LONG).show();
 						uHost.updateConnectedStatus("USB CONNECT", "START USB CONNECTION - Press CONNECT USB", true);

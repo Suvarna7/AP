@@ -1,0 +1,18 @@
+MATLAB:UndefinedFunction
+Undefined function 'ldl' for input arguments of type 'double' and attributes 'full 3d real'.
+    file: 'C:\Users\Experimens\Desktop\New folder\CL_GUI\m20141215_ukf_meal.m'
+    name: 'm20141215_ukf_meal'
+    line: 17
+
+    file: 'C:\Users\Experimens\Desktop\New folder\CL_GUI\m20150711_run_meal_detectio...'
+    name: 'm20150711_run_meal_detection_bolus_algorithm'
+    line: 34
+
+    file: 'C:\Users\Experimens\Desktop\New folder\CL_GUI\m20160509_CL_GUI.m'
+    name: 'gui_run_algorithm_Callback'
+    line: 228
+
+    file: 'C:\Program Files\MATLAB\MATLAB Production Server\R2015a\toolbox\matlab\gu...'
+    name: 'gui_mainfcn'
+    line: 95
+

@@ -1,0 +1,19 @@
+MATLAB:xlsread:FileNotFound
+XLSREAD unable to open file 'E:\CL_GUI\armband.xlsx'.
+File 'E:\CL_GUI\armband.xlsx' not found.
+    file: 'C:\Program Files\MATLAB\R2014a\toolbox\matlab\iofun\xlsread.m'
+    name: 'xlsread'
+    line: 128
+
+    file: 'C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\CL_With_Empatica\m20150711_get_armband_data.m'
+    name: 'm20150711_get_armband_data'
+    line: 3
+
+    file: 'C:\Users\Cat\Documents\GitHub\AP_IIT_2016\MATLAB\CL_With_Empatica\m20160509_CL_GUI.m'
+    name: 'gui_run_algorithm_Callback'
+    line: 207
+
+    file: 'C:\Program Files\MATLAB\R2014a\toolbox\matlab\guide\gui_mainfcn.m'
+    name: 'gui_mainfcn'
+    line: 95
+

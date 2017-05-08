@@ -1,0 +1,36 @@
+MATLAB:badsubscript
+Attempted to access meal_states(:,0); index must be a positive integer or logical.
+    file: 'C:\Users\Experimens\Desktop\New folder\CL_GUI\m20150711_run_meal_detectio...'
+    name: 'm20150711_run_meal_detection_bolus_algorithm'
+    line: 34
+
+    file: 'C:\Users\Experimens\Desktop\New folder\CL_GUI\m20160509_CL_GUI.m'
+    name: 'gui_run_algorithm_Callback'
+    line: 228
+
+    file: 'C:\Program Files\MATLAB\MATLAB Production Server\R2015a\toolbox\matlab\gu...'
+    name: 'gui_mainfcn'
+    line: 95
+
+    file: 'C:\Users\Experimens\Desktop\New folder\CL_GUI\m20160509_CL_GUI.m'
+    name: 'm20160509_CL_GUI'
+    line: 42
+
+MATLAB:badsubscript
+Subscript indices must either be real positive integers or logicals.
+    file: 'C:\Users\Experimens\Desktop\New folder\CL_GUI\m20150711_gpc.m'
+    name: 'm20150711_gpc'
+    line: 34
+
+    file: 'C:\Users\Experimens\Desktop\New folder\CL_GUI\m20160509_CL_GUI.m'
+    name: 'gui_run_algorithm_Callback'
+    line: 256
+
+    file: 'C:\Program Files\MATLAB\MATLAB Production Server\R2015a\toolbox\matlab\gu...'
+    name: 'gui_mainfcn'
+    line: 95
+
+    file: 'C:\Users\Experimens\Desktop\New folder\CL_GUI\m20160509_CL_GUI.m'
+    name: 'm20160509_CL_GUI'
+    line: 42
+

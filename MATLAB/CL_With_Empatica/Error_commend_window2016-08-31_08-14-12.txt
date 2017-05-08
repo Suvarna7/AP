@@ -1,0 +1,37 @@
+MATLAB:UndefinedFunction
+Undefined function 'ldl' for input arguments of type 'double' and attributes 'full 3d real'.
+    file: 'C:\Users\Experimens\Desktop\New folder\CL_GUI\m20141215_ukf_meal.m'
+    name: 'm20141215_ukf_meal'
+    line: 17
+
+    file: 'C:\Users\Experimens\Desktop\New folder\CL_GUI\m20150711_run_meal_detectio...'
+    name: 'm20150711_run_meal_detection_bolus_algorithm'
+    line: 34
+
+    file: 'C:\Users\Experimens\Desktop\New folder\CL_GUI\m20160509_CL_GUI.m'
+    name: 'gui_run_algorithm_Callback'
+    line: 228
+
+    file: 'C:\Program Files\MATLAB\MATLAB Production Server\R2015a\toolbox\matlab\gu...'
+    name: 'gui_mainfcn'
+    line: 95
+
+MATLAB:mtimes:inputsMustBe2D
+Inputs must be 2-D, or at least one input must be scalar.
+To compute elementwise TIMES, use TIMES (.*) instead.
+    file: 'C:\Users\Experimens\Desktop\New folder\CL_GUI\opt_recursive.m'
+    name: 'opt_recursive'
+    line: 2
+
+    file: 'C:\Users\Experimens\Desktop\New folder\CL_GUI\m20150711_gpc.m'
+    name: 'm20150711_gpc'
+    line: 38
+
+    file: 'C:\Users\Experimens\Desktop\New folder\CL_GUI\m20160509_CL_GUI.m'
+    name: 'gui_run_algorithm_Callback'
+    line: 256
+
+    file: 'C:\Program Files\MATLAB\MATLAB Production Server\R2015a\toolbox\matlab\gu...'
+    name: 'gui_mainfcn'
+    line: 95
+
