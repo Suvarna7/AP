@@ -1,4 +1,4 @@
-function [ table_name, data_to_save ] = read_last_samples( t , table_name)
+function [ table_name, data_to_save, usb_state ] = read_last_samples( t , table_name)
 %read_last_samples Request new samples and waits for java
 %   program to send them all
 % We request data for a certain sensor. Available sensors:
@@ -7,26 +7,40 @@ function [ table_name, data_to_save ] = read_last_samples( t , table_name)
 
 %Send request
 fprintf(t, table_name); 
-ready_to_read = true;
+done_reading = false;
+usb_state = true;
+init_flag = false;
 data_to_save = [];
 table_name = 'no_data';
 global ack_data;
 ack_data = '';
 %Wait till we read all samples
- while (ready_to_read)
+initialTime = datenum(clock + [0, 0, 0, 0, 0, 30]);
+finalTime = datenum(clock + [0, 0, 0, 0, 3, 0]);
+
+% Break while loop if:
+%   - last command is been received: ready_to_read = true
+%   - initial command is not received in 10 seconds: 10 seconds passed &&
+%   no initial command is received
+%   - 5 minutes elapsed
+ while (~done_reading && usb_state)
             %data = fread(t, 10)
             if (t.BytesAvailable > 0)
                 %Read new data from Java and phone
                 DataReceived = fscanf(t);
                 var = DataReceived(1:length(DataReceived)-2);
-                if (strcmp(var, 'no_more_values'))
+                if (strcmp(var, 'first_value'))
+                    'Initial message !'
+                    init_flag = true;
+                elseif(strcmp(var, 'no_more_values'))
                     %End of sample sending
-                    out = 'Received JSON !'
+                    'Received all messages !'
                     %assignin('base', table_name, data_to_save);
                     %data_to_save = [];
-                    ready_to_read = false;
+                    done_reading = true;
                     fprintf(t, ack_data);
-
+                elseif(strcmp(var, 'usb_sync'))
+                    'USB related ?'
                 else
                     if (var(1:1)=='[')
                         %Handle received Data - JSON ARRAY
@@ -38,10 +52,18 @@ ack_data = '';
                             data_to_save =[data_to_save; data(2:end,:)];
                         end
                         %fprintf(t, ack);
+                    else
+                        'Received other:'
+                        var
 
                     end
 
                 end
+            end
+            
+            %USB Connection
+            if((datenum(clock) > initialTime && ~init_flag)|| datenum(clock) > finalTime)
+                usb_state = false;
             end
 end
 
