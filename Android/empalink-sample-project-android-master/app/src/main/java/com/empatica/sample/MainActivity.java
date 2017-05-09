@@ -104,8 +104,6 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     private static final String jsonID = "empaticaJSON";
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //System.out.println("App created");
