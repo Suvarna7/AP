@@ -205,9 +205,9 @@ public class BGService extends Service implements EmpaDataDelegate{
 
 
 
-
-
         }
+
+
 
     /**********************************
      * Empatica callbacks

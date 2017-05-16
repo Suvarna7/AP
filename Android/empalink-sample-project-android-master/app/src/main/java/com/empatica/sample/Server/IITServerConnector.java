@@ -1,4 +1,5 @@
 package com.empatica.sample.Server;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -75,8 +76,6 @@ public class IITServerConnector {
 		READ_URL = readURL;
 		tableNames = new ArrayList<>();
 
-
-
 	}
 	
 	/**
@@ -117,12 +116,9 @@ public class IITServerConnector {
 		map.put("updated", "n");
 		map.put("time_stamp", getCurrentTime());
 
-
 		//arg.add(map1);
 		arg.add(map);
-
 		sendToIIT(convertToJSON(arg), WRITE_URL);
-
 		System.out.println("Sent to server: "+WRITE_URL);
 
 
@@ -191,12 +187,19 @@ public  static String convertToJSON( List<Map<String, String>> args){
  */
 public static String convertToString(byte[] args){
 	String str = "";
-	try{
-		str = new String(args, "UTF-8"); // for UTF-8 encoding
-	}catch (Exception e){
-		e.printStackTrace();
+	if (args != null) {
+			try {
+				str = new String(args, "UTF-8"); // for UTF-8 encoding
+
+			} catch (Exception e2) {
+				try {
+					str = new String(args, "US-ASCII"); //Try US-ASCII
+
+				} catch (UnsupportedEncodingException e1) {
+					e1.printStackTrace();
+				}
+			}
 	}
-	System.out.println("SERVER RESPONSE: "+str);
 	return str;
 }
 

@@ -61,9 +61,6 @@ public class USBHost {
         readingThread = new USBReadThread(this, ctx);
         last_time_ack = "time";
 
-        USBReceiver.addUsbHost(this);
-
-
     }
 
 

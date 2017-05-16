@@ -5,7 +5,9 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
+import android.hardware.usb.UsbManager;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,23 +27,26 @@ import com.empatica.empalink.config.EmpaStatus;
 import com.empatica.empalink.delegate.EmpaStatusDelegate;
 import com.empatica.sample.Timers.SendDataTimer;
 import com.empatica.sample.USB.USBHost;
+import com.empatica.sample.USB.USBReceiver;
 
 
 /**
  * EmpaLink Main Activity
  * Implements EmpaStatusDelegate and holds the GUI of the app
- * Class modfied from the EmpaLink Sample code
+ * Class modified from the EmpaLink Sample code
  *
  * @author Caterina Lazaro
- * @version 1.0 Jun 2016
+ * @version 2.0 May 2017
  */
 
 public class MainActivity extends AppCompatActivity implements EmpaStatusDelegate {
 
+    //DiAS Flag:
+    private boolean DiASPhone = false;
     //Empatica variables
     private static final int REQUEST_ENABLE_BT = 1;
-    //public static final String EMPATICA_API_KEY = "01f86c5b71ce435298d2ebc74e3e21a0"; // API Key YELLOW PHONE
-    public static final String EMPATICA_API_KEY = "f92ddb7260a54f5790038ba90ef4d1ad"; // API Key RED PHONE
+    public static final String EMPATICA_API_KEY = "01f86c5b71ce435298d2ebc74e3e21a0"; // API Key YELLOW PHONE
+    //public static final String EMPATICA_API_KEY = "f92ddb7260a54f5790038ba90ef4d1ad"; // API Key RED PHONE
     //public static final String EMPATICA_API_KEY = "bb7af54058a34b9987d31953912f11e5"; //API Key PINK PHONE
 
     //GUI
@@ -84,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     public static USBHost mHost;
     public TextView usbCommand;
     public static String usbCommandValue;
+    public USBReceiver usbBroadcast;
 
     //public final String USB_START_CONNECT= getString(R.string.connect_usb_init);
 
@@ -97,8 +103,6 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
         setContentView(R.layout.activity_main);
 
         //Screen ON
-
-
         keepScreenON(true);
 
         // Initialize vars that reference UI components
@@ -139,18 +143,19 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
         appContext = this;
         appMain = this;
 
+
+
     }
+
+
 
 
     @Override
     protected void onPause() {
         //System.out.println("App paused");
-
         super.onPause();
-
         /*if (BGService.deviceManager != null)
             BGService.deviceManager.stopScanning();*/
-
     }
 
     @Override
@@ -162,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
 
         //Make connected screen visible
         if (statusLabel.getText().toString().contains(EmpaStatus.CONNECTED.toString()) &&
-                !statusLabel.getText().toString().contains(EmpaStatus.DISCONNECTED.toString()))
+                !statusLabel.getText().toString().contains(EmpaStatus.DISCONNECTED.toString())) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -170,7 +175,17 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                     dataCnt.setVisibility(View.VISIBLE);
                 }
             });
+            updateLabel(statusLabel, statusLabel.getText().toString());
+            updateLabel(deviceNameLabel, device);
+        }else{
+            updateLabel(statusLabel, "ANOTHER");
+            stopService(new Intent(appContext, BGService.class));
+            //Start service
+            BGService.initContext(appMain);
+            startService(new Intent(appContext, BGService.class));
+            BGService.serviceStarted = true;
 
+        }
 
     }
 
@@ -202,10 +217,12 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                 mHost = new USBHost(this, this);
                 usbCommandValue = "waiting for a command..";
                 mHost.connected = false;
+                //USB Broadcast receiver:
+                attachUSBReceiver(mHost);
+
             }else{
                 //There a USB host active, keep USB button connected
                 mHost.updateConnectedStatus("Connected", "USB HOST CONNECTED - established!  :) ", false);
-
             }
 
 
@@ -220,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
             //Initialize server connector
             sendDataTimer = new SendDataTimer(this);
             //TODO SERVER BACKUP
-            //sendDataTimer.startTimer();
+            sendDataTimer.startTimer();
 
         }else{
             //Set the view for Connected
@@ -277,6 +294,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
         //startStreamingPackets();
         super.onStop();
 
+
     }
 
     @Override
@@ -290,12 +308,16 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
      */
     @Override
     public void onBackPressed() {
-        if (statusLabel.getText().toString().contains(EmpaStatus.CONNECTED.toString()))
+        if (statusLabel.getText().toString().contains(EmpaStatus.CONNECTED.toString())){
             //CONNECTED
+            System.out.println("Back pressed and connected");
             moveTaskToBack(true);
-        else {
+    }else {
+            System.out.println("Back pressed and not connected");
             //Any other state... destroy app
             stopService(new Intent(this, BGService.class));
+            //Stop USB receiver
+            releaseUSBReceiver();
             super.onDestroy();
             finish();
             System.exit(0);
@@ -387,6 +409,8 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                     }, STREAMING_TIME);*/
                 }
             });
+            updateLabel(deviceNameLabel, device);
+            connectionS  = status.name();
             //UPDATE CONNECTED STATUS
             BGService.EmpaticaDisconnected = false;
 
@@ -402,7 +426,7 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                 }
             });
             updateLabel(statusLabel, status.name() + " - Turn on your device");
-            connectionS  = status.name() + " - Turn on your device";
+            connectionS  = status.name();
             if (BGService.deviceManager != null ) {
                 BGService.deviceManager.stopScanning();
                 // Start scanning
@@ -419,8 +443,13 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                     dataCnt.setVisibility(View.INVISIBLE);
                 }
             });
-            updateLabel(deviceNameLabel, "");
+            updateLabel(statusLabel, status.name());
+            updateLabel(deviceNameLabel, "---");
             BGService.EmpaticaDisconnected = true;
+        }else {
+            //Update labels in this non recognize state
+            updateLabel(statusLabel, status.name() + " - ? Turn on your device");
+            connectionS  = status.name();
         }
     }
 
@@ -460,13 +489,13 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
             if (BGService.deviceManager != null) {
                 //If deviceManager is scanning, we stop it
                 BGService.deviceManager.stopScanning();
-                //Change empastatus to ready if there is Internet connection
+                //Change empa_status to ready if there is Internet connection
                 if ( checkInternetConnectivity()) {
                     BGService.deviceManager.authenticateWithAPIKey(EMPATICA_API_KEY);
                     updateLabel(internet_conn, "INTERNET");
 
                 } else
-                    //No itnernet connection - WE CAN NOT USE THE APP
+                    //No internet connection - WE CAN NOT USE THE APP
                     updateLabel(internet_conn, "NO INTERNET");
                 //BGService.deviceManager.startScanning();
                 view.setVisibility(View.INVISIBLE);
@@ -490,7 +519,6 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
                 view.setBackgroundColor(getResources().getColor(R.color.dark_green_paleta));
                 startServiceButton.setBackgroundColor(getResources().getColor(R.color.ligher_green_paleta));
                 BGService.EmpaticaDisconnected = true;
-
 
             }
 
@@ -534,7 +562,6 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
             String msg = "Attempting to connect…";
             Toast.makeText(mHost.ctx, msg, Toast.LENGTH_LONG).show();
 
-
         }
     };
 
@@ -571,9 +598,6 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
     }
 
 
-
-
-
     public void popUpFragment(Class c){
         //Display the dialog
         Intent dialogIntent = new Intent(this, c);
@@ -597,6 +621,26 @@ public class MainActivity extends AppCompatActivity implements EmpaStatusDelegat
 
 
         }
+    }
+
+    /**
+     * Initialize USBReceiver to monitor USB connect/disconnect
+     */
+    private void attachUSBReceiver(USBHost uhost){
+        usbBroadcast = new USBReceiver(uhost);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_POWER_CONNECTED);
+        filter.addAction(Intent.ACTION_POWER_DISCONNECTED);
+        filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
+        filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
+        filter.addCategory(Intent.CATEGORY_DEFAULT);
+        registerReceiver(usbBroadcast, filter);
+    }
+
+    private void releaseUSBReceiver(){
+        usbBroadcast.removeUsbHost();
+        unregisterReceiver(usbBroadcast);
+
     }
 
 

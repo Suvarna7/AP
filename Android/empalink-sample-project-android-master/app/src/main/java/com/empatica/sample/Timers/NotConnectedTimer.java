@@ -44,11 +44,11 @@ public class NotConnectedTimer extends BasicTimer {
     public void startTimer(){
         //Restart the counter flag
         startTimer = false;
-        //Start a a timer
+        //Start a timer
         this.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                if (mAct.mHost.isConnected()) {
+                if (mAct.mHost != null && mAct.mHost.isConnected()) {
                     //Send a connection ACK
                     mAct.mHost.usbMessenger.sendUSBmessage(USBMessageSender._ACK_TEST_USB);
 

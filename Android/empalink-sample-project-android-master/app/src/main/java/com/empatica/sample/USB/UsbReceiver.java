@@ -9,10 +9,10 @@ import android.os.Vibrator;
 import android.widget.Toast;
 
 public class USBReceiver extends BroadcastReceiver{
-	 private static USBHost uHost;
-	 
+	 private  USBHost uHost;
 
-	 public USBReceiver(){
+	 public USBReceiver(USBHost host){
+		 uHost = host;
 		 
 	 }
 	 /* public UsbReceiver(Context ctx){
@@ -34,7 +34,7 @@ public class USBReceiver extends BroadcastReceiver{
 			String action = intent.getAction();
 			System.out.println("BroadcastReceiver Event: Empatica");
 
-			if (action !=null) {
+			if (action !=null && uHost !=null) {
 				if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
 					// Toast.makeText(context, "!! USB ATTACHED", Toast.LENGTH_LONG).show();
 					//TODO Turn ON Screen
@@ -85,7 +85,8 @@ public class USBReceiver extends BroadcastReceiver{
 		
 	}
 	
-	public static void addUsbHost(USBHost host){
+	public void addUsbHost(USBHost host){
 		uHost = host;
 	}
+	public void removeUsbHost(){ uHost = null;}
 }
