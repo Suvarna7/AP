@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="le-api-1.0.0-SNAPSHOT">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/libs/le-api-1.0.0-SNAPSHOT.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="gecko-collector-service-1.0.0-SNAPSHOT">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/libs/gecko-collector-service-1.0.0-SNAPSHOT.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

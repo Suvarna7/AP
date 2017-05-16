@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:orientation="horizontal" >
-
-</FrameLayout><!-- From: file:/C:/Users/Cat/Dropbox/ECE_PhD%20Research/Artifitial%20Pancreas%20Work/Dias/BodyMedia%20App/Previous%20Versions/sensors_mobile/res/layout/dexcom.xml -->

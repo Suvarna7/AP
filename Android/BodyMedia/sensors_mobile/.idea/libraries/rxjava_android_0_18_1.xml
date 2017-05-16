@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="rxjava-android-0.18.1">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/libs/rxjava-android-0.18.1.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

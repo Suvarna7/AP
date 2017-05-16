@@ -1,9 +1,0 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- TODO: Hide this menu item whenever no device is connected. -->
-    <item
-            android:id="@+id/action_disconnect"
-            android:icon="@drawable/ic_action_link"
-            android:title="@string/action_disconnect"
-            android:showAsAction="ifRoom"
-            android:orderInCategory="1" />
-</menu>
