@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Definig a container for you List Item-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:gravity="center_vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <!-- Defining where should text be placed. You set you text color here-->
+
+    <TextView
+        android:id="@+id/list_content"
+        android:textColor="@android:color/holo_blue_dark"
+        android:gravity="center"
+        android:text="sample"
+        android:textSize="22dp"
+        android:layout_margin="4dip"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"/>
+</LinearLayout><!-- From: file:/C:/Users/Cat/Dropbox/ECE_PhD%20Research/Artifitial%20Pancreas%20Work/Dias/BodyMedia%20App/Previous%20Versions/sensors_mobile/res/layout/listview_list_item.xml -->

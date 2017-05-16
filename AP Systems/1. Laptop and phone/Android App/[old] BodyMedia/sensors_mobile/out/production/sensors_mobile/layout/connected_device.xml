@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ Copyright (c) 2013, BodyMedia Inc. All Rights Reserved
+  ~ $HeadURL: http://svn.bodymedia.com/svn/mobile/gecko/android/trunk/gecko-mobile-client/res/layout/connected_device.xml $
+  ~ $Revision: 5460 $
+  ~ $Date: 2013-07-31 15:52:10 -0400 (Wed, 31 Jul 2013) $
+  ~ $Author: hgomes $
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <ProgressBar
+            style="@android:style/Widget.Holo.ProgressBar.Large"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/progressBar"
+            />
+
+    <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/deviceStatusListView"
+            android:layout_gravity="center"/>
+</LinearLayout>
