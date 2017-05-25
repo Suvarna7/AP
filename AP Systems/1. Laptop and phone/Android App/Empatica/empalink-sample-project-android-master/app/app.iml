@@ -69,6 +69,7 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/debug" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/dependency-cache" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/dex" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.empatica.empalink/empalink/2.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/manifests" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/pre-dexed" />
@@ -86,6 +87,7 @@
     <orderEntry type="library" exported="" name="android-async-http-1.4.6" level="project" />
     <orderEntry type="library" exported="" name="1_android-async-http-1.4.6" level="project" />
     <orderEntry type="library" exported="" name="okhttp-2.5.0" level="project" />
+    <orderEntry type="library" exported="" name="empalink-2.1" level="project" />
     <orderEntry type="library" exported="" name="org.apache.http.legacy-android-25" level="project" />
   </component>
 </module>
