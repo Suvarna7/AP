@@ -21,7 +21,7 @@ public class ACKThread implements Runnable {
         System.gc();
 
         //ACK
-        db.ackSyncStatusAllPrevious(BGService.empaticaMilTableName,status, last_stamp);
+        db.ackSyncStatusAllPrevious(BGService.empaticaTableName,status, last_stamp);
     }
 
     public void presetRunningParams(IITDatabaseManager db, String table,  String status, String last_up){

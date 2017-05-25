@@ -3,6 +3,7 @@ package com.empatica.sample.USB;
 import android.util.Log;
 
 import com.empatica.sample.BGService;
+import com.empatica.sample.DataConstants;
 import com.empatica.sample.Database.IITDatabaseManager;
 import com.empatica.sample.Server.IITServerConnector;
 
@@ -76,7 +77,7 @@ public class USBMessageSender {
      * @return
      */
     public void messageAllAsync(String table) {
-        messageNAsync(table, IITDatabaseManager.MAX_READ_SAMPLES_SYNCHRONIZE);
+        messageNAsync(table, DataConstants.MAX_READ_SAMPLES_SYNCHRONIZE);
     }
 
     /**

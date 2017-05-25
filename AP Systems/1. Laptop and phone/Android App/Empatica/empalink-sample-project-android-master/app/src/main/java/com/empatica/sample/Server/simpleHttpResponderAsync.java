@@ -75,15 +75,17 @@ public class simpleHttpResponderAsync extends AsyncHttpResponseHandler {
                         String last_update = (String) jsonObj.get(IITDatabaseManager.default_timeStampColumn);
 
                         //TODO Update database updated value
-                        StoringThread.myDB.updateSyncStatus(BGService.empaticaMilTableName,
-                            IITDatabaseManager.upDateColumn, (String) jsonObj.get(IITDatabaseManager.upDateColumn), last_update);
+                        //StoringThread.myDB.updateSyncStatus(BGService.empaticaMilTableName,
+                        //    IITDatabaseManager.upDateColumn, (String) jsonObj.get(IITDatabaseManager.upDateColumn), last_update);
+                        StoringThread.myDB.deleteRow(BGService.empaticaTableName, IITDatabaseManager.timeStampColumn, last_update);
+
                         //Update last remote sent value
-                        SendDataTimer.setLastUpdate(last_update);
+                                SendDataTimer.setLastUpdate(last_update);
 
                         //dbManager.updateSyncStatus(databaseContext, (String) jsonObj.get("table_name"),
                         //		IITDatabaseManager.syncColumn, (String) jsonObj.get("updated"), (String) jsonObj.get("time_stamp"));
                     }
-
+                    StoringThread.myDB.tableOrginize(BGService.empaticaTableName);
 
                     System.out.println("****** End server updating");
 

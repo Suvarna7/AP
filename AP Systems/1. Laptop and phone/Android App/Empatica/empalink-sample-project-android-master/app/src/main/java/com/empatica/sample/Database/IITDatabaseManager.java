@@ -69,16 +69,7 @@ public class IITDatabaseManager {
     //static String databaseFile = sdcard.getAbsolutePath() + File.separator + "ZephyrDB" ;
 
     private boolean initialized = false;
-    //1 second = 64 + 32 + 4 + 4 + 1 = 105 samples
-    //Sending up to 40 minutes
-    public static int ONE_SECOND_DATA = (64+32+4+4+1);
 
-    //1 second = 64 + 32 + 4 + 4 + 1 = 105 samples
-    //Sending up to 10 minutes
-    public static int MAX_READ_SAMPLES_SYNCHRONIZE = 6*60* ONE_SECOND_DATA;
-
-    //Max number of samples that can be stored in a HashMap
-    public static int MAX_MEMORY_SAMPLES = 10*60* ONE_SECOND_DATA;
 
     ACKThread myACK;
 
@@ -134,7 +125,6 @@ public class IITDatabaseManager {
             } finally {
                 if (db.inTransaction())
                     db.endTransaction();
-                //TODO db.close();
             }
             initialized = true;
         }catch (SQLiteDatabaseLockedException eo){
@@ -208,7 +198,6 @@ public class IITDatabaseManager {
                 if (db.inTransaction())
                     db.endTransaction();
 
-                //TODO db.close();
             }
             return true;
         }catch (Exception e){
@@ -256,8 +245,6 @@ public class IITDatabaseManager {
             }finally {
                 if (db.inTransaction())
                     db.endTransaction();
-
-                //TODO db.close();
             }
             return true;
         }catch (Exception e){
@@ -276,11 +263,10 @@ public class IITDatabaseManager {
                 db.execSQL(updateQuery);
 
             }catch(Exception e){
-                Log.d(TAG, "Error storing new sample in " + table +": "+e);
+                Log.d(TAG, "Error storing new sample in " + table + ": " + e);
             }finally {
                 if (db.inTransaction())
                     db.endTransaction();
-                //TODO db.close();
             }
         }catch (Exception e){
             System.out.println("DELETE TABLE - Exception opening writable database to store: " + e);
@@ -320,7 +306,6 @@ public class IITDatabaseManager {
                 //Reset table
                 //String sql =  "VACUUM "+table+"";
                 //db.execSQL(sql);
-                //TODO db.close();
             }
             return true;
         }catch (Exception e){
@@ -339,6 +324,7 @@ public class IITDatabaseManager {
     public boolean deleteNRowsFromTable(String table, String time_column, int rows){
         try{
             SQLiteDatabase db = dbHelper.getWritableDatabase();
+
             try{
                 db.beginTransaction();
 
@@ -366,8 +352,7 @@ public class IITDatabaseManager {
                 //Reorder table
                 String sql =  "VACUUM "+table+"";
                 db.execSQL(sql);
-                //Close db
-                //TODO db.close();
+                //Close db ?
             }
             return true;
         }catch (Exception e){
@@ -378,6 +363,48 @@ public class IITDatabaseManager {
 
     }
 
+    public boolean deleteRow(String table, String time_column, String timestamp){
+        try{
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+            try{
+                db.beginTransaction();
+
+                //Delete a row
+                System.out.println("Delete Row (" + table + "): " + timestamp);
+                db.delete(table, time_column+" = "+timestamp, null);
+
+                //db.execSQL(sql_statement);
+                db.setTransactionSuccessful();
+
+            }catch(Exception e){
+                Log.d(TAG, "Error deleting "+timestamp+" rows in "+table +": "+e);
+            }finally {
+                if (db.inTransaction())
+                    db.endTransaction();
+
+            }
+            return true;
+        }catch (Exception e){
+            System.out.println("DELETE ROW "+timestamp+" - Exception opening writable database to store: " + e);
+            return false;
+
+        }
+
+    }
+
+    public void tableOrginize(String table){
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        if (db.inTransaction())
+            db.endTransaction();
+        //Reorder table
+        String sql =  "VACUUM "+table+"";
+        db.execSQL(sql);
+        //Close db ?
+        if (db.inTransaction())
+            db.endTransaction();
+    }
 
     /**
      * Get all values of a given table except for the last 'margin' rows
@@ -530,7 +557,6 @@ public class IITDatabaseManager {
                 } finally {
                     if (db.inTransaction())
                         db.endTransaction();
-                    //TODO db.close();
                 }
                 //Update time_stamp name value
                 timeStampColumn = keyColumnInTable;
@@ -626,7 +652,7 @@ public class IITDatabaseManager {
                             } catch (Exception e) {
                                 //Close cursor and db:
                                 cursorSync.close();
-                                db_cursor.close();
+                                //db_cursor.close();
 
                                 return wordList;
                             }
@@ -645,7 +671,7 @@ public class IITDatabaseManager {
                         if (db_cursor.inTransaction())
                             db_cursor.endTransaction();
 
-                        //TODO db_cursor.close();
+                        //db_cursor.close();
                     }
 
 
@@ -658,7 +684,7 @@ public class IITDatabaseManager {
                 if (db_cursor.inTransaction())
                     db_cursor.endTransaction();
 
-                //TODO db_cursor.close();
+                //db_cursor.close();
             }
         }
 
@@ -728,13 +754,13 @@ public class IITDatabaseManager {
                 if (db_select.inTransaction())
                     db_select.endTransaction();
 
-                //TODO db_cursor.close();
             }
         } else {
-            db_select.setTransactionSuccessful();
+            /*db_select.setTransactionSuccessful();
             if (db_select.inTransaction())
                 db_select.endTransaction();
             //TODO db.close();
+            return 0;*/
             return 0;
         }
     }
@@ -914,7 +940,6 @@ public class IITDatabaseManager {
             } finally {
                 if (db.inTransaction())
                     db.endTransaction();
-                //TODO db.close();
             }
         }catch (SQLiteDatabaseLockedException eo){
             System.out.println("Error getting writable db to update sync values: " + eo);
@@ -950,9 +975,9 @@ public class IITDatabaseManager {
             //SQLiteDatabase db =ctx.openOrCreateDatabase(databaseFile, SQLiteDatabase.OPEN_READONLY, null);
             SQLiteDatabase db = dbHelper.getReadableDatabase();
             try{
-                db.beginTransaction();
 
                 if ( db  !=null) {
+                    db.beginTransaction();
                     //Create Cursor
                     //Choose the right array from table
                     //cursorSync =    db .rawQuery(selectQuery, null);
@@ -984,7 +1009,6 @@ public class IITDatabaseManager {
 
                             } while (!last_up.equals(last_updated) && cursorSync.moveToNext()   );
                             System.out.println("Done ACK reading: "+index);
-
                         }
                     }
                     cursorSync.close();
@@ -993,9 +1017,10 @@ public class IITDatabaseManager {
                 db.setTransactionSuccessful();
             }catch (SQLiteException e){
                 System.out.println("Error with ACK function, read table: "+e);
-            }     finally {
+            } finally {
                 if (db.inTransaction())
                     db.endTransaction();
+
             }
         }
 

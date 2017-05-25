@@ -121,12 +121,12 @@ public class USBReadThread extends Thread {
 									if (firstRead) {
 										//Send more samples of data
 										//mHost.usbMesenger.messageNAsync(BGService.empaticaMilTableName, (IITDatabaseManager.MAX_READ_SAMPLES_SYNCHRONIZE));
-										mHost.usbMessenger.messageAllAsync(BGService.empaticaMilTableName);
+										mHost.usbMessenger.messageAllAsync(BGService.empaticaTableName);
 
 										firstRead = false;
 									} else {
 										//The rest, according to the interval
-										mHost.usbMessenger.messageAllAsync(BGService.empaticaMilTableName);
+										mHost.usbMessenger.messageAllAsync(BGService.empaticaTableName);
 									}
 								}
 								//ALL OTHER sensors
@@ -172,7 +172,7 @@ public class USBReadThread extends Thread {
 										mHost.last_time_ack = (String) jsonObj.get("time_stamp");
 										//mDatabase.ackSyncStatusAllPrevious(BGService.empaticaMilTableName,
 										//	(String) jsonObj.get("synchronized"), (String) jsonObj.get("time_stamp"));
-										mDatabase.runAckSync(BGService.empaticaMilTableName,
+										mDatabase.runAckSync(BGService.empaticaTableName,
 												(String) jsonObj.get("synchronized"), (String) jsonObj.get("time_stamp"));
 										//Inform phone process ended
 										mHost.usbMessenger.sendUSBmessage(USBMessageSender._ACK_SYNCHRONIZED);

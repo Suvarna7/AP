@@ -6,6 +6,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 
 import com.empatica.sample.BGService;
+import com.empatica.sample.DataConstants;
 import com.empatica.sample.Database.IITDatabaseManager;
 import com.empatica.sample.Database.StoringThread;
 import com.empatica.sample.MainActivity;
@@ -23,12 +24,6 @@ import java.util.TimerTask;
  */
 public class SendDataTimer extends BasicTimer{
 
-    private static final int SENDING_PERIOD = 2*60*1000; //1 min
-    private static final int SENDING_AMOUNT = 2*IITDatabaseManager.ONE_SECOND_DATA;
-    public static int MAX_READ_SAMPLES_UPDATE = 30*60* IITDatabaseManager.ONE_SECOND_DATA;
-
-    private static final int DELETING_MARGIN = 10*60*(64+32+4+4+1); // 10 min
-    private static final int DEL_AMOUNT = 3000;
 
     private MainActivity mainCtx;
 
@@ -63,47 +58,54 @@ public class SendDataTimer extends BasicTimer{
                 //mHost.sendUSBmessage(USBHost._END_COMMAND);
 
                 //if (mHost.connected) {
-                if (ready) {
-                    //Store values in database every minute and reset:
+                Thread one = new Thread() {
+                    public void run() {
+                        if (ready) {
+                            //Store values in database every minute and reset:
 
-                    new AsyncTask<URL, Integer, Long>() {
-                        @Override
-                        protected Long doInBackground(URL... urls) {
-                            System.out.println("SEND TIMER");
-                            //Send saved information to IIT server
-                            if (mainCtx.checkInternetConnectivity()) {
+                            new AsyncTask<URL, Integer, Long>() {
+                                @Override
+                                protected Long doInBackground(URL... urls) {
+                                    System.out.println("SEND TIMER");
+                                    //Send saved information to IIT server
+                                    if (mainCtx.checkInternetConnectivity()) {
 
-                                //Number of samples to read and update to server
-                                int samplesToUpdate = BGService.storingManager.myDB.getNotCheckedValuesNumber(BGService.empaticaMilTableName,
-                                        IITDatabaseManager.syncColumn, IITDatabaseManager.syncStatusYes, MAX_READ_SAMPLES_UPDATE);
+                                        //Number of samples to read and update to server
+                                        int samplesToUpdate = BGService.storingManager.myDB.getNotCheckedValuesNumber(BGService.empaticaTableName,
+                                                IITDatabaseManager.syncColumn, IITDatabaseManager.syncStatusYes, DataConstants.MAX_READ_SAMPLES_UPDATE);
 
-                                //TODO Update last samples To Read
-                                if (samplesToUpdate < MAX_READ_SAMPLES_UPDATE)
-                                    updateDatabase(samplesToUpdate, DELETING_MARGIN);
-                                else
-                                    updateDatabase(MAX_READ_SAMPLES_UPDATE, DELETING_MARGIN);
+                                        //TODO Update last samples To Read
+                                        if (samplesToUpdate < DataConstants.MAX_READ_SAMPLES_UPDATE)
+                                            updateDatabase(samplesToUpdate, DataConstants.DELETING_MARGIN);
+                                        else
+                                            updateDatabase(DataConstants.MAX_READ_SAMPLES_UPDATE, DataConstants.DELETING_MARGIN);
 
-                                //TODO DEBUG mock data to send to server
-                               // myServerManager.debugSendToServer("sampling");
-                                //TODO DEBUG Table
-                                //MainActivity.myDB.updateDatabaseTable("debug_table", new ArrayList<>(Arrays.asList(new String[]{"'A'"})), true);
-                            }
-                            return null;
+                                        //TODO DEBUG mock data to send to server
+                                       // myServerManager.debugSendToServer("sampling");
+                                        //TODO DEBUG Table
+                                        //MainActivity.myDB.updateDatabaseTable("debug_table", new ArrayList<>(Arrays.asList(new String[]{"'A'"})), true);
+                                    }
+                                    return null;
+
+                                }
+
+                                protected void onPostExecute(Long result) {
+                                    //Do nothing: just try and be async
+                                    //System.out.println("Post sending");
+
+                                }
+                            }.execute();
+
                         }
+                    }
+                };
+                one.start();
 
-                        protected void onPostExecute(Long result) {
-                            //Do nothing: just try and be async
-                            //System.out.println("Post sending");
-
-                        }
-                    }.execute();
-
-
-                }
             }
         }
 
-                , SENDING_PERIOD, SENDING_PERIOD); // delay(seconds*1000), period(seconds*1000)
+                , DataConstants.SENDING_PERIOD, DataConstants.SENDING_PERIOD); // delay(seconds*1000), period(seconds*1000)
+
 
     }
 
@@ -116,10 +118,10 @@ public class SendDataTimer extends BasicTimer{
 
     private boolean updateDatabase(int samples, int safetyMargin){
         //1. Erase all previously updated values
-        //deleteUpdatedValues(safetyMargin);
+       deleteUpdatedValues(safetyMargin);
 
         //2. Obtain not updated values from database
-        List<Map<String, String>> listReadToServer = StoringThread.myDB.getNotCheckedValues (BGService.empaticaMilTableName, BGService.columnsTable,
+       /* List<Map<String, String>> listReadToServer = StoringThread.myDB.getNotCheckedValues (BGService.empaticaTableName, BGService.columnsTable,
                 IITDatabaseManager.upDateColumn, IITDatabaseManager.updatedStatusNo, samples, false);
 
         //1. Obtain syncrhonized values from database to delete
@@ -135,12 +137,13 @@ public class SendDataTimer extends BasicTimer{
 
             //TODO SENDING TO SERVER
             List<Map<String, String>> temp = new ArrayList<Map<String, String>>();
-            //List too long: break in smaller chunks
+            //List too long:
+            //First, break in smaller chunks and Send
             for (int i = 0; i < listReadToServer.size(); i++) {
                 Map<String, String> val = listReadToServer.get(i);
-                val.put("table_name", BGService.empaticaMilTableName);
+                val.put("table_name", BGService.empaticaTableName);
                 temp.add(val);
-                if ((i + 1) % SENDING_AMOUNT == 0) {
+                if ((i + 1) % DataConstants.SENDING_AMOUNT == 0) {
                 //if ((i + 1) / SENDING_AMOUNT == 1) {
                         System.out.println("Send first packs: " + listReadToServer.size() + " vs " +temp.size());
                         String jSon = IITServerConnector.convertToJSON(temp);
@@ -153,77 +156,81 @@ public class SendDataTimer extends BasicTimer{
                             //wait to receive something
                         }
 
-                        /*try {
-                             Thread.sleep(15000); // giving time to connect to wifi
-                        } catch (Exception e) {
-                             System.out.println("Exception while waiting to send:" + e);
-                        }*/
+                        //try {
+                        //    Thread.sleep(15000); // giving time to connect to wifi
+                        //} catch (Exception e) {
+                        //    System.out.println("Exception while waiting to send:" + e);
+                        //}
                         temp = new ArrayList<Map<String, String>>();
 
-                           /*
+
                         }
-                    }
-                                    if (temp.size() > 0) {
-                                        //Send last values
-                                        System.out.println("Send remainig");
-
-                                        String jSon = IITServerConnector.convertToJSON(temp);
-                                        myServerManager.sendToIIT(jSon, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
-
-                                        /*try {
-                                            Thread.sleep(2000); // giving time to connect to wifi
-                                        } catch (Exception e) {
-                                            System.out.println("Exception while waiting to send:" + e);
-                                        }
-                                    }*/
-                        //myServerManager.debugServer("samples");
-                    //}
-                }
             }
-            //Send remaining samples:
-            System.out.println("Send last batch: " + listReadToServer.size());
-            String jSon = IITServerConnector.convertToJSON(temp);
-            myServerManager.sendToIIT(jSon, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
+            //Finally, send remaining samples:
+            if (temp.size() > 0) {
+                        //Send last values
+                        System.out.println("Send last batch");
 
-            System.out.println("Send status: " + myServerManager.sending);
+                        String jSon = IITServerConnector.convertToJSON(temp);
+                        myServerManager.sendToIIT(jSon, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
+                    //try {
+                    //    Thread.sleep(15000); // giving time to connect to wifi
+                    //} catch (Exception e) {
+                    //    System.out.println("Exception while waiting to send:" + e);
+                    //}
+            }
+            //myServerManager.debugServer("samples");
+
+            //TODO DEBUG - Send everything
+            //System.out.println("Send al to update: " + listReadToServer.size());
+            //String jSon = IITServerConnector.convertToJSON(listReadToServer);
+            //myServerManager.sendToIIT(jSon, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
 
             return true;
         } else
-            return false;
+            return false;*/
+        return true;
 
 
     }
 
     private int deleteUpdatedValues(int safetyMargin){
-        if (!lastUpdate.equals("")) {
-            //1. Get number of samples to be erased -- UPDATED
-            //Number of samples to read and update to server
-            int samplesToDelete = BGService.storingManager.myDB.getNotCheckedValuesNumber(BGService.empaticaMilTableName,
-                    IITDatabaseManager.upDateColumn , IITDatabaseManager.updatedStatusYes , MAX_READ_SAMPLES_UPDATE);
 
-            int deleting = samplesToDelete - safetyMargin;
+        //if (!lastUpdate.equals("")) {
+        //1. Get number of samples to be erased -- UPDATED
+        //Number of samples to read and update to server
+        /*int samplesToDelete = BGService.storingManager.myDB.getNotCheckedValuesNumber(BGService.empaticaTableName,
+                    IITDatabaseManager.upDateColumn , IITDatabaseManager.updatedStatusYes , DataConstants.MAX_READ_SAMPLES_UPDATE);**/
+        //Number of samples  synchronized
+        int samplesToDelete = BGService.storingManager.myDB.getNotCheckedValuesNumber(BGService.empaticaTableName,
+                IITDatabaseManager.syncColumn , IITDatabaseManager.syncStatusYes , DataConstants.MAX_READ_SAMPLES_UPDATE);
 
-            boolean del = false;
-            //To avoid memory errors, we use deleting margin
-            if (deleting > 0) {
-                while (deleting > DEL_AMOUNT) {
-                    del = StoringThread.myDB.deleteNRowsFromTable(BGService.empaticaMilTableName,
-                            BGService.columnsTable[0], DEL_AMOUNT);
-                    if (del) {
-                        deleting = deleting - DEL_AMOUNT;
-                    } else {
-                        System.out.println("Not erased");
-                    }
+        int deleting = samplesToDelete - safetyMargin;
+        /*int samplesToDelete = DataConstants.MAX_READ_SAMPLES_UPDATE;
+        int deleting = DataConstants.MAX_READ_SAMPLES_UPDATE;*/
+
+        boolean del = false;
+        //To avoid memory errors, we use deleting margin
+        if (deleting > 0) {
+            while (deleting > DataConstants.DEL_AMOUNT) {
+                del = StoringThread.myDB.deleteNRowsFromTable(BGService.empaticaTableName,
+                        BGService.columnsTable[0], DataConstants.DEL_AMOUNT);
+                if (del) {
+                    System.out.println("Yes erased");
+                    deleting = deleting - DataConstants.DEL_AMOUNT;
+                } else {
+                    System.out.println("Not erased");
                 }
-                //Finally deleting amount
-                StoringThread.myDB.deleteNRowsFromTable(BGService.empaticaMilTableName,
-                        BGService.columnsTable[0], deleting);
-                return samplesToDelete - safetyMargin;
-            } else
-                return 0;
-        }else{
+            }
+            //Finally deleting amount
+            StoringThread.myDB.deleteNRowsFromTable(BGService.empaticaTableName,
+                    BGService.columnsTable[0], deleting);
+            return samplesToDelete - safetyMargin;
+        } else
             return 0;
-        }
+        //}else{
+          //  return 0;
+        //}
 
 
     }

@@ -70,7 +70,7 @@ public class BGService extends Service implements EmpaDataDelegate{
 
     //Database
     //public static IITDatabaseManager myDB;
-    public static final String empaticaMilTableName= "empatica_table";
+    public static final String empaticaTableName= "empatica_table";
     //public static final String empaticaSecTableName= "empatica_seconds";
 
     public static final String[] columnsTable = new String[]{"time_stamp", "Acc_x", "Acc_y", "Acc_z", "GSR", "BVP",
@@ -537,10 +537,10 @@ public class BGService extends Service implements EmpaDataDelegate{
             //TODO Add to database: instantly
             //Store current sample
             List<ThreadSafeArrayList<String>> error = new ArrayList<ThreadSafeArrayList<String>>();
-            storingManager.storeSampleInTempDatabase(tempList, empaticaMilTableName, columnsTable, error);
+            storingManager.storeSampleInTempDatabase(tempList, empaticaTableName, columnsTable, error);
 
             for  (ThreadSafeArrayList<String> sample: error){
-                storingManager.storeSampleInTempDatabase(sample, empaticaMilTableName, columnsTable, error);
+                storingManager.storeSampleInTempDatabase(sample, empaticaTableName, columnsTable, error);
             }
 
             //Run storing thread to store all previous
