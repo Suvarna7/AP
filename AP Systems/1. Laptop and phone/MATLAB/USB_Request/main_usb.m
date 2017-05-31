@@ -14,9 +14,9 @@ end
 five_min = datenum(clock + [0, 0, 0, 0, 5, 0]);
 while 1
     if (datenum(clock) > five_min)
+        five_min = datenum(clock + [0, 0, 0, 0, 5, 0]);
         [table, new_samples] = read_last_samples(usb_con, 'empatica');
         %Save as global variable
-        five_min = datenum(clock + [0, 0, 0, 0, 5, 0]);
     end
 end
 

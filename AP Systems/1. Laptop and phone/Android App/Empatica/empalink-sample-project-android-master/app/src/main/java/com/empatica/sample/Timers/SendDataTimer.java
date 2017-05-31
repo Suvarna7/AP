@@ -1,8 +1,6 @@
 package com.empatica.sample.Timers;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+
 import android.os.AsyncTask;
 
 import com.empatica.sample.BGService;
@@ -16,11 +14,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * Created by Cat on 2/21/2017.
+ * Class to send data to update to server
+ * @author Caterina Lazaro
+ * @version 1.0 2/21/2017.
  */
 public class SendDataTimer extends BasicTimer{
 
@@ -121,7 +120,7 @@ public class SendDataTimer extends BasicTimer{
        deleteUpdatedValues(safetyMargin);
 
         //2. Obtain not updated values from database
-       /* List<Map<String, String>> listReadToServer = StoringThread.myDB.getNotCheckedValues (BGService.empaticaTableName, BGService.columnsTable,
+      /* List<Map<String, String>> listReadToServer = StoringThread.myDB.getNotCheckedValues (BGService.empaticaTableName, BGService.columnsTable,
                 IITDatabaseManager.upDateColumn, IITDatabaseManager.updatedStatusNo, samples, false);
 
         //1. Obtain syncrhonized values from database to delete
@@ -186,6 +185,8 @@ public class SendDataTimer extends BasicTimer{
             //String jSon = IITServerConnector.convertToJSON(listReadToServer);
             //myServerManager.sendToIIT(jSon, IITServerConnector.IIT_SERVER_UPDATE_VALUES_URL);
 
+            System.gc();
+
             return true;
         } else
             return false;*/
@@ -202,12 +203,12 @@ public class SendDataTimer extends BasicTimer{
         /*int samplesToDelete = BGService.storingManager.myDB.getNotCheckedValuesNumber(BGService.empaticaTableName,
                     IITDatabaseManager.upDateColumn , IITDatabaseManager.updatedStatusYes , DataConstants.MAX_READ_SAMPLES_UPDATE);**/
         //Number of samples  synchronized
-        int samplesToDelete = BGService.storingManager.myDB.getNotCheckedValuesNumber(BGService.empaticaTableName,
+       int samplesToDelete = BGService.storingManager.myDB.getNotCheckedValuesNumber(BGService.empaticaTableName,
                 IITDatabaseManager.syncColumn , IITDatabaseManager.syncStatusYes , DataConstants.MAX_READ_SAMPLES_UPDATE);
 
         int deleting = samplesToDelete - safetyMargin;
         /*int samplesToDelete = DataConstants.MAX_READ_SAMPLES_UPDATE;
-        int deleting = DataConstants.MAX_READ_SAMPLES_UPDATE;*/
+        //int deleting = DataConstants.MAX_READ_SAMPLES_UPDATE;*/
 
         boolean del = false;
         //To avoid memory errors, we use deleting margin

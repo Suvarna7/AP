@@ -23,5 +23,5 @@ public class DataConstants {
     public static final int SENDING_AMOUNT = 2*ONE_SECOND_DATA;
     public static int MAX_READ_SAMPLES_UPDATE = 15*60*ONE_SECOND_DATA;
     public static final int DELETING_MARGIN = 10*60*(64+32+4+4+1); // 10 min
-    public static final int DEL_AMOUNT = 1*1000;
+    public static final int DEL_AMOUNT = 10*1000;
 }

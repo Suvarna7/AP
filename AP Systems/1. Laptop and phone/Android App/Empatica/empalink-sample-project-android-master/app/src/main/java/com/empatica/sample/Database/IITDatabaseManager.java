@@ -10,6 +10,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.empatica.sample.BGService;
+import com.empatica.sample.DataConstants;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -317,9 +318,11 @@ public class IITDatabaseManager {
     }
 
     /**
-     * Delete all rows of given table
+     * Delete N rows of given table, starting from the oldest
      * @param table  table name
-     * @return
+     * @param time_column timestamp column name
+     * @param rows number of rows to delete
+     * @return success
      */
     public boolean deleteNRowsFromTable(String table, String time_column, int rows){
         try{
@@ -363,6 +366,69 @@ public class IITDatabaseManager {
 
     }
 
+    /**
+     * Delete N rows of given table, starting from the timestamp to N older values
+     * @param table  table name
+     * @param time_column timestamp column name
+     * @param time_stamp timestamp value to start deleting
+     * @param rows number of rows to delete
+     * @return success
+     */
+    public boolean deleteNRowsFromTable(String table, String time_column, String time_stamp, int rows){
+        try{
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+            try{
+                db.beginTransaction();
+                //String query = "SELECT * FROM " + table + " WHERE " + time_column + " < '" + time_stamp+"'  LIMIT "+rows;
+                //Cursor res = db.rawQuery(query, null);
+                Cursor res = db.query(table, null, null, null, null, null, time_column + " < '" + time_stamp+"'  LIMIT "+rows, null);
+
+                res.moveToFirst();
+                String init_rowid = res.getString(res.getColumnIndex(time_column));
+                res.moveToLast();
+                String last_rowid = res.getString(res.getColumnIndex(time_column));
+                res.close();
+
+                //Delete N rows
+                String delQ= "ROWID IN (SELECT "+time_column+ " FROM "+table+" WHERE "+time_column+" BETWEEN '"+last_rowid+"' AND '"+init_rowid+"')";
+                System.out.println("Delete Rows (" + table + "): " + delQ);
+
+                int del =db.delete(table,delQ, null);
+
+                System.out.println("Deleted rows ("+table+"): " + del);
+                //db.execSQL(sql_statement);
+
+                db.setTransactionSuccessful();
+
+            }catch(Exception e){
+                Log.d(TAG, "Error deleting "+rows+" rows in "+table +": "+e);
+                System.out.println(time_stamp + " Error deleting " + rows + " rows in " + table + ": " + e);
+
+            }finally {
+                if (db.inTransaction())
+                    db.endTransaction();
+                //Reorder table
+                String sql =  "VACUUM "+table+"";
+                db.execSQL(sql);
+                //Close db ?
+            }
+            return true;
+        }catch (Exception e){
+            System.out.println("DELETE N ROWS - Exception opening writable database to store: " + e);
+            return false;
+
+        }
+
+    }
+
+    /**
+     * Delete a single row from the table
+     * @param table table name
+     * @param time_column  timestamp column name
+     * @param timestamp timestamp value of the row
+     * @return success
+     */
     public boolean deleteRow(String table, String time_column, String timestamp){
         try{
             SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -372,7 +438,7 @@ public class IITDatabaseManager {
 
                 //Delete a row
                 System.out.println("Delete Row (" + table + "): " + timestamp);
-                db.delete(table, time_column+" = "+timestamp, null);
+                db.delete(table, time_column + " = " + timestamp, null);
 
                 //db.execSQL(sql_statement);
                 db.setTransactionSuccessful();
@@ -398,9 +464,7 @@ public class IITDatabaseManager {
 
         if (db.inTransaction())
             db.endTransaction();
-        //Reorder table
-        String sql =  "VACUUM "+table+"";
-        db.execSQL(sql);
+
         //Close db ?
         if (db.inTransaction())
             db.endTransaction();
@@ -929,7 +993,7 @@ public class IITDatabaseManager {
                 //Update query: update status, searching the right last_updated value
                 String updateQuery = "UPDATE " + table + " SET " + status_col + " = '" + status + "' WHERE " + timeStampColumn + " = '" + last_up + "'";
                 //System.out.println("Update values: "+updateQuery);
-                Log.d("query", updateQuery);
+                //Log.d("query", updateQuery);
                 //System.out.println("^^^^^^^^^^^UPDATED???: " + updateQuery);
                 db.execSQL(updateQuery);
                 db.setTransactionSuccessful();
@@ -1023,6 +1087,9 @@ public class IITDatabaseManager {
 
             }
         }
+
+        //TODO Garbage collector
+        System.gc();
 
         return true;
     }

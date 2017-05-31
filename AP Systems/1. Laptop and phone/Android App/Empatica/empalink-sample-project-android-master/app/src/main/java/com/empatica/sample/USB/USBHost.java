@@ -29,8 +29,8 @@ public class USBHost {
     public String connectionStatus = null;
     public static final int TIMEOUT = 300; //Seconds
     public Intent intent;
-    //private static final int ANDROID_LOCAL_HOST = 38600; //Empatica and Sensors Apps
-    private static final int ANDROID_LOCAL_HOST = 38700; // DiAS
+    private static final int ANDROID_LOCAL_HOST = 38600; //Empatica and Sensors Apps
+    //private static final int ANDROID_LOCAL_HOST = 38700; // DiAS
 
 
 

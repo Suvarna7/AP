@@ -3,6 +3,7 @@ package com.empatica.sample.Server;
 import android.os.AsyncTask;
 
 import com.empatica.sample.BGService;
+import com.empatica.sample.DataConstants;
 import com.empatica.sample.Database.IITDatabaseManager;
 import com.empatica.sample.Database.StoringThread;
 import com.empatica.sample.Timers.SendDataTimer;
@@ -16,7 +17,10 @@ import org.json.JSONObject;
 import java.net.URL;
 
 /**
- * Created by Cat on 2/22/2017.
+ * HTTP Response handler class to deal with succes/fail messages sent to the Server.
+ * Verify samples updated
+ * @author Caterina Lazaro
+ * @version 2.0 5/26/2017.
  */
 public class simpleHttpResponderAsync extends AsyncHttpResponseHandler {
 
@@ -77,10 +81,13 @@ public class simpleHttpResponderAsync extends AsyncHttpResponseHandler {
                         //TODO Update database updated value
                         //StoringThread.myDB.updateSyncStatus(BGService.empaticaMilTableName,
                         //    IITDatabaseManager.upDateColumn, (String) jsonObj.get(IITDatabaseManager.upDateColumn), last_update);
-                        StoringThread.myDB.deleteRow(BGService.empaticaTableName, IITDatabaseManager.timeStampColumn, last_update);
-
+                        //StoringThread.myDB.deleteRow(BGService.empaticaTableName, IITDatabaseManager.timeStampColumn, last_update);
+                        System.out.println("Delete server updated: "+last_update);
+                        while (!StoringThread.myDB.deleteNRowsFromTable(BGService.empaticaTableName, IITDatabaseManager.timeStampColumn, last_update, DataConstants.DEL_AMOUNT)){
+                            //DO NOTHING
+                        }
                         //Update last remote sent value
-                                SendDataTimer.setLastUpdate(last_update);
+                        SendDataTimer.setLastUpdate(last_update);
 
                         //dbManager.updateSyncStatus(databaseContext, (String) jsonObj.get("table_name"),
                         //		IITDatabaseManager.syncColumn, (String) jsonObj.get("updated"), (String) jsonObj.get("time_stamp"));

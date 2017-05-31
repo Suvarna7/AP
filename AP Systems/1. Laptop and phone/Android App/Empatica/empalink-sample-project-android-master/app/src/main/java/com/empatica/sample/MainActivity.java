@@ -44,9 +44,9 @@ public class MainActivity extends Activity implements EmpaStatusDelegate {
     private boolean DiASPhone = false;
     //Empatica variables
     private static final int REQUEST_ENABLE_BT = 1;
-    public static final String EMPATICA_API_KEY = "01f86c5b71ce435298d2ebc74e3e21a0"; // API Key YELLOW PHONE
+    //public static final String EMPATICA_API_KEY = "01f86c5b71ce435298d2ebc74e3e21a0"; // API Key YELLOW PHONE
     //public static final String EMPATICA_API_KEY = "f92ddb7260a54f5790038ba90ef4d1ad"; // API Key RED PHONE
-    //public static final String EMPATICA_API_KEY = "bb7af54058a34b9987d31953912f11e5"; // API Key PINK PHONE
+    public static final String EMPATICA_API_KEY = "bb7af54058a34b9987d31953912f11e5"; // API Key PINK PHONE
 
     //GUI
     //Wake lock
