@@ -3,7 +3,8 @@
 #include <time.h>
 
 #include <cmath>
-#include <testheader.h>
+#include "testheader.h"
+#include "testheader.hpp"
 
 extern "C"
 jstring
@@ -25,10 +26,10 @@ Java_com_example_zachariemaloney_c_1helloworld_MainActivity_stringNumberFromCMat
     JNIEnv *env,
     jobject /*this*/) {
     double x;
-    x = sin(2.);
+    x = sin(myinput) * myinput_2;
     char output[50];
     snprintf(output, 50, "%f", x);
-    std::string sinoutput = "sin(2.) is ";
+    std::string sinoutput = "sin(2.) * 10 is ";
     sinoutput += output;
     sinoutput += ".";
     return env->NewStringUTF(sinoutput.c_str());

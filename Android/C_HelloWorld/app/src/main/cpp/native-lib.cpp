@@ -1,6 +1,8 @@
 #include <jni.h>
 #include <string>
 
+#include <testheader.h>
+
 extern "C"
 jstring
 Java_com_example_zachariemaloney_c_1helloworld_MainActivity_stringFromJNI(

@@ -7,4 +7,4 @@
 
 #endif //C_HELLOWORLD_TESTHEADER_H
 
-double myinput = 2.;
+double myinput_2 = 10.;

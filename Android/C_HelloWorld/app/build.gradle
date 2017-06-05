@@ -1,5 +1,10 @@
 apply plugin: 'com.android.application'
 
+println  "Root project:   "+ project.rootProject;
+println  "  rootDir:      "+ project.rootDir;
+println  "  projectDir:   "+ project.projectDir;
+println  "  project dir:  "+ System.getProperty("user.dir");
+
 android {
     compileSdkVersion 25
     buildToolsVersion "24.0.1"
@@ -15,6 +20,8 @@ android {
                 cppFlags "-frtti -fexceptions"
                 //adding the include library for my dummy header.
                 cppFlags += "-I${file("src/main/cpp/include")}".toString()
+                println "Printing cppFlags : ";
+                println cppFlags;
             }
         }
     }
@@ -32,7 +39,8 @@ android {
     //adding cpp/include to source dirs
     sourceSets {
         main {
-            res.srcDirs += ['main/cpp/include']
+            //this doesn't seem to be necessary!
+            //res.srcDirs += ['main/cpp/include']
         }
     }
 }

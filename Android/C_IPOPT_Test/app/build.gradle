@@ -13,7 +13,21 @@ android {
         externalNativeBuild {
             cmake {
                 cppFlags "-frtti -fexceptions"
-                cppFlags += "-I" + file("main/cpp/Common/").absolutePath
+                //Adding the following lines makes .hpp files fail, too! What's going on?
+                //Without the following lines, only .h files fail.
+//                cppFlags += "-I" + file("main/cpp/Common/").absolutePath +
+//                        "-I" + file("main/cpp/Algorithm/").absolutePath +
+//                        "-I" + file("main/cpp/Algorithm//Inexact").absolutePath +
+//                        "-I" + file("main/cpp/Algorithm//LinearSolvers").absolutePath +
+//                        "-I" + file("main/cpp/Apps/").absolutePath +
+//                        "-I" + file("main/cpp/Apps//AmplSolver").absolutePath +
+//                        "-I" + file("main/cpp/Apps//CUTErInterface").absolutePath +
+//                        "-I" + file("main/cpp/Interfaces/").absolutePath +
+//                        "-I" + file("main/cpp/LinAlg/").absolutePath +
+//                        "-I" + file("main/cpp/LinAlg//TMatrices").absolutePath +
+//                        "-I" + file("main/cpp/contrib/").absolutePath +
+//                        "-I" + file("main/cpp/contrib//CGPenalty").absolutePath +
+//                        "-I" + file("main/cpp/contrib//LinearSolverLoader").absolutePath
                 //generated using
                 // find app/src/main/cpp/*/ -type d | sed 's|app/src/|cppFlags += "-I${file("|' | sed 's/$/")}".toString()/'
                 cFlags += "-I" + file("main/cpp/Common/").absolutePath +
