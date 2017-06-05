@@ -10,7 +10,7 @@
 #ifndef __IPSLACKBASEDTSYMSCALINGMETHOD_HPP__
 #define __IPSLACKBASEDTSYMSCALINGMETHOD_HPP__
 
-#include "IpUtils.hpp"
+#include "../../Common/IpUtils.hpp"
 #include "IpTSymScalingMethod.hpp"
 
 namespace Ipopt

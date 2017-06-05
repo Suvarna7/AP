@@ -9,7 +9,7 @@
 
 
 
-#include "IpoptConfig.h"
+#include "../../Common/IpoptConfig.h"
 #include "IpWsmpSolverInterface.hpp"
 
 #ifdef HAVE_CMATH

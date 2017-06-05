@@ -9,12 +9,12 @@
 #ifndef __IPVECTOR_HPP__
 #define __IPVECTOR_HPP__
 
-#include "IpTypes.hpp"
-#include "IpTaggedObject.hpp"
-#include "IpCachedResults.hpp"
-#include "IpSmartPtr.hpp"
-#include "IpJournalist.hpp"
-#include "IpException.hpp"
+#include "../Common/IpTypes.hpp"
+#include "../Common/IpTaggedObject.hpp"
+#include "../Common/IpCachedResults.hpp"
+#include "../Common/IpSmartPtr.hpp"
+#include "../Common/IpJournalist.hpp"
+#include "../Common/IpException.hpp"
 
 #include <vector>
 

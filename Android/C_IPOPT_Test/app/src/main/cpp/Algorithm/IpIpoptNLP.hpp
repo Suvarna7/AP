@@ -10,7 +10,7 @@
 #define __IPIPOPTNLP_HPP__
 
 #include "IpNLP.hpp"
-#include "IpJournalist.hpp"
+#include "../Common/IpJournalist.hpp"
 #include "IpNLPScaling.hpp"
 
 namespace Ipopt

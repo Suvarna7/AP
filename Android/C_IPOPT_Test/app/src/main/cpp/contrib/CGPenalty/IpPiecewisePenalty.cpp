@@ -7,7 +7,7 @@
 // Authors:  Lifeng Chen/Zaiwen Wen      Columbia Univ
 
 #include "IpPiecewisePenalty.hpp"
-#include "IpJournalist.hpp"
+#include "../../Common/IpJournalist.hpp"
 #include "IpRestoPhase.hpp"
 #include "IpAlgTypes.hpp"
 

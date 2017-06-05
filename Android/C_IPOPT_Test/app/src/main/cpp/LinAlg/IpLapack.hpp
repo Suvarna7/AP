@@ -9,8 +9,8 @@
 #ifndef __IPLAPACK_HPP__
 #define __IPLAPACK_HPP__
 
-#include "IpUtils.hpp"
-#include "IpException.hpp"
+#include "../Common/IpUtils.hpp"
+#include "../Common/IpException.hpp"
 
 namespace Ipopt
 {

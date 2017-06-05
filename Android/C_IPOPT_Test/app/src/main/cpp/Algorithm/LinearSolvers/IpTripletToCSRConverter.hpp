@@ -9,8 +9,8 @@
 #ifndef __IPTRIPLETTOCSRCONVERTER_HPP__
 #define __IPTRIPLETTOCSRCONVERTER_HPP__
 
-#include "IpUtils.hpp"
-#include "IpReferenced.hpp"
+#include "../../Common/IpUtils.hpp"
+#include "../../Common/IpReferenced.hpp"
 namespace Ipopt
 {
 

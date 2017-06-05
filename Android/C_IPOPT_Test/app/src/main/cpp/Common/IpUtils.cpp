@@ -13,7 +13,7 @@
 # include <cstdlib>
 #else
 # ifdef HAVE_STDLIB_H
-#  include <stdlib.h>
+#  include "../../../../../../../../../Library/Android/sdk/ndk-bundle/platforms/android-21/arch-x86_64/usr/include/stdlib.h"
 # endif
 #endif
 
@@ -96,7 +96,7 @@ namespace std
 #include <sys/time.h>
 #endif
 #if !defined(__MSVCRT__)
-#include <sys/resource.h>
+#include "../../../../../../../../../Library/Android/sdk/ndk-bundle/platforms/android-21/arch-x86_64/usr/include/sys/resource.h"
 #endif
 #endif
 
@@ -137,7 +137,7 @@ inline double IpCoinGetTimeOfDay()
 
 #else
 
-#include <sys/time.h>
+#include "../../../../../../../../../Library/Android/sdk/ndk-bundle/platforms/android-21/arch-x86_64/usr/include/sys/time.h"
 
 inline double IpCoinGetTimeOfDay()
 {

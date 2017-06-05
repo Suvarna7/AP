@@ -7,7 +7,7 @@
 // Authors:  Andreas Waechter     IBM                  2008-09-05
 //            based on IpAlgBuilder.cpp (rev 1311)
 
-#include "IpoptConfig.h"
+#include "../../Common/IpoptConfig.h"
 #include "IpInexactAlgBuilder.hpp"
 #include "IpInexactData.hpp"
 #include "IpInexactCq.hpp"

@@ -9,8 +9,8 @@
 #ifndef __IPTRIPLETHELPER_HPP__
 #define __IPTRIPLETHELPER_HPP__
 
-#include "IpTypes.hpp"
-#include "IpException.hpp"
+#include "../../Common/IpTypes.hpp"
+#include "../../Common/IpException.hpp"
 
 namespace Ipopt
 {

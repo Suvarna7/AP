@@ -11,7 +11,7 @@
 #include "IpCGPenaltyLSAcceptor.hpp"
 #include "IpCGPenaltyData.hpp"
 #include "IpCGPenaltyCq.hpp"
-#include "IpJournalist.hpp"
+#include "../../Common/IpJournalist.hpp"
 #include "IpRestoPhase.hpp"
 #include "IpAlgTypes.hpp"
 #include "IpIpoptAlg.hpp"

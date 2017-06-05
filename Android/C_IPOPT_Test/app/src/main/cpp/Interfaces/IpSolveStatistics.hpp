@@ -9,8 +9,8 @@
 #ifndef __IPSOLVESTATISTICS_HPP__
 #define __IPSOLVESTATISTICS_HPP__
 
-#include "IpReferenced.hpp"
-#include "IpSmartPtr.hpp"
+#include "../Common/IpReferenced.hpp"
+#include "../Common/IpSmartPtr.hpp"
 
 namespace Ipopt
 {

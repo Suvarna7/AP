@@ -7,7 +7,7 @@
 // Authors:  Carl Laird, Andreas Waechter     IBM    2004-08-13
 
 #include "IpStdAugSystemSolver.hpp"
-#include "IpDebug.hpp"
+#include "../Common/IpDebug.hpp"
 
 #include "IpCompoundSymMatrix.hpp"
 #include "IpCompoundVector.hpp"

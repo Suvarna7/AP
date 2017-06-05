@@ -9,7 +9,7 @@
 //               derived file from IpFilterLineSearch.cpp
 
 #include "IpBacktrackingLineSearch.hpp"
-#include "IpJournalist.hpp"
+#include "../Common/IpJournalist.hpp"
 #include "IpRestoPhase.hpp"
 #include "IpAlgTypes.hpp"
 

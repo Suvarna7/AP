@@ -9,8 +9,8 @@
 #ifndef __IPALGSTRATEGY_HPP__
 #define __IPALGSTRATEGY_HPP__
 
-#include "IpOptionsList.hpp"
-#include "IpJournalist.hpp"
+#include "../Common/IpOptionsList.hpp"
+#include "../Common/IpJournalist.hpp"
 #include "IpIpoptCalculatedQuantities.hpp"
 #include "IpIpoptNLP.hpp"
 #include "IpIpoptData.hpp"

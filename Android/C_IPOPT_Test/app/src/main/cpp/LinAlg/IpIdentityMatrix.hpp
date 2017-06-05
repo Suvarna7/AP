@@ -9,7 +9,7 @@
 #ifndef __IPIDENTITYMATRIX_HPP__
 #define __IPIDENTITYMATRIX_HPP__
 
-#include "IpUtils.hpp"
+#include "../Common/IpUtils.hpp"
 #include "IpSymMatrix.hpp"
 
 namespace Ipopt

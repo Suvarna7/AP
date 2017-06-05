@@ -9,7 +9,7 @@
 #ifndef __IPMC19TSYMSCALINGMETHOD_HPP__
 #define __IPMC19TSYMSCALINGMETHOD_HPP__
 
-#include "IpUtils.hpp"
+#include "../../Common/IpUtils.hpp"
 #include "IpTSymScalingMethod.hpp"
 
 namespace Ipopt

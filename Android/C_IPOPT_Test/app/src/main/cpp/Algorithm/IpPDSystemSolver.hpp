@@ -9,7 +9,7 @@
 #ifndef __IPPDSYSTEMSOLVER_HPP__
 #define __IPPDSYSTEMSOLVER_HPP__
 
-#include "IpUtils.hpp"
+#include "../Common/IpUtils.hpp"
 #include "IpSymMatrix.hpp"
 #include "IpAlgStrategy.hpp"
 #include "IpIteratesVector.hpp"

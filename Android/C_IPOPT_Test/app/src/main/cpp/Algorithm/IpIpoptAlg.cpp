@@ -6,9 +6,9 @@
 //
 // Authors:  Carl Laird, Andreas Waechter     IBM    2004-08-13
 
-#include "IpoptConfig.h"
+#include "../Common/IpoptConfig.h"
 #include "IpIpoptAlg.hpp"
-#include "IpJournalist.hpp"
+#include "../Common/IpJournalist.hpp"
 #include "IpRestoPhase.hpp"
 #include "IpOrigIpoptNLP.hpp"
 

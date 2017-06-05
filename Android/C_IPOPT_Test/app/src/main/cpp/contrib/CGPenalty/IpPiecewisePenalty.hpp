@@ -9,9 +9,9 @@
 #ifndef __IPPIECEWISEPENALTY_HPP__
 #define __IPPIECEWISEPENALTY_HPP__
 
-#include "IpJournalist.hpp"
-#include "IpDebug.hpp"
-#include "IpOptionsList.hpp"
+#include "../../Common/IpJournalist.hpp"
+#include "../../Common/IpDebug.hpp"
+#include "../../Common/IpOptionsList.hpp"
 #include "IpIpoptCalculatedQuantities.hpp"
 #include "IpBacktrackingLSAcceptor.hpp"
 #include "IpPDSystemSolver.hpp"

@@ -9,7 +9,7 @@
 #ifndef __IPALGORITHMREGOP_HPP__
 #define __IPALGORITHMREGOP_HPP__
 
-#include "IpSmartPtr.hpp"
+#include "../Common/IpSmartPtr.hpp"
 
 namespace Ipopt
 {

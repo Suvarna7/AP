@@ -9,7 +9,7 @@
 #ifndef __IPCOMPOUNDVECTOR_HPP__
 #define __IPCOMPOUNDVECTOR_HPP__
 
-#include "IpUtils.hpp"
+#include "../Common/IpUtils.hpp"
 #include "IpVector.hpp"
 #include <vector>
 

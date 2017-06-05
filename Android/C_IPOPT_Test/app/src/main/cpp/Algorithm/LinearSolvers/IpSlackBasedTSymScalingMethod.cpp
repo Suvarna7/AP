@@ -7,7 +7,7 @@
 // Authors:  Andreas Waechter                       IBM    2009-11-13
 //               (based on IpInexactTSymScalingMethod.cpp)
 
-#include "IpoptConfig.h"
+#include "../../Common/IpoptConfig.h"
 #include "IpSlackBasedTSymScalingMethod.hpp"
 #include "IpTripletHelper.hpp"
 

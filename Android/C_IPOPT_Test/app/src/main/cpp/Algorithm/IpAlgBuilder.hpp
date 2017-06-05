@@ -10,7 +10,7 @@
 #define __IPALGBUILDER_HPP__
 
 #include "IpIpoptAlg.hpp"
-#include "IpReferenced.hpp"
+#include "../Common/IpReferenced.hpp"
 #include "IpAugSystemSolver.hpp"
 
 namespace Ipopt

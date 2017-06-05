@@ -9,10 +9,10 @@
 #ifndef __IPAMPLTNLP_HPP__
 #define __IPAMPLTNLP_HPP__
 
-#include "IpUtils.hpp"
+#include "../../Common/IpUtils.hpp"
 #include "IpTNLP.hpp"
-#include "IpJournalist.hpp"
-#include "IpOptionsList.hpp"
+#include "../../Common/IpJournalist.hpp"
+#include "../../Common/IpOptionsList.hpp"
 
 #include <map>
 #include <string>

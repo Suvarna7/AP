@@ -9,8 +9,8 @@
 #ifndef __IPNLPSCALING_HPP__
 #define __IPNLPSCALING_HPP__
 
-#include "IpOptionsList.hpp"
-#include "IpRegOptions.hpp"
+#include "../Common/IpOptionsList.hpp"
+#include "../Common/IpRegOptions.hpp"
 
 namespace Ipopt
 {

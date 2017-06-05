@@ -7,7 +7,7 @@
 // Authors:  Andreas Waechter                 IBM    2009-09-18
 //               based on IpWsmpSolverInterface.cpp (rev 1521)
 
-#include "IpoptConfig.h"
+#include "../../Common/IpoptConfig.h"
 #include "IpIterativeWsmpSolverInterface.hpp"
 #include "IpBlas.hpp"
 

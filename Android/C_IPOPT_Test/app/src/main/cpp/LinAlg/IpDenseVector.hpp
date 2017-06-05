@@ -9,7 +9,7 @@
 #ifndef __IPDENSEVECTOR_HPP__
 #define __IPDENSEVECTOR_HPP__
 
-#include "IpUtils.hpp"
+#include "../Common/IpUtils.hpp"
 #include "IpVector.hpp"
 #include <map>
 

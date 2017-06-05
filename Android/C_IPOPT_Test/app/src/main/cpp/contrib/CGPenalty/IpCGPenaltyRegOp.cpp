@@ -7,7 +7,7 @@
 // Authors:  Andreas Waechter         IBM        2007-06-01
 
 #include "IpAlgorithmRegOp.hpp"
-#include "IpRegOptions.hpp"
+#include "../../Common/IpRegOptions.hpp"
 
 #include "IpCGSearchDirCalc.hpp"
 #include "IpCGPenaltyLSAcceptor.hpp"

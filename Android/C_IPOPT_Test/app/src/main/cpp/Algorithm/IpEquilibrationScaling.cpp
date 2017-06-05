@@ -6,7 +6,7 @@
 //
 // Authors:  Andreas Waechter            IBM    2007-05-21
 
-#include "IpoptConfig.h"
+#include "../Common/IpoptConfig.h"
 #include "IpEquilibrationScaling.hpp"
 #include "IpTripletHelper.hpp"
 

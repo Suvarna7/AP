@@ -6,12 +6,12 @@
 //
 // Authors:  Carl Laird, Andreas Waechter     IBM    2005-08-16
 
-#include "IpoptConfig.h"
+#include "../../Common/IpoptConfig.h"
 #ifdef COIN_HAS_HSL
 #include "CoinHslConfig.h"
 #endif
 #include "IpLinearSolversRegOp.hpp"
-#include "IpRegOptions.hpp"
+#include "../../Common/IpRegOptions.hpp"
 #include "IpTSymLinearSolver.hpp"
 
 #include "IpMa27TSolverInterface.hpp"

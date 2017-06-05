@@ -9,7 +9,7 @@
 #ifndef __IPMULTIVECTORMATRIX_HPP__
 #define __IPMULTIVECTORMATRIX_HPP__
 
-#include "IpUtils.hpp"
+#include "../Common/IpUtils.hpp"
 #include "IpMatrix.hpp"
 
 namespace Ipopt

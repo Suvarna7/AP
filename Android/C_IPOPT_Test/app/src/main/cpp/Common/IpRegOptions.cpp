@@ -25,7 +25,7 @@
 # include <cctype>
 #else
 # ifdef HAVE_CTYPE_H
-#  include <ctype.h>
+#  include "../../../../../../../../../Library/Android/sdk/ndk-bundle/platforms/android-21/arch-x86_64/usr/include/ctype.h"
 # else
 #  error "don't have header file for ctype"
 # endif

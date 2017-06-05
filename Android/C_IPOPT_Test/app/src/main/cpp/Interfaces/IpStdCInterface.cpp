@@ -8,7 +8,7 @@
 
 #include "IpStdCInterface.h"
 #include "IpStdInterfaceTNLP.hpp"
-#include "IpOptionsList.hpp"
+#include "../Common/IpOptionsList.hpp"
 #include "IpIpoptApplication.hpp"
 
 struct IpoptProblemInfo

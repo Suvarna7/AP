@@ -6,7 +6,7 @@
 //
 // Authors:  Andreas Waechter              IBM    2005-12-25
 
-#include "IpoptConfig.h"
+#include "../Common/IpoptConfig.h"
 #include "IpLapack.hpp"
 
 #ifdef FUNNY_LAPACK_FINT

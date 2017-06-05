@@ -10,7 +10,7 @@
 #define __IPORIGIPOPTNLP_HPP__
 
 #include "IpIpoptNLP.hpp"
-#include "IpException.hpp"
+#include "../Common/IpException.hpp"
 #include "IpTimingStatistics.hpp"
 
 namespace Ipopt

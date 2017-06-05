@@ -7,7 +7,7 @@
 // Authors:  Carl Laird, Andreas Waechter     IBM    2004-08-13
 
 #include "IpFilter.hpp"
-#include "IpJournalist.hpp"
+#include "../Common/IpJournalist.hpp"
 
 namespace Ipopt
 {

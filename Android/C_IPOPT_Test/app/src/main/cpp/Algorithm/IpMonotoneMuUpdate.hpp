@@ -11,7 +11,7 @@
 
 #include "IpMuUpdate.hpp"
 #include "IpLineSearch.hpp"
-#include "IpRegOptions.hpp"
+#include "../Common/IpRegOptions.hpp"
 
 namespace Ipopt
 {

@@ -7,7 +7,7 @@
 // Authors:  Andreas Waechter            IBM    2008-09-05
 
 #include "IpInexactRegOp.hpp"
-#include "IpRegOptions.hpp"
+#include "../../Common/IpRegOptions.hpp"
 
 #include "IpInexactAlgBuilder.hpp"
 #include "IpInexactSearchDirCalc.hpp"

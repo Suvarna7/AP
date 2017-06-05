@@ -9,7 +9,7 @@
 #ifndef __IPLINEARSOLVERSREGOP_HPP__
 #define __IPLINEARSOLVERSREGOP_HPP__
 
-#include "IpSmartPtr.hpp"
+#include "../../Common/IpSmartPtr.hpp"
 
 namespace Ipopt
 {

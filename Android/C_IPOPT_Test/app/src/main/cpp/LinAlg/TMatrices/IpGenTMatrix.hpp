@@ -9,7 +9,7 @@
 #ifndef __IPGENTMATRIX_HPP__
 #define __IPGENTMATRIX_HPP__
 
-#include "IpUtils.hpp"
+#include "../../Common/IpUtils.hpp"
 #include "IpMatrix.hpp"
 
 namespace Ipopt

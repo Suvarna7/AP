@@ -9,12 +9,12 @@
 #ifndef __IPSTDINTERFACETNLP_HPP__
 #define __IPSTDINTERFACETNLP_HPP__
 
-#include "IpUtils.hpp"
+#include "../Common/IpUtils.hpp"
 #include "IpTNLP.hpp"
-#include "IpJournalist.hpp"
-#include "IpException.hpp"
+#include "../Common/IpJournalist.hpp"
+#include "../Common/IpException.hpp"
 #include "IpStdCInterface.h"
-#include "IpSmartPtr.hpp"
+#include "../Common/IpSmartPtr.hpp"
 
 namespace Ipopt
 {

@@ -9,9 +9,9 @@
 #ifndef __IPTIMINGSTATISTICS_HPP__
 #define __IPTIMINGSTATISTICS_HPP__
 
-#include "IpReferenced.hpp"
-#include "IpJournalist.hpp"
-#include "IpTimedTask.hpp"
+#include "../Common/IpReferenced.hpp"
+#include "../Common/IpJournalist.hpp"
+#include "../Common/IpTimedTask.hpp"
 
 namespace Ipopt
 {

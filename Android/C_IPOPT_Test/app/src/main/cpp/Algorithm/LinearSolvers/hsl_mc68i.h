@@ -9,7 +9,7 @@
 #ifndef HSL_MC68I_H
 #define HSL_MC68I_H
 
-#include "IpoptConfig.h"
+#include "../../Common/IpoptConfig.h"
 #ifdef COIN_HAS_HSL
 #include "CoinHslConfig.h"
 #endif

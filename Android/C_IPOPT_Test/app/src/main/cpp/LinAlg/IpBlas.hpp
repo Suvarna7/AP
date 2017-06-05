@@ -9,7 +9,7 @@
 #ifndef __IPBLAS_HPP__
 #define __IPBLAS_HPP__
 
-#include "IpUtils.hpp"
+#include "../Common/IpUtils.hpp"
 
 namespace Ipopt
 {

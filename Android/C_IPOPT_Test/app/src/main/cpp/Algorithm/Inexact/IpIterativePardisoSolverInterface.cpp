@@ -8,7 +8,7 @@
 //
 //           based on IpPardisoSolverInterface.cpp rev 1219
 
-#include "IpoptConfig.h"
+#include "../../Common/IpoptConfig.h"
 #include "IpIterativePardisoSolverInterface.hpp"
 #include "IpBlas.hpp"
 # include <math.h>

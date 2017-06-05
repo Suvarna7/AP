@@ -34,7 +34,8 @@
 #define COIN_HAS_ASL 1
 
 /* If defined, the BLAS Library is available. */
-#define COIN_HAS_BLAS 1
+/* XXX DEBUG : I undefined this for testing. */
+/* #define COIN_HAS_BLAS 1 */
 
 /* If defined, the LAPACK Library is available. */
 #define COIN_HAS_LAPACK 1

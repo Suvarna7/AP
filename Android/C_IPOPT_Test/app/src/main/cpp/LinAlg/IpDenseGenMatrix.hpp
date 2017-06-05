@@ -9,7 +9,7 @@
 #ifndef __IPDENSEGENMATRIX_HPP__
 #define __IPDENSEGENMATRIX_HPP__
 
-#include "IpUtils.hpp"
+#include "../Common/IpUtils.hpp"
 #include "IpMatrix.hpp"
 #include "IpDenseVector.hpp"
 #include "IpDenseSymMatrix.hpp"

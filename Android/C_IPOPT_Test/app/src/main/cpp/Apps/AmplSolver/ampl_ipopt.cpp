@@ -9,7 +9,7 @@
 #include "AmplTNLP.hpp"
 #include "IpIpoptApplication.hpp"
 
-#include "IpoptConfig.h"
+#include "../../Common/IpoptConfig.h"
 #ifdef HAVE_CSTRING
 # include <cstring>
 #else

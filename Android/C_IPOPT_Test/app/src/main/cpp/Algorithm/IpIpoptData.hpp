@@ -10,9 +10,9 @@
 #define __IPIPOPTDATA_HPP__
 
 #include "IpSymMatrix.hpp"
-#include "IpOptionsList.hpp"
+#include "../Common/IpOptionsList.hpp"
 #include "IpIteratesVector.hpp"
-#include "IpRegOptions.hpp"
+#include "../Common/IpRegOptions.hpp"
 #include "IpTimingStatistics.hpp"
 
 namespace Ipopt

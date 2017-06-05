@@ -9,12 +9,12 @@
 #ifndef __IPNLP_HPP__
 #define __IPNLP_HPP__
 
-#include "IpUtils.hpp"
+#include "../Common/IpUtils.hpp"
 #include "IpVector.hpp"
-#include "IpSmartPtr.hpp"
+#include "../Common/IpSmartPtr.hpp"
 #include "IpMatrix.hpp"
 #include "IpSymMatrix.hpp"
-#include "IpOptionsList.hpp"
+#include "../Common/IpOptionsList.hpp"
 #include "IpAlgTypes.hpp"
 #include "IpReturnCodes.hpp"
 

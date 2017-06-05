@@ -9,7 +9,7 @@
 #ifndef __IPCGPENALTYREGOP_HPP__
 #define __IPCGPENALTYREGOP_HPP__
 
-#include "IpSmartPtr.hpp"
+#include "../../Common/IpSmartPtr.hpp"
 
 namespace Ipopt
 {

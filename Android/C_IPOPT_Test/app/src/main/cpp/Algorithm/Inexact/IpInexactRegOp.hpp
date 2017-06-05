@@ -9,7 +9,7 @@
 #ifndef __IPINEXACTREGOP_HPP__
 #define __IPINEXACTREGOP_HPP__
 
-#include "IpSmartPtr.hpp"
+#include "../../Common/IpSmartPtr.hpp"
 
 namespace Ipopt
 {

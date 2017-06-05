@@ -15,7 +15,7 @@
 #include "IpLineSearch.hpp"
 #include "IpMuUpdate.hpp"
 #include "IpConvCheck.hpp"
-#include "IpOptionsList.hpp"
+#include "../Common/IpOptionsList.hpp"
 #include "IpIterateInitializer.hpp"
 #include "IpIterationOutput.hpp"
 #include "IpAlgTypes.hpp"

@@ -9,7 +9,7 @@
 #ifndef __IPSPARSESYMLINEARSOLVERINTERFACE_HPP__
 #define __IPSPARSESYMLINEARSOLVERINTERFACE_HPP__
 
-#include "IpUtils.hpp"
+#include "../../Common/IpUtils.hpp"
 #include "IpAlgStrategy.hpp"
 #include "IpSymLinearSolver.hpp"
 

@@ -9,8 +9,8 @@
 #ifndef __IPIPOPTCALCULATEDQUANTITIES_HPP__
 #define __IPIPOPTCALCULATEDQUANTITIES_HPP__
 
-#include "IpSmartPtr.hpp"
-#include "IpCachedResults.hpp"
+#include "../Common/IpSmartPtr.hpp"
+#include "../Common/IpCachedResults.hpp"
 
 #include <string>
 

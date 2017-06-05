@@ -7,7 +7,7 @@
 // Authors:  Carl Laird, Andreas Waechter     IBM    2004-08-13
 
 #include "IpMonotoneMuUpdate.hpp"
-#include "IpJournalist.hpp"
+#include "../Common/IpJournalist.hpp"
 
 #ifdef HAVE_CMATH
 # include <cmath>

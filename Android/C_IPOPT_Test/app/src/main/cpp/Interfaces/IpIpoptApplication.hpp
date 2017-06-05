@@ -23,7 +23,7 @@
 
 #include <iostream>
 
-#include "IpJournalist.hpp"
+#include "../Common/IpJournalist.hpp"
 #include "IpTNLP.hpp"
 #include "IpNLP.hpp"
 /* Return codes for the Optimize call for an application */

@@ -7,7 +7,7 @@
 // Authors:  Carl Laird, Andreas Waechter     IBM    2005-08-16
 
 #include "IpInterfacesRegOp.hpp"
-#include "IpRegOptions.hpp"
+#include "../Common/IpRegOptions.hpp"
 #include "IpIpoptApplication.hpp"
 #include "IpTNLPAdapter.hpp"
 

@@ -7,7 +7,7 @@
 // Authors:  Andreas Waechter, Frank E. Curtis         IBM    2009-06-12
 //               (based on IpMc19TSymScalingMethod.cpp rev 1204)
 
-#include "IpoptConfig.h"
+#include "../../Common/IpoptConfig.h"
 #include "IpInexactTSymScalingMethod.hpp"
 #include "IpTripletHelper.hpp"
 

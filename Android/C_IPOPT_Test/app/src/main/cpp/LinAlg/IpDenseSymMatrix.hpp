@@ -9,7 +9,7 @@
 #ifndef __IPDENSESYMMATRIX_HPP__
 #define __IPDENSESYMMATRIX_HPP__
 
-#include "IpUtils.hpp"
+#include "../Common/IpUtils.hpp"
 #include "IpSymMatrix.hpp"
 #include "IpMultiVectorMatrix.hpp"
 #include "IpDenseVector.hpp"

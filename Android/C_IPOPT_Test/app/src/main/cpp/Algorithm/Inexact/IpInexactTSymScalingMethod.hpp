@@ -10,7 +10,7 @@
 #ifndef __IPINEXACTTSYMSCALINGMETHOD_HPP__
 #define __IPINEXACTTSYMSCALINGMETHOD_HPP__
 
-#include "IpUtils.hpp"
+#include "../../Common/IpUtils.hpp"
 #include "IpTSymScalingMethod.hpp"
 #include "IpInexactCq.hpp"
 

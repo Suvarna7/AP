@@ -8,8 +8,8 @@
 
 #include "IpDenseVector.hpp"
 #include "IpBlas.hpp"
-#include "IpUtils.hpp"
-#include "IpDebug.hpp"
+#include "../Common/IpUtils.hpp"
+#include "../Common/IpDebug.hpp"
 
 #ifdef HAVE_CMATH
 # include <cmath>

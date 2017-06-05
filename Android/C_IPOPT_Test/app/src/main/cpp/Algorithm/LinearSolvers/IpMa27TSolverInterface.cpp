@@ -6,7 +6,7 @@
 //
 // Authors:  Carl Laird, Andreas Waechter     IBM    2005-03-17
 
-#include "IpoptConfig.h"
+#include "../../Common/IpoptConfig.h"
 
 #ifdef COIN_HAS_HSL
 #include "CoinHslConfig.h"

@@ -9,9 +9,9 @@
 #ifndef __IPTNLP_HPP__
 #define __IPTNLP_HPP__
 
-#include "IpUtils.hpp"
-#include "IpReferenced.hpp"
-#include "IpException.hpp"
+#include "../Common/IpUtils.hpp"
+#include "../Common/IpReferenced.hpp"
+#include "../Common/IpException.hpp"
 #include "IpAlgTypes.hpp"
 #include "IpReturnCodes.hpp"
 

@@ -9,7 +9,7 @@
 #ifndef __IPSYMLINEARSOLVER_HPP__
 #define __IPSYMLINEARSOLVER_HPP__
 
-#include "IpUtils.hpp"
+#include "../../Common/IpUtils.hpp"
 #include "IpSymMatrix.hpp"
 #include "IpAlgStrategy.hpp"
 #include <vector>

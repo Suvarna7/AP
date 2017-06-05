@@ -9,7 +9,7 @@
 #ifndef __IPGENKKTSOLVERINTERFACE_HPP__
 #define __IPGENKKTSOLVERINTERFACE_HPP__
 
-#include "IpUtils.hpp"
+#include "../../Common/IpUtils.hpp"
 #include "IpAlgStrategy.hpp"
 #include "IpSymLinearSolver.hpp"
 

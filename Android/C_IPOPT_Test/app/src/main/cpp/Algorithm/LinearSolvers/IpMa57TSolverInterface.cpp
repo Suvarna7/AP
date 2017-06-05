@@ -7,7 +7,7 @@
 // Authors:  Michael Hagemann               Univ of Basel 2005-10-28
 //               original version (based on MA27TSolverInterface.cpp)
 
-#include "IpoptConfig.h"
+#include "../../Common/IpoptConfig.h"
 
 #ifdef COIN_HAS_HSL
 #include "CoinHslConfig.h"

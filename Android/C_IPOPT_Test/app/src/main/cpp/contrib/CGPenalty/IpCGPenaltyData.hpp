@@ -11,7 +11,7 @@
 #define __IPCGPENALTYDATA_HPP__
 
 #include "IpIteratesVector.hpp"
-#include "IpOptionsList.hpp"
+#include "../../Common/IpOptionsList.hpp"
 #include "IpIpoptData.hpp"
 
 namespace Ipopt

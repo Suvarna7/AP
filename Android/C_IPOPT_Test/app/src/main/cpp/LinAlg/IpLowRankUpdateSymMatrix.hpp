@@ -9,7 +9,7 @@
 #ifndef __IPLOWRANKUPDATESYMMATRIX_HPP__
 #define __IPLOWRANKUPDATESYMMATRIX_HPP__
 
-#include "IpUtils.hpp"
+#include "../Common/IpUtils.hpp"
 #include "IpSymMatrix.hpp"
 #include "IpMultiVectorMatrix.hpp"
 

@@ -14,7 +14,7 @@
  * API differences MKL vs Basel PARDISO: http://software.intel.com/en-us/articles/summary-of-api-differences-between-intel-mkl-pardiso-and-university-of-basel-pardiso-400
  */
 
-#include "IpoptConfig.h"
+#include "../../Common/IpoptConfig.h"
 #include "IpPardisoSolverInterface.hpp"
 # include <math.h>
 

@@ -6,7 +6,7 @@
 //
 // Authors:  Carl Laird, Andreas Waechter     IBM    2004-08-13
 
-#include "IpoptConfig.h"
+#include "../Common/IpoptConfig.h"
 #include "IpTNLPAdapter.hpp"
 #include "IpBlas.hpp"
 #include "IpIpoptData.hpp"

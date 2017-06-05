@@ -7,7 +7,7 @@
 // Authors:  Carl Laird, Andreas Waechter     IBM    2004-08-13
 
 #include "IpPDFullSpaceSolver.hpp"
-#include "IpDebug.hpp"
+#include "../Common/IpDebug.hpp"
 
 #ifdef HAVE_CMATH
 # include <cmath>

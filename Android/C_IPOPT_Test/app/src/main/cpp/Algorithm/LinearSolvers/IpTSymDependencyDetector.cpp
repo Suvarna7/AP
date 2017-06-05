@@ -6,7 +6,7 @@
 //
 // Authors:  Andreas Waechter            IBM    2007-04-17
 
-#include "IpoptConfig.h"
+#include "../../Common/IpoptConfig.h"
 #include "IpTSymDependencyDetector.hpp"
 
 namespace Ipopt

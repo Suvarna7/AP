@@ -9,7 +9,7 @@
 #ifndef __IPEXPANDEDMULTIVECTORMATRIX_HPP__
 #define __IPEXPANDEDMULTIVECTORMATRIX_HPP__
 
-#include "IpUtils.hpp"
+#include "../Common/IpUtils.hpp"
 #include "IpMatrix.hpp"
 #include "IpExpansionMatrix.hpp"
 

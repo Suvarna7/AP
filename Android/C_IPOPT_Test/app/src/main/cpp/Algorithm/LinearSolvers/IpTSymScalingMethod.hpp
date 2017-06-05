@@ -9,7 +9,7 @@
 #ifndef __IPTSYMSCALINGMETHOD_HPP__
 #define __IPTSYMSCALINGMETHOD_HPP__
 
-#include "IpUtils.hpp"
+#include "../../Common/IpUtils.hpp"
 #include "IpAlgStrategy.hpp"
 
 namespace Ipopt
