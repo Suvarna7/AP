@@ -61,12 +61,9 @@ public class BGService extends Service implements EmpaDataDelegate{
     private static boolean batteryNotReceived;
     //Total values
     private static double BATTERY;
-    //Timestamp
-
 
     //Fields to verify key
     public static VerifyKeyTimer verifyKeyTimer;
-
 
     //Database
     //public static IITDatabaseManager myDB;
@@ -76,14 +73,12 @@ public class BGService extends Service implements EmpaDataDelegate{
     public static final String[] columnsTable = new String[]{"time_stamp", "Acc_x", "Acc_y", "Acc_z", "GSR", "BVP",
             "IBI", "HR", "temperature","battery_level"};
     public static final int _TIME_INDEX = 0;
-
     //private static List<ThreadSafeArrayList<String> > failedToUpdate;
 
     //Manage access to Database
     public static boolean ackInProgress;
 
     //****************** STORING THREAD ************************
-
     public static StoringThread storingManager;
 
     //****************** IBI PREPROCESSING ********************
@@ -111,6 +106,11 @@ public class BGService extends Service implements EmpaDataDelegate{
         //Empatica disconnected
         //EmpaticaDisconnected = true;
     }
+
+    /* *************************************************************************
+     * BACKGROUND SERVICE CALLBACKS
+     * *************************************************************************
+     */
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -163,7 +163,6 @@ public class BGService extends Service implements EmpaDataDelegate{
         //Empatica disconnected
         EmpaticaDisconnected = true;
 
-
     }
 
 
@@ -173,7 +172,6 @@ public class BGService extends Service implements EmpaDataDelegate{
         // Do your Bluetooth Work Here
         serviceStarted = true;
         Toast.makeText(this, " Service Started", Toast.LENGTH_LONG).show();
-
 
         //Start connection timer
         //Timer to check the connection
@@ -186,7 +184,6 @@ public class BGService extends Service implements EmpaDataDelegate{
         if(MainActivity.mHost !=null && MainActivity.mHost.readingThread != null)
             MainActivity.mHost.readingThread.shutup();
 
-
         //Update values in table
         return 0;
 
@@ -194,7 +191,7 @@ public class BGService extends Service implements EmpaDataDelegate{
 
         @Override
         public void onDestroy() {
-            Toast.makeText(this, "Service Destroyed", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Service Stopped", Toast.LENGTH_LONG).show();
 
             //Stop timer
             notConnectedTimer.cancel();
@@ -203,14 +200,13 @@ public class BGService extends Service implements EmpaDataDelegate{
             //Stop reader thread
             MainActivity.mHost.readingThread.shutdown();
 
-
-
         }
 
 
 
-    /**********************************
-     * Empatica callbacks
+    /* *************************************************************************
+     * EMPATICA  CALLBACKS
+     * *************************************************************************
      */
 
     @Override
@@ -255,7 +251,6 @@ public class BGService extends Service implements EmpaDataDelegate{
         mActivity.updateLabel(mActivity.usbCommand, "---");
         mActivity.updateLabel(mActivity.usbCommand, MainActivity.usbCommandValue);
 
-
     }
 
     @Override
@@ -272,7 +267,6 @@ public class BGService extends Service implements EmpaDataDelegate{
         else
             allValues[gsrValue]=gsrval;
 
-
         //Update number of received samples:
         if (gsrNotReceived ){
             gsrNotReceived = false;
@@ -280,10 +274,6 @@ public class BGService extends Service implements EmpaDataDelegate{
 
         //Store in DB
         storeNewSample(time_stamp);
-
-
-
-
     }
 
     @Override
