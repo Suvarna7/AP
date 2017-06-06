@@ -1,4 +1,4 @@
-package com.ece.ap.awsbackup.models.nosql;
+package com.amazonaws.models.nosql;
 
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBAttribute;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBHashKey;
@@ -15,6 +15,9 @@ import java.util.Set;
 
 public class FirstAwsDO {
     private String _userId;
+    private String _inputSample;
+    private String _otherThings;
+    private String _timeStamp;
 
     @DynamoDBHashKey(attributeName = "userId")
     @DynamoDBAttribute(attributeName = "userId")
@@ -24,6 +27,30 @@ public class FirstAwsDO {
 
     public void setUserId(final String _userId) {
         this._userId = _userId;
+    }
+    @DynamoDBAttribute(attributeName = "input_sample")
+    public String getInputSample() {
+        return _inputSample;
+    }
+
+    public void setInputSample(final String _inputSample) {
+        this._inputSample = _inputSample;
+    }
+    @DynamoDBAttribute(attributeName = "other_things")
+    public String getOtherThings() {
+        return _otherThings;
+    }
+
+    public void setOtherThings(final String _otherThings) {
+        this._otherThings = _otherThings;
+    }
+    @DynamoDBAttribute(attributeName = "time_stamp")
+    public String getTimeStamp() {
+        return _timeStamp;
+    }
+
+    public void setTimeStamp(final String _timeStamp) {
+        this._timeStamp = _timeStamp;
     }
 
 }
