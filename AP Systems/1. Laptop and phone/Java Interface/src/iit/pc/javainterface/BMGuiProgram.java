@@ -644,7 +644,7 @@ public class BMGuiProgram extends JFrame{
 				usbGetButton.setEnabled(true);
 				
 
-				updateUSBConnectionStatus("USB Disconnected", "|||");
+				//updateUSBConnectionStatus("USB Disconnected", "|||");
 
 			}
 		}

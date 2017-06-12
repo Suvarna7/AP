@@ -41,7 +41,7 @@ public class USBReadThread extends Thread {
 				//System.out.println("Line read: "+line);
 
 				if (line != null && !line.equals("null")){
-					System.out.println("Received line: "+line);
+					//System.out.println("Received line: "+line);
 					//When DiAS is ready with new CGM sample
 					mHost.updateConnectionStatus(true);
 					
@@ -65,6 +65,7 @@ public class USBReadThread extends Thread {
 							//Update button
 							mBridge.gui.usbGetButton.setText("USB get values");
 							mBridge.gui.usbGetButton.setEnabled(true);
+							System.out.println("MALTAB not notified");;
 						}
 						mBridge.gui.updateUSBConnectionStatus("Received all messages  ", "|||");
 						
@@ -141,11 +142,13 @@ public class USBReadThread extends Thread {
 						mBridge.gui.updateUSBConnectionStatus("Receiving messages  ", "");
 
 						System.out.println(line);
-						if (matlab_request>0)
+						if (matlab_request>0){
 							//Send to matlab:
 							//if (!mBridge.matSocket.sendMessageToMatlab(line)){
 							mBridge.matSocket.sendMessageToMatlab(line);
-						else{
+							mBridge.gui.updateUSBConnectionStatus("Receiving messages  ", "........................");
+						
+						}else{
 							//TODO Write to excel:
 							//List<String> responseBack = mBridge.handleJSONResponse(line);
 							//If we were able to write in the excel file, we send an ACK Back:
