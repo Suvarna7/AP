@@ -120,7 +120,7 @@ public class SendDataTimer extends BasicTimer{
        deleteUpdatedValues(safetyMargin);
 
         //2. Obtain not updated values from database
-      /* List<Map<String, String>> listReadToServer = StoringThread.myDB.getNotCheckedValues (BGService.empaticaTableName, BGService.columnsTable,
+       /*List<Map<String, String>> listReadToServer = StoringThread.myDB.getNotCheckedValues (BGService.empaticaTableName, BGService.columnsTable,
                 IITDatabaseManager.upDateColumn, IITDatabaseManager.updatedStatusNo, samples, false);
 
         //1. Obtain syncrhonized values from database to delete

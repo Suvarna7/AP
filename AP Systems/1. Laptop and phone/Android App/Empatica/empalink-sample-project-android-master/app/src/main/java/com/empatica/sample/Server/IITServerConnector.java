@@ -30,7 +30,9 @@ public class IITServerConnector {
 	//JSON Identifier
 	public static final String JSON_ID_dias = "empaticaJSON";
 	//Server urls
-	private static final String IIT_SERVER_IP = "216.47.158.133";
+	//private static final String IIT_SERVER_IP = "216.47.158.133"; //Siegel Hall
+	private static final String IIT_SERVER_IP = "52.39.157.52"; //AWS
+
 	public static final String IIT_SERVER_UPDATE_VALUES_URL = "http://"+ IIT_SERVER_IP+"/phpSync/insert_into_table.php";
 	public static final String IIT_SERVER_READ_TABLE_URL = "http://"+IIT_SERVER_IP+"/phpSync/read_table_values.php";
 	//debug page private final String IIT_SERVER_URL =   "http://216.47.158.133/phpSync/insertzephyrvalues.php";
