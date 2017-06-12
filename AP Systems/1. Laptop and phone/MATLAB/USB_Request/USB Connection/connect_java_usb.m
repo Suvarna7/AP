@@ -5,7 +5,8 @@ function [ socket ] = connect_java_usb( ~ )
 % Local host
 % Port with Java - 37600 (same as Java interface)
 
-t = tcpip('localhost', 37600, 'NetworkRole', 'server');
+t = tcpip('localhost', 38700, 'NetworkRole', 'server');
+% t = tcpip('localhost', 37600, 'NetworkRole', 'server');
 %t = tcpclient ('127.0.0.1', 38700, 'NetworkRole', 'client');
 set(t, 'InputBufferSize', 50000); 
 set(t, 'OutputBufferSize', 50000); 

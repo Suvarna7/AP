@@ -39,6 +39,12 @@ finalTime = datenum(clock + [0, 0, 0, 0, 3, 0]);
                     %data_to_save = [];
                     done_reading = true;
                     fprintf(t, ack_data);
+                    %Store samples
+                    %data_to_save(1:size(data_to_save,1), end)= num2cell(zeros(size(data_to_save,1), 1));
+                    %data_to_save(1,end)= cellstr('ReceivedBatch');
+                    %data_to_save(2, end)= cellstr('y');
+
+                    store_samples(table_name, data_to_save);
                 elseif(strcmp(var, 'usb_sync'))
                     'USB related ?'
                 else

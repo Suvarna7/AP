@@ -7,8 +7,9 @@ global empatica_data;
 if(check_usb(usb_con) && check_bl_connection(usb_con, 'empatica'))
     [table, new_samples] = read_last_samples(usb_con, 'empatica');
     %Save as global variable
-    empatica_data = [empatica_data;new_samples(2:end,:)];
+    %empatica_data = [empatica_data;new_samples(2:end,:)];
 end
+
 
 %Loop to get Empatica data every 5 minutes:
 five_min = datenum(clock + [0, 0, 0, 0, 5, 0]);
