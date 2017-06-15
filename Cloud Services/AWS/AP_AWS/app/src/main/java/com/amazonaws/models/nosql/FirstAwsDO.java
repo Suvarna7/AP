@@ -15,7 +15,7 @@ import java.util.Set;
 
 public class FirstAwsDO {
     private String _userId;
-    private String _inputSample;9
+    private String _inputSample;
     private String _otherThings;
     private String _timeStamp;
 

@@ -13,6 +13,7 @@ public class AWSThread  extends AsyncTask<String, String,String> {
     @Override
     protected String doInBackground(String... urls) {
         myAWS.insertData();
+        myAWS.createTable("tabla", 50L,50L, "la_llave", "S");
         return null;
     }
 }
