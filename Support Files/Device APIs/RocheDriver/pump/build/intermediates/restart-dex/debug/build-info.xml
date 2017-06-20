@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<instant-run
+    abi="armeabi-v7a,armeabi"
+    api-level="19"
+    density="xxhdpi"
+    format="8"
+    plugin-version="2.2.3"
+    timestamp="2557832517188347"
+    token="-1899615159504546253"
+    verifier="FULL_BUILD_REQUESTED" >
+
+    <task
+        name="javac"
+        duration="0" />
+    <task
+        name="instant-run-dex"
+        duration="0" />
+    <task
+        name="instant-run-transform"
+        duration="0" />
+    <task
+        name="verifier"
+        duration="0" />
+
+    <artifact
+        location="C:\Users\Caterina\Documents\GitHub\AP_IIT_2016\Android\RocheDriver\pump\build\outputs\apk\pump-debug.apk"
+        type="MAIN" />
+
+    <build
+        timestamp="2557832517188347"
+        verifier="FULL_BUILD_REQUESTED" >
+        <artifact
+            location="C:\Users\Caterina\Documents\GitHub\AP_IIT_2016\Android\RocheDriver\pump\build\outputs\apk\pump-debug.apk"
+            type="MAIN" />
+    </build>
+
+</instant-run>
