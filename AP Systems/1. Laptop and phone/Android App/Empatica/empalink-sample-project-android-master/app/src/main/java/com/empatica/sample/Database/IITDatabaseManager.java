@@ -1056,6 +1056,7 @@ public class IITDatabaseManager {
                         if (cursorSync.moveToFirst()) {
                             int index = 0;
                             String last_updated = "";
+
                             do {
                                 //Update values
                                 last_updated = cursorSync.getString(BGService._TIME_INDEX);
@@ -1069,9 +1070,13 @@ public class IITDatabaseManager {
                                     cursorSync.close();
                                     cursorSync = db.query(table, null, syncColumn+" = \"" + syncStatusNo +"\"",null, null, null, timeStampColumn+" ASC", null);
                                     cursorSync.moveToFirst();
+                                    //Update first sample
+                                    updateSyncStatus(table,syncColumn, syncStatusYes,last_updated);
                                 }
 
                             } while (!last_up.equals(last_updated) && cursorSync.moveToNext()   );
+
+
                             System.out.println("Done ACK reading: "+index);
                         }
                     }
