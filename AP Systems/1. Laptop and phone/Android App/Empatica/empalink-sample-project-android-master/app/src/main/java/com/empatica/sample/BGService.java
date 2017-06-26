@@ -121,8 +121,7 @@ public class BGService extends Service implements EmpaDataDelegate{
     @Override
     public void onCreate() {
         ackInProgress = false;
-        //Create the storing Thread and manager
-        storingManager = new StoringThread(this);
+
 
         // Create a new EmpaDeviceManager. Service is both its data  delegate and MainActivity its status delegate.
         if (mActivity != null) {
@@ -172,6 +171,9 @@ public class BGService extends Service implements EmpaDataDelegate{
         // Do your Bluetooth Work Here
         serviceStarted = true;
         Toast.makeText(this, " Service Started", Toast.LENGTH_LONG).show();
+
+        //Create the storing Thread and manager
+        storingManager = new StoringThread(this);
 
         //Start connection timer
         //Timer to check the connection
