@@ -417,7 +417,8 @@ public class BGService extends Service implements EmpaDataDelegate{
         //Store in local array
         String tempval = (""+ temp + "");
         if (tempval.contains("null") || temp < 0)
-            allValues[temperatureValue] = "0";
+            //            allValues[temperatureValue] = "0";
+            allValues[temperatureValue] = allValues[temperatureValue]; //prev
         else
             allValues[temperatureValue]=tempval;
 
@@ -468,7 +469,9 @@ public class BGService extends Service implements EmpaDataDelegate{
      */
 
     private static void  initArrayOfValues(){
+        //TODO String temp =  allValues[temperatureValue];
         allValues  = new String[]{"0", "0", "0", "0", "0", "0", "0", "0", ""+BATTERY};
+
 
     }
 

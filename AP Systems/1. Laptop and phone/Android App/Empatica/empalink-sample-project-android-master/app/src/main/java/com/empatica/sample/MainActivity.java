@@ -425,7 +425,7 @@ public class MainActivity extends Activity implements EmpaStatusDelegate {
             });
             updateLabel(statusLabel, status.name() + " - Turn on your device");
             connectionS  = status.name();
-            if (BGService.deviceManager != null ) {
+            if (BGService.deviceManager != null) {
                 BGService.deviceManager.stopScanning();
                 // Start scanning
                 BGService.deviceManager.startScanning();
@@ -443,7 +443,16 @@ public class MainActivity extends Activity implements EmpaStatusDelegate {
             });
             updateLabel(statusLabel, status.name());
             updateLabel(deviceNameLabel, "---");
+            //Reset background service
+           if (BGService.serviceStarted && !BGService.EmpaticaDisconnected) {
+                stopService(new Intent(appContext, BGService.class));
+                //BGService.initContext(appMain);
+                startService(new Intent(appContext, BGService.class));
+                BGService.initContext(appMain);
+            }
             BGService.EmpaticaDisconnected = true;
+
+
         }else {
             //Update labels in this non recognize state
             updateLabel(statusLabel, status.name() + " - ? Turn on your device");
