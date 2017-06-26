@@ -1,6 +1,6 @@
 -- Merging decision tree log ---
 manifest
-ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:2:1-57:12
+ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:2:1-58:12
 	package
 		ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:3:5-43
 		INJECTED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml
@@ -61,7 +61,7 @@ ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\R
 	android:name
 		ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:19:22-46
 application
-ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:21:5-55:19
+ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:21:5-56:19
 	android:label
 		ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:23:9-41
 	android:icon
@@ -109,7 +109,7 @@ ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\R
 	android:name
 		ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:32:20-49
 activity#edu.virginia.dtc.RocheDriver.RocheUI
-ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:34:9-43:20
+ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:34:9-44:20
 	android:screenOrientation
 		ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:37:19-62
 	android:label
@@ -119,36 +119,36 @@ ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\R
 	android:name
 		ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:36:19-70
 intent-filter#android.intent.action.MAIN+android.intent.category.LAUNCHER
-ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:38:13-42:29
+ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:38:13-43:29
 action#android.intent.action.MAIN
 ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:39:17-76
 	android:name
 		ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:39:25-66
 category#android.intent.category.LAUNCHER
-ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:40:17-77
+ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:41:17-77
 	android:name
-		ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:40:27-74
+		ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:41:27-74
 service#edu.virginia.dtc.RocheDriver.RocheDriver
-ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:45:9-53:19
+ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:46:9-54:19
 	android:enabled
-		ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:48:13-35
+		ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:49:13-35
 	android:exported
-		ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:47:13-36
+		ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:48:13-36
 	android:name
-		ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:46:13-68
+		ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:47:13-68
 intent-filter#Driver.Pump.Roche+Driver.UI.Roche
-ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:49:13-52:29
+ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:50:13-53:29
 action#Driver.Pump.Roche
-ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:50:17-59
+ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:51:17-59
 	android:name
-		ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:50:25-57
+		ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:51:25-57
 action#Driver.UI.Roche
-ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:51:17-57
+ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:52:17-57
 	android:name
-		ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:51:25-55
+		ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:52:25-55
 meta-data#Version
-ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:54:9-74
+ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:55:9-74
 	android:value
-		ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:54:43-72
+		ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:55:43-72
 	android:name
-		ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:54:20-42
+		ADDED from C:\Users\Cat\Documents\GitHub\AP_IIT_2016\Support Files\Device APIs\RocheDriver\pump\src\main\AndroidManifest.xml:55:20-42

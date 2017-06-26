@@ -22,12 +22,14 @@ public class PhonesList {
 	public static final String _ID_2 =  "044330fb0950bd90";
 	private static final String _PHONE_3 = "yellow_phone";
 	public static final String _ID_3 =  "06ac3cce13c86914";
-	private static final String _PHONE_4 = "motorola_phone";
-	public final static String _ID_4 =  "ZY224336GR";
+	private static final String _PHONE_4 = "black_phone";
+	public final static String _ID_4 =  "0875f7d905920832";
+	private static final String _PHONE_5 = "motorola_phone";
+	public final static String _ID_5 =  "ZY224336GR";
 	private static final String _OTHER = "other";
 
-	private String[] modes = { _PHONE_1, _PHONE_2, _PHONE_3, _PHONE_4, _OTHER};
-	private String[] ids = { _ID_1, _ID_2, _ID_3, _ID_4};
+	private String[] modes = { _PHONE_1, _PHONE_2, _PHONE_3, _PHONE_4, _PHONE_5, _OTHER};
+	private String[] ids = { _ID_1, _ID_2, _ID_3, _ID_4, _ID_5};
 
 	private HashMap<String, String> phonesID;
 

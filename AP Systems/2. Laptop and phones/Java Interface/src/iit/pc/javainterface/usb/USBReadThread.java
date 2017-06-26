@@ -171,6 +171,8 @@ public class USBReadThread extends Thread {
 							//If we were able to write in the excel file, we send an ACK Back:
 							//TODO for (String ack_msg: responseBack)
 								//mHost.sendUSBmessage(ack_msg);
+							mBridge.gui.updateUSBConnectionStatus("Not sending to MATLAB  ", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", indexPhoneGui);
+
 						}
 						
 						mBridge.gui.updateUSBConnectionStatus("Receiving messages  ", "........................", indexPhoneGui);
